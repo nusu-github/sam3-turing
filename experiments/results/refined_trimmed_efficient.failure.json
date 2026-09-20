@@ -1,0 +1,21 @@
+{
+  "name": "refined_trimmed_efficient",
+  "config": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "public_int8_asymmetric": true,
+    "public_int8_optimize_scales": true,
+    "public_refinements": true,
+    "public_cpu_text": true,
+    "public_cpu_trim_padding": true,
+    "text_cache_size": 0,
+    "backend": "efficient"
+  },
+  "exit_code": 1,
+  "error": "n encode\n    pooled, memory = original_encoder(tokens[:, :length])\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/sam3-turing/sam3/model/text_encoder_ve.py\", line 245, in forward\n    x = self.transformer(x, attn_mask=attn_mask)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py\", line 1777, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py\", line 1788, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/sam3-turing/sam3/model/text_encoder_ve.py\", line 146, in forward\n    x = r(\n        ^^\n  File \"/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py\", line 1777, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py\", line 1788, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/sam3-turing/sam3/model/text_encoder_ve.py\", line 88, in forward\n    self.attention(q_x=self.ln_1(q_x), k_x=k_x, v_x=v_x, attn_mask=attn_mask)\n  File \"/workspace/sam3-turing/sam3/model/text_encoder_ve.py\", line 70, in attention\n    return self.attn(q_x, k_x, v_x, need_weights=False, attn_mask=attn_mask)[0]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py\", line 1777, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py\", line 1788, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/sam3-turing/sam3/turing.py\", line 176, in attention\n    return original(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/torch/nn/modules/activation.py\", line 1492, in forward\n    attn_output, attn_output_weights = F.multi_head_attention_forward(\n                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/torch/nn/functional.py\", line 6499, in multi_head_attention_forward\n    attn_output = scaled_dot_product_attention(\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/sam3-turing/experiments/archive_reference/sam3_fp16_lab/precision.py\", line 18, in attention\n    with sdpa_kernel(SDPBackend.EFFICIENT_ATTENTION):return original(*args,**kwargs)\n                                                            ^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: No viable backend for scaled_dot_product_attention was found. This is likely due to turning off both the math kernel and the fused kernels.\n",
+  "measurement_valid": false,
+  "attempt_note": "Initial experiment backend wrapper incorrectly forced CUDA attention for CPU text; fixed in attention_backend.py"
+}

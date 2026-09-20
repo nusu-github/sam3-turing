@@ -260,6 +260,7 @@ def run(args):
     model = build_sam3_image_model(
         checkpoint_path=args.checkpoint, load_from_HF=False
     ).eval()
+    eager_trunk_forward = model.backbone.vision_backbone.trunk.forward
     torch.set_num_threads(cfg.get("cpu_threads", 4))
     result = {
         "name": args.name,
@@ -347,6 +348,20 @@ def run(args):
             from sam3.turing_refinements import apply_image_refinements
 
             apply_image_refinements(processor)
+    if cfg.get("calibrated_heads_keep"):
+        from head_calibration import collect_head_stats
+        from pruned_heads import apply_pruned_heads
+
+        stats, metadata = collect_head_stats(processor, eager_trunk_forward)
+        metadata["selected_heads"] = apply_pruned_heads(
+            model,
+            cfg["calibrated_heads_keep"],
+            scope=cfg.get("calibrated_heads_scope", "global"),
+            compensate=cfg.get("calibrated_heads_compensate", False),
+            calibration=stats,
+        )
+        result["head_calibration"] = metadata
+        del stats
     cases = [
         ("truck", "images/truck.jpg", "truck"),
         ("bag", "images/groceries.jpg", "paper bag"),
@@ -368,6 +383,10 @@ def run(args):
         if cfg.get("arena"):
             stack.enter_context(mlp_arena(model))
         extra_patches(model, processor, cfg, stack)
+        if cfg.get("backend") == "efficient":
+            from attention_backend import efficient_cuda_attention
+
+            stack.enter_context(efficient_cuda_attention())
         if hasattr(processor, "_cpu_text_quantization"):
             result["cpu_text_quantization"] = processor._cpu_text_quantization
 
@@ -377,9 +396,7 @@ def run(args):
                     "cuda", dtype=torch.bfloat16, cache_enabled=cfg.get("cache", False)
                 )
             else:
-                ctx = execution(
-                    "fp16", cfg.get("backend", "auto"), cfg.get("cache", False)
-                )
+                ctx = execution("fp16", "auto", cfg.get("cache", False))
             with ctx:
                 return processor.set_text_prompt(text, processor.set_image(im))
 

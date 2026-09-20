@@ -890,3 +890,30 @@ facebook/sam3.1のsam3.1_multiplex.ptを取得（revision daa63191845a41281374e7
 FA3・compile・TF32を無効、grounding batch 1、動画フレームCPU保存を両構成で揃える。
 元のモデルと、BF16固定箇所をFP16へ置き換える試作を比較する。画像専用のneck削除は使わない。
 add_prompt＋順方向追跡を計測し、フレーム読み込みは除く。動画の結果はまだ未測定。
+
+## Round 60の候補：別画像1枚でheadの寄与を見る
+
+Round 36の重みだけによるhead選択に加え、評価3画像とは別の同梱動画0001/0.jpgを1枚使い、
+Attention出力を128 tokenまで抽出してheadごとの出力寄与を測る。二乗平均の小さいheadを削る案と、
+平均寄与をbiasで補った上で分散の小さいheadを削る案を比較する。global・window・全層を分ける。
+追加学習・勾配計算はしない。初期化時の1回の測定で、推論ごとの動的選別はしない。
+Sciteで[Global Vision Transformer Pruning with Hessian-Aware Saliency](https://arxiv.org/abs/2110.04869)
+を調べたが、今回の寄与二乗・分散は独自の簡易指標でありHessian法の再現ではない。
+
+## Round 58：追加パッチをFlashAttentionなしで使用
+
+| 構成 | ms | allocated GiB | NVML GiB | 平均IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| r58_refined_trimmed_auto_control | 85.312 | 0.7822 | 2.2979 | 0.99799737 | 674 |
+| refined_trimmed_cpu_int8_efficient | 90.013 | 0.7822 | 2.3506 | 0.99788641 | 814 |
+| refined_trimmed_efficient | 90.605 | 0.7832 | 2.5491 | 0.99811614 | 689 |
+| refined_fp16_trimmed_efficient | 119.423 | 1.1904 | 2.3408 | 0.99917998 | 285 |
+
+すべて1/4/6/4/0。新規語句を毎回CPUで処理し、padding省略を使った。
+FlashAttentionなしのINT8画像＋CPU FP32は90.60ms・689画素・IoU 0.998116、
+CPU INT8も使うと90.01ms・814画素・IoU 0.997886だった。通常経路の基準は85.31ms。
+FP16画像は119.42ms・285画素。これも3090上のAttention経路比較であり、Turing実機の測定ではない。
+
+初回は実験用backend切替がCPUテキストにもCUDA専用SDPAを強制して失敗した。
+2件のfailure JSONを保存し、attention_backend.pyでCUDA queryだけを切り替えるよう修正した。
+通常経路の基準も再実行したため、このラウンドは4候補・7試行。

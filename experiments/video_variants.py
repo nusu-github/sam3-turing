@@ -116,9 +116,11 @@ def apply_video_variant(predictor, variant):
 
         original = F.scaled_dot_product_attention
 
-        def efficient(*args, **kwargs):
+        def efficient(query, *args, **kwargs):
+            if query.device.type != "cuda":
+                return original(query, *args, **kwargs)
             with sdpa_kernel(SDPBackend.EFFICIENT_ATTENTION):
-                return original(*args, **kwargs)
+                return original(query, *args, **kwargs)
 
         F.scaled_dot_product_attention = efficient
         decoder.sdpa_kernel = lambda *args, **kwargs: sdpa_kernel(

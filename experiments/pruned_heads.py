@@ -6,8 +6,9 @@ from pruned_mlp import _weight
 from sam3.turing_int8 import DynamicInt8Linear
 
 
-def apply_pruned_heads(model, keep, scope="global", compensate=False):
-    for block in model.backbone.vision_backbone.trunk.blocks:
+def apply_pruned_heads(model, keep, scope="global", compensate=False, calibration=None):
+    selected_heads = {}
+    for index, block in enumerate(model.backbone.vision_backbone.trunk.blocks):
         if scope == "global" and block.window_size:
             continue
         if scope == "window" and not block.window_size:
@@ -30,7 +31,11 @@ def apply_pruned_heads(model, keep, scope="global", compensate=False):
         variance = (v_weight * gamma[None, :]).square().sum(1)
         energy = variance if compensate else variance + mean.square()
         score = (energy * out_weight.square().sum(0)).reshape(heads, dim).sum(1)
+        if calibration is not None:
+            mean = calibration[index]["mean"]
+            score = calibration[index]["variance" if compensate else "energy"]
         selected = score.topk(keep).indices.sort().values
+        selected_heads[str(index)] = selected.tolist()
         channels = (
             selected[:, None] * dim + torch.arange(dim, device=selected.device)
         ).flatten()
@@ -48,3 +53,4 @@ def apply_pruned_heads(model, keep, scope="global", compensate=False):
         proj.weight_int8 = proj.weight_int8[:, channels].contiguous()
         proj.in_features = keep * dim
         attn.num_heads = keep
+    return selected_heads

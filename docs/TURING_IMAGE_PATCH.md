@@ -90,6 +90,11 @@ FlashAttentionを使わずefficient Attentionに固定した3090上の更新版�
 FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892GiBだった。
 検出数は同じで、後者の平均mask IoUは0.997066。
 これはAttention経路の確認であり、Turing実機の速度測定ではない。
+画像追加パッチ＋CPUテキストpadding省略を併用した更新比較では、INT8画像＋CPU FP32が
+90.60ms・allocated 0.783GiB・NVML 2.549GiB・IoU 0.998116だった。
+CPUテキストもINT8にすると90.01ms・allocated 0.782GiB・NVML 2.351GiB・IoU 0.997886。
+検出数は両方1/4/6/4/0。新規語句を毎回処理し、CPU側のAttention backendは変更していない。
+[追加パッチのefficient比較](../experiments/round58.json)
 
 公開モジュール内の7種類のTriton kernelは、Triton 3.5.0でsm75向けのオフラインcompileに通過した。
 実験用の独自INT8 GEMMはsm75のloweringで失敗したため、公開パッチには採用していない。
@@ -112,7 +117,7 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [CPU動的INT8・cacheあり JSON](../experiments/results/accepted_cpu_dynamic_text.json) /
 [CPU動的INT8・cacheなし JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json)
 
-完了済みラウンドの比較は310候補・315試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は314候補・322試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
