@@ -99,7 +99,7 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [重み調整＋非対称INT8 JSON](../experiments/results/accepted_optimized_asymmetric.json) /
 [同＋CPUテキスト JSON](../experiments/results/accepted_optimized_asymmetric_cpu.json)
 
-完了済みラウンドの比較は250候補・255試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は256候補・261試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -155,14 +155,31 @@ offload_text_encoder(processor)
 CPU側には約1.32GiBのテキスト重みを保持する。画像状態の再利用・box・packed出力・
 固定語句への切替も[API確認](../experiments/results/api_smoke_cpu_text.json)で通過した。
 
-速度優先で解像度を下げる場合は、processor作成時に指定する。パッチがRoPEも調整する。
-マスクの形状差が大きくなるため、標準値は1008のままにした。
-今回の最適化を組み合わせた試作では784が93.39ms、672が66.04ms。
-平均mask IoUはそれぞれ約0.971、0.954だった。
-初回の560実験では最も差が大きいマスクのIoUが約0.62、box最大差は約26画素だった。
+速度優先で解像度を下げる場合は、最初のprocessor作成時に指定する。パッチがRoPEも調整する。
+標準値は1008を維持し、縮小はマスク形状との交換条件として選ぶ。
+Round 30で同じINT8＋Attention射影＋GELU融合を比べた結果は次の通り。
+
+| 入力解像度 | ms | GPU全体 NVML GiB | 平均mask IoU | 最小mask IoU | box最大差 px |
+|---|---:|---:|---:|---:|---:|
+| 1008 | 86.78 | 3.026 | 0.99742 | 0.99319 | 0.49 |
+| 896 | 76.04 | 2.712 | 0.97389 | 0.89985 | 4.32 |
+| 840 | 70.47 | 2.714 | 0.97280 | 0.87577 | 7.89 |
+| 784 | 63.84 | 2.692 | 0.97082 | 0.88517 | 8.63 |
+| 672 | 40.68 | 2.854 | 0.95396 | 0.78244 | 17.62 |
+| 560 | 35.23 | 2.577 | 0.93205 | 0.61447 | 26.19 |
+
+全設定で5条件の検出数は1/4/6/4/0。allocatedは1.298〜1.455GiBだった。
+IoUとbox差は元の1008・BF16出力との一致度。小さい物体などでは平均より差が大きい。
+縮小版の初回は、この時点のキャッシュ状態で約84〜95秒だった。
+[解像度比較の設定](../experiments/round30.json) / [672の測定JSON](../experiments/results/compact_int8_resolution672.json)
+
+上のモデル作成例で、processor作成と追加パッチを次の形にする。
 
 ```python
+from sam3.turing_int8 import apply_int8_patch
+
 processor = apply_turing_patch(Sam3Processor(model, resolution=784), compile=True)
+apply_int8_patch(processor, attention_projections=True, fused_mlp=True)
 ```
 
 ## 取り込んだ変更

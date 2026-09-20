@@ -4,7 +4,12 @@ Latency is truck.jpg + truck; output differences cover the listed number of case
 
 | Candidate | ms | CUDA allocated GiB | NVML GiB | Cases | Masks | Mean mask IoU vs stock | Changed pixels |
 |---|---:|---:|---:|---:|---:|---:|---:|
+| [compact_int8_resolution560](compact_int8_resolution560.json) | 35.23 | 1.298 | 2.577 | 5 | 15 | 0.932052 | 18663 |
+| [compact_int8_resolution672](compact_int8_resolution672.json) | 40.67 | 1.331 | 2.854 | 5 | 15 | 0.953963 | 13340 |
+| [compact_int8_resolution784](compact_int8_resolution784.json) | 63.84 | 1.367 | 2.692 | 5 | 15 | 0.970820 | 9336 |
 | [combined_graph672](combined_graph672.json) | 66.04 | 1.747 | 2.948 | 5 | 15 | 0.954238 | 13407 |
+| [compact_int8_resolution840](compact_int8_resolution840.json) | 70.47 | 1.423 | 2.714 | 5 | 15 | 0.972801 | 8098 |
+| [compact_int8_resolution896](compact_int8_resolution896.json) | 76.04 | 1.405 | 2.712 | 5 | 15 | 0.973894 | 8644 |
 | [prune_mlp_keep75](prune_mlp_keep75.json) | 77.95 | 1.433 | 2.784 | 5 | 15 | 0.929640 | 22983 |
 | [prune_compensated_keep75](prune_compensated_keep75.json) | 79.11 | 1.378 | 2.998 | 5 | 5 | 0.649087 | 74545 |
 | [prune_mlp_keep90](prune_mlp_keep90.json) | 81.90 | 1.440 | 2.772 | 5 | 15 | 0.982748 | 5854 |
@@ -56,6 +61,7 @@ Latency is truck.jpg + truck; output differences cover the listed number of case
 | [accepted_optimized_asymmetric_cpu](accepted_optimized_asymmetric_cpu.json) | 86.30 | 0.793 | 2.368 | 5 | 15 | 0.998065 | 698 |
 | [r22_fused_attention_control](r22_fused_attention_control.json) | 86.43 | 1.455 | 2.864 | 5 | 15 | 0.997421 | 916 |
 | [r20_fused_attention_control](r20_fused_attention_control.json) | 86.61 | 1.456 | 2.880 | 5 | 15 | 0.997421 | 916 |
+| [r30_fused_attention_control](r30_fused_attention_control.json) | 86.78 | 1.455 | 3.026 | 5 | 15 | 0.997421 | 916 |
 | [image_neck_normalize](image_neck_normalize.json) | 86.87 | 1.454 | 2.874 | 5 | 15 | 0.996951 | 947 |
 | [accepted_optimized_asymmetric](accepted_optimized_asymmetric.json) | 86.91 | 1.456 | 2.851 | 5 | 15 | 0.998074 | 697 |
 | [quant_rows4_gelu1_w8](quant_rows4_gelu1_w8.json) | 86.91 | 1.455 | 2.831 | 5 | 15 | 0.997421 | 916 |

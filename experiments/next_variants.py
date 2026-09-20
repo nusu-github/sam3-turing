@@ -27,6 +27,24 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("vision_window_size"):
+        size = cfg["vision_window_size"]
+        for block in model.backbone.vision_backbone.trunk.blocks:
+            if not block.window_size:
+                continue
+            attn = block.attn
+            block.window_size = size
+            attn.input_size = (size, size)
+            scale = (
+                attn.rope_pt_size[0] / size
+                if cfg.get("window_rope_interp", True)
+                else 1.0
+            )
+            attn.freqs_cis = attn.compute_cis(
+                end_x=size, end_y=size, scale_pos=scale
+            ).to(attn.freqs_cis.device)
+            attn.freqs_cis_real = attn.freqs_cis.real
+            attn.freqs_cis_imag = attn.freqs_cis.imag
     if cfg.get("decoder_layer_indices"):
         decoder = model.transformer.decoder
         indices = cfg["decoder_layer_indices"]
