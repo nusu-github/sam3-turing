@@ -1,0 +1,9 @@
+{
+  "packed_matches_fp16": true,
+  "detected_trucks": 1,
+  "geometric_box_detections": 1,
+  "unknown_frozen_prompt_rejected": true,
+  "empty_output": true,
+  "reset": true,
+  "autocast_restored": true
+}

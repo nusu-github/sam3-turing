@@ -1,0 +1,282 @@
+"""Runtime patches for single-image SAM 3 inference on small CUDA GPUs.
+
+Usage: processor = apply_turing_patch(Sam3Processor(model))
+The checkpoint stays unchanged. Apply once to an eval model/processor pair;
+weight conversion is permanent for that model instance. Rebuild to undo it.
+"""
+
+from collections import OrderedDict
+from functools import wraps
+
+import torch
+import torch.nn.functional as F
+from torch import nn
+
+from sam3.model import box_ops
+from sam3.model.data_misc import interpolate, NestedTensor
+from sam3.model.decoder import TransformerDecoderLayer
+
+
+def _inference_call(model, fn):
+    @wraps(fn)
+    def call(*args, **kwargs):
+        if model.training:
+            raise RuntimeError("The Turing image patch is for eval/inference only")
+        with torch.inference_mode(), torch.autocast(
+            "cuda", dtype=torch.float16, cache_enabled=False
+        ):
+            return fn(*args, **kwargs)
+
+    return call
+
+
+def apply_turing_patch(
+    processor,
+    *,
+    text_cache_size=16,
+    early_filter=False,
+    compile=False,
+    packed_masks=False,
+    mask_chunk_size=8,
+):
+    """Patch a Sam3Processor in place and return it.
+
+    Supports one image at a time, arbitrary text and geometric box prompts,
+    and the usual dense masks/probabilities/scores/boxes. SAM 1 interactivity,
+    training, video and moving the model after patching are outside this patch.
+    Text cache hits skip encoding; a new prompt still uses the text encoder.
+    compile=True compiles the vision trunk and segmentation head for repeated
+    inference. Smaller processor resolutions trade mask quality for speed.
+    compile="max-autotune" enables additional kernel tuning.
+    packed_masks=True returns masks_packed + mask_shape instead of dense masks
+    and probabilities; decode individual rows with turing_masks.unpack_masks.
+    """
+    model = processor.model
+    neck = model.backbone.vision_backbone
+    head = model.segmentation_head
+    if getattr(processor, "_turing_patched", False):
+        raise ValueError("This processor has already been patched")
+    if model.training or next(model.parameters()).device.type != "cuda":
+        raise ValueError("Use a CUDA eval model")
+    if (
+        model.inst_interactive_predictor is not None
+        or model.num_feature_levels != 1
+        or neck.sam2_convs is not None
+        or len(neck.convs) != 4
+        or model.backbone.scalp != 1
+        or head is None
+        or not head.use_encoder_inputs
+    ):
+        raise ValueError(
+            "Expected the standard SAM 3 image model without SAM 1 interactivity"
+        )
+    if text_cache_size < 0:
+        raise ValueError("text_cache_size must be nonnegative")
+    if mask_chunk_size < 1:
+        raise ValueError("mask_chunk_size must be positive")
+    if compile not in (False, True, "reduce-overhead", "max-autotune"):
+        raise ValueError(
+            "compile must be False, True, 'reduce-overhead' or 'max-autotune'"
+        )
+    if processor.resolution < 14 or processor.resolution % 14:
+        raise ValueError("Image resolution must be a positive multiple of 14")
+
+    # These decoder FFNs explicitly disable autocast and require FP32 weights.
+    protected = {
+        id(linear)
+        for module in model.modules()
+        if isinstance(module, TransformerDecoderLayer)
+        for linear in (module.linear1, module.linear2)
+    }
+    model.requires_grad_(False)
+    for module in model.modules():
+        if isinstance(module, (nn.Linear, nn.Conv2d, nn.ConvTranspose2d)):
+            if id(module) not in protected:
+                module.to(dtype=torch.float16)
+
+    # The upstream fused MLP forces BF16. This path follows FP16 autocast.
+    for block in neck.trunk.blocks:
+        mlp = block.mlp
+
+        def forward(x, mlp=mlp):
+            return mlp.drop2(mlp.fc2(mlp.norm(mlp.drop1(mlp.act(mlp.fc1(x))))))
+
+        mlp.forward = forward
+
+    for block in neck.trunk.blocks:
+        attention = block.attn
+        if processor.resolution != 1008 and attention.input_size == (72, 72):
+            side = processor.resolution // 14
+            attention.input_size = (side, side)
+            attention.freqs_cis = attention.compute_cis(
+                end_x=side, end_y=side, scale_pos=attention.rope_pt_size[0] / side
+            ).to(attention.freqs_cis.device)
+        if compile:
+            attention.use_rope_real = True
+            attention.freqs_cis_real = attention.freqs_cis.real
+            attention.freqs_cis_imag = attention.freqs_cis.imag
+
+    def image_neck(tensor_list):
+        x = neck.trunk(tensor_list)[-1]
+        feats = [conv(x) for conv in neck.convs[:3]]
+        pos = neck.position_encoding(feats[-1]).to(feats[-1].dtype)
+        return feats, [None, None, pos], None, None
+
+    neck.forward = image_neck
+    model.backbone.scalp = 0
+    neck.position_encoding.cache.clear()
+
+    def embed_pixels(backbone_feats, image_ids, encoder_hidden_states):
+        feats = [
+            x.tensors if isinstance(x, NestedTensor) else x for x in backbone_feats
+        ]
+        if feats[0].shape[0] != 1:
+            raise ValueError("The image patch supports batch size 1")
+        # Replace a list entry; PixelDecoder does not mutate cached features.
+        feats[-1] = encoder_hidden_states.permute(1, 2, 0).reshape(
+            -1, *feats[-1].shape[1:]
+        )
+        return head.pixel_decoder(feats)
+
+    head._embed_pixels = embed_pixels
+
+    cache = OrderedDict()
+    processor._turing_text_cache = cache
+    original_text = model.backbone.forward_text
+
+    def forward_text(captions, input_boxes=None, additional_text=None, device="cuda"):
+        if (
+            not text_cache_size
+            or input_boxes is not None
+            or additional_text is not None
+        ):
+            return original_text(captions, input_boxes, additional_text, device)
+        key = (tuple(captions), str(device))
+        if key not in cache:
+            cache[key] = original_text(captions, device=device)
+            if len(cache) > text_cache_size:
+                cache.popitem(last=False)
+        cache.move_to_end(key)
+        return dict(cache[key])
+
+    model.backbone.forward_text = forward_text
+
+    # Only filter queries during processor calls. Direct model calls retain the
+    # full set of masks, and changing the processor threshold recomputes them.
+    selecting = False
+    original_heads = model._run_segmentation_heads
+
+    def segmentation_heads(out, hs, **kwargs):
+        if selecting:
+            scores = (
+                out["pred_logits"].sigmoid()
+                * out["presence_logit_dec"].sigmoid().unsqueeze(1)
+            ).squeeze(-1)
+            hs = hs[:, :, scores[0] > processor.confidence_threshold]
+        return original_heads(out=out, hs=hs, **kwargs)
+
+    if early_filter:
+        model._run_segmentation_heads = segmentation_heads
+
+    def grounding(state):
+        nonlocal selecting
+        selecting = early_filter
+        try:
+            outputs = model.forward_grounding(
+                backbone_out=state["backbone_out"],
+                find_input=processor.find_stage,
+                geometric_prompt=state["geometric_prompt"],
+                find_target=None,
+            )
+        finally:
+            selecting = False
+        probs = (
+            outputs["pred_logits"].sigmoid()
+            * outputs["presence_logit_dec"].sigmoid().unsqueeze(1)
+        ).squeeze(-1)
+        keep = probs > processor.confidence_threshold
+        boxes = box_ops.box_cxcywh_to_xyxy(outputs["pred_boxes"][keep])
+        h, w = state["original_height"], state["original_width"]
+        boxes = boxes * torch.tensor([w, h, w, h], device=processor.device)[None]
+        masks = (
+            outputs["pred_masks"][0] if early_filter else outputs["pred_masks"][keep]
+        )
+        if packed_masks:
+            from sam3.turing_masks import resize_and_pack_masks
+
+            state.update(
+                masks_packed=resize_and_pack_masks(masks, (h, w), mask_chunk_size),
+                mask_shape=(len(masks), 1, h, w),
+                scores=probs[keep],
+                boxes=boxes,
+            )
+            state.pop("masks", None)
+            state.pop("masks_logits", None)
+            return state
+        masks = interpolate(
+            masks.unsqueeze(1), (h, w), mode="bilinear", align_corners=False
+        ).sigmoid_()
+        state.update(
+            masks_logits=masks, masks=masks > 0.5, scores=probs[keep], boxes=boxes
+        )
+        return state
+
+    processor._forward_grounding = grounding
+    original_reset = processor.reset_all_prompts
+
+    def reset(state):
+        original_reset(state)
+        state.pop("masks_packed", None)
+        state.pop("mask_shape", None)
+
+    processor.reset_all_prompts = reset
+    for method in (
+        "set_image",
+        "set_text_prompt",
+        "add_geometric_prompt",
+        "set_confidence_threshold",
+    ):
+        setattr(processor, method, _inference_call(model, getattr(processor, method)))
+
+    def no_batch(*args, **kwargs):
+        raise ValueError("Use set_image: the Turing image patch supports batch size 1")
+
+    processor.set_image_batch = no_batch
+    if compile:
+        mode = compile if isinstance(compile, str) else "reduce-overhead"
+        neck.trunk.forward = torch.compile(neck.trunk.forward, mode=mode)
+        head.forward = torch.compile(head.forward, mode=mode)
+    processor._turing_patched = True
+    return processor
+
+
+def freeze_text_prompts(processor, prompts):
+    """Precompute a fixed vocabulary, then release the text encoder weights.
+
+    Optional extra memory saving. Afterwards, unknown prompts raise ValueError.
+    Include "visual" if geometric-only box prompts will be used.
+    """
+    if not getattr(processor, "_turing_patched", False):
+        raise ValueError("Apply the Turing image patch first")
+    prompts = tuple(dict.fromkeys(prompts))
+    if not prompts or any(not isinstance(p, str) for p in prompts):
+        raise ValueError("Provide a nonempty sequence of text prompts")
+    backbone = processor.model.backbone
+    with torch.inference_mode(), torch.autocast(
+        "cuda", dtype=torch.float16, cache_enabled=False
+    ):
+        cache = {
+            tuple([p]): backbone.forward_text([p], device=processor.device)
+            for p in prompts
+        }
+
+    def forward_text(captions, input_boxes=None, additional_text=None, device="cuda"):
+        key = tuple(captions)
+        if input_boxes is not None or additional_text is not None or key not in cache:
+            raise ValueError("This processor only accepts its frozen text prompts")
+        return dict(cache[key])
+
+    backbone.forward_text = forward_text
+    backbone.language_backbone = None
+    processor._turing_text_cache.clear()
+    return processor

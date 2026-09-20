@@ -1,0 +1,16 @@
+{
+  "fp16": {},
+  "inplace_mlp": {"mode": "lean_prune", "half": true, "mlp": "inplace"},
+  "static_head": {"mode": "lean_prune", "half": true, "fold": "static"},
+  "dynamic_head": {"mode": "lean_prune", "half": true, "fold": "dynamic"},
+  "pixel_inplace": {"mode": "lean_prune", "half": true, "pixel_inplace": true},
+  "output_inplace": {"mode": "lean_prune", "half": true, "output_inplace": true},
+  "rope_real": {"mode": "lean_prune", "half": true, "rope_real": true},
+  "efficient": {"mode": "lean_prune", "half": true, "backend": "efficient"},
+  "cudnn_search": {"mode": "lean_prune", "half": true, "cudnn_benchmark": true},
+  "compiled_mlp": {"mode": "lean_prune", "half": true, "compile_mlp": true},
+  "resolution896": {"mode": "lean_prune", "half": true, "resolution": 896},
+  "resolution784": {"mode": "lean_prune", "half": true, "resolution": 784},
+  "arena": {"mode": "lean_prune", "half": true, "arena": true},
+  "chunk512": {"mode": "lean_prune_chunk", "half": true}
+}

@@ -1,0 +1,74 @@
+{
+  "name": "stock",
+  "config": {
+    "precision": "bf16",
+    "cache": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.10.0a0+b558c986e8.nv25.11",
+    "cuda": "13.0",
+    "cudnn": 91500,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "capability": [
+      8,
+      6
+    ],
+    "physical_vram_bytes": 25296044032,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "cublas_workspace_config": ":4096:8"
+  },
+  "build_seconds": 11.719363678945228,
+  "build_allocated_bytes": 3575265280,
+  "metrics": {
+    "cold_seconds": 1.2909022341482341,
+    "warmups": 2,
+    "repetitions": 5,
+    "wall_seconds": [
+      0.19703994109295309,
+      0.19677008199505508,
+      0.20072281220927835,
+      0.1961249760352075,
+      0.19655590411275625
+    ],
+    "gpu_seconds": [
+      0.19696640014648437,
+      0.19673983764648437,
+      0.2006937561035156,
+      0.19609593200683595,
+      0.19652198791503905
+    ],
+    "median_wall_seconds": 0.19677008199505508,
+    "median_gpu_seconds": 0.19673983764648437,
+    "peak_allocated_bytes": 5361736192,
+    "peak_reserved_bytes": 5616173056,
+    "allocated_before_bytes": 3575266304,
+    "reserved_before_bytes": 3682598912,
+    "end_device_used_bytes": 5986516992,
+    "physical_vram_bytes": 25296044032,
+    "nvml": {
+      "sampled_device_used_peak_bytes": 6460276736,
+      "sampled_device_used_min_bytes": 4478468096,
+      "samples": 516,
+      "requested_interval_ms": 5,
+      "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+    }
+  },
+  "checks": {
+    "truck": {
+      "count": 1,
+      "finite": true
+    },
+    "bag": {
+      "count": 4,
+      "finite": true
+    },
+    "child": {
+      "count": 6,
+      "finite": true
+    }
+  }
+}

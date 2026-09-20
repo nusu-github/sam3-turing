@@ -1,0 +1,141 @@
+{
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.10.0a0+b558c986e8.nv25.11",
+    "cuda": "13.0",
+    "cudnn": 91500,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "capability": [
+      8,
+      6
+    ],
+    "physical_vram_bytes": 25296044032,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "cublas_workspace_config": ":4096:8"
+  },
+  "scope": "Output component only: 200 learned logits resized to 4K; binary output; eight sampled masks checked",
+  "dense": {
+    "cold_seconds": 0.024449369870126247,
+    "warmups": 1,
+    "repetitions": 5,
+    "wall_seconds": [
+      0.024225211003795266,
+      0.024161122040823102,
+      0.024103731848299503,
+      0.024060122203081846,
+      0.024087753146886826
+    ],
+    "gpu_seconds": [
+      0.024178783416748048,
+      0.02414080047607422,
+      0.024077024459838867,
+      0.024039424896240235,
+      0.024066047668457033
+    ],
+    "median_wall_seconds": 0.024103731848299503,
+    "median_gpu_seconds": 0.024077024459838867,
+    "peak_allocated_bytes": 6703677440,
+    "peak_reserved_bytes": 6708789248,
+    "allocated_before_bytes": 68157440,
+    "reserved_before_bytes": 69206016,
+    "end_device_used_bytes": 7079133184,
+    "physical_vram_bytes": 25296044032,
+    "nvml": {
+      "sampled_device_used_peak_bytes": 7552892928,
+      "sampled_device_used_min_bytes": 913309696,
+      "samples": 34,
+      "requested_interval_ms": 5,
+      "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+    }
+  },
+  "packed": [
+    {
+      "chunk_size": 1,
+      "metrics": {
+        "cold_seconds": 0.8931792650837451,
+        "warmups": 1,
+        "repetitions": 5,
+        "wall_seconds": [
+          0.04615817801095545,
+          0.04611697793006897,
+          0.04605642915703356,
+          0.04604785796254873,
+          0.04604425886645913
+        ],
+        "gpu_seconds": [
+          0.046103359222412106,
+          0.046094558715820313,
+          0.046033920288085936,
+          0.046025726318359376,
+          0.046023681640625
+        ],
+        "median_wall_seconds": 0.04605642915703356,
+        "median_gpu_seconds": 0.046033920288085936,
+        "peak_allocated_bytes": 309141504,
+        "peak_reserved_bytes": 314572800,
+        "allocated_before_bytes": 68157440,
+        "reserved_before_bytes": 69206016,
+        "end_device_used_bytes": 684916736,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1158676480,
+          "sampled_device_used_min_bytes": 913309696,
+          "samples": 223,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "output_bytes": 207360000,
+      "sampled_changed_pixels": 0,
+      "sampled_pixels": 66355200
+    },
+    {
+      "chunk_size": 8,
+      "metrics": {
+        "cold_seconds": 0.03085951809771359,
+        "warmups": 1,
+        "repetitions": 5,
+        "wall_seconds": [
+          0.02865736186504364,
+          0.02879389189183712,
+          0.028633662965148687,
+          0.028634672053158283,
+          0.028638773132115602
+        ],
+        "gpu_seconds": [
+          0.028617727279663087,
+          0.028773120880126953,
+          0.028609407424926757,
+          0.028612607955932616,
+          0.028617727279663087
+        ],
+        "median_wall_seconds": 0.028638773132115602,
+        "median_gpu_seconds": 0.028617727279663087,
+        "peak_allocated_bytes": 542703616,
+        "peak_reserved_bytes": 545259520,
+        "allocated_before_bytes": 68157440,
+        "reserved_before_bytes": 69206016,
+        "end_device_used_bytes": 915603456,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1389363200,
+          "sampled_device_used_min_bytes": 913309696,
+          "samples": 40,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "output_bytes": 207360000,
+      "sampled_changed_pixels": 0,
+      "sampled_pixels": 66355200
+    }
+  ],
+  "padding_roundtrip": true,
+  "empty_shape": [
+    0,
+    28
+  ]
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "round": 1,
+    "candidate": "fp16",
+    "failure": "SIGSEGV during parallel CPU model initialization before patching",
+    "resolution": "Build with one CPU thread; subsequent retry passed"
+  },
+  {
+    "round": 1,
+    "candidate": "inplace_mlp",
+    "failure": "SIGSEGV during parallel CPU model initialization before patching",
+    "resolution": "Build with one CPU thread; subsequent retry passed"
+  },
+  {
+    "round": 2,
+    "candidate": "output_inplace",
+    "failure": "Prototype AST wrapper used decorator globals: NameError for torch",
+    "resolution": "Unwrap the decorated function before rewriting; round 3 passed"
+  }
+]

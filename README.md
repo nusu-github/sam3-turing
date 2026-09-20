@@ -1,3 +1,14 @@
+# SAM3-Turing
+
+6GB級GPU向けのSAM 3画像推論パッチを開発しています。
+FP16化・メモリ削減・テキストキャッシュ・任意のコンパイルを、実行時に適用します。
+
+- [使い方とRTX 3090での比較結果](docs/TURING_IMAGE_PATCH.md)
+- [全候補の測定結果](experiments/results/README.md)
+- [単独で適用できるパッチ](patches/turing-image.patch)
+
+以下は上流SAM 3 / SAM 3.1の説明です。
+
 # SAM 3: Segment Anything with Concepts
 
 Meta Superintelligence Labs
