@@ -1,0 +1,56 @@
+{
+  "r62_int4_group32_control": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 32,
+    "weight_only_int4_attention": true
+  },
+  "int4_compact_group16": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 16,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_compact": true,
+    "weight_only_int4_gaussian": false
+  },
+  "int4_compact_group16_gaussian": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 16,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_compact": true,
+    "weight_only_int4_gaussian": true
+  },
+  "int4_compact_group32": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 32,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_compact": true,
+    "weight_only_int4_gaussian": false
+  },
+  "int4_compact_group32_gaussian": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 32,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_compact": true,
+    "weight_only_int4_gaussian": true
+  },
+  "int4_compact_group16_asym": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 16,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_asymmetric": true,
+    "weight_only_int4_compact": true
+  },
+  "int4_compact_group32_asym": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 32,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_asymmetric": true,
+    "weight_only_int4_compact": true
+  }
+}

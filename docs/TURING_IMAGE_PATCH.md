@@ -117,7 +117,7 @@ CPUテキストもINT8にすると90.01ms・allocated 0.782GiB・NVML 2.351GiB�
 [CPU動的INT8・cacheあり JSON](../experiments/results/accepted_cpu_dynamic_text.json) /
 [CPU動的INT8・cacheなし JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json)
 
-完了済みラウンドの比較は321候補・329試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は329候補・337試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -422,3 +422,9 @@ PyTorchやCUDAは入れ替えていない。
 基準ソース: `2345a4ad109ac29c569da749c91d84f10dc08c40`。
 重み: `facebook/sam3`、revision `3c879f39826c281e95690f02c7821c4de09afae7`。
 入力資料は添付のFP16 / 20USD / GPU validationの3アーカイブ。
+
+4bit重みの試作ではFP16へ復元して計算するため、速度は約114〜118msでFP16並みだった。
+全5条件で検出数を維持したが、マスク変化は約2千〜3千画素へ増えた。
+射影も4bit・group 128はallocated 1.263GiB、group 16は1.473GiB。
+まだ公開APIには採用せず、scaleの保存量を減らす候補も比較している。
+[4bit比較](../experiments/round38.json)

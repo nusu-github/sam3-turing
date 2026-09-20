@@ -91,6 +91,7 @@ def apply_next_variants(model, processor, cfg, stack):
             cfg.get("weight_only_int4_attention", False),
             cfg.get("weight_only_int4_asymmetric", False),
             cfg.get("weight_only_int4_gaussian", False),
+            cfg.get("weight_only_int4_compact", False),
         )
     if cfg.get("fused_int8_gemm"):
         from fused_int8_gemm import apply_fused_int8_gemm

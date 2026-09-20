@@ -3,7 +3,7 @@
 ![SAM 3.1 video benchmarks](images/video_benchmarks.png)
 
 RTX 3090・同梱動画0001の先頭24フレーム・person prompt。既存コンテナのPythonを使用。
-両構成ともgrounding batch 1、フレームはCPU保存、FA3とTF32はOFF、compileなし。
+全構成でgrounding batch 1、フレームはCPU保存、FA3とTF32はOFF。最初の3構成はcompileなし。
 cold run後の3回の中央値。add_prompt＋順方向追跡を計測し、フレーム読込み・モデル構築は除外。
 
 | 構成 | ms/frame | allocated GiB | GPU全体 NVML GiB | mask IoU vs stock | 変化画素 |
@@ -25,7 +25,7 @@ offload_state_to_cpu=Falseを外す補正を入れた。元の失敗はfailure J
 offload_state_to_cpu=Trueには対応していない。通常のstockモデルにこのAPI補正と上記batch設定を加えた基準。
 
 重み: facebook/sam3.1 / sam3.1_multiplex.pt、revision daa63191845a41281374e725f4c9e51c7a824460。
-次は画像側の非対称INT8＋重みスケール調整、ViT compile、CPUテキストを比較する。
+続くRound 2で非対称INT8＋重みスケール調整、ViT compile、CPUテキストを比較した。
 
 ## 動画 Round 2：INT8・ViT compile・CPUテキスト
 
