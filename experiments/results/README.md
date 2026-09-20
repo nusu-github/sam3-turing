@@ -5,9 +5,19 @@ Latency is truck.jpg + truck; output differences cover the listed number of case
 | Candidate | ms | CUDA allocated GiB | NVML GiB | Cases | Masks | Mean mask IoU vs stock | Changed pixels |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | [combined_graph672](combined_graph672.json) | 66.04 | 1.747 | 2.948 | 5 | 15 | 0.954238 | 13407 |
+| [int8_attention_both](int8_attention_both.json) | 88.61 | 1.495 | 2.896 | 5 | 15 | 0.996938 | 950 |
+| [int8_attention_fusion](int8_attention_fusion.json) | 88.84 | 1.504 | 2.886 | 5 | 15 | 0.996895 | 948 |
+| [fused_int8_w8](fused_int8_w8.json) | 88.93 | 1.573 | 3.030 | 5 | 15 | 0.997491 | 840 |
 | [int8_qkv](int8_qkv.json) | 88.98 | 1.555 | 3.130 | 5 | 15 | 0.997355 | 891 |
+| [fused_int8_w4_tanh](fused_int8_w4_tanh.json) | 89.17 | 1.628 | 3.071 | 5 | 15 | 0.997269 | 827 |
+| [accepted_attention_int8](accepted_attention_int8.json) | 90.19 | 1.455 | 2.854 | 5 | 15 | 0.996938 | 950 |
+| [int8_window_attention](int8_window_attention.json) | 90.58 | 1.474 | 2.915 | 5 | 15 | 0.997061 | 942 |
+| [fused_int8_w4](fused_int8_w4.json) | 91.76 | 1.573 | 3.030 | 5 | 15 | 0.997491 | 840 |
+| [int8_projection](int8_projection.json) | 92.15 | 1.530 | 2.997 | 5 | 15 | 0.997205 | 885 |
 | [r14_int8_control](r14_int8_control.json) | 92.26 | 1.625 | 3.099 | 5 | 15 | 0.997396 | 836 |
+| [r15_int8_control](r15_int8_control.json) | 92.61 | 1.624 | 3.079 | 5 | 15 | 0.997396 | 836 |
 | [compact_grounding_int8](compact_grounding_int8.json) | 92.64 | 1.625 | 3.099 | 5 | 15 | 0.997396 | 836 |
+| [int8_fusion_ffn](int8_fusion_ffn.json) | 92.64 | 1.568 | 3.038 | 5 | 15 | 0.997342 | 836 |
 | [compact_grounding_views](compact_grounding_views.json) | 92.79 | 1.629 | 3.104 | 5 | 15 | 0.997419 | 832 |
 | [combined_graph784](combined_graph784.json) | 93.39 | 1.786 | 3.063 | 5 | 15 | 0.971100 | 9336 |
 | [final_fast560](final_fast560.json) | 95.08 | 1.964 | 3.062 | 5 | 15 | 0.933582 | 18311 |

@@ -1,0 +1,45 @@
+{
+  "r17_int8_control": {
+    "final": true,
+    "compile": true,
+    "public_int8": true
+  },
+  "int8_norm_w4": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "int8_layernorm": true
+  },
+  "int8_norm_w8": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "int8_layernorm": true,
+    "int8_layernorm_warps": 8
+  },
+  "int8_norm_fused": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "int8_layernorm": true,
+    "fused_int8_mlp": true,
+    "fused_int8_warps": 8
+  },
+  "fused_int8_attention": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "fused_int8_mlp": true,
+    "fused_int8_warps": 8
+  },
+  "norm_fused_int8_attention": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "fused_int8_mlp": true,
+    "int8_layernorm": true,
+    "fused_int8_warps": 8
+  }
+}

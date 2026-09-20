@@ -286,9 +286,13 @@ def run(args):
             compile_text=cfg.get("public_compile_text", False),
         )
         if cfg.get("public_int8"):
-            from sam3.turing_int8 import apply_int8_mlp_patch
+            from sam3.turing_int8 import apply_int8_patch
 
-            apply_int8_mlp_patch(processor, text=cfg.get("public_int8_text", False))
+            apply_int8_patch(
+                processor,
+                text=cfg.get("public_int8_text", False),
+                attention_projections=cfg.get("public_int8_attention", False),
+            )
         if cfg.get("fixed_text"):
             freeze_text_prompts(
                 processor,

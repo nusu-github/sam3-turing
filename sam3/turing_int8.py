@@ -1,4 +1,4 @@
-"""Optional dynamic INT8 MLPs; trades a small output difference for speed/memory."""
+"""Optional dynamic INT8 projections; trades output differences for speed/memory."""
 
 import torch
 from torch import nn
@@ -61,7 +61,9 @@ class DynamicInt8Linear(nn.Module):
         return result[:rows].to(torch.float16).reshape(*shape[:-1], self.out_features)
 
 
-def apply_int8_mlp_patch(processor, *, vision=True, text=False):
+def apply_int8_patch(
+    processor, *, vision=True, text=False, attention_projections=False
+):
     """Quantize selected MLPs after apply_turing_patch, before first inference.
 
     Per-token activations and per-output-channel weights use signed INT8;
@@ -69,11 +71,13 @@ def apply_int8_mlp_patch(processor, *, vision=True, text=False):
     The original weights are released. Rebuild the model to undo the patch.
     vision=True targets the ViT MLPs; text=True additionally targets the text
     MLPs, reducing memory but potentially slowing new-prompt encoding.
+    attention_projections=True also targets the ViT QKV and output projections.
+    The attention operation itself remains FP16.
     """
     if not getattr(processor, "_turing_patched", False):
         raise ValueError("Apply the Turing image patch first")
-    if not vision and not text:
-        raise ValueError("Select vision and/or text MLPs")
+    if not vision and not text and not attention_projections:
+        raise ValueError("Select vision MLPs, text MLPs and/or attention projections")
     model = processor.model
     if model.training:
         raise ValueError("INT8 MLPs are for inference only")
@@ -83,6 +87,12 @@ def apply_int8_mlp_patch(processor, *, vision=True, text=False):
             (block.mlp, name)
             for block in model.backbone.vision_backbone.trunk.blocks
             for name in ("fc1", "fc2")
+        )
+    if attention_projections:
+        targets.extend(
+            (block.attn, name)
+            for block in model.backbone.vision_backbone.trunk.blocks
+            for name in ("qkv", "proj")
         )
     if text:
         if model.backbone.language_backbone is None:
@@ -95,7 +105,14 @@ def apply_int8_mlp_patch(processor, *, vision=True, text=False):
     if any(
         not isinstance(getattr(parent, name), nn.Linear) for parent, name in targets
     ):
-        raise ValueError("Expected unquantized Linear MLPs; apply each selection once")
+        raise ValueError(
+            "Expected unquantized Linear layers; apply each selection once"
+        )
     for parent, name in targets:
         setattr(parent, name, DynamicInt8Linear(getattr(parent, name)))
     return processor
+
+
+def apply_int8_mlp_patch(processor, *, vision=True, text=False):
+    """Compatibility entry point for quantizing only the selected MLPs."""
+    return apply_int8_patch(processor, vision=vision, text=text)

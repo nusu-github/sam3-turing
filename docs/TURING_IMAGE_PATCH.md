@@ -15,13 +15,15 @@
 | 採用FP16・コンパイルなし（Round 10） | 169.77 | 1.997 | 3.144 | 0.99917 |
 | 採用FP16・コンパイルあり | **114.31** | **1.862** | **3.095** | **0.99921** |
 | 画像MLPのINT8＋コンパイル | **92.26** | **1.625** | **3.099** | **0.99740** |
+| INT8＋Attention射影＋コンパイル | **90.19** | **1.455** | **2.854** | **0.99694** |
 
 FP16コンパイル版は、素の状態から時間を約46%、GPU全体の使用量を約49%削減した。
 初回の採用版153.53ms、前回121.30msから、検出処理の一括コンパイルでさらに短縮した。
-同じ語句ではテキスト特徴を再利用する。INT8の時間削減は約56%。
+同じ語句ではテキスト特徴を再利用する。INT8の時間削減は約56〜57%。
 INT8は追加学習なしの任意パッチで、速度・メモリと出力差の交換条件を選べる。
 
-表のコンパイルあり・素の状態はRound 14、コンパイルなしは変更のない経路のRound 10値。
+表のFP16・MLPのINT8・素の状態はRound 14、Attention射影追加はRound 15。
+コンパイルなしは変更のない経路のRound 10値。
 前回の段ごとコンパイルでは、語句キャッシュ無効＋text compileが127.39ms、
 固定語句＋FP16が120.97ms・NVML 2.401GiBだった。
 この2オプションは今回も動作確認済みで、更新後の速度・メモリの再測定は別途行う。
@@ -37,9 +39,11 @@ NVMLは5ms間隔のGPU全体の標本最大値。メモリはパッチ適用後�
 FP16のマスク差は **285 / 18,038,400画素（0.00158%）**、
 score最大差 **0.00391**、box最大差 **0.49画素**。
 INT8は **836画素（0.00463%）**、score最大差 **0.01367**、box最大差 **0.66画素**。
+Attention射影も含めたINT8では **950画素（0.00527%）**、score最大差 **0.01172**、
+box最大差 **0.90画素**。検出数は同じ。
 boxの対応付け後にマスクを比較した。正解ラベルに対する精度評価ではない。
 
-コンパイルの初回推論は、今回のキャッシュ状態でFP16が約20.5秒、INT8が約22.3秒だった。
+コンパイルの初回推論は、今回のキャッシュ状態でFP16が約20.5秒、MLPのINT8が約22.3秒だった。
 Round 13で新しい検出Graphをコンパイルした際は約48秒かかった。キャッシュ状況で変わる。
 
 FlashAttentionを使わずefficient Attentionに固定した3090上の比較でも、
@@ -48,9 +52,10 @@ FlashAttentionを使わずefficient Attentionに固定した3090上の比較で�
 
 [全候補の表](../experiments/results/README.md) / [CSV](../experiments/results/summary.csv) /
 [採用FP16 JSON](../experiments/results/r14_fp16_control.json) /
-[採用INT8 JSON](../experiments/results/r14_int8_control.json)
+[採用INT8 JSON](../experiments/results/r14_int8_control.json) /
+[Attention射影もINT8にしたJSON](../experiments/results/accepted_attention_int8.json)
 
-Round 13までに123候補・128試行を完了した（再測定と失敗を含む）。Round 14以降も継続中。
+Round 15までに137候補・142試行を完了した（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -119,21 +124,23 @@ processor = apply_turing_patch(Sam3Processor(model, resolution=784), compile=Tru
 ヘッド射影の再結合、Attention固定、MLP分割、arena再利用、非コンパイルの実数RoPEは
 今回の3090では標準採用に至らなかった。候補コードと測定値は実験ディレクトリに残した。
 
-## 任意のINT8 MLP
+## 任意のINT8
 
-速度・メモリをさらに優先する場合は、画像MLPの重みと演算をINT8にする追加パッチを使える。
+速度・メモリをさらに優先する場合は、画像MLPやAttention射影をINT8にする追加パッチを使える。
 追加学習は不要。FP16版より出力差が増えるので、通常パッチとは別の明示的な選択にした。
-モデルを作って通常パッチを適用した後、最初の推論の前に呼ぶ。
+通常パッチを適用した直後、最初の推論の前に追加する。
 
 ```python
-from sam3.turing_int8 import apply_int8_mlp_patch
+from sam3.turing_int8 import apply_int8_patch
 
-processor = apply_turing_patch(Sam3Processor(model), compile=True)
-apply_int8_mlp_patch(processor)
+apply_int8_patch(processor, attention_projections=True)
 ```
 
+`attention_projections=False`（既定）なら画像MLPだけをINT8化する。
+`True`ではViTのQKV射影・出力射影も対象にする。Attention本体にはFP16のQ/K/Vを渡す。
 `text=True` はテキストMLPも対象にする。`vision=False, text=True` ならテキストだけ。
 テキストのINT8化はメモリ優先で、新しい語句の処理が少し遅くなる場合がある。
+従来の `apply_int8_mlp_patch` もMLPだけの入口として利用できる。
 解除する場合はモデルを作り直す。
 
 ## 多数の二値マスクを小さく返す

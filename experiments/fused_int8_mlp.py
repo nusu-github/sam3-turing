@@ -53,11 +53,14 @@ def fused_mlp(x, fc1, fc2, warps, tanh):
     padded_rows = max(32, triton.cdiv(rows, 16) * 16)
     if padded_rows != rows:
         x = torch.nn.functional.pad(x, (0, 0, 0, padded_rows - rows))
-    q1 = torch.empty_like(x, dtype=torch.int8)
-    scale1 = torch.empty(padded_rows, device=x.device, dtype=torch.float32)
-    _quantize[(padded_rows,)](
-        x, q1, scale1, fc1.in_features, triton.next_power_of_2(fc1.in_features)
-    )
+    if hasattr(fc1, "quantize_input"):
+        q1, scale1 = fc1.quantize_input(x)
+    else:
+        q1 = torch.empty_like(x, dtype=torch.int8)
+        scale1 = torch.empty(padded_rows, device=x.device, dtype=torch.float32)
+        _quantize[(padded_rows,)](
+            x, q1, scale1, fc1.in_features, triton.next_power_of_2(fc1.in_features)
+        )
     mm1 = torch._int_mm(q1, fc1.weight_int8.T)
     q2 = torch.empty_like(mm1, dtype=torch.int8)
     scale2 = torch.empty_like(scale1)

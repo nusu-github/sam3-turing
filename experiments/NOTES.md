@@ -115,3 +115,34 @@ Round 14の公開API再測定はstock 210.81ms、FP16 114.31ms、INT8 92.26msだ
 Round 14以降はこの更新版を基準に測る。Round 16には、重みだけINT8で保持し、
 入力はFP16のままTensor Core演算する別案も用意した。列ごとの重みスケールを
 積和の後に掛けることで、完全なFP16重み配列の展開を避ける。
+
+## Round 14：INT8を適用する場所
+
+| 追加対象（MLPのINT8が基準） | ms | CUDA allocated GiB | NVML GiB | 平均mask IoU | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| 追加なし | 92.26 | 1.625 | 3.099 | 0.99740 | 836 |
+| QKV射影 | 88.98 | 1.555 | 3.130 | 0.99735 | 891 |
+| 出力射影 | 92.15 | 1.530 | 2.997 | 0.99721 | 885 |
+| 両方 | 88.61 | 1.495 | 2.896 | 0.99694 | 950 |
+| window Attentionの両射影だけ | 90.58 | 1.474 | 2.915 | 0.99706 | 942 |
+| fusion encoderのFFN | 92.64 | 1.568 | 3.038 | 0.99734 | 836 |
+| 両射影＋fusion FFN | 88.84 | 1.504 | 2.886 | 0.99690 | 948 |
+
+全構成で1/4/6/4/0の検出数は一致。Attentionの両射影を追加する案を公開APIの
+`attention_projections=True`として採用した。公開APIでは90.19ms・1.455GiB allocated・
+2.854GiB NVML、平均IoU 0.996938で検出数は一致した。Attention本体のQK/AV積はFP16のまま。
+fusion FFNまで追加する効果は小さいため、ここでは採用しない。
+
+Round 17では、MLP前のLayerNormと量子化を融合する。Round 18は固定語句・新規語句・
+efficient Attentionの更新後の測定。Round 19はuint8 resizeを保った入力正規化の融合と、
+画像neckも含めたコンパイルを比較する。
+
+## Round 15：GELUと再量子化の融合
+
+MLPのINT8基準92.61ms・1.624GiB allocatedに対し、通常GELUの融合は
+4 warpsが91.76ms、8 warpsが88.93ms。後者のallocatedは1.573GiB、NVMLは3.030GiB。
+両warp設定は出力差も同じで、平均IoU 0.997491、変化840画素、検出数1/4/6/4/0。
+tanh近似は89.17ms・1.628GiB allocated・平均IoU 0.997269だった。
+
+通常GELUの8 warpsを優先し、Round 17のLayerNorm融合・Attention射影INT8との組合せを
+先に実行する。Round 16の重みのみINT8は準備済みで、その後に比較する。

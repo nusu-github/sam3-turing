@@ -22,10 +22,29 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("fast_normalize"):
+        from image_input import apply_fast_normalize
+
+        apply_fast_normalize(processor, cfg["fast_normalize"], stack)
+    if cfg.get("compile_image_neck"):
+        neck = model.backbone.vision_backbone
+        side = processor.resolution // 14
+        neck.position_encoding(torch.empty(1, 1, side, side, device=processor.device))
+        stack.enter_context(
+            patch.object(
+                neck,
+                "forward",
+                _compile_stage(neck.forward, {**cfg, "clone_stage_outputs": True}),
+            )
+        )
     if cfg.get("weight_only_int8"):
         from weight_only_int8 import apply_weight_only_int8
 
         apply_weight_only_int8(model, cfg.get("weight_only_tile", [64, 64, 32, 4]))
+    if cfg.get("int8_layernorm"):
+        from norm_int8 import apply_norm_int8
+
+        apply_norm_int8(model, cfg.get("int8_layernorm_warps", 4))
     if cfg.get("fused_int8_mlp"):
         from fused_int8_mlp import apply_fused_int8_mlp
 
