@@ -1,0 +1,46 @@
+{
+  "r27_fused_attention_control": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true
+  },
+  "mask_query_top8": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "mask_query_limit": 8
+  },
+  "mask_query_top16": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "mask_query_limit": 16
+  },
+  "mask_query_top32": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "mask_query_limit": 32
+  },
+  "mask_query_top64": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "mask_query_limit": 64
+  },
+  "fp16_mask_query_top32": {
+    "final": true,
+    "compile": true,
+    "mask_query_limit": 32
+  }
+}

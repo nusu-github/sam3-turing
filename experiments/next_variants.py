@@ -27,10 +27,34 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("group_quantize"):
+        from grouped_quantize import apply_grouped_quantize
+
+        apply_grouped_quantize(model, stack, *cfg["group_quantize"])
+    if cfg.get("mask_query_limit"):
+        original_heads = model._run_segmentation_heads
+        limit = cfg["mask_query_limit"]
+
+        def limited_heads(out, hs, **kwargs):
+            # A bounded candidate: detections beyond this capacity are discarded.
+            # Scores are already final; keep original query order for the result.
+            indices = out["pred_logits"][0, :, 0].topk(limit).indices.sort().values
+            for name in ("pred_logits", "pred_boxes", "pred_boxes_xyxy", "queries"):
+                out[name] = out[name].index_select(1, indices)
+            return original_heads(out=out, hs=hs.index_select(2, indices), **kwargs)
+
+        stack.enter_context(
+            patch.object(model, "_run_segmentation_heads", limited_heads)
+        )
     if cfg.get("prune_mlp_keep"):
         from pruned_mlp import apply_pruned_mlp
 
-        apply_pruned_mlp(model, cfg["prune_mlp_keep"], cfg.get("prune_mlp_layers"))
+        apply_pruned_mlp(
+            model,
+            cfg["prune_mlp_keep"],
+            cfg.get("prune_mlp_layers"),
+            cfg.get("prune_mlp_compensate", False),
+        )
     if cfg.get("asymmetric_mlp"):
         from asymmetric_mlp import apply_asymmetric_mlp
 

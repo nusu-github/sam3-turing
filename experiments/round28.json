@@ -1,0 +1,74 @@
+{
+  "r28_fused_attention_control": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true
+  },
+  "quant_rows4_gelu1_w8": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "group_quantize": [
+      4,
+      4,
+      1,
+      8
+    ]
+  },
+  "quant_rows8_gelu1_w8": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "group_quantize": [
+      8,
+      4,
+      1,
+      8
+    ]
+  },
+  "quant_rows4_gelu2_w8": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "group_quantize": [
+      4,
+      4,
+      2,
+      8
+    ]
+  },
+  "quant_rows8_gelu2_w8": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "group_quantize": [
+      8,
+      4,
+      2,
+      8
+    ]
+  },
+  "quant_rows4_gelu4_w16": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "group_quantize": [
+      4,
+      4,
+      4,
+      16
+    ]
+  }
+}
