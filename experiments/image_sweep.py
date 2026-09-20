@@ -31,6 +31,9 @@ sys.path.insert(0, str(ROOT))
 
 
 def extra_patches(model, processor, cfg, stack):
+    from next_variants import apply_next_variants
+
+    apply_next_variants(model, processor, cfg, stack)
     if cfg.get("rope_real"):
         for block in model.backbone.vision_backbone.trunk.blocks:
             a = block.attn

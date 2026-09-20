@@ -1,0 +1,131 @@
+{
+  "r8_control": {
+    "final": true,
+    "compile": true
+  },
+  "combined_rpb_half": {
+    "final": true,
+    "compile": true,
+    "static_rpb": true,
+    "compile_rpb": true,
+    "mha_half": true,
+    "mha_no_weights": true,
+    "embedding_half": true
+  },
+  "encoder_graph_clone": {
+    "final": true,
+    "compile": true,
+    "compile_encoder": true,
+    "clone_stage_outputs": true
+  },
+  "decoder_graph_clone": {
+    "final": true,
+    "compile": true,
+    "static_rpb": true,
+    "compile_decoder": true,
+    "clone_stage_outputs": true
+  },
+  "grounding_compile": {
+    "final": true,
+    "compile_trunk": true,
+    "rope_real": true,
+    "static_rpb": true,
+    "fixed_feature_meta": true,
+    "mha_no_weights": true,
+    "compile_grounding": true,
+    "stage_mode": "default",
+    "native_mha": true
+  },
+  "pooled_mlp_late8": {
+    "final": true,
+    "compile": true,
+    "pooled_mlp": 2,
+    "pooled_mlp_layers": [
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ]
+  },
+  "pooled_mlp_periodic8": {
+    "final": true,
+    "compile": true,
+    "pooled_mlp": 2,
+    "pooled_mlp_layers": [
+      3,
+      7,
+      11,
+      15,
+      19,
+      23,
+      27,
+      31
+    ]
+  },
+  "pooled_mlp_all": {
+    "final": true,
+    "compile": true,
+    "pooled_mlp": 2
+  },
+  "skip_two_blocks": {
+    "final": true,
+    "compile": true,
+    "skip_vit_blocks": [
+      26,
+      30
+    ]
+  },
+  "int8_text_mlp": {
+    "final": true,
+    "compile": true,
+    "int8_text_mlp": true,
+    "mha_half": true,
+    "embedding_half": true,
+    "text_cache_size": 0
+  },
+  "text_core_uncached": {
+    "final": true,
+    "compile": true,
+    "compile_text_core": true,
+    "text_cache_size": 0,
+    "mha_half": true,
+    "embedding_half": true
+  },
+  "text_core_cached": {
+    "final": true,
+    "compile": true,
+    "compile_text_core": true,
+    "mha_half": true,
+    "embedding_half": true
+  },
+  "combined_decoder_half": {
+    "final": true,
+    "compile": true,
+    "static_rpb": true,
+    "compile_decoder": true,
+    "stage_mode": "default",
+    "mha_half": true,
+    "mha_no_weights": true,
+    "embedding_half": true
+  },
+  "half_block_output": {
+    "final": true,
+    "compile": true,
+    "half_block_output": true
+  },
+  "int8_combined": {
+    "final": true,
+    "compile": true,
+    "int8_mlp": "both",
+    "static_rpb": true,
+    "compile_decoder": true,
+    "stage_mode": "default",
+    "mha_half": true,
+    "mha_no_weights": true,
+    "embedding_half": true
+  }
+}

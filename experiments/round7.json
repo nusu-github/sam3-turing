@@ -1,0 +1,15 @@
+{
+  "static_rpb": {"final": true, "compile": true, "static_rpb": true},
+  "compile_rpb": {"final": true, "compile": true, "static_rpb": true, "compile_rpb": true},
+  "last_scores": {"final": true, "compile": true, "last_scores": true},
+  "native_mha": {"final": true, "compile": true, "native_mha": true},
+  "trim_text_cached": {"final": true, "compile": true, "trim_text": true},
+  "trim_text_uncached": {"final": true, "compile": true, "trim_text": true, "text_cache_size": 0},
+  "embedding_half": {"final": true, "compile": true, "embedding_half": true, "mha_half": true},
+  "cpu_resize": {"final": true, "compile": true, "cpu_resize": true},
+  "encoder_compile_default": {"final": true, "compile": true, "compile_encoder": true, "stage_mode": "default"},
+  "decoder_compile_default": {"final": true, "compile": true, "compile_decoder": true, "static_rpb": true, "stage_mode": "default"},
+  "text_compile_default": {"final": true, "compile": true, "compile_text": true, "text_cache_size": 0, "stage_mode": "default"},
+  "int8_fc1": {"final": true, "compile": true, "int8_mlp": "fc1"},
+  "int8_mlp": {"final": true, "compile": true, "int8_mlp": "both"}
+}

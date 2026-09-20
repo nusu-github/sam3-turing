@@ -1,0 +1,14 @@
+{
+  "scope": "RTX3090, compiled FP16, warm truck image + cached truck prompt; nested CUDA event intervals",
+  "milliseconds": {
+    "vision_trunk": 92.7383041381836,
+    "image_backbone": 96.73814392089844,
+    "image_total": 100.7462387084961,
+    "text_cache": 0.002047999994829297,
+    "encode_prompt": 0.6952959895133972,
+    "fusion_encoder": 6.8587517738342285,
+    "detection_decoder": 25.624576568603516,
+    "segmentation_head": 4.187136173248291,
+    "prompt_total": 37.99039840698242
+  }
+}
