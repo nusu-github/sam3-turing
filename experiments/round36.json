@@ -1,0 +1,69 @@
+{
+  "r36_fused_attention_control": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true
+  },
+  "prune_heads_global_15": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "prune_heads_keep": 15,
+    "prune_heads_scope": "global",
+    "prune_heads_compensate": false
+  },
+  "prune_heads_global_15_comp": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "prune_heads_keep": 15,
+    "prune_heads_scope": "global",
+    "prune_heads_compensate": true
+  },
+  "prune_heads_global_14_comp": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "prune_heads_keep": 14,
+    "prune_heads_scope": "global",
+    "prune_heads_compensate": true
+  },
+  "prune_heads_window_15_comp": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "prune_heads_keep": 15,
+    "prune_heads_scope": "window",
+    "prune_heads_compensate": true
+  },
+  "prune_heads_all_15_comp": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "prune_heads_keep": 15,
+    "prune_heads_scope": "all",
+    "prune_heads_compensate": true
+  },
+  "prune_heads_all_14_comp": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "prune_heads_keep": 14,
+    "prune_heads_scope": "all",
+    "prune_heads_compensate": true
+  }
+}

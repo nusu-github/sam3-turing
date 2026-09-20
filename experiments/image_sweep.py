@@ -288,14 +288,21 @@ def run(args):
         if cfg.get("public_int8"):
             from sam3.turing_int8 import apply_int8_patch
 
-            apply_int8_patch(
-                processor,
-                text=cfg.get("public_int8_text", False),
-                attention_projections=cfg.get("public_int8_attention", False),
-                fused_mlp=cfg.get("public_int8_fused", False),
-                asymmetric_gelu=cfg.get("public_int8_asymmetric", False),
-                weight_only=cfg.get("public_int8_weight_only", False),
-            )
+            with contextlib.ExitStack() as quant_stack:
+                if cfg.get("weight_scale_search"):
+                    from weight_scale_search import weight_scale_search
+
+                    result["weight_quantization"] = quant_stack.enter_context(
+                        weight_scale_search(cfg.get("weight_scale_refine", 0))
+                    )
+                apply_int8_patch(
+                    processor,
+                    text=cfg.get("public_int8_text", False),
+                    attention_projections=cfg.get("public_int8_attention", False),
+                    fused_mlp=cfg.get("public_int8_fused", False),
+                    asymmetric_gelu=cfg.get("public_int8_asymmetric", False),
+                    weight_only=cfg.get("public_int8_weight_only", False),
+                )
         if cfg.get("fixed_text"):
             freeze_text_prompts(
                 processor,

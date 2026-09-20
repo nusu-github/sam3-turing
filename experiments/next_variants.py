@@ -27,6 +27,15 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("prune_heads_keep"):
+        from pruned_heads import apply_pruned_heads
+
+        apply_pruned_heads(
+            model,
+            cfg["prune_heads_keep"],
+            cfg.get("prune_heads_scope", "global"),
+            cfg.get("prune_heads_compensate", False),
+        )
     if cfg.get("dequant_weight"):
         from dequant_weight import apply_dequant_weight
 
