@@ -205,6 +205,8 @@ def main():
         else outputs
     )
     data["reference"] = args.reference if reference_path.exists() else "self"
+    if hasattr(predictor, "_cpu_text_calls"):
+        data["cpu_text_calls"] = predictor._cpu_text_calls
     data["checks"] = compare_frames(outputs, reference)
     torch.save(outputs, outdir / f"{args.name}.pt")
     (outdir / f"{args.name}.json").write_text(json.dumps(data, indent=2) + "\n")

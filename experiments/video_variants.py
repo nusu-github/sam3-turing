@@ -4,6 +4,7 @@ import ast
 import importlib
 import inspect
 import textwrap
+import time
 
 import torch
 import torch.nn.functional as F
@@ -74,6 +75,8 @@ def apply_video_variant(predictor, variant):
         "fp16_int8_compile",
         "fp16_int8_cpu_compile",
         "fp16_int8_cpu_compile_efficient",
+        "fp16_int8_cpu_trim_compile",
+        "fp16_int8_cpu_trim_compile_efficient",
     ):
         raise ValueError(variant)
     model = predictor.model
@@ -149,15 +152,39 @@ def apply_video_variant(predictor, variant):
 
         device = next(backbone.vision_backbone.parameters()).device
         backbone.language_backbone.cpu().float()
+        if "trim" in variant:
+            encoder = backbone.language_backbone.encoder
+            original_encoder = encoder.forward
+
+            def encode(tokens):
+                length = int(tokens.argmax(1).max()) + 1
+                pooled, memory = original_encoder(tokens[:, :length])
+                padding = tokens.shape[1] - length
+                if padding:
+                    memory = F.pad(memory, (0, 0, 0, padding))
+                    if pooled.ndim == 3:
+                        pooled = F.pad(pooled, (0, 0, 0, padding))
+                return pooled, memory
+
+            encoder.forward = encode
         original_text = backbone._forward_text_no_ack_ckpt
+        predictor._cpu_text_calls = []
 
         def cpu_text(captions, input_boxes=None, additional_text=None, device=device):
+            start = time.perf_counter()
             with torch.autocast("cuda", enabled=False), torch.autocast(
                 "cpu", enabled=False
             ):
                 outputs = original_text(
                     captions, input_boxes, additional_text, device="cpu"
                 )
+            predictor._cpu_text_calls.append(
+                {
+                    "captions": len(captions),
+                    "additional": len(additional_text or []),
+                    "cpu_seconds": time.perf_counter() - start,
+                }
+            )
             return tree_map(
                 lambda x: (
                     x.to(

@@ -24,3 +24,19 @@ offload_state_to_cpu=Trueには対応していない。通常のstockモデル�
 
 重み: facebook/sam3.1 / sam3.1_multiplex.pt、revision daa63191845a41281374e725f4c9e51c7a824460。
 次は画像側の非対称INT8＋重みスケール調整、ViT compile、CPUテキストを比較する。
+
+## 動画 Round 2：INT8・ViT compile・CPUテキスト
+
+| 構成 | ms/frame | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| [video_fp16_int8_b1](../experiments/results/video_fp16_int8_b1.json) | 265.94 | 3.496 | 4.632 | 0.998099 | 8151 |
+| [video_fp16_int8_compile_b1](../experiments/results/video_fp16_int8_compile_b1.json) | 195.40 | 3.509 | 5.003 | 0.998080 | 8313 |
+| [video_fp16_int8_cpu_compile_b1](../experiments/results/video_fp16_int8_cpu_compile_b1.json) | 226.79 | 2.849 | 4.485 | 0.998076 | 8319 |
+| [video_fp16_int8_cpu_compile_efficient_b1](../experiments/results/video_fp16_int8_cpu_compile_efficient_b1.json) | 226.65 | 2.838 | 4.505 | 0.997858 | 7567 |
+
+全構成で24フレーム×4人・96件の人物ID対応を維持。INT8だけでは速度差が小さかったが、
+ViT compileで265.94→195.40ms/frameへ短縮した。基準261.00ms/frameに対し約25%短縮。
+CPUテキストはallocated 2.849GiBに下がる一方226.79ms/frameへ遅くなった。
+CPUテキスト＋efficientでも226.65ms/frame・2.838GiB。
+CPUの短い語句でpadding省略を使い、この待ち時間を減らす候補を追加する。
+画像の公開パッチと同じ非対称INT8・重み調整を使うが、動画では別途そのまま同じ数値になるとは限らない。
