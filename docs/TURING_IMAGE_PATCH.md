@@ -117,7 +117,7 @@ CPUテキストもINT8にすると90.01ms・allocated 0.782GiB・NVML 2.351GiB�
 [CPU動的INT8・cacheあり JSON](../experiments/results/accepted_cpu_dynamic_text.json) /
 [CPU動的INT8・cacheなし JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json)
 
-完了済みラウンドの比較は329候補・337試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は336候補・344試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -428,3 +428,9 @@ PyTorchやCUDAは入れ替えていない。
 射影も4bit・group 128はallocated 1.263GiB、group 16は1.473GiB。
 まだ公開APIには採用せず、scaleの保存量を減らす候補も比較している。
 [4bit比較](../experiments/round38.json)
+
+4bitのscaleをFP16保存にして不要なoffsetを省く追加比較では、Gaussian group 32が
+116.81ms・allocated 1.267GiB・IoU 0.993293・1995画素変化だった。
+非対称group 16は116.65ms・1.453GiB・IoU 0.994461・1748画素変化。
+すべて検出数を維持したが、画像側の公開INT8より速くはないため、引き続き任意の試作として保存する。
+[compact 4bit比較](../experiments/round62.json)

@@ -6,6 +6,18 @@ RTX 3090・同梱動画0001の先頭24フレーム・person prompt。既存コ�
 全構成でgrounding batch 1、フレームはCPU保存、FA3とTF32はOFF。最初の3構成はcompileなし。
 cold run後の3回の中央値。add_prompt＋順方向追跡を計測し、フレーム読込み・モデル構築は除外。
 
+同じ比較はリポジトリのルートから実行できる。重みが既にある場合は、そのパスを指定する。
+
+```bash
+hf download facebook/sam3.1 sam3.1_multiplex.pt --local-dir checkpoints/sam3.1
+python experiments/video_sweep.py \
+  --checkpoint checkpoints/sam3.1/sam3.1_multiplex.pt \
+  --variants stock fp16_int8_cpu_trim_compile fp16_int8_cpu_trim_compile_efficient
+```
+
+stockの保存出力を後続候補の比較に使う。今回のstock推論は6GiBを超えており、この比較は3090で実施した。
+新しい仮想環境は不要。各候補は同じPythonの別プロセスで順に実行する。
+
 | 構成 | ms/frame | allocated GiB | GPU全体 NVML GiB | mask IoU vs stock | 変化画素 |
 |---|---:|---:|---:|---:|---:|
 | [video_stock_bf16_b1](../experiments/results/video_stock_bf16_b1.json) | 261.00 | 6.726 | 7.919 | 1.000000 | 0 |

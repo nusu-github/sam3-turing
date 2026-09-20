@@ -1,0 +1,18 @@
+{
+  "int4_compact_group64_gaussian": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 64,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_gaussian": true,
+    "weight_only_int4_compact": true
+  },
+  "int4_compact_group128_gaussian": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 128,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_gaussian": true,
+    "weight_only_int4_compact": true
+  }
+}
