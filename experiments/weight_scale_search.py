@@ -31,7 +31,7 @@ def weight_scale_search(refine=0):
             )
             original_error = best_error.sum().item()
             # Per-row clipping candidates; no images, activation fitting or training.
-            for ratio in (0.975, 0.95, 0.925, 0.9, 0.875, 0.85, 0.825, 0.8):
+            for ratio in (1.0, 0.995, 0.99, 0.985, 0.975, 0.95, 0.925, 0.9, 0.85, 0.8):
                 scale = initial * ratio
                 q = (w / scale[:, None]).round().clamp(-127, 127)
                 for _ in range(refine):

@@ -27,6 +27,21 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("weight_only_int4"):
+        from weight_only_int4 import apply_weight_only_int4
+
+        apply_weight_only_int4(
+            model,
+            cfg["weight_only_int4"],
+            cfg.get("weight_only_int4_attention", False),
+            cfg.get("weight_only_int4_asymmetric", False),
+        )
+    if cfg.get("fused_int8_gemm"):
+        from fused_int8_gemm import apply_fused_int8_gemm
+
+        apply_fused_int8_gemm(
+            model, stack, cfg["fused_int8_gemm"], cfg.get("fused_int8_gemm_fc2", True)
+        )
     if cfg.get("prune_heads_keep"):
         from pruned_heads import apply_pruned_heads
 
