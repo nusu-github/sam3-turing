@@ -22,6 +22,45 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("fused_int8_mlp"):
+        from fused_int8_mlp import apply_fused_int8_mlp
+
+        apply_fused_int8_mlp(
+            model,
+            stack,
+            cfg.get("fused_int8_warps", 4),
+            cfg.get("fused_int8_tanh", False),
+        )
+    if cfg.get("int8_vision_attention"):
+        from sam3.turing_int8 import DynamicInt8Linear
+
+        for i, block in enumerate(model.backbone.vision_backbone.trunk.blocks):
+            if cfg.get("int8_attention_windows_only") and not block.window_size:
+                continue
+            for name in cfg["int8_vision_attention"]:
+                setattr(block.attn, name, DynamicInt8Linear(getattr(block.attn, name)))
+    if cfg.get("int8_fusion_ffn"):
+        from sam3.turing_int8 import DynamicInt8Linear
+
+        for module in model.transformer.encoder.modules():
+            if isinstance(getattr(module, "linear1", None), nn.Linear):
+                module.linear1 = DynamicInt8Linear(module.linear1)
+                module.linear2 = DynamicInt8Linear(module.linear2)
+    if cfg.get("balanced_int8_alpha"):
+        from balanced_int8 import apply_balanced_int8
+
+        apply_balanced_int8(
+            model, cfg["balanced_int8_alpha"], cfg.get("balanced_int8_scope", "both")
+        )
+    if cfg.get("adaptive_mlp"):
+        from adaptive_mlp import apply_adaptive_mlp
+
+        apply_adaptive_mlp(
+            model,
+            cfg["adaptive_mlp"],
+            cfg.get("adaptive_mlp_layers", list(range(32))),
+            stack,
+        )
     if cfg.get("empty_geometry"):
         geometry = model.geometry_encoder
         for method, field in (("_encode_points", "points"), ("_encode_boxes", "boxes")):
@@ -333,6 +372,47 @@ def apply_next_variants(model, processor, cfg, stack):
                 ),
             )
         )
+    if cfg.get("compact_grounding"):
+        original_grounding = model.forward_grounding
+
+        def compact(backbone_out, find_input, geometric_prompt):
+            output = original_grounding(
+                backbone_out=backbone_out,
+                find_input=find_input,
+                geometric_prompt=geometric_prompt,
+                find_target=None,
+            )
+            return {
+                name: output[name]
+                for name in (
+                    "pred_logits",
+                    "presence_logit_dec",
+                    "pred_boxes",
+                    "pred_masks",
+                )
+            }
+
+        compiled_compact = torch.compile(
+            compact, mode=cfg.get("compact_grounding_mode", "reduce-overhead")
+        )
+
+        def grounding(
+            backbone_out, find_input, find_target, geometric_prompt, **kwargs
+        ):
+            for name in ("box_embeddings", "point_embeddings", "mask_embeddings"):
+                value = getattr(geometric_prompt, name)
+                if value is not None and value.shape[0]:
+                    return original_grounding(
+                        backbone_out,
+                        find_input,
+                        find_target,
+                        geometric_prompt,
+                        **kwargs,
+                    )
+            output = compiled_compact(backbone_out, find_input, geometric_prompt)
+            return {name: value.clone() for name, value in output.items()}
+
+        stack.enter_context(patch.object(model, "forward_grounding", grounding))
     if cfg.get("kv_pool"):
         stride = cfg["kv_pool"]
         for index, block in enumerate(model.backbone.vision_backbone.trunk.blocks):

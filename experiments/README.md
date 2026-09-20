@@ -10,6 +10,8 @@ python experiments/image_sweep.py --sweep experiments/round3.json --cases 5 --re
 python experiments/image_sweep.py --sweep experiments/round4.json --cases 5 --reps 9
 python experiments/image_sweep.py --sweep experiments/round5.json --cases 5 --reps 9
 python experiments/image_sweep.py --sweep experiments/round10.json --cases 5 --reps 9
+python experiments/image_sweep.py --sweep experiments/round11.json --cases 5 --reps 9 --timeout 240
+python experiments/image_sweep.py --sweep experiments/round12.json --cases 5 --reps 9 --timeout 240
 python experiments/packed_masks.py
 python experiments/fused_masks_bench.py
 python experiments/summarize.py

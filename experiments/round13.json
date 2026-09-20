@@ -1,0 +1,7 @@
+{
+  "r13_fp16_control": {"final": true, "compile": true},
+  "compact_grounding_graph": {"final": true, "compile": true, "empty_geometry": true, "compact_grounding": true},
+  "compact_grounding_default": {"final": true, "compile": true, "empty_geometry": true, "compact_grounding": true, "compact_grounding_mode": "default"},
+  "compact_grounding_int8": {"final": true, "compile": true, "public_int8": true, "empty_geometry": true, "compact_grounding": true},
+  "compact_grounding_views": {"final": true, "compile": true, "public_int8": true, "empty_geometry": true, "compact_grounding": true, "feature_views": true, "fixed_feature_meta": true, "last_scores": true}
+}

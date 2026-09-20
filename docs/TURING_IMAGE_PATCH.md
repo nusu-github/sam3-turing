@@ -47,7 +47,7 @@ FlashAttentionを使わずefficient Attentionに固定した3090上の比較で�
 [採用FP16 JSON](../experiments/results/accepted_compiled.json) /
 [採用INT8 JSON](../experiments/results/accepted_int8.json)
 
-初回50候補に続き56候補を追加し、現在は106候補・111試行（再測定と失敗を含む）。
+初回50候補に続き68候補を追加し、現在は118候補・123試行（再測定と失敗を含む）。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
