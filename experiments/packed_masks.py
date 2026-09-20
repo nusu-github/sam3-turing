@@ -65,7 +65,9 @@ with torch.inference_mode():
     }
     for chunk in (1, 8):
         packed, metrics = measure(
-            lambda: resize_and_pack_masks(low, size, chunk), warmups=1, repetitions=5
+            lambda: resize_and_pack_masks(low, size, chunk, fused=False),
+            warmups=1,
+            repetitions=5,
         )
         changed = sum(
             int((unpack_masks(packed[i : i + 1], size)[0].cpu() != expected[i]).sum())

@@ -1,0 +1,157 @@
+{
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.10.0a0+b558c986e8.nv25.11",
+    "cuda": "13.0",
+    "cudnn": 91500,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "capability": [
+      8,
+      6
+    ],
+    "physical_vram_bytes": 25296044032,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "cublas_workspace_config": ":4096:8"
+  },
+  "scope": "200 learned FP16 mask logits -> 4K packed output; component only",
+  "variants": {
+    "chunk8": {
+      "cold_seconds": 0.6452115681022406,
+      "warmups": 2,
+      "repetitions": 9,
+      "wall_seconds": [
+        0.028775797924026847,
+        0.028727947967126966,
+        0.02872858801856637,
+        0.028708657948300242,
+        0.028697717934846878,
+        0.02870530914515257,
+        0.028716688975691795,
+        0.02871695812791586,
+        0.02871499815955758
+      ],
+      "gpu_seconds": [
+        0.02872319984436035,
+        0.028703744888305665,
+        0.028705791473388673,
+        0.028686336517333984,
+        0.028675071716308592,
+        0.028683263778686522,
+        0.02869251251220703,
+        0.028694528579711914,
+        0.02868943977355957
+      ],
+      "median_wall_seconds": 0.028716688975691795,
+      "median_gpu_seconds": 0.02869251251220703,
+      "peak_allocated_bytes": 542703616,
+      "peak_reserved_bytes": 545259520,
+      "allocated_before_bytes": 68157440,
+      "reserved_before_bytes": 69206016,
+      "end_device_used_bytes": 915603456,
+      "physical_vram_bytes": 25296044032,
+      "nvml": {
+        "sampled_device_used_peak_bytes": 1389363200,
+        "sampled_device_used_min_bytes": 913309696,
+        "samples": 187,
+        "requested_interval_ms": 5,
+        "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+      }
+    },
+    "fused": {
+      "cold_seconds": 0.37523582484573126,
+      "warmups": 2,
+      "repetitions": 9,
+      "wall_seconds": [
+        0.007576765958219767,
+        0.0075612368527799845,
+        0.008110343012958765,
+        0.008333280915394425,
+        0.00829167221672833,
+        0.008242673007771373,
+        0.008233851054683328,
+        0.008177133044227958,
+        0.008159952936694026
+      ],
+      "gpu_seconds": [
+        0.007531519889831543,
+        0.007525375843048096,
+        0.008081439971923829,
+        0.0083056640625,
+        0.008267775535583496,
+        0.008220671653747558,
+        0.00821350383758545,
+        0.008157183647155761,
+        0.008140800476074218
+      ],
+      "median_wall_seconds": 0.008177133044227958,
+      "median_gpu_seconds": 0.008157183647155761,
+      "peak_allocated_bytes": 275775488,
+      "peak_reserved_bytes": 276824064,
+      "allocated_before_bytes": 68157440,
+      "reserved_before_bytes": 69206016,
+      "end_device_used_bytes": 647168000,
+      "physical_vram_bytes": 25296044032,
+      "nvml": {
+        "sampled_device_used_peak_bytes": 1120927744,
+        "sampled_device_used_min_bytes": 913309696,
+        "samples": 87,
+        "requested_interval_ms": 5,
+        "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+      }
+    }
+  },
+  "checks": [
+    {
+      "case": "learned4k",
+      "changed_pixels": 1,
+      "compared_pixels": 1658880000
+    },
+    {
+      "case": "torch.float16_3x5x7_to_13x17_scale1",
+      "changed_pixels": 0,
+      "compared_pixels": 663
+    },
+    {
+      "case": "torch.float16_2x37x51_to_17x23_scale1",
+      "changed_pixels": 0,
+      "compared_pixels": 782
+    },
+    {
+      "case": "torch.float16_2x9x7_to_32x19_scale0.002",
+      "changed_pixels": 0,
+      "compared_pixels": 1216
+    },
+    {
+      "case": "torch.float16_2x1x1_to_17x19_scale1",
+      "changed_pixels": 0,
+      "compared_pixels": 646
+    },
+    {
+      "case": "torch.float32_3x5x7_to_13x17_scale1",
+      "changed_pixels": 0,
+      "compared_pixels": 663
+    },
+    {
+      "case": "torch.float32_2x37x51_to_17x23_scale1",
+      "changed_pixels": 0,
+      "compared_pixels": 782
+    },
+    {
+      "case": "torch.float32_2x9x7_to_32x19_scale0.002",
+      "changed_pixels": 0,
+      "compared_pixels": 1216
+    },
+    {
+      "case": "torch.float32_2x1x1_to_17x19_scale1",
+      "changed_pixels": 0,
+      "compared_pixels": 646
+    }
+  ],
+  "empty_shape": [
+    0,
+    28
+  ]
+}

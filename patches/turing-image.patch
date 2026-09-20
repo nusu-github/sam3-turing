@@ -288,10 +288,10 @@ index 0000000..1d8e9c3
 +    return processor
 diff --git a/sam3/turing_masks.py b/sam3/turing_masks.py
 new file mode 100644
-index 0000000..9e4dd0c
+index 0000000..d19b34d
 --- /dev/null
 +++ b/sam3/turing_masks.py
-@@ -0,0 +1,88 @@
+@@ -0,0 +1,147 @@
 +"""Optional packed binary mask output; probabilities are not retained."""
 +
 +import math
@@ -300,6 +300,50 @@ index 0000000..9e4dd0c
 +import torch.nn.functional as F
 +import triton
 +import triton.language as tl
++
++
++@triton.jit
++def _resize_pack(
++    src,
++    dst,
++    IH: tl.constexpr,
++    IW: tl.constexpr,
++    OH: tl.constexpr,
++    OW: tl.constexpr,
++    S0: tl.constexpr,
++    S1: tl.constexpr,
++    S2: tl.constexpr,
++    HALF: tl.constexpr,
++    BLOCK: tl.constexpr,
++):
++    row = tl.program_id(0)
++    byte = tl.program_id(1) * BLOCK + tl.arange(0, BLOCK)
++    bit = tl.arange(0, 8)
++    p = byte[:, None] * 8 + bit[None, :]
++    valid = p < OH * OW
++    fy = tl.maximum((p // OW + 0.5) * (IH / OH) - 0.5, 0.0)
++    fx = tl.maximum((p % OW + 0.5) * (IW / OW) - 0.5, 0.0)
++    y0 = fy.to(tl.int32)
++    x0 = fx.to(tl.int32)
++    y1 = tl.minimum(y0 + 1, IH - 1)
++    x1 = tl.minimum(x0 + 1, IW - 1)
++    wy = fy - y0
++    wx = fx - x0
++    base = src + row * S0
++    v00 = tl.load(base + y0 * S1 + x0 * S2, valid, 0).to(tl.float32)
++    v01 = tl.load(base + y0 * S1 + x1 * S2, valid, 0).to(tl.float32)
++    v10 = tl.load(base + y1 * S1 + x0 * S2, valid, 0).to(tl.float32)
++    v11 = tl.load(base + y1 * S1 + x1 * S2, valid, 0).to(tl.float32)
++    value = (1 - wy) * ((1 - wx) * v00 + wx * v01) + wy * ((1 - wx) * v10 + wx * v11)
++    if HALF:
++        value = value.to(tl.float16).to(tl.float32)
++    prob = 1.0 / (1.0 + tl.exp(-value))
++    if HALF:
++        prob = prob.to(tl.float16).to(tl.float32)
++    yes = ((prob > 0.5) & valid).to(tl.uint32)
++    packed = tl.sum(yes << bit[None, :], 1).to(tl.uint8)
++    row_bytes: tl.constexpr = (OH * OW + 7) // 8
++    tl.store(dst + row * row_bytes + byte, packed, byte < row_bytes)
 +
 +
 +@triton.jit
@@ -326,21 +370,36 @@ index 0000000..9e4dd0c
 +
 +
 +@torch.inference_mode()
-+def resize_and_pack_masks(logits, size, chunk_size=8):
++def resize_and_pack_masks(logits, size, chunk_size=8, *, fused=True):
 +    """[N,h,w] logits -> [N,ceil(H*W/8)] uint8, little-endian bits per row.
 +
-+    Resize, sigmoid and threshold run before packing, with the input precision.
-+    Chunking bounds temporary storage; each mask has its own byte padding.
++    FP16/FP32 uses one fused kernel by default, retaining precision rounding.
++    fused=False uses PyTorch interpolation and chunk_size-bounded temporaries.
++    Each mask has its own byte padding. Fused interpolation can differ at a
++    threshold boundary by floating-point rounding.
 +    """
 +    if logits.ndim != 3 or not logits.is_cuda or not logits.is_floating_point():
 +        raise ValueError("Expected floating CUDA logits shaped [N,h,w]")
-+    if chunk_size < 1 or len(size) != 2 or min(size) < 1:
++    if chunk_size < 1 or len(size) != 2 or min(size) < 1 or min(logits.shape[-2:]) < 1:
 +        raise ValueError("Use a positive chunk_size and output height/width")
 +    pixels = math.prod(size)
 +    row_bytes = triton.cdiv(pixels, 8)
 +    out = torch.empty(
 +        (logits.shape[0], row_bytes), device=logits.device, dtype=torch.uint8
 +    )
++    if fused and logits.dtype in (torch.float16, torch.float32):
++        if len(logits):
++            _resize_pack[(len(logits), triton.cdiv(row_bytes, 128))](
++                logits,
++                out,
++                *logits.shape[-2:],
++                *size,
++                *logits.stride(),
++                logits.dtype == torch.float16,
++                128,
++                enable_fp_fusion=False,
++            )
++        return out
 +    for start in range(0, logits.shape[0], chunk_size):
 +        masks = (
 +            F.interpolate(

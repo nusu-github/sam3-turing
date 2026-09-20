@@ -44,7 +44,7 @@ boxの対応付け後にマスクを比較した。正解ラベルに対する�
 [全候補の表](../experiments/results/README.md) / [CSV](../experiments/results/summary.csv) /
 [最終コンパイル版JSON](../experiments/results/final_compiled.json)
 
-画像推論は50候補・55試行（再測定込み）を実行した。初期の3失敗は修正して再実行済み。
+初回の画像推論探索は50候補・55試行（再測定込み）。初期の3失敗は修正して再実行済み。
 
 ## 使い方
 
@@ -113,7 +113,15 @@ Tritonを使用する。通常の `masks` / `masks_logits` の代わりに
 出力は約198MiB。抽出した8マスク・66,355,200画素の比較では差0だった。
 これは画像全体の速度ではなく、4K出力部品のストレス試験。
 さらに一時メモリを減らす `mask_chunk_size=1` は46.06ms・0.288GiBだった。
-既定値は8。[測定JSON](../experiments/results/packed_masks.json)
+従来経路のchunk既定値は8。[測定JSON](../experiments/results/packed_masks.json)
+
+継続最適化では、この4段階を1つのTriton kernelに融合した。同じ4K出力部品の
+比較で、従来のchunk 8は28.72ms・0.505GiB、新方式は **8.18ms・0.257GiB**。
+200マスク全体の **1,658,880,000画素中1画素** が閾値付近の丸めで異なった。
+奇数サイズ、縮小、閾値付近の値、1×1入力の追加比較は差0。
+FP16/FP32ではこの方式を既定にした。`mask_chunk_size`は他のdtypeでの従来経路に使う。
+直接 `resize_and_pack_masks(logits, size, fused=False)` を呼べば従来経路も選べる。
+[追加測定JSON](../experiments/results/fused_masks.json)
 
 ```python
 from sam3.turing_masks import unpack_masks
