@@ -1160,3 +1160,42 @@ Round 67のAPI確認も通過。128個の4bit Linear＋48個のCPU INT8 Linear�
 画像追加パッチ、packed maskを併用した。A→B→Aの画像state再利用でマスクは完全一致。
 幾何prompt・直接modelの出力dict・空出力・固定語句への切替・autocast復帰も確認した。
 単独patchに5つ目の公開モジュールを含め、reverse適用checkを通した。
+
+## Round 68の候補：小さい入力向けの余白射影省略を公開オプションへ
+
+`apply_image_refinements(..., unpadded_projections=True)`で、小さい入力のwindow paddingに対する
+QKVと出力のLinearを省略する。Attention内のpadding tokenとそのQKV biasは維持する。
+1008入力などwindowを割り切れる場合は何も変えない。既定値はFalse。
+784入力の16スレッドCPU FP32、8スレッドCPU INT8をRound 66と照合する。
+1008で無変更となることも測り、784のAPI smokeへ進む。CPUスレッド数は公開パッチから変更しない。
+
+## Round 66：低解像度のCPU待ちを減らす
+
+| 構成 | ms | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| r66_unpadded784_cpu4_control | 69.528 | 0.7266 | 2.1768 | 0.97132407 | 9352 |
+| unpadded784_cpu_fp32_threads16 | 58.959 | 0.7266 | 2.1768 | 0.97132407 | 9352 |
+| standard784_cpu_fp32_threads16 | 64.664 | 0.725 | 2.1729 | 0.97123186 | 9296 |
+| unpadded784_cpu_int8_threads8 | 58.837 | 0.6933 | 2.4241 | 0.97153204 | 9374 |
+
+すべて1/4/6/4/0。余白の射影省略ありのCPU FP32は4→16スレッドで69.53→58.96ms。
+同じ16スレッドでは通常射影64.66ms→省略58.96ms。CPU待ちを減らすと射影省略の効果が現れた。
+4/16スレッドのmask・score・box比較値は同じ。probability MAEの集約値だけに約1e-9以下の差があった。
+CPU INT8＋8スレッドは58.84ms・9374画素で、FP32＋16の58.96ms・9352画素と近かった。
+短いpromptと今回のEPYCでの値であり、CPUスレッドを公開パッチ内で固定しない。
+
+## Round 68：公開用の余白射影省略
+
+| 構成 | ms | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| accepted_unpadded784_cpu_fp32_threads16 | 61.578 | 0.6916 | 2.1729 | 0.97132407 | 9352 |
+| accepted_unpadded784_cpu_int8_threads8 | 58.505 | 0.7251 | 2.1689 | 0.97153204 | 9374 |
+| accepted_unpadded1008_noop | 84.744 | 0.8379 | 2.3506 | 0.99799737 | 674 |
+
+784の両構成はRound 66の対応する試作と全5条件の比較dictが一致。
+1008も既存の同構成と全5条件で一致し、処理を変更しないことを確認した。
+公開FP32の61.58msと試作58.96msには時間の差があり、公開用の値を記載する。
+
+784入力のAPI smokeも通過。28個のwindowブロックへの余白射影省略、画像INT8、CPU INT8＋padding省略、
+packed maskを併用し、A→B→A、幾何prompt、空出力、直接modelの辞書、固定語句への切替、
+autocast復帰を確認した。単独patchも再生成してreverse適用checkを通した。

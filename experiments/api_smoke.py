@@ -33,9 +33,9 @@ model = build_sam3_image_model(
     ),
     load_from_HF=False,
 ).eval()
-torch.set_num_threads(4)
+torch.set_num_threads(args.config.get("cpu_threads", 4))
 p = apply_turing_patch(
-    Sam3Processor(model),
+    Sam3Processor(model, resolution=args.config.get("resolution", 1008)),
     compile=True,
     compile_text=args.config.get(
         "public_compile_text", not args.config.get("public_cpu_text", False)
@@ -100,7 +100,9 @@ if args.config.get("public_cpu_text"):
 if args.config.get("public_refinements"):
     from sam3.turing_refinements import apply_image_refinements
 
-    apply_image_refinements(p)
+    apply_image_refinements(
+        p, unpadded_projections=args.config.get("public_unpadded_projections", False)
+    )
 stack = ExitStack()
 if args.config:
     from next_variants import apply_next_variants
@@ -131,6 +133,12 @@ if args.config.get("public_int4"):
     )
     assert result["vision_int4_linears"] == 128
     result["int4_reapply_rejected"] = True
+if args.config.get("public_unpadded_projections"):
+    result["unpadded_window_blocks"] = sum(
+        hasattr(block, "_turing_window_valid")
+        for block in model.backbone.vision_backbone.trunk.blocks
+    )
+    assert result["unpadded_window_blocks"] == 28
 if args.config.get("public_cpu_text_int8"):
     result["cpu_text_int8_linears"] = sum(
         isinstance(module, torch.ao.nn.quantized.dynamic.Linear)

@@ -356,7 +356,10 @@ def run(args):
         if cfg.get("public_refinements"):
             from sam3.turing_refinements import apply_image_refinements
 
-            apply_image_refinements(processor)
+            apply_image_refinements(
+                processor,
+                unpadded_projections=cfg.get("public_unpadded_projections", False),
+            )
     if cfg.get("calibrated_input_split"):
         from input_split import apply_calibrated_input_split
 

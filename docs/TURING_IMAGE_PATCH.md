@@ -120,7 +120,7 @@ CPUテキストもINT8にすると90.01ms・allocated 0.782GiB・NVML 2.351GiB�
 [CPU動的INT8・cacheあり JSON](../experiments/results/accepted_cpu_dynamic_text.json) /
 [CPU動的INT8・cacheなし JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json)
 
-完了済みラウンドの比較は357候補・365試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は364候補・372試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -289,6 +289,51 @@ box最大差0.552画素。どちらも検出数1/4/6/4/0は一致した。速度
 
 全機能を併用した[API確認](../experiments/results/api_smoke_refined_cpu_trimmed.json)でも、
 画像状態の再利用・box・しきい値変更・空出力・固定語句への切替・packed maskを通過した。
+
+## 小さい入力で余白の射影を省略する
+
+784などwindowに余白が生じる入力では、`unpadded_projections=True`を選べる。
+QKVのLinearをwindow分割より前に、出力のLinearを余白除去より後に移す。
+Attentionに入るpadding tokenとそのbiasは維持し、実画素のない行の射影だけを省く。
+1008など余白のない入力ではこのオプションは処理を変更しない。既定はFalse。
+
+今回のEPYCでは、画像を小さくするとCPUテキスト処理が全体時間を制限していた。
+CPUを16スレッドにした条件で、余白の射影省略の速度効果が現れた。
+スレッド数はCPUやprompt長に応じて選び、モデル初期化後に設定する。
+
+```python
+from sam3.turing import apply_turing_patch, offload_text_encoder
+from sam3.turing_int8 import apply_int8_patch
+from sam3.turing_refinements import apply_image_refinements
+
+# 新しい画像modelを用意してから設定する。このEPYCで測った例。
+torch.set_num_threads(16)
+processor = apply_turing_patch(
+    Sam3Processor(model, resolution=784), compile=True, text_cache_size=0
+)
+apply_int8_patch(
+    processor, attention_projections=True, fused_mlp=True,
+    asymmetric_gelu=True, optimize_weight_scales=True,
+)
+offload_text_encoder(processor, trim_padding=True)
+apply_image_refinements(processor, unpadded_projections=True)
+```
+
+解像度低下によるマスク差は残る。1008入力を既定とし、この構成は速度を優先する場合に選ぶ。
+
+公開版の784入力の測定は以下。検出数は両方1/4/6/4/0で、比較値は試作と一致した。
+
+| CPUテキスト | ms | allocated GiB | NVML GiB | IoU vs stock | 最小IoU | 変化画素 |
+|---|---:|---:|---:|---:|---:|---:|
+| [FP32・16スレッド](../experiments/results/accepted_unpadded784_cpu_fp32_threads16.json) | 61.58 | 0.692 | 2.173 | 0.971324 | 0.889583 | 9352 |
+| [INT8 MLP・8スレッド](../experiments/results/accepted_unpadded784_cpu_int8_threads8.json) | 58.51 | 0.725 | 2.169 | 0.971532 | 0.892061 | 9374 |
+
+CPU INT8の例を使う場合は、上の例のスレッド数を8に、offloadの呼出しを
+`offload_text_encoder(processor, int8_mlp=True, trim_padding=True)`に変更する。
+1008で同じオプションを有効にした確認では、既存構成と全5条件の比較値が一致した。
+
+784の28 windowブロックへの適用と、CPU INT8・packed mask・画像state再利用・
+幾何prompt・空出力の併用も[API確認](../experiments/results/api_smoke_unpadded784.json)を通過した。
 
 ## 取り込んだ変更
 
