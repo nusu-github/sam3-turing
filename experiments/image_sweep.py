@@ -354,6 +354,8 @@ def run(args):
         if cfg.get("arena"):
             stack.enter_context(mlp_arena(model))
         extra_patches(model, processor, cfg, stack)
+        if hasattr(processor, "_cpu_text_quantization"):
+            result["cpu_text_quantization"] = processor._cpu_text_quantization
 
         def infer(im, text):
             if cfg.get("precision", "fp16") == "bf16":

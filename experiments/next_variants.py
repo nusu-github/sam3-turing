@@ -27,6 +27,14 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("cpu_text_quantize"):
+        from cpu_text_quantize import apply_cpu_text_quantize
+
+        apply_cpu_text_quantize(processor, cfg["cpu_text_quantize"] == "per_channel")
+    if cfg.get("activation_clip"):
+        from activation_clip import apply_activation_clip
+
+        apply_activation_clip(model, stack, *cfg["activation_clip"])
     if cfg.get("vision_window_size"):
         size = cfg["vision_window_size"]
         for block in model.backbone.vision_backbone.trunk.blocks:
