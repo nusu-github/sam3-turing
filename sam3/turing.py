@@ -350,6 +350,7 @@ def apply_turing_patch(
     if compile_text:
         core = model.backbone.language_backbone.encoder.transformer
         core.forward = torch.compile(core.forward, mode="reduce-overhead")
+    processor._turing_compile_text = bool(compile_text)
     processor._turing_patched = True
     return processor
 
@@ -387,4 +388,49 @@ def freeze_text_prompts(processor, prompts):
     import gc
 
     gc.collect()
+    return processor
+
+
+def offload_text_encoder(processor):
+    """Keep arbitrary text prompts while moving their encoder to CPU FP32.
+
+    Apply after the image patch, before inference. Cached prompts reuse GPU
+    features; uncached prompts require CPU encoding and a small transfer.
+    Requires compile_text=False and unquantized text layers. Vision INT8 is
+    compatible. Clear cached text when switching so all features use this path.
+    """
+    if not getattr(processor, "_turing_patched", False):
+        raise ValueError("Apply the Turing image patch first")
+    if getattr(processor, "_turing_cpu_text", False):
+        raise ValueError("The text encoder is already on CPU")
+    if getattr(processor, "_turing_compile_text", False):
+        raise ValueError("CPU text offload requires compile_text=False")
+    model = processor.model
+    if model.training:
+        raise ValueError("CPU text offload is for inference only")
+    backbone = model.backbone
+    text = backbone.language_backbone
+    if text is None:
+        raise ValueError("The text encoder has already been released")
+    if any(hasattr(module, "weight_int8") for module in text.modules()):
+        raise ValueError("CPU text offload cannot use INT8 text layers")
+    text.to(device="cpu", dtype=torch.float32)
+    original = backbone._forward_text_no_ack_ckpt
+
+    def forward(captions, input_boxes=None, additional_text=None, device="cuda"):
+        with torch.autocast("cuda", enabled=False), torch.autocast(
+            "cpu", enabled=False
+        ):
+            output = original(captions, input_boxes, additional_text, device="cpu")
+        return {
+            name: value.to(
+                device=device,
+                dtype=torch.float16 if value.is_floating_point() else value.dtype,
+            )
+            for name, value in output.items()
+        }
+
+    backbone._forward_text_no_ack_ckpt = forward
+    processor._turing_text_cache.clear()
+    processor._turing_cpu_text = True
     return processor

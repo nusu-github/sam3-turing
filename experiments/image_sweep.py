@@ -268,7 +268,7 @@ def run(args):
         "build_seconds": time.perf_counter() - start,
         "build_allocated_bytes": torch.cuda.max_memory_allocated(),
     }
-    if cfg.get("cpu_text"):
+    if cfg.get("cpu_text") or cfg.get("public_cpu_text"):
         result["environment"]["cpu_threads"] = torch.get_num_threads()
         result["environment"]["cpu_model"] = next(
             (
@@ -313,6 +313,10 @@ def run(args):
                     asymmetric_gelu=cfg.get("public_int8_asymmetric", False),
                     weight_only=cfg.get("public_int8_weight_only", False),
                 )
+        if cfg.get("public_cpu_text"):
+            from sam3.turing import offload_text_encoder
+
+            offload_text_encoder(processor)
         if cfg.get("fixed_text"):
             freeze_text_prompts(
                 processor,

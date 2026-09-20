@@ -25,6 +25,9 @@ FP16・INT8・コンパイルの効果は各GPUで個別に比較する。
 | INT8＋Attention射影＋GELU融合 | **85.46** | **1.455** | **2.872** | **0.99742** |
 | 非対称INT8・MLP＋GELU融合 | **89.47** | **1.628** | **3.190** | **0.99848** |
 | 非対称INT8＋Attention射影＋GELU融合 | 85.01 | 1.456 | 2.851 | 0.99805 |
+| CPUテキスト＋FP16・語句cacheあり | 113.39 | 1.202 | 2.370 | 0.99919 |
+| CPUテキスト＋INT8・射影・GELU融合・cacheあり | **84.94** | **0.793** | **2.333** | **0.99742** |
+| CPUテキスト＋INT8・新規語句を毎回処理 | 187.33 | 0.793 | 2.333 | 0.99742 |
 | 固定語句＋FP16 | 114.52 | 1.256 | 2.411 | 0.99921 |
 | 固定語句＋INT8・射影・GELU融合 | **84.18** | **0.850** | **2.401** | **0.99742** |
 | 画像・テキストINT8＋融合・新規語句を毎回処理 | 87.64 | 1.265 | 2.849 | 0.99745 |
@@ -35,9 +38,12 @@ FP16コンパイル版は、素の状態から時間を約46%、GPU全体の使�
 INT8は追加学習なしの任意パッチで、速度・メモリと出力差の交換条件を選べる。
 
 表の通常FP16・MLPのINT8・素の状態はRound 14、GELU融合・語句の追加比較はRound 18。
-非対称INT8の2行はRound 32、重みのみINT8はRound 34の公開API測定。
+非対称INT8の2行はRound 32、重みのみINT8はRound 34、CPUテキストはRound 42の公開API測定。
 コンパイルなしは変更のない経路のRound 10値。
-新規語句の行は `text_cache_size=0, compile_text=True`。
+GPUで新規語句を毎回処理する行は `text_cache_size=0, compile_text=True`。
+CPUテキストは `compile_text=False`、AMD EPYC 7763を4スレッドで使った。
+CPU uncachedは試作146.64ms・公開版187.33msと変動した。公開版9回は147〜211ms。
+CPU時間を含むため、語句が毎回変わる用途ではこの待ち時間も選択基準になる。
 GELU融合なしでAttention射影だけを追加した公開版は90.19ms・NVML 2.854GiBだった。
 
 速度は `truck.jpg` + `truck` の `set_image` + `set_text_prompt` 全体。
@@ -58,6 +64,8 @@ Attention射影もINT8にする非対称版は **735画素（0.00407%）**、sco
 box最大差 **1.44画素**だった。マスク差が減る一方、box差は構成によって増える。
 重みのみINT8・射影込みは **389画素（0.00216%）**、score最大差 **0.00537**、
 box最大差 **0.51画素**だった。これらも検出数は同じ。
+CPUテキストのFP16画像版は289画素、INT8画像版は915画素変化し、検出数は同じだった。
+後者のscore最大差0.00830、box最大差0.51画素。
 boxの対応付け後にマスクを比較した。正解ラベルに対する精度評価ではない。
 
 コンパイルの初回推論は、今回のキャッシュ状態でFP16が約20.5秒、MLPのINT8が約22.3秒だった。
@@ -65,6 +73,7 @@ Round 13で新しい検出Graphをコンパイルした際は約48秒かかっ�
 新しいINT8＋GELU融合Graphは約55〜57秒、同系統のキャッシュを使った固定語句版は約21秒だった。
 非対称INT8の公開版はMLPのみ約63秒、Attention射影込み約37秒だった。
 重みのみINT8の公開版は、今回のキャッシュ状態で約23秒だった。
+CPUテキスト版も約21〜23秒だった。
 
 FlashAttentionを使わずefficient Attentionに固定した3090上の更新版は、
 FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892GiBだった。
@@ -78,9 +87,12 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [固定語句INT8 JSON](../experiments/results/compact_fixed_all_int8.json) /
 [非対称INT8・MLP JSON](../experiments/results/accepted_asymmetric_mlp.json) /
 [非対称INT8・射影 JSON](../experiments/results/accepted_asymmetric_attention.json) /
-[重みのみINT8 JSON](../experiments/results/accepted_weight_only_attention.json)
+[重みのみINT8 JSON](../experiments/results/accepted_weight_only_attention.json) /
+[CPUテキスト＋FP16 JSON](../experiments/results/accepted_cpu_text_fp16.json) /
+[CPUテキスト＋INT8 JSON](../experiments/results/accepted_cpu_text_int8.json) /
+[CPUテキストuncached JSON](../experiments/results/accepted_cpu_text_int8_uncached.json)
 
-完了済みラウンドの比較は225候補・230試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は234候補・239試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -120,6 +132,22 @@ freeze_text_prompts(processor, ["truck", "wheel", "person", "visual"])
 
 その後は未登録の語句がエラーになる。幾何boxだけの指定には `visual` を含める。
 
+自由な語句を使いながらVRAMを減らす場合は、最初の画像推論の前にテキストエンコーダーを
+CPUへ移せる。`compile_text=False`（既定）で作成し、次を追加する。
+
+```python
+from sam3.turing import offload_text_encoder
+
+offload_text_encoder(processor)
+```
+
+語句はCPUのFP32で処理し、特徴だけGPUへ戻す。同じ語句は既存のLRUキャッシュから再利用する。
+新規語句を処理するときの時間は増える。画像側のINT8やpacked masksと組み合わせられるが、
+テキスト側のINT8（`text=True`）と`compile_text=True`には併用しない。
+固定語句への制限はなく、幾何box用の`visual`も必要になった時点で処理する。
+CPU側には約1.32GiBのテキスト重みを保持する。画像状態の再利用・box・packed出力・
+固定語句への切替も[API確認](../experiments/results/api_smoke_cpu_text.json)で通過した。
+
 速度優先で解像度を下げる場合は、processor作成時に指定する。パッチがRoPEも調整する。
 マスクの形状差が大きくなるため、標準値は1008のままにした。
 今回の最適化を組み合わせた試作では784が93.39ms、672が66.04ms。
@@ -141,7 +169,7 @@ processor = apply_turing_patch(Sam3Processor(model, resolution=784), compile=Tru
   processorが使う4配列をCUDA Graphの外でcloneし、次の推論による上書きを防ぐ。
   box promptや早期query選別には段ごとのコンパイル経路を使う。
   直接modelを呼ぶ場合は元の出力辞書を返す。
-- 任意でテキストTransformerをコンパイル。
+- 任意でテキストTransformerをコンパイル。自由な語句を残す省VRAM用途ではCPUへ移動。
 
 融合MLP、GELU近似、channels-last、PixelDecoderのin-place化、早期query選別を
 個別・組み合わせで試したが、最終構成への追加効果は小さかった。

@@ -16,7 +16,8 @@ CONFIGS = [
     ("INT8 MLP", "r14_int8_control"),
     ("Asymmetric INT8 MLP + fused GELU", "accepted_asymmetric_mlp"),
     ("INT8 + projections + fused GELU", "accepted_fused_attention"),
-    ("Same, fixed text vocabulary", "compact_fixed_all_int8"),
+    ("INT8 + CPU text encoder/cache", "accepted_cpu_text_int8"),
+    ("INT8 + fixed text vocabulary", "compact_fixed_all_int8"),
 ]
 
 
@@ -46,7 +47,7 @@ def main():
     fig, axes = plt.subplots(
         1,
         3,
-        figsize=(12, 4.6),
+        figsize=(12, 5.0),
         sharey=True,
         gridspec_kw={"width_ratios": [1.3, 1.1, 1]},
     )
@@ -57,6 +58,7 @@ def main():
         "#38a169",
         "#319795",
         "#16806a",
+        "#b7791f",
         "#805ad5",
     ]
     for ax, column, title, maximum in zip(

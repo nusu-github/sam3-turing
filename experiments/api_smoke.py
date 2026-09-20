@@ -35,7 +35,12 @@ model = build_sam3_image_model(
 ).eval()
 torch.set_num_threads(4)
 p = apply_turing_patch(
-    Sam3Processor(model), compile=True, compile_text=True, packed_masks=True
+    Sam3Processor(model),
+    compile=True,
+    compile_text=args.config.get(
+        "public_compile_text", not args.config.get("public_cpu_text", False)
+    ),
+    packed_masks=True,
 )
 if args.config.get("public_int8"):
     from sam3.turing_int8 import apply_int8_patch
@@ -48,6 +53,20 @@ if args.config.get("public_int8"):
         asymmetric_gelu=args.config.get("public_int8_asymmetric", False),
         weight_only=args.config.get("public_int8_weight_only", False),
     )
+if args.config.get("public_cpu_text"):
+    from sam3.turing import offload_text_encoder
+    from sam3.turing_int8 import apply_int8_patch
+
+    offload_text_encoder(p)
+    assert all(
+        x.device.type == "cpu" for x in model.backbone.language_backbone.parameters()
+    )
+    try:
+        apply_int8_patch(p, vision=False, text=True)
+    except ValueError as exc:
+        assert "CPU text" in str(exc)
+    else:
+        raise AssertionError("CPU text accepted incompatible INT8 conversion")
 stack = ExitStack()
 if args.config:
     from next_variants import apply_next_variants

@@ -204,6 +204,8 @@ def apply_int8_patch(
         raise ValueError("Apply the Turing image patch first")
     if not vision and not text and not attention_projections:
         raise ValueError("Select vision MLPs, text MLPs and/or attention projections")
+    if text and getattr(processor, "_turing_cpu_text", False):
+        raise ValueError("CPU text offload cannot use INT8 text layers")
     model = processor.model
     if model.training:
         raise ValueError("INT8 MLPs are for inference only")

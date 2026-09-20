@@ -68,6 +68,44 @@ def quantize(x):
     return q, scale
 
 
+@triton.jit
+def _quantize_asymmetric(
+    x, q, scale_out, zero_out, K: tl.constexpr, BLOCK: tl.constexpr
+):
+    row = tl.program_id(0)
+    col = tl.arange(0, BLOCK)
+    y = tl.load(x + row * K + col, col < K, 0).to(tl.float32)
+    lo = tl.minimum(tl.min(tl.where(col < K, y, float("inf")), 0), 0.0)
+    hi = tl.maximum(tl.max(tl.where(col < K, y, -float("inf")), 0), 0.0)
+    scale = tl.maximum(hi - lo, 1e-8) / 255.0
+    zero = tl.minimum(
+        tl.maximum(libdevice.nearbyint(-lo / scale) - 128.0, -128.0), 127.0
+    )
+    values = tl.minimum(
+        tl.maximum(libdevice.nearbyint(y / scale) + zero, -128.0), 127.0
+    )
+    tl.store(q + row * K + col, values.to(tl.int8), col < K)
+    tl.store(scale_out + row, scale)
+    tl.store(zero_out + row, zero.to(tl.int32))
+
+
+def asymmetric_fc2(hidden, linear):
+    rows, cols = hidden.shape
+    padded = max(32, triton.cdiv(rows, 16) * 16)
+    if padded != rows:
+        hidden = torch.nn.functional.pad(hidden, (0, 0, 0, padded - rows))
+    q = torch.empty_like(hidden, dtype=torch.int8)
+    scale = torch.empty(padded, device=hidden.device, dtype=torch.float32)
+    zero = torch.empty(padded, device=hidden.device, dtype=torch.int32)
+    _quantize_asymmetric[(padded,)](
+        hidden, q, scale, zero, cols, triton.next_power_of_2(cols), num_warps=4
+    )
+    mm = torch._int_mm(q, linear.weight_int8.T)
+    mm = mm - zero[:, None] * linear.weight_sum[None, :]
+    out = (mm.float() * scale[:, None]) * linear.weight_scale[None, :] + linear.bias
+    return out[:rows].half()
+
+
 def matmul(q, scale, linear, tile, gelu=False):
     rows, cols = q.shape
     out = torch.empty((rows, linear.out_features), device=q.device, dtype=torch.float16)
@@ -93,9 +131,15 @@ def matmul(q, scale, linear, tile, gelu=False):
     return out
 
 
-def apply_fused_int8_gemm(model, stack, tile, fc2=True):
+def apply_fused_int8_gemm(model, stack, tile, fc2=True, asymmetric=False):
+    if asymmetric and fc2:
+        raise ValueError("Asymmetric candidate currently fuses fc1 only")
     for block in model.backbone.vision_backbone.trunk.blocks:
         mlp = block.mlp
+        if asymmetric and not hasattr(mlp.fc2, "weight_sum"):
+            mlp.fc2.register_buffer(
+                "weight_sum", mlp.fc2.weight_int8.sum(1, dtype=torch.int32)
+            )
 
         def forward(x, mlp=mlp):
             shape = x.shape
@@ -106,7 +150,9 @@ def apply_fused_int8_gemm(model, stack, tile, fc2=True):
                 )
             q, scale = quantize(flat)
             hidden = matmul(q, scale, mlp.fc1, tile, gelu=True)
-            if fc2:
+            if asymmetric:
+                out = asymmetric_fc2(hidden, mlp.fc2)
+            elif fc2:
                 q, scale = quantize(hidden)
                 out = matmul(q, scale, mlp.fc2, tile)
             else:

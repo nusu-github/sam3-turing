@@ -1,0 +1,21 @@
+{
+  "config": {
+    "public_cpu_text": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true
+  },
+  "truck_count": 1,
+  "bag_count": 4,
+  "image_state_reuse": true,
+  "direct_model_output_preserved": true,
+  "geometric_count": 1,
+  "text_parameter_bytes_before_freeze": 1414898688,
+  "allocated_bytes_released_by_freeze": 0,
+  "frozen_count": 1,
+  "unknown_frozen_prompt_rejected": true,
+  "strided_pack_changed_pixels": 0,
+  "autocast_restored": true,
+  "threshold_empty": true,
+  "reset_clears_packed_output": true
+}
