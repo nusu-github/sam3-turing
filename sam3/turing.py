@@ -391,13 +391,15 @@ def freeze_text_prompts(processor, prompts):
     return processor
 
 
-def offload_text_encoder(processor):
-    """Keep arbitrary text prompts while moving their encoder to CPU FP32.
+def offload_text_encoder(processor, *, int8_mlp=False):
+    """Keep arbitrary text prompts while moving their encoder to CPU.
 
     Apply after the image patch, before inference. Cached prompts reuse GPU
     features; uncached prompts require CPU encoding and a small transfer.
-    Requires compile_text=False and unquantized text layers. Vision INT8 is
+    Requires compile_text=False and unquantized GPU text layers. Vision INT8 is
     compatible. Clear cached text when switching so all features use this path.
+    CPU computation is FP32 by default. int8_mlp=True dynamically quantizes only
+    the CPU text MLPs, trading output differences for faster uncached prompts.
     """
     if not getattr(processor, "_turing_patched", False):
         raise ValueError("Apply the Turing image patch first")
@@ -413,8 +415,15 @@ def offload_text_encoder(processor):
     if text is None:
         raise ValueError("The text encoder has already been released")
     if any(hasattr(module, "weight_int8") for module in text.modules()):
-        raise ValueError("CPU text offload cannot use INT8 text layers")
+        raise ValueError("CPU text offload cannot use CUDA INT8 text layers")
     text.to(device="cpu", dtype=torch.float32)
+    if int8_mlp:
+        from torch.ao.quantization import default_dynamic_qconfig, quantize_dynamic
+
+        for block in text.encoder.transformer.resblocks:
+            quantize_dynamic(
+                block.mlp, {nn.Linear: default_dynamic_qconfig}, inplace=True
+            )
     original = backbone._forward_text_no_ack_ckpt
 
     def forward(captions, input_boxes=None, additional_text=None, device="cuda"):
@@ -433,4 +442,5 @@ def offload_text_encoder(processor):
     backbone._forward_text_no_ack_ckpt = forward
     processor._turing_text_cache.clear()
     processor._turing_cpu_text = True
+    processor._turing_cpu_text_int8 = bool(int8_mlp)
     return processor

@@ -132,6 +132,11 @@ def matmul(q, scale, linear, tile, gelu=False):
 
 
 def apply_fused_int8_gemm(model, stack, tile, fc2=True, asymmetric=False):
+    if torch.cuda.get_device_capability(next(model.parameters()).device) < (8, 0):
+        raise ValueError(
+            "This experimental INT8 GEMM needs SM80+ with the tested Triton; "
+            "use the public torch._int_mm path on Turing"
+        )
     if asymmetric and fc2:
         raise ValueError("Asymmetric candidate currently fuses fc1 only")
     for block in model.backbone.vision_backbone.trunk.blocks:

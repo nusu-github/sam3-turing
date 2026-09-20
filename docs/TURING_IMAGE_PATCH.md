@@ -27,6 +27,8 @@ FP16・INT8・コンパイルの効果は各GPUで個別に比較する。
 | 非対称INT8＋Attention射影＋GELU融合 | 85.01 | 1.456 | 2.851 | 0.99805 |
 | 同＋重みスケール調整 | 86.91 | 1.456 | 2.851 | 0.99807 |
 | 同＋重み調整＋CPUテキスト・cacheあり | **86.30** | **0.793** | **2.368** | **0.99806** |
+| 同＋CPUテキストMLPもINT8・cacheあり | 84.79 | 0.793 | 2.368 | 0.99779 |
+| 同＋CPUテキストMLPもINT8・新規語句を毎回処理 | **100.80** | **0.793** | **2.345** | **0.99779** |
 | CPUテキスト＋FP16・語句cacheあり | 113.39 | 1.202 | 2.370 | 0.99919 |
 | CPUテキスト＋INT8・射影・GELU融合・cacheあり | **84.94** | **0.793** | **2.333** | **0.99742** |
 | CPUテキスト＋INT8・新規語句を毎回処理 | 187.33 | 0.793 | 2.333 | 0.99742 |
@@ -71,6 +73,8 @@ CPUテキストのFP16画像版は289画素、INT8画像版は915画素変化し
 後者のscore最大差0.00830、box最大差0.51画素。
 非対称INT8＋重み調整は697画素・score最大差0.00391・box最大差0.57画素。
 CPUテキストも組み合わせると698画素となり、検出数は両方とも同じだった。
+CPUのテキストMLPもINT8にした場合は922画素・score最大差0.02051・box最大差0.52画素。
+キャッシュあり・なしとも全5条件の比較値は同じで、検出数も一致した。
 boxの対応付け後にマスクを比較した。正解ラベルに対する精度評価ではない。
 
 コンパイルの初回推論は、今回のキャッシュ状態でFP16が約20.5秒、MLPのINT8が約22.3秒だった。
@@ -85,6 +89,11 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 検出数は同じで、後者の平均mask IoUは0.997066。
 これはAttention経路の確認であり、Turing実機の速度測定ではない。
 
+公開モジュール内の7種類のTriton kernelは、Triton 3.5.0でsm75向けのオフラインcompileに通過した。
+実験用の独自INT8 GEMMはsm75のloweringで失敗したため、公開パッチには採用していない。
+公開INT8の行列積は引き続き`torch._int_mm`を使用する。この確認もTuring実機の動作・速度の確認ではない。
+[compile結果](../experiments/results/sm75_compile_check.json)
+
 [全候補の表](../experiments/results/README.md) / [CSV](../experiments/results/summary.csv) /
 [採用FP16 JSON](../experiments/results/r14_fp16_control.json) /
 [採用INT8 JSON](../experiments/results/r14_int8_control.json) /
@@ -97,9 +106,11 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [CPUテキスト＋INT8 JSON](../experiments/results/accepted_cpu_text_int8.json) /
 [CPUテキストuncached JSON](../experiments/results/accepted_cpu_text_int8_uncached.json) /
 [重み調整＋非対称INT8 JSON](../experiments/results/accepted_optimized_asymmetric.json) /
-[同＋CPUテキスト JSON](../experiments/results/accepted_optimized_asymmetric_cpu.json)
+[同＋CPUテキスト JSON](../experiments/results/accepted_optimized_asymmetric_cpu.json) /
+[CPU動的INT8・cacheあり JSON](../experiments/results/accepted_cpu_dynamic_text.json) /
+[CPU動的INT8・cacheなし JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json)
 
-完了済みラウンドの比較は265候補・270試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は279候補・284試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -154,6 +165,27 @@ offload_text_encoder(processor)
 固定語句への制限はなく、幾何box用の`visual`も必要になった時点で処理する。
 CPU側には約1.32GiBのテキスト重みを保持する。画像状態の再利用・box・packed出力・
 固定語句への切替も[API確認](../experiments/results/api_smoke_cpu_text.json)で通過した。
+
+新規語句の待ち時間とCPUの重み容量を減らす場合は、CPUテキストMLPも動的INT8にできる。
+既定のCPU FP32と出力が変わるため、明示的な追加設定にしている。
+
+```python
+offload_text_encoder(processor, int8_mlp=True)
+```
+
+48個のテキストMLP LinearだけをCPUのper-tensor動的INT8へ変換する。
+Attention・単語埋め込み・resizerはCPU FP32。`apply_int8_patch(..., text=True)`による
+GPUテキストINT8とは別の設定で、両者は併用しない。語句cacheと固定語句への切替は維持する。
+速度はCPUとスレッド数にも依存する。このコンテナではAMD EPYC 7763・4スレッド・
+PyTorchのx86量子化backendを使用した。
+
+公開版は語句cacheあり84.79ms、cacheなし100.80ms。直前の同じ画像側構成の
+CPU FP32・cacheなし155.84msから約35%短縮した。CPUの通常parameterと量子化重み/biasの
+合計は約1.32GiB→0.76GiBになった。プロセスRSSを表す値ではない。
+検出数は1/4/6/4/0、平均mask IoU 0.997790、922画素が変化した。
+[公開版JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json) /
+[FP32との比較](../experiments/round48.json) /
+[画像状態・box・固定語句・packed maskの確認](../experiments/results/api_smoke_cpu_dynamic_text.json)
 
 速度優先で解像度を下げる場合は、最初のprocessor作成時に指定する。パッチがRoPEも調整する。
 標準値は1008を維持し、縮小はマスク形状との交換条件として選ぶ。

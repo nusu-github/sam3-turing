@@ -31,6 +31,10 @@ def apply_next_variants(model, processor, cfg, stack):
         from cpu_text_quantize import apply_cpu_text_quantize
 
         apply_cpu_text_quantize(processor, cfg["cpu_text_quantize"] == "per_channel")
+    if cfg.get("cpu_text_trim"):
+        from cpu_text_trim import apply_cpu_text_trim
+
+        apply_cpu_text_trim(processor, stack, cfg["cpu_text_trim"])
     if cfg.get("activation_clip"):
         from activation_clip import apply_activation_clip
 
@@ -53,6 +57,16 @@ def apply_next_variants(model, processor, cfg, stack):
             ).to(attn.freqs_cis.device)
             attn.freqs_cis_real = attn.freqs_cis.real
             attn.freqs_cis_imag = attn.freqs_cis.imag
+    if cfg.get("unpadded_projections"):
+        from unpadded_projections import apply_unpadded_projections
+
+        apply_unpadded_projections(
+            model,
+            processor.resolution // 14,
+            stack,
+            qkv=cfg.get("unpadded_qkv", True),
+            projection=cfg.get("unpadded_output", True),
+        )
     if cfg.get("decoder_layer_indices"):
         decoder = model.transformer.decoder
         indices = cfg["decoder_layer_indices"]

@@ -1,0 +1,65 @@
+{
+  "r53_optimized_cpu_control": {
+    "final": true,
+    "compile": true,
+    "public_cpu_text": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "public_int8_asymmetric": true,
+    "public_int8_optimize_scales": true
+  },
+  "combined_standard_decoder": {
+    "final": true,
+    "compile": true,
+    "public_cpu_text": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "public_int8_asymmetric": true,
+    "public_int8_optimize_scales": true,
+    "decoder_half_ffn": true
+  },
+  "combined_standard_neck_normalize": {
+    "final": true,
+    "compile": true,
+    "public_cpu_text": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "public_int8_asymmetric": true,
+    "public_int8_optimize_scales": true,
+    "decoder_half_ffn": true,
+    "compile_image_neck": true,
+    "fast_normalize": "fp32"
+  },
+  "combined_standard_static_head": {
+    "final": true,
+    "compile": true,
+    "public_cpu_text": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "public_int8_asymmetric": true,
+    "public_int8_optimize_scales": true,
+    "decoder_half_ffn": true,
+    "compile_image_neck": true,
+    "fast_normalize": "fp32",
+    "fold": "static"
+  },
+  "combined_standard_half_residual": {
+    "final": true,
+    "compile": true,
+    "public_cpu_text": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "public_int8_asymmetric": true,
+    "public_int8_optimize_scales": true,
+    "decoder_half_ffn": true,
+    "compile_image_neck": true,
+    "fast_normalize": "fp32",
+    "fold": "static",
+    "half_block_output": true
+  }
+}

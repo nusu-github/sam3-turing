@@ -1,0 +1,73 @@
+{
+  "r49_resolution1008_control": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 1008
+  },
+  "unpadded_projection_resolution1008": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 1008,
+    "unpadded_projections": true
+  },
+  "r49_resolution896_control": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 896
+  },
+  "unpadded_projection_resolution896": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 896,
+    "unpadded_projections": true
+  },
+  "r49_resolution784_control": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 784
+  },
+  "unpadded_projection_resolution784": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 784,
+    "unpadded_projections": true
+  },
+  "unpadded_qkv_resolution784": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 784,
+    "unpadded_projections": true,
+    "unpadded_output": false
+  },
+  "unpadded_output_resolution784": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 784,
+    "unpadded_projections": true,
+    "unpadded_qkv": false
+  }
+}

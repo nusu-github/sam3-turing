@@ -18,6 +18,10 @@ def apply_cpu_text_quantize(processor, per_channel=False):
     for block in text.encoder.transformer.resblocks:
         quantize_dynamic(block.mlp, {nn.Linear: qconfig}, inplace=True)
     processor._turing_text_cache.clear()
+    processor._cpu_text_quantization = quantized_text_stats(text, per_channel)
+
+
+def quantized_text_stats(text, per_channel=False):
     quantized = list(
         m for m in text.modules() if isinstance(m, torch.ao.nn.quantized.dynamic.Linear)
     )
@@ -28,7 +32,7 @@ def apply_cpu_text_quantize(processor, per_channel=False):
         stored += weight.numel() * weight.element_size()
         if bias is not None:
             stored += bias.numel() * bias.element_size()
-    processor._cpu_text_quantization = {
+    return {
         "engine": torch.backends.quantized.engine,
         "per_channel": per_channel,
         "linear_layers": len(quantized),

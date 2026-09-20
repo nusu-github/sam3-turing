@@ -634,6 +634,8 @@ windowを調整してpaddingを減らす案も比較する。これはAttention�
 GELU後は既存の非対称量子化の上端だけを0.995 / 0.99倍にする。
 追加の画像較正は行わず、速度・5条件の出力差・検出数を比較する。
 重みスケール最適化＋非対称GELUを基準とし、倍率1の置換確認も含める。
+Sciteで参照した[FQ-ViT](https://arxiv.org/abs/2111.13824)にもViTでのclippingの扱いがあるが、
+ここではpercentile較正や論文の量子化方式は使わず、各token最大値の倍率だけを試す。
 
 ## Round 48の候補：CPUテキストMLPの動的INT8
 
@@ -664,3 +666,87 @@ childを検出できず1/4/0/3/0となる。IoUは対応マスクだけの集計
 最小IoU 0.88517→0.90596、box最大差8.63→7.99画素だった。検出数1/4/6/4/0を維持。
 低解像度の速度候補として保存し、公開パッチの標準窓24は変更しない。
 次は窓の範囲を維持したまま、padding領域のQKV・出力射影だけを省けるかを調べる。
+
+## Round 49の候補：padding位置の射影を省く
+
+window Attentionの窓24・RoPE・Key/Valueの数を維持し、QKVをwindow分割の前、
+出力射影をwindow結合の後へ移す。低解像度で生じるpadding位置のLinearを省く狙い。
+padding位置のQKVはゼロではなくQKV biasを補う。実tokenは元と同じ窓でAttentionを行う。
+1008・896・784の基準と比較し、784ではQKV移動のみ・出力射影移動のみも分けて測る。
+演算順とGEMM形状が変わるため、実際の出力差は計測して判断する。
+
+## Round 50の候補：CPUテキストのスレッド数
+
+新規語句を毎回処理するCPU INT8版について、既定4スレッドと1 / 2 / 8を比較する。
+CPU初期化は引き続き1スレッド、推論時だけ変更する。CPUの設定は公開パッチからは変更せず、
+このコンテナでの選択肢として時間と出力差を記録する。
+
+## Round 48：CPUテキストMLPの動的INT8
+
+| CPUテキスト | cache | ms | 平均IoU vs stock | 変化画素 |
+|---|---|---:|---:|---:|
+| FP32 | あり | 85.02 | 0.998065 | 698 |
+| FP32 | なし | 155.84 | 0.998065 | 698 |
+| per_tensor | あり | 85.78 | 0.997790 | 922 |
+| per_tensor | なし | 107.00 | 0.997790 | 922 |
+| per_channel | あり | 86.20 | 0.997815 | 888 |
+| per_channel | なし | 118.68 | 0.997815 | 888 |
+
+全設定で1/4/6/4/0。CUDA allocated 0.793〜0.795GiB、NVML 2.337〜2.537GiB。
+CPUのx86 backend・4スレッドで48個のMLP Linearを動的INT8化した。
+CPUの通常parameter＋展開した量子化重み/biasの容量は1,414,898,688→810,918,912 bytes。
+プロセスRSSやpacked表現の管理領域を測った値ではない。
+per-tensorは新規語句155.84→107.00ms。score最大差0.02051、box最大差0.523画素。
+per-channelは118.68ms。score最大差0.02441、box最大差0.525画素だった。
+マスク差の差は小さく、今回速かったper-tensorを任意の公開設定に選ぶ。
+`offload_text_encoder(processor, int8_mlp=True)`として組み込み、Round 51で公開版を確認する。
+既定のCPU FP32と、GPU用のtext=Trueは変更しない。
+
+## Round 52の候補：CPUテキストのpadding tokenを省く
+
+EOSまでのtokenを8の倍数または実長へ切り詰め、CPUテキストencoderを処理する。
+元の32 tokenへゼロpaddingしてから返すため、GPU側のTensor形状とtoken maskは維持する。
+実tokenは因果Attentionで後方paddingを参照しない。CPU FP32と動的INT8を別々に測る。
+INT8では入力全体の量子化範囲も変わるため、マスク差を実測して判断する。
+Round 7のtokenizer全体を短縮する案と違い、後段のGPU形状は変えない。
+
+## Round 41：fc1融合のタイルと非対称GELU
+
+| 構成 | ms | allocated GiB | NVML GiB | 変化画素 |
+|---|---:|---:|---:|---:|
+| r41_fused_attention_control | 86.78 | 1.455 | 2.831 | 916 |
+| epilogue_fc1_large | 83.21 | 1.457 | 2.938 | 916 |
+| epilogue_fc1_wide | 83.92 | 1.456 | 2.919 | 916 |
+| r41_asymmetric_control | 85.75 | 1.455 | 2.831 | 735 |
+| epilogue_fc1_asymmetric | 83.14 | 1.456 | 2.890 | 735 |
+| epilogue_fc1_large_asymmetric | 83.64 | 1.455 | 2.901 | 735 |
+
+対称版の大タイルは86.77→83.21ms、非対称版の小タイルは85.75→83.14ms。
+4つの融合候補は、それぞれ対応する基準と全5条件の比較辞書が一致した。
+マスク指標だけでなくscore・box・probability差も同じで、検出数は1/4/6/4/0。
+新しいタイルの初回コンパイルには時間がかかる。大タイル対称版は今回約70秒だった。
+GPUメモリはわずかに増えるため、Round 45で他の改善と組み合わせてから採用を判断する。
+
+## sm75のオフラインcompileとRound 53
+
+Triton 3.5.0でCUDA_VISIBLE_DEVICESを空にし、sm75向けのcompileだけを確認した。
+独自INT8 GEMMの64×128 / 128×128タイルは、INT8 dotのloweringで`arith.extf`型エラーになる。
+3090での速度・出力の測定は有効だが、この候補をTuring用の公開パッチへは入れない。
+実験helperはsm80未満で理由を示して停止する。
+Round 45の融合GEMMを含む組合せはAmpere向け候補として保留し、Round 53では
+既存のtorch._int_mmを使い、decoder FP16・neck compile・正規化・head射影再結合・
+残差half保持の組合せを測る。オフラインcompileはTuring実機の動作や速度の測定ではない。
+
+## Round 51：CPUテキストINT8の公開版
+
+公開APIからcacheあり84.79ms・NVML 2.368GiB、cacheなし100.80ms・NVML 2.345GiB。
+allocatedはともに0.793GiBで、試作per-tensor版と5条件の比較辞書が一致した。
+検出数1/4/6/4/0、平均IoU 0.997790、922画素、score差0.02051、box差0.523画素。
+CPU FP32・新規語句155.84msに対し約35%短縮した。
+API smokeは画像A→B→A、box、しきい値変更、空出力、固定語句への切替、直接model呼出し、
+autocast復元を通過。48個のCPU INT8 Linearも確認し、非連続strideのbitpack差は0だった。
+`int8_mlp=True`を任意設定として採用し、単独パッチも更新した。
+
+sm75向けの追加compile確認では、公開の量子化・GELU/非対称GELU・FP16/FP32 mask resize+pack・
+pack・unpackの7カーネルが通過した。独自INT8 GEMMの2タイルは失敗したままで、
+RTX 3090の候補として保存する。sm75実機での実行確認は行っていない。

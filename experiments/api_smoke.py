@@ -62,10 +62,17 @@ if args.config.get("public_cpu_text"):
     from sam3.turing import offload_text_encoder
     from sam3.turing_int8 import apply_int8_patch
 
-    offload_text_encoder(p)
+    offload_text_encoder(p, int8_mlp=args.config.get("public_cpu_text_int8", False))
     assert all(
         x.device.type == "cpu" for x in model.backbone.language_backbone.parameters()
     )
+    if args.config.get("public_cpu_text_int8"):
+        assert all(
+            module.weight().device.type == "cpu"
+            and module.weight().dtype == torch.qint8
+            for module in model.backbone.language_backbone.modules()
+            if isinstance(module, torch.ao.nn.quantized.dynamic.Linear)
+        )
     try:
         apply_int8_patch(p, vision=False, text=True)
     except ValueError as exc:
@@ -94,6 +101,12 @@ result = {
     "bag_count": len(b["scores"]),
     "image_state_reuse": True,
 }
+if args.config.get("public_cpu_text_int8"):
+    result["cpu_text_int8_linears"] = sum(
+        isinstance(module, torch.ao.nn.quantized.dynamic.Linear)
+        for module in model.backbone.language_backbone.modules()
+    )
+    assert result["cpu_text_int8_linears"] == 48
 with torch.inference_mode(), torch.autocast(
     "cuda", dtype=torch.float16, cache_enabled=False
 ):

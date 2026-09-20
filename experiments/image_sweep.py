@@ -260,7 +260,7 @@ def run(args):
     model = build_sam3_image_model(
         checkpoint_path=args.checkpoint, load_from_HF=False
     ).eval()
-    torch.set_num_threads(4)
+    torch.set_num_threads(cfg.get("cpu_threads", 4))
     result = {
         "name": args.name,
         "config": cfg,
@@ -327,7 +327,15 @@ def run(args):
         if cfg.get("public_cpu_text"):
             from sam3.turing import offload_text_encoder
 
-            offload_text_encoder(processor)
+            offload_text_encoder(
+                processor, int8_mlp=cfg.get("public_cpu_text_int8", False)
+            )
+            if cfg.get("public_cpu_text_int8"):
+                from cpu_text_quantize import quantized_text_stats
+
+                result["cpu_text_quantization"] = quantized_text_stats(
+                    model.backbone.language_backbone
+                )
         if cfg.get("fixed_text"):
             freeze_text_prompts(
                 processor,

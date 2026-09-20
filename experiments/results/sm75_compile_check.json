@@ -1,0 +1,85 @@
+{
+  "target": "sm75",
+  "triton": "3.5.0",
+  "gpu_execution": false,
+  "note": "Offline compilation only, not runtime compatibility or performance on RTX20/GTX16.",
+  "checks": [
+    {
+      "name": "public_quantize",
+      "compiled": true,
+      "cubin_bytes": 11104,
+      "shared_bytes": 16,
+      "contains_mma_sync": false,
+      "contains_dp4a": false,
+      "seconds": 0.5624008909799159
+    },
+    {
+      "name": "public_gelu_quantize",
+      "compiled": true,
+      "cubin_bytes": 111152,
+      "shared_bytes": 32,
+      "contains_mma_sync": false,
+      "contains_dp4a": false,
+      "seconds": 0.33580288803204894
+    },
+    {
+      "name": "public_gelu_asymmetric",
+      "compiled": true,
+      "cubin_bytes": 206256,
+      "shared_bytes": 16,
+      "contains_mma_sync": false,
+      "contains_dp4a": false,
+      "seconds": 0.5808163611218333
+    },
+    {
+      "name": "public_resize_pack_fp16",
+      "compiled": true,
+      "cubin_bytes": 51944,
+      "shared_bytes": 0,
+      "contains_mma_sync": false,
+      "contains_dp4a": false,
+      "seconds": 0.2048701390158385
+    },
+    {
+      "name": "public_resize_pack_fp32",
+      "compiled": true,
+      "cubin_bytes": 56808,
+      "shared_bytes": 0,
+      "contains_mma_sync": false,
+      "contains_dp4a": false,
+      "seconds": 0.21642971807159483
+    },
+    {
+      "name": "public_pack",
+      "compiled": true,
+      "cubin_bytes": 11872,
+      "shared_bytes": 128,
+      "contains_mma_sync": false,
+      "contains_dp4a": false,
+      "seconds": 0.07662338600493968
+    },
+    {
+      "name": "public_unpack",
+      "compiled": true,
+      "cubin_bytes": 9704,
+      "shared_bytes": 0,
+      "contains_mma_sync": false,
+      "contains_dp4a": false,
+      "seconds": 0.055449527921155095
+    },
+    {
+      "name": "int8_fc1_64x128",
+      "compiled": false,
+      "error_type": "RuntimeError",
+      "error": "PassManager::run failed",
+      "seconds": 0.05952959111891687
+    },
+    {
+      "name": "int8_fc1_128x128",
+      "compiled": false,
+      "error_type": "RuntimeError",
+      "error": "PassManager::run failed",
+      "seconds": 0.05724739097058773
+    }
+  ]
+}
