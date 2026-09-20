@@ -13,6 +13,7 @@ CONFIGS = [
     ("Stock BF16", "r14_stock_control"),
     ("Patched FP16", "r14_fp16_control"),
     ("INT8 MLP", "r14_int8_control"),
+    ("Asymmetric INT8 MLP + fused GELU", "accepted_asymmetric_mlp"),
     ("INT8 + projections + fused GELU", "accepted_fused_attention"),
     ("Same, fixed text vocabulary", "compact_fixed_all_int8"),
 ]
@@ -44,11 +45,11 @@ def main():
     fig, axes = plt.subplots(
         1,
         3,
-        figsize=(12, 3.8),
+        figsize=(12, 4.2),
         sharey=True,
         gridspec_kw={"width_ratios": [1.3, 1.1, 1]},
     )
-    colors = ["#718096", "#2b6cb0", "#38a169", "#16806a", "#805ad5"]
+    colors = ["#718096", "#2b6cb0", "#38a169", "#319795", "#16806a", "#805ad5"]
     for ax, column, title, maximum in zip(
         axes,
         [1, 2, 3],

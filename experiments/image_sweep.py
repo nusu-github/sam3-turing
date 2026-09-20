@@ -293,6 +293,7 @@ def run(args):
                 text=cfg.get("public_int8_text", False),
                 attention_projections=cfg.get("public_int8_attention", False),
                 fused_mlp=cfg.get("public_int8_fused", False),
+                asymmetric_gelu=cfg.get("public_int8_asymmetric", False),
             )
         if cfg.get("fixed_text"):
             freeze_text_prompts(

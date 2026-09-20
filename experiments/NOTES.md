@@ -325,3 +325,28 @@ NVML 3.030GiB、544画素・平均IoU 0.998477、score最大差0.00586、box最�
 全構成で検出数1/4/6/4/0は一致。出力差を抑える選択肢として公開APIへ追加予定。
 通常の速度優先構成と分けて`asymmetric_gelu=True`で指定し、4 warpsを使う。
 Round 28終了後に公開コードを切り替え、Round 32の公開APIで比較する。
+
+## Round 28：複数tokenをまとめた量子化
+
+基準85.39msに対し、入力4行/GELU1行は86.91ms、8行/1行は86.29ms、
+4行/2行は87.17ms、8行/2行は87.09ms、4行/4行（16 warps）は87.47msだった。
+全設定で5条件の出力差は基準と同じ916画素・平均IoU 0.997421、検出数も一致。
+allocatedはいずれも約1.455GiB。速度改善がないため採用しない。
+
+Round 28の終了後、`asymmetric_gelu=True`を公開APIへ追加した。
+GELU後のzero pointとfc2重み行和によるINT32補正を使い、4 warpsで実行する。
+既存の対称GELU kernelはそのまま残した。Round 32で公開版を測定中。
+
+## Round 32：非対称INT8の公開API
+
+公開版の通常構成は85.16ms・1.454GiB allocated・2.884GiB NVMLで、出力差は従来と同じ。
+非対称GELUのMLPのみ版は89.47ms・1.628GiB allocated・3.190GiB NVML、
+平均IoU 0.998477・544画素変化・score最大差0.00586・box最大差0.475画素。
+Attention射影もINT8にする版は85.01ms・1.456GiB allocated・2.851GiB NVML、
+平均IoU 0.998051・735画素変化・score最大差0.01172・box最大差1.436画素だった。
+全3構成で5条件の検出数は1/4/6/4/0で一致した。
+
+`asymmetric_gelu=True`を任意設定として採用した。`fused_mlp=True`と組み合わせ、
+vision MLPのGELU後だけにzero pointを導入する。重み行和は適用時に前計算する。
+公開コードからの比較を保存し、単独パッチも再生成・逆適用チェック済み。
+次はRound 31の一時FP16重み、kernelのタイル探索、残る構造変更候補を続ける。

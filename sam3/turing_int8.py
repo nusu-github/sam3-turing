@@ -36,7 +36,44 @@ def _gelu_quantize(
     tl.store(scales + row, scale)
 
 
-def _fused_mlp(x, fc1, fc2):
+@triton.jit
+def _gelu_asymmetric(
+    mm,
+    row_scales,
+    weight_scales,
+    bias,
+    q,
+    scales,
+    zeros,
+    K: tl.constexpr,
+    BLOCK: tl.constexpr,
+):
+    row = tl.program_id(0)
+    i = tl.arange(0, BLOCK)
+    x = tl.load(mm + row * K + i, i < K, 0).to(tl.float32)
+    x *= tl.load(row_scales + row)
+    x = x * tl.load(weight_scales + i, i < K, 0) + tl.load(bias + i, i < K, 0)
+    x = x.to(tl.float16).to(tl.float32)
+    y = (
+        (0.5 * x * (1 + libdevice.erf(x * 0.7071067811865476)))
+        .to(tl.float16)
+        .to(tl.float32)
+    )
+    lo = tl.minimum(tl.min(tl.where(i < K, y, float("inf")), 0), 0.0)
+    hi = tl.maximum(tl.max(tl.where(i < K, y, -float("inf")), 0), 0.0)
+    scale = tl.maximum(hi - lo, 1.0e-8) / 255.0
+    zero = tl.minimum(
+        tl.maximum(libdevice.nearbyint(-lo / scale) - 128.0, -128.0), 127.0
+    )
+    quantized = tl.minimum(
+        tl.maximum(libdevice.nearbyint(y / scale) + zero, -128.0), 127.0
+    ).to(tl.int8)
+    tl.store(q + row * K + i, quantized, i < K)
+    tl.store(scales + row, scale)
+    tl.store(zeros + row, zero.to(tl.int32))
+
+
+def _fused_mlp(x, fc1, fc2, asymmetric=False):
     shape = x.shape
     x = x.reshape(-1, fc1.in_features).contiguous()
     rows = x.shape[0]
@@ -53,18 +90,35 @@ def _fused_mlp(x, fc1, fc2):
     mm1 = torch._int_mm(q1, fc1.weight_int8.T)
     q2 = torch.empty_like(mm1, dtype=torch.int8)
     scale2 = torch.empty_like(scale1)
-    _gelu_quantize[(padded_rows,)](
-        mm1,
-        scale1,
-        fc1.weight_scale,
-        fc1.bias,
-        q2,
-        scale2,
-        fc2.in_features,
-        triton.next_power_of_2(fc2.in_features),
-        num_warps=8,
-    )
+    if asymmetric:
+        zero2 = torch.empty(padded_rows, device=x.device, dtype=torch.int32)
+        _gelu_asymmetric[(padded_rows,)](
+            mm1,
+            scale1,
+            fc1.weight_scale,
+            fc1.bias,
+            q2,
+            scale2,
+            zero2,
+            fc2.in_features,
+            triton.next_power_of_2(fc2.in_features),
+            num_warps=4,
+        )
+    else:
+        _gelu_quantize[(padded_rows,)](
+            mm1,
+            scale1,
+            fc1.weight_scale,
+            fc1.bias,
+            q2,
+            scale2,
+            fc2.in_features,
+            triton.next_power_of_2(fc2.in_features),
+            num_warps=8,
+        )
     mm2 = torch._int_mm(q2, fc2.weight_int8.T)
+    if asymmetric:
+        mm2 = mm2 - zero2[:, None] * fc2.weight_sum[None, :]
     y = (mm2.float() * scale2[:, None]) * fc2.weight_scale[None, :] + fc2.bias
     return y[:rows].to(torch.float16).reshape(*shape[:-1], fc2.out_features)
 
@@ -113,7 +167,13 @@ class DynamicInt8Linear(nn.Module):
 
 
 def apply_int8_patch(
-    processor, *, vision=True, text=False, attention_projections=False, fused_mlp=False
+    processor,
+    *,
+    vision=True,
+    text=False,
+    attention_projections=False,
+    fused_mlp=False,
+    asymmetric_gelu=False,
 ):
     """Quantize selected MLPs after apply_turing_patch, before first inference.
 
@@ -125,6 +185,8 @@ def apply_int8_patch(
     attention_projections=True also targets the ViT QKV and output projections.
     The attention operation itself remains FP16.
     fused_mlp=True fuses the vision MLP's dequantization, GELU and requantization.
+    asymmetric_gelu=True uses a per-token zero point for GELU activations. It
+    requires fused_mlp=True and offers a different output-error tradeoff.
     """
     if not getattr(processor, "_turing_patched", False):
         raise ValueError("Apply the Turing image patch first")
@@ -133,6 +195,8 @@ def apply_int8_patch(
     model = processor.model
     if model.training:
         raise ValueError("INT8 MLPs are for inference only")
+    if asymmetric_gelu and not fused_mlp:
+        raise ValueError("asymmetric_gelu requires fused_mlp=True")
     if fused_mlp:
         if not vision:
             raise ValueError("fused_mlp requires vision MLP quantization")
@@ -175,9 +239,13 @@ def apply_int8_patch(
     if fused_mlp:
         for block in model.backbone.vision_backbone.trunk.blocks:
             mlp = block.mlp
+            if asymmetric_gelu:
+                mlp.fc2.register_buffer(
+                    "weight_sum", mlp.fc2.weight_int8.sum(1, dtype=torch.int32)
+                )
 
             def forward(x, mlp=mlp):
-                return _fused_mlp(x, mlp.fc1, mlp.fc2)
+                return _fused_mlp(x, mlp.fc1, mlp.fc2, asymmetric_gelu)
 
             mlp.forward = forward
     return processor

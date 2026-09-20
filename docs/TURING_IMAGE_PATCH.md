@@ -22,6 +22,8 @@ FP16・INT8・コンパイルの効果は各GPUで個別に比較する。
 | FP16・新規語句を毎回処理 | 116.32 | 1.862 | 3.095 | 0.99920 |
 | 画像MLPのINT8＋コンパイル | **92.26** | **1.625** | **3.099** | **0.99740** |
 | INT8＋Attention射影＋GELU融合 | **85.46** | **1.455** | **2.872** | **0.99742** |
+| 非対称INT8・MLP＋GELU融合 | **89.47** | **1.628** | **3.190** | **0.99848** |
+| 非対称INT8＋Attention射影＋GELU融合 | 85.01 | 1.456 | 2.851 | 0.99805 |
 | 固定語句＋FP16 | 114.52 | 1.256 | 2.411 | 0.99921 |
 | 固定語句＋INT8・射影・GELU融合 | **84.18** | **0.850** | **2.401** | **0.99742** |
 | 画像・テキストINT8＋融合・新規語句を毎回処理 | 87.64 | 1.265 | 2.849 | 0.99745 |
@@ -32,6 +34,7 @@ FP16コンパイル版は、素の状態から時間を約46%、GPU全体の使�
 INT8は追加学習なしの任意パッチで、速度・メモリと出力差の交換条件を選べる。
 
 表の通常FP16・MLPのINT8・素の状態はRound 14、GELU融合・語句の追加比較はRound 18。
+非対称INT8の2行はRound 32の公開API測定。
 コンパイルなしは変更のない経路のRound 10値。
 新規語句の行は `text_cache_size=0, compile_text=True`。
 GELU融合なしでAttention射影だけを追加した公開版は90.19ms・NVML 2.854GiBだった。
@@ -49,11 +52,16 @@ score最大差 **0.00391**、box最大差 **0.49画素**。
 INT8は **836画素（0.00463%）**、score最大差 **0.01367**、box最大差 **0.66画素**。
 GELU融合＋Attention射影のINT8では **916画素（0.00508%）**、score最大差 **0.00781**、
 box最大差 **0.49画素**。検出数は同じ。
+非対称INT8のMLP版は **544画素（0.00302%）**、score最大差 **0.00586**、box最大差 **0.47画素**。
+Attention射影もINT8にする非対称版は **735画素（0.00407%）**、score最大差 **0.01172**、
+box最大差 **1.44画素**だった。マスク差が減る一方、box差は構成によって増える。
+これらも検出数は同じ。
 boxの対応付け後にマスクを比較した。正解ラベルに対する精度評価ではない。
 
 コンパイルの初回推論は、今回のキャッシュ状態でFP16が約20.5秒、MLPのINT8が約22.3秒だった。
 Round 13で新しい検出Graphをコンパイルした際は約48秒かかった。キャッシュ状況で変わる。
 新しいINT8＋GELU融合Graphは約55〜57秒、同系統のキャッシュを使った固定語句版は約21秒だった。
+非対称INT8の公開版はMLPのみ約63秒、Attention射影込み約37秒だった。
 
 FlashAttentionを使わずefficient Attentionに固定した3090上の更新版は、
 FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892GiBだった。
@@ -64,9 +72,11 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [採用FP16 JSON](../experiments/results/r14_fp16_control.json) /
 [採用INT8 JSON](../experiments/results/r14_int8_control.json) /
 [INT8・射影・GELU融合JSON](../experiments/results/accepted_fused_attention.json) /
-[固定語句INT8 JSON](../experiments/results/compact_fixed_all_int8.json)
+[固定語句INT8 JSON](../experiments/results/compact_fixed_all_int8.json) /
+[非対称INT8・MLP JSON](../experiments/results/accepted_asymmetric_mlp.json) /
+[非対称INT8・射影 JSON](../experiments/results/accepted_asymmetric_attention.json)
 
-完了済みラウンドの比較は188候補・193試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は197候補・202試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -155,6 +165,16 @@ FP16の中間丸めを残す。`False`（既定）では各演算を個別に呼
 今回の `text=True, attention_projections=True, fused_mlp=True` と
 `compile_text=True, text_cache_size=0` の組合せは、新規語句を毎回処理して87.64msだった。
 text compileを省く場合の起動時間・速度は別の交換条件になる。
+`asymmetric_gelu=True` を指定すると、GELU後だけをtokenごとの非対称INT8にする。
+`fused_mlp=True` と組み合わせて使う。重みの行和とzero pointでINT32の積を補正し、
+通常のINT8とは異なる出力差の選択肢になる。4 warpsの融合kernelを使う。
+今回のMLPのみの公開版は89.47ms・平均mask IoU 0.998477・544画素変化だった。
+`attention_projections=True` も加えると85.01ms・735画素変化だが、box最大差は1.44画素になる。
+
+```python
+apply_int8_patch(processor, fused_mlp=True, asymmetric_gelu=True)
+```
+
 従来の `apply_int8_mlp_patch` もMLPだけの入口として利用できる。
 解除する場合はモデルを作り直す。
 
