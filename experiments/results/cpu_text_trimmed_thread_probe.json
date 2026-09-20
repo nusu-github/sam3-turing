@@ -1,0 +1,561 @@
+{
+  "scope": "CPU text encoder only, including tokenization and exact EOT padding trim; excludes GPU transfer, vision and grounding. 2 warmups, 7 repeats. Public FP16 weight conversion precedes CPU FP32 offload; INT8 uses the same public MLP quantization configuration.",
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "cpu_model": "AMD EPYC 7763 64-Core Processor",
+  "prompts": {
+    "short": [
+      "truck"
+    ],
+    "long": [
+      "person wearing a red jacket and carrying a black bag near the truck"
+    ],
+    "batch4": [
+      "truck",
+      "wheel",
+      "vehicle",
+      "elephant"
+    ]
+  },
+  "cpu_text_metrics": [
+    {
+      "precision": "fp32",
+      "threads": 4,
+      "prompt_group": "short",
+      "wall_ms": [
+        67.20589380711317,
+        61.62144290283322,
+        60.241393046453595,
+        58.312956942245364,
+        58.709303848445415,
+        74.01760504581034,
+        58.591844979673624
+      ],
+      "median_ms": 60.241393046453595,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 4,
+      "prompt_group": "long",
+      "wall_ms": [
+        105.85011984221637,
+        110.62364606186748,
+        107.03492187894881,
+        100.84489500150084,
+        112.95194993726909,
+        109.09875691868365,
+        106.11141892150044
+      ],
+      "median_ms": 107.03492187894881,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 4,
+      "prompt_group": "batch4",
+      "wall_ms": [
+        113.2040279917419,
+        114.78759604506195,
+        120.67115493118763,
+        111.28176213242114,
+        123.52268490940332,
+        113.85373305529356,
+        121.0549520328641
+      ],
+      "median_ms": 114.78759604506195,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 2,
+      "prompt_group": "short",
+      "wall_ms": [
+        161.50158597156405,
+        161.14834789186716,
+        182.1492500603199,
+        162.15843008831143,
+        160.739280981943,
+        163.67095010355115,
+        169.67395693063736
+      ],
+      "median_ms": 162.15843008831143,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 2,
+      "prompt_group": "long",
+      "wall_ms": [
+        575.0262849032879,
+        257.79702397994697,
+        256.6180319990963,
+        250.18541794270277,
+        248.75149806030095,
+        249.3429728783667,
+        271.82940393686295
+      ],
+      "median_ms": 256.6180319990963,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 2,
+      "prompt_group": "batch4",
+      "wall_ms": [
+        262.85715820267797,
+        263.0535860080272,
+        262.1438328642398,
+        258.1658400595188,
+        262.62167003005743,
+        254.3205381371081,
+        282.98804396763444
+      ],
+      "median_ms": 262.62167003005743,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 8,
+      "prompt_group": "short",
+      "wall_ms": [
+        47.195104882121086,
+        44.31463615037501,
+        46.387432143092155,
+        44.47386506944895,
+        50.54312199354172,
+        50.57050078175962,
+        45.18857994116843
+      ],
+      "median_ms": 46.387432143092155,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 8,
+      "prompt_group": "long",
+      "wall_ms": [
+        88.41899409890175,
+        85.61271289363503,
+        86.4175281021744,
+        100.82798614166677,
+        103.83888403885067,
+        98.89913001097739,
+        105.47855193726718
+      ],
+      "median_ms": 98.89913001097739,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 8,
+      "prompt_group": "batch4",
+      "wall_ms": [
+        104.99482601881027,
+        120.24680804461241,
+        106.63286410272121,
+        109.11453701555729,
+        116.81228200905025,
+        110.41206796653569,
+        107.78146586380899
+      ],
+      "median_ms": 109.11453701555729,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 16,
+      "prompt_group": "short",
+      "wall_ms": [
+        41.762004140764475,
+        40.42849293909967,
+        46.51662986725569,
+        44.5531141012907,
+        42.436478892341256,
+        42.98686608672142,
+        41.30758694373071
+      ],
+      "median_ms": 42.436478892341256,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 16,
+      "prompt_group": "long",
+      "wall_ms": [
+        89.70925398170948,
+        92.28580608032644,
+        86.7578350007534,
+        89.05433816835284,
+        91.72372100874782,
+        86.39015792869031,
+        88.85559090413153
+      ],
+      "median_ms": 89.05433816835284,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 16,
+      "prompt_group": "batch4",
+      "wall_ms": [
+        97.7177678141743,
+        88.28105498105288,
+        86.96755394339561,
+        87.9957159049809,
+        86.05984994210303,
+        89.22352781519294,
+        88.82681094110012
+      ],
+      "median_ms": 88.28105498105288,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 1,
+      "prompt_group": "short",
+      "wall_ms": [
+        156.7407390102744,
+        155.75748682022095,
+        155.5547770112753,
+        150.7235320750624,
+        150.88535100221634,
+        155.223990092054,
+        159.89999705925584
+      ],
+      "median_ms": 155.5547770112753,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 1,
+      "prompt_group": "long",
+      "wall_ms": [
+        274.43468500860035,
+        275.862145004794,
+        275.1568399835378,
+        282.8115760348737,
+        369.3831420969218,
+        356.5258542075753,
+        366.7442509904504
+      ],
+      "median_ms": 282.8115760348737,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "fp32",
+      "threads": 1,
+      "prompt_group": "batch4",
+      "wall_ms": [
+        272.1573319286108,
+        272.3567900247872,
+        273.0468448717147,
+        273.415083065629,
+        271.63978503085673,
+        270.7141919527203,
+        268.5050170402974
+      ],
+      "median_ms": 272.1573319286108,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.0,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 4,
+      "prompt_group": "short",
+      "wall_ms": [
+        34.76521302945912,
+        34.26330699585378,
+        34.520996036008,
+        37.00990811921656,
+        37.982241017743945,
+        35.10552202351391,
+        36.532341968268156
+      ],
+      "median_ms": 35.10552202351391,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.461757630109787,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 4,
+      "prompt_group": "long",
+      "wall_ms": [
+        57.559801964089274,
+        60.15384383499622,
+        61.64695299230516,
+        60.29903283342719,
+        57.79673997312784,
+        58.78882412798703,
+        57.76306986808777
+      ],
+      "median_ms": 58.78882412798703,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 3.4238693714141846,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 4,
+      "prompt_group": "batch4",
+      "wall_ms": [
+        66.87904614955187,
+        75.55986498482525,
+        69.8401948902756,
+        67.55176093429327,
+        72.93309294618666,
+        72.02478987164795,
+        67.34839314594865
+      ],
+      "median_ms": 69.8401948902756,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.683518648147583,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 2,
+      "prompt_group": "short",
+      "wall_ms": [
+        67.9445278365165,
+        67.42049288004637,
+        66.67303713038564,
+        65.22349803708494,
+        68.23415611870587,
+        65.29062800109386,
+        69.28201904520392
+      ],
+      "median_ms": 67.42049288004637,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.461757630109787,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 2,
+      "prompt_group": "long",
+      "wall_ms": [
+        101.5645198058337,
+        137.31063692830503,
+        118.08252288028598,
+        102.33420482836664,
+        112.51564300619066,
+        105.16728507354856,
+        104.61425897665322
+      ],
+      "median_ms": 105.16728507354856,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 3.4238693714141846,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 2,
+      "prompt_group": "batch4",
+      "wall_ms": [
+        131.11890107393265,
+        121.16361106745899,
+        121.23094080016017,
+        133.71839304454625,
+        138.93139478750527,
+        129.60889213718474,
+        117.58841620758176
+      ],
+      "median_ms": 129.60889213718474,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.683518648147583,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 8,
+      "prompt_group": "short",
+      "wall_ms": [
+        28.074051020666957,
+        33.50682300515473,
+        33.784530125558376,
+        26.66250104084611,
+        30.227256007492542,
+        36.37842298485339,
+        29.189002932980657
+      ],
+      "median_ms": 30.227256007492542,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.461757630109787,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 8,
+      "prompt_group": "long",
+      "wall_ms": [
+        55.697096046060324,
+        42.77720698155463,
+        55.25154806673527,
+        46.008664183318615,
+        47.71276214160025,
+        52.25800909101963,
+        45.84442591294646
+      ],
+      "median_ms": 47.71276214160025,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 3.4238693714141846,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 8,
+      "prompt_group": "batch4",
+      "wall_ms": [
+        69.57365688867867,
+        61.63269281387329,
+        80.35885100252926,
+        70.1531630475074,
+        65.47953584231436,
+        82.3023070115596,
+        81.57604211010039
+      ],
+      "median_ms": 70.1531630475074,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.683518648147583,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 16,
+      "prompt_group": "short",
+      "wall_ms": [
+        30.7464930228889,
+        34.09617906436324,
+        39.14212202653289,
+        34.681004006415606,
+        33.56225206516683,
+        34.061839105561376,
+        32.527689123526216
+      ],
+      "median_ms": 34.061839105561376,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.461757630109787,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 16,
+      "prompt_group": "long",
+      "wall_ms": [
+        67.01270514167845,
+        59.28597995080054,
+        62.073520151898265,
+        56.7788181360811,
+        65.2081179432571,
+        67.16046389192343,
+        68.45899508334696
+      ],
+      "median_ms": 65.2081179432571,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 3.4238693714141846,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 16,
+      "prompt_group": "batch4",
+      "wall_ms": [
+        55.41096697561443,
+        60.82158908247948,
+        64.63605188764632,
+        60.48683193512261,
+        63.43138008378446,
+        56.74600810743868,
+        62.33783788047731
+      ],
+      "median_ms": 60.82158908247948,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.683518648147583,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 1,
+      "prompt_group": "short",
+      "wall_ms": [
+        77.56404113024473,
+        75.83986199460924,
+        78.27511499635875,
+        77.29131286032498,
+        75.02818806096911,
+        73.47367913462222,
+        76.26422005705535
+      ],
+      "median_ms": 76.26422005705535,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.461757630109787,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 1,
+      "prompt_group": "long",
+      "wall_ms": [
+        147.92892197147012,
+        150.75280191376805,
+        153.5110219847411,
+        145.24102001450956,
+        149.51830101199448,
+        146.4337119832635,
+        143.55519297532737
+      ],
+      "median_ms": 147.92892197147012,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 3.4238693714141846,
+      "finite": true
+    },
+    {
+      "precision": "int8_mlp",
+      "threads": 1,
+      "prompt_group": "batch4",
+      "wall_ms": [
+        172.04749095253646,
+        169.25397119484842,
+        168.5440361034125,
+        175.79767387360334,
+        174.05386711470783,
+        184.6677609719336,
+        167.96524007804692
+      ],
+      "median_ms": 172.04749095253646,
+      "mask_equal_to_fp32_threads4": true,
+      "memory_max_abs_vs_fp32_threads4": 0.683518648147583,
+      "finite": true
+    }
+  ]
+}

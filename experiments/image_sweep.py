@@ -348,6 +348,15 @@ def run(args):
             from sam3.turing_refinements import apply_image_refinements
 
             apply_image_refinements(processor)
+    if cfg.get("calibrated_input_split"):
+        from input_split import apply_calibrated_input_split
+
+        result["input_split_calibration"] = apply_calibrated_input_split(
+            processor,
+            eager_trunk_forward,
+            cfg["calibrated_input_split"],
+            cfg.get("input_split_scope", "all"),
+        )
     if cfg.get("calibrated_heads_keep"):
         from head_calibration import collect_head_stats
         from pruned_heads import apply_pruned_heads
