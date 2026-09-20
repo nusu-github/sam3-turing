@@ -917,3 +917,11 @@ FP16画像は119.42ms・285画素。これも3090上のAttention経路比較で�
 初回は実験用backend切替がCPUテキストにもCUDA専用SDPAを強制して失敗した。
 2件のfailure JSONを保存し、attention_backend.pyでCUDA queryだけを切り替えるよう修正した。
 通常経路の基準も再実行したため、このラウンドは4候補・7試行。
+
+## 動画 Round 1：FP16化
+
+24フレーム・person・batch 1・3回中央値。基準261.00ms/frame・allocated 6.726GiB・NVML 7.919GiB。
+FP16は268.50ms/frame・3.902GiB・5.030GiB、efficient固定は284.79ms/frame・3.899GiB・5.110GiB。
+全フレーム4人、96件のID対応を維持。平均IoU 0.998608 / 0.998610、変化画素4282 / 4270。
+初回はinit_stateの未対応offload_state_to_cpu引数で停止。両構成へ同じAPI補正を入れて比較した。
+性能と設定の詳細はdocs/TURING_VIDEO_EXPERIMENTS.md。画像向け公開パッチへは混ぜていない。

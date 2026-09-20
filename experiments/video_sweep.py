@@ -16,9 +16,12 @@ def main():
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--reps", type=int, default=3)
     parser.add_argument("--timeout", type=int, default=600)
+    parser.add_argument(
+        "--variants", nargs="+", default=["stock", "fp16", "fp16_efficient"]
+    )
     args = parser.parse_args()
     output = ROOT / "experiments/results"
-    for variant in ("stock", "fp16", "fp16_efficient"):
+    for variant in args.variants:
         name = "video_stock_bf16_b1" if variant == "stock" else f"video_{variant}_b1"
         command = [
             sys.executable,

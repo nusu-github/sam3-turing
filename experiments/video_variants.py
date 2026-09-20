@@ -67,7 +67,14 @@ def _replace_explicit_bf16():
 
 @torch.no_grad()
 def apply_video_variant(predictor, variant):
-    if variant not in ("fp16", "fp16_efficient"):
+    if variant not in (
+        "fp16",
+        "fp16_efficient",
+        "fp16_int8",
+        "fp16_int8_compile",
+        "fp16_int8_cpu_compile",
+        "fp16_int8_cpu_compile_efficient",
+    ):
         raise ValueError(variant)
     model = predictor.model
     predictor.bf16_context.__exit__(None, None, None)
@@ -111,7 +118,65 @@ def apply_video_variant(predictor, variant):
             "cuda", dtype=torch.float16, cache_enabled=False
         )
         owner.bf16_context.__enter__()
-    if variant == "fp16_efficient":
+    if "int8" in variant:
+        from sam3.turing_int8 import (
+            DynamicInt8Linear,
+            _fused_mlp,
+            _optimize_weight_scales,
+        )
+
+        for block in backbone.vision_backbone.trunk.blocks:
+            for parent, name in (
+                (block.attn, "qkv"),
+                (block.attn, "proj"),
+                (block.mlp, "fc1"),
+                (block.mlp, "fc2"),
+            ):
+                linear = getattr(parent, name)
+                quantized = DynamicInt8Linear(linear)
+                _optimize_weight_scales(quantized, linear.weight)
+                setattr(parent, name, quantized)
+            block.mlp.fc2.register_buffer(
+                "weight_sum", block.mlp.fc2.weight_int8.sum(1, dtype=torch.int32)
+            )
+
+            def int8_forward(x, mlp=block.mlp):
+                return _fused_mlp(x, mlp.fc1, mlp.fc2, asymmetric=True)
+
+            block.mlp.forward = int8_forward
+    if "cpu" in variant:
+        from torch.utils._pytree import tree_map
+
+        device = next(backbone.vision_backbone.parameters()).device
+        backbone.language_backbone.cpu().float()
+        original_text = backbone._forward_text_no_ack_ckpt
+
+        def cpu_text(captions, input_boxes=None, additional_text=None, device=device):
+            with torch.autocast("cuda", enabled=False), torch.autocast(
+                "cpu", enabled=False
+            ):
+                outputs = original_text(
+                    captions, input_boxes, additional_text, device="cpu"
+                )
+            return tree_map(
+                lambda x: (
+                    x.to(
+                        device=device,
+                        dtype=torch.float16 if x.is_floating_point() else x.dtype,
+                    )
+                    if isinstance(x, torch.Tensor)
+                    else x
+                ),
+                outputs,
+            )
+
+        backbone._forward_text_no_ack_ckpt = cpu_text
+    if "compile" in variant:
+        from sam3.turing import _compile_with_owned_output
+
+        trunk = backbone.vision_backbone.trunk
+        trunk.forward = _compile_with_owned_output(trunk.forward, "reduce-overhead")
+    if "efficient" in variant:
         import sam3.model.decoder as decoder
 
         original = F.scaled_dot_product_attention

@@ -2,6 +2,7 @@
 
 import argparse
 import gc
+import inspect
 import json
 import statistics
 import sys
@@ -101,12 +102,28 @@ def main():
     torch.backends.cudnn.allow_tf32 = False
     torch.set_num_threads(4)
     predictor.model.batched_grounding_batch_size = args.grounding_batch
+    compatibility = []
+    original_init = predictor.model.init_state
+    if "offload_state_to_cpu" not in inspect.signature(original_init).parameters:
+
+        def init_state(*args, offload_state_to_cpu=False, **kwargs):
+            if offload_state_to_cpu:
+                raise ValueError(
+                    "This SAM 3.1 init_state does not support state offload"
+                )
+            return original_init(*args, **kwargs)
+
+        predictor.model.init_state = init_state
+        compatibility.append(
+            "Ignore unsupported default offload_state_to_cpu=False passed by Sam3BasePredictor; same shim for stock and patched"
+        )
     data = {
         "name": args.name,
         "config": vars(args),
         "environment": environment(),
         "build_seconds": time.perf_counter() - started,
         "build_allocated_bytes": torch.cuda.max_memory_allocated(),
+        "shared_api_compatibility": compatibility,
         "scope": "SAM 3.1, first consecutive frames of assets/videos/0001, person. Uncompiled, FA3 off, TF32 off, frames on CPU, grounding batch explicitly configured. Timed add_prompt + forward propagation; frame loading/session construction excluded.",
     }
     if args.variant != "stock":
@@ -116,6 +133,7 @@ def main():
     gc.collect()
     torch.cuda.empty_cache()
     torch.cuda.reset_peak_memory_stats()
+    data["after_patch_allocated_bytes"] = torch.cuda.memory_allocated()
 
     def run():
         response = predictor.handle_request(
@@ -132,6 +150,7 @@ def main():
             dict(type="add_prompt", session_id=session, frame_index=0, text="person")
         )
         outputs = {response["frame_index"]: response["outputs"]}
+        memory_trace = [(response["frame_index"], torch.cuda.memory_allocated())]
         for response in predictor.handle_stream_request(
             dict(
                 type="propagate_in_video",
@@ -142,6 +161,9 @@ def main():
             )
         ):
             outputs[response["frame_index"]] = response["outputs"]
+            memory_trace.append(
+                (response["frame_index"], torch.cuda.memory_allocated())
+            )
         torch.cuda.synchronize()
         elapsed = time.perf_counter() - start
         predictor.handle_request(
@@ -152,17 +174,17 @@ def main():
                 clear_cache_threshold=0,
             )
         )
-        return outputs, elapsed
+        return outputs, elapsed, memory_trace
 
     with torch.inference_mode(), DeviceMemorySampler() as sampler:
-        outputs, cold = run()
+        outputs, cold, memory_trace = run()
         print(
             f"COLD {args.name}: {cold:.3f}s, counts {[len(v['out_obj_ids']) for v in outputs.values()]}",
             flush=True,
         )
         times = []
         for rep in range(args.reps):
-            outputs, elapsed = run()
+            outputs, elapsed, memory_trace = run()
             times.append(elapsed)
             print(f"RUN {rep + 1}: {elapsed:.3f}s", flush=True)
     data["video_metrics"] = {
@@ -174,6 +196,7 @@ def main():
         "peak_allocated_bytes": torch.cuda.max_memory_allocated(),
         "peak_reserved_bytes": torch.cuda.max_memory_reserved(),
         "nvml": sampler.result(),
+        "last_run_allocated_by_frame": memory_trace,
     }
     reference_path = outdir / f"{args.reference}.pt"
     reference = (
