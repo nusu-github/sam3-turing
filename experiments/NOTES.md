@@ -1041,3 +1041,37 @@ compact Gaussian group 16/32、非対称group 16を、CPUテキストpadding省�
 FP16画像の同じ構成を基準にする。Gaussian group 32はefficient Attentionでも比較する。
 4bitの行列積はFP16の通常Linearであり、動的INT8のtorch._int_mmは使わない。
 3090上の測定であり、GTX16やRTX20の速度を代用するものではない。
+
+## Round 64の候補：1008から少しだけ解像度を下げる
+
+896/784より小さい変更として980/952/924を試す。window 24は維持する。
+Round 59の組み合わせでは余白の射影省略による速度改善が出なかったため、ここでは通常の射影を使う。
+画像追加パッチ・画像の非対称INT8＋重み調整・CPUテキストpadding省略を使い、
+1008の同じ構成と比較する。解像度による速度差とマスクの差の中間点を探す。
+
+## Round 54b：compact Gaussianの大きいgroup幅
+
+| 構成 | ms | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| int4_compact_group64_gaussian | 115.52 | 1.2485 | 2.8597 | 0.99153033 | 2550 |
+| int4_compact_group128_gaussian | 115.594 | 1.2457 | 2.626 | 0.99206558 | 2603 |
+
+両方1/4/6/4/0。group 64 / 128は2550 / 2603画素変化で、group 32の1995画素より増えた。
+allocatedは1.249 / 1.246GiBで、group 32の1.267GiBからの削減は小さい。
+続くCPUテキスト併用では、まずgroup 16/32の候補を使う。
+
+## Round 59：余白の射影省略と画像追加パッチの併用
+
+| 構成 | ms | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| r59_refined_resolution896_control | 79.052 | 0.733 | 2.4827 | 0.97368888 | 8507 |
+| refined_unpadded_resolution896 | 88.025 | 0.7339 | 2.1982 | 0.97434917 | 8476 |
+| r59_refined_resolution784_control | 77.668 | 0.7253 | 2.4144 | 0.97123186 | 9296 |
+| refined_unpadded_resolution784 | 77.847 | 0.6916 | 2.165 | 0.97132407 | 9352 |
+| r59_fp16_refined784_control | 87.089 | 1.1024 | 2.1768 | 0.97107591 | 9351 |
+| fp16_refined_unpadded784 | 80.704 | 1.102 | 2.1943 | 0.97110031 | 9343 |
+
+全構成1/4/6/4/0。INT8の896では79.05→88.02ms、784では77.67→77.85msで速度改善なし。
+784のallocatedは0.725→0.692GiBへ減った。FP16の784では87.09→80.70ms、allocatedは約1.102GiBで同等。
+CPUテキストを毎回計算する今回の構成では、Round 49のINT8速度改善をそのまま再現しなかった。
+既定パッチは変えず、FP16・低解像度での選択肢として保持する。解像度低下によるマスク差はどの構成にも残る。

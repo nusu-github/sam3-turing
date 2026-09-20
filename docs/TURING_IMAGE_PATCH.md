@@ -117,7 +117,7 @@ CPUテキストもINT8にすると90.01ms・allocated 0.782GiB・NVML 2.351GiB�
 [CPU動的INT8・cacheあり JSON](../experiments/results/accepted_cpu_dynamic_text.json) /
 [CPU動的INT8・cacheなし JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json)
 
-完了済みラウンドの比較は336候補・344試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は344候補・352試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
