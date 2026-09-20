@@ -8,7 +8,9 @@ import torch.nn.functional as F
 from sam3.model.vitdet import window_partition, window_unpartition
 
 
-def apply_unpadded_projections(model, side, stack, qkv=True, projection=True):
+def apply_unpadded_projections(
+    model, side, stack, qkv=True, projection=True, half_output=False
+):
     for block in model.backbone.vision_backbone.trunk.blocks:
         size = block.window_size
         if not size:
@@ -57,8 +59,9 @@ def apply_unpadded_projections(model, side, stack, qkv=True, projection=True):
                     attn.proj(attended), size, padded, (height, width)
                 )
             x = shortcut + block.dropout(block.drop_path(block.ls1(attended)))
-            return x + block.dropout(
+            result = x + block.dropout(
                 block.drop_path(block.ls2(block.mlp(block.norm2(x))))
             )
+            return result.half() if half_output else result
 
         stack.enter_context(patch.object(block, "forward", forward))

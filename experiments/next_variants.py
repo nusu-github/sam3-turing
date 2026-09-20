@@ -66,6 +66,7 @@ def apply_next_variants(model, processor, cfg, stack):
             stack,
             qkv=cfg.get("unpadded_qkv", True),
             projection=cfg.get("unpadded_output", True),
+            half_output=cfg.get("public_refinements", False),
         )
     if cfg.get("decoder_layer_indices"):
         decoder = model.transformer.decoder

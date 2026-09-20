@@ -112,7 +112,7 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [CPU動的INT8・cacheあり JSON](../experiments/results/accepted_cpu_dynamic_text.json) /
 [CPU動的INT8・cacheなし JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json)
 
-完了済みラウンドの比較は298候補・303試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は310候補・315試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -195,6 +195,9 @@ Attention・単語埋め込み・resizerはCPU FP32。`apply_int8_patch(..., tex
 GPUテキストINT8とは別の設定で、両者は併用しない。語句cacheと固定語句への切替は維持する。
 速度はCPUとスレッド数にも依存する。このコンテナではAMD EPYC 7763・4スレッド・
 PyTorchのx86量子化backendを使用した。
+別比較では、padding省略なしのCPU INT8が4スレッド105.17ms、8スレッド87.90msだった。
+初期化後の`torch.set_num_threads(8)`もこのCPUでは選択肢になる。
+パッチ自体はCPUスレッド数を変更しない。[スレッド数比較](../experiments/round50.json)
 
 公開版は語句cacheあり84.79ms、cacheなし100.80ms。直前の同じ画像側構成の
 CPU FP32・cacheなし155.84msから約35%短縮した。CPUの通常parameterと量子化重み/biasの
