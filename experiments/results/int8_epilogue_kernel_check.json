@@ -1,0 +1,77 @@
+{
+  "scope": "Direct kernel check, INT8 GEMM plus FP16 dequantization/GELU reference; RTX 3090, random seed 3. Not model quality.",
+  "tile": [
+    64,
+    128,
+    64,
+    4
+  ],
+  "rows": [
+    {
+      "shape": [
+        128,
+        64,
+        128
+      ],
+      "gelu": false,
+      "finite": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    {
+      "shape": [
+        128,
+        64,
+        128
+      ],
+      "gelu": true,
+      "finite": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    {
+      "shape": [
+        5184,
+        1024,
+        4736
+      ],
+      "gelu": false,
+      "finite": true,
+      "max_abs": 0.0009765625,
+      "mean_abs": 6.713497535670854e-10
+    },
+    {
+      "shape": [
+        5184,
+        1024,
+        4736
+      ],
+      "gelu": true,
+      "finite": true,
+      "max_abs": 0.0009765625,
+      "mean_abs": 3.3070282623448577e-10
+    },
+    {
+      "shape": [
+        5184,
+        4736,
+        1024
+      ],
+      "gelu": false,
+      "finite": true,
+      "max_abs": 0.0009765625,
+      "mean_abs": 6.611352576513241e-10
+    },
+    {
+      "shape": [
+        5184,
+        4736,
+        1024
+      ],
+      "gelu": true,
+      "finite": true,
+      "max_abs": 0.0009765625,
+      "mean_abs": 3.736900511253083e-10
+    }
+  ]
+}

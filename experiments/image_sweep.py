@@ -268,6 +268,16 @@ def run(args):
         "build_seconds": time.perf_counter() - start,
         "build_allocated_bytes": torch.cuda.max_memory_allocated(),
     }
+    if cfg.get("cpu_text"):
+        result["environment"]["cpu_threads"] = torch.get_num_threads()
+        result["environment"]["cpu_model"] = next(
+            (
+                line.split(":", 1)[1].strip()
+                for line in Path("/proc/cpuinfo").read_text().splitlines()
+                if line.startswith("model name")
+            ),
+            "unknown",
+        )
     if cfg.get("half"):
         cast_linear_weights(model, preserve_precision=True)
     if cfg.get("freeze"):
@@ -459,10 +469,12 @@ def main():
         else:
             data = json.loads((out / (name + ".json")).read_text())
             m = data["metrics"]
-            diff = [
-                v.get("vs_fp16", v.get("vs_stock", {})).get("changed_pixels", 0)
-                for v in data["checks"].values()
-            ]
+            checks = list(data["checks"].values())
+            stock_diff = (
+                sum(v["vs_stock"].get("changed_pixels", 0) for v in checks)
+                if all("vs_stock" in v for v in checks)
+                else None
+            )
             print(
                 name,
                 "ms",
@@ -471,8 +483,10 @@ def main():
                 round(m["peak_allocated_bytes"] / 2**30, 3),
                 "nvml_GiB",
                 round(m["nvml"]["sampled_device_used_peak_bytes"] / 2**30, 3),
-                "changed_pixels",
-                sum(diff),
+                "counts",
+                [v["count"] for v in checks],
+                "changed_pixels_vs_stock",
+                stock_diff,
                 flush=True,
             )
 

@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parent
 rows = []
 for path in sorted((ROOT / "results").glob("*.json")):
     data = json.loads(path.read_text())
-    if "metrics" not in data:
+    if "metrics" not in data or not data.get("measurement_valid", True):
         continue
     metrics = data["metrics"]
     checks = [c["vs_stock"] for c in data["checks"].values() if "vs_stock" in c]

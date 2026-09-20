@@ -46,7 +46,7 @@ def _int8_epilogue(
         b = tl.load(
             w + ni[None, :] * K + ks[:, None], (ni[None, :] < N) & (ks[:, None] < K), 0
         )
-        acc = tl.dot(a, b, acc)
+        acc = tl.dot(a, b, acc, out_dtype=tl.int32)
     out = acc.to(tl.float32) * tl.load(row_scales + mi, mi < M, 0)[:, None]
     out = (
         out * tl.load(weight_scales + ni, ni < N, 0)[None, :]

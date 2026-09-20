@@ -1,0 +1,151 @@
+{
+  "name": "int8_epilogue_64_128_64_4",
+  "config": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "fused_int8_gemm": [
+      64,
+      128,
+      64,
+      4
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.10.0a0+b558c986e8.nv25.11",
+    "cuda": "13.0",
+    "cudnn": 91500,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "capability": [
+      8,
+      6
+    ],
+    "physical_vram_bytes": 25296044032,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "cublas_workspace_config": ":4096:8"
+  },
+  "build_seconds": 14.386279303813353,
+  "build_allocated_bytes": 3575265280,
+  "metrics": {
+    "cold_seconds": 67.34420118806884,
+    "warmups": 2,
+    "repetitions": 9,
+    "wall_seconds": [
+      0.062238408951088786,
+      0.061812562169507146,
+      0.06195701099932194,
+      0.05972580495290458,
+      0.05944353714585304,
+      0.05949640600010753,
+      0.05941152712330222,
+      0.059497694950550795,
+      0.05979973403736949
+    ],
+    "gpu_seconds": [
+      0.06218454360961914,
+      0.061764606475830076,
+      0.061908992767333984,
+      0.05968070220947266,
+      0.059391807556152344,
+      0.05944745635986328,
+      0.059361278533935545,
+      0.05945027160644531,
+      0.05974835205078125
+    ],
+    "median_wall_seconds": 0.05972580495290458,
+    "median_gpu_seconds": 0.05968070220947266,
+    "peak_allocated_bytes": 1562963456,
+    "peak_reserved_bytes": 2176843776,
+    "allocated_before_bytes": 1290254336,
+    "reserved_before_bytes": 1824522240,
+    "end_device_used_bytes": 2576547840,
+    "physical_vram_bytes": 25296044032,
+    "nvml": {
+      "sampled_device_used_peak_bytes": 3050307584,
+      "sampled_device_used_min_bytes": 2620391424,
+      "samples": 7115,
+      "requested_interval_ms": 5,
+      "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+    }
+  },
+  "checks": {
+    "truck": {
+      "count": 0,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 1,
+        "count": 0,
+        "matched": 0
+      },
+      "vs_fp16": {
+        "reference_count": 1,
+        "count": 0,
+        "matched": 0
+      }
+    },
+    "bag": {
+      "count": 0,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 4,
+        "count": 0,
+        "matched": 0
+      },
+      "vs_fp16": {
+        "reference_count": 4,
+        "count": 0,
+        "matched": 0
+      }
+    },
+    "child": {
+      "count": 0,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 6,
+        "count": 0,
+        "matched": 0
+      },
+      "vs_fp16": {
+        "reference_count": 6,
+        "count": 0,
+        "matched": 0
+      }
+    },
+    "wheel": {
+      "count": 0,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 4,
+        "count": 0,
+        "matched": 0
+      },
+      "vs_fp16": {
+        "reference_count": 4,
+        "count": 0,
+        "matched": 0
+      }
+    },
+    "empty": {
+      "count": 0,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 0,
+        "count": 0,
+        "matched": 0
+      },
+      "vs_fp16": {
+        "reference_count": 0,
+        "count": 0,
+        "matched": 0
+      }
+    }
+  },
+  "measurement_valid": false,
+  "invalid_reason": "Initial kernel omitted tl.dot out_dtype=tl.int32. Triton mutation analysis failed and the compiled model returned zero detections in all cases. Timing is not a valid optimization result."
+}

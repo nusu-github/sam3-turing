@@ -1,0 +1,63 @@
+{
+  "r40_fused_attention_control": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true
+  },
+  "decoder_first5": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "decoder_layer_indices": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "decoder_keep_last5": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "decoder_layer_indices": [
+      0,
+      1,
+      2,
+      3,
+      5
+    ]
+  },
+  "decoder_first4": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "decoder_layer_indices": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "decoder_spaced4": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "decoder_layer_indices": [
+      0,
+      1,
+      3,
+      5
+    ]
+  }
+}

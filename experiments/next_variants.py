@@ -27,6 +27,16 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("decoder_layer_indices"):
+        decoder = model.transformer.decoder
+        indices = cfg["decoder_layer_indices"]
+        decoder.layers = nn.ModuleList([decoder.layers[i] for i in indices])
+        decoder.fine_layers = [decoder.fine_layers[i] for i in indices]
+        decoder.num_layers = len(indices)
+    if cfg.get("cpu_text"):
+        from cpu_text import apply_cpu_text
+
+        apply_cpu_text(model, stack)
     if cfg.get("weight_only_int4"):
         from weight_only_int4 import apply_weight_only_int4
 

@@ -1,0 +1,18 @@
+{
+  "name": "int8_epilogue_32_128_64_4",
+  "config": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "fused_int8_gemm": [
+      32,
+      128,
+      64,
+      4
+    ]
+  },
+  "exit_code": 143,
+  "error": "Interrupted after the first candidate exposed a shared kernel output-type bug; retry uses explicit INT32 dot output."
+}

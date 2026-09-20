@@ -1,0 +1,45 @@
+{
+  "r39_fused_attention_control": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true
+  },
+  "cpu_text_fp16_cached": {
+    "final": true,
+    "compile": true,
+    "cpu_text": true
+  },
+  "cpu_text_fp16_uncached": {
+    "final": true,
+    "compile": true,
+    "cpu_text": true,
+    "text_cache_size": 0
+  },
+  "cpu_text_int8_cached": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "cpu_text": true
+  },
+  "cpu_text_int8_uncached": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "cpu_text": true,
+    "text_cache_size": 0
+  },
+  "r39_gpu_text_int8_uncached": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "text_cache_size": 0
+  }
+}
