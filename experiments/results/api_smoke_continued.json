@@ -1,0 +1,14 @@
+{
+  "truck_count": 1,
+  "bag_count": 4,
+  "image_state_reuse": true,
+  "geometric_count": 1,
+  "text_parameter_bytes_before_freeze": 708764160,
+  "allocated_bytes_released_by_freeze": 508031488,
+  "frozen_count": 1,
+  "unknown_frozen_prompt_rejected": true,
+  "strided_pack_changed_pixels": 0,
+  "autocast_restored": true,
+  "threshold_empty": true,
+  "reset_clears_packed_output": true
+}

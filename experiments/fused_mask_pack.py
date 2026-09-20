@@ -18,6 +18,7 @@ def _resize_pack(
     S2: tl.constexpr,
     HALF: tl.constexpr,
     BLOCK: tl.constexpr,
+    DIRECT: tl.constexpr,
 ):
     row = tl.program_id(0)
     byte = tl.program_id(1) * BLOCK + tl.arange(0, BLOCK)
@@ -40,17 +41,20 @@ def _resize_pack(
     value = (1 - wy) * ((1 - wx) * v00 + wx * v01) + wy * ((1 - wx) * v10 + wx * v11)
     if HALF:
         value = value.to(tl.float16).to(tl.float32)
-    prob = 1.0 / (1.0 + tl.exp(-value))
-    if HALF:
-        prob = prob.to(tl.float16).to(tl.float32)
-    yes = ((prob > 0.5) & valid).to(tl.uint32)
+    if DIRECT and HALF:
+        yes = ((value > 0.0009765625) & valid).to(tl.uint32)
+    else:
+        prob = 1.0 / (1.0 + tl.exp(-value))
+        if HALF:
+            prob = prob.to(tl.float16).to(tl.float32)
+        yes = ((prob > 0.5) & valid).to(tl.uint32)
     packed = tl.sum(yes << bit[None, :], 1).to(tl.uint8)
     row_bytes: tl.constexpr = (OH * OW + 7) // 8
     tl.store(dst + row * row_bytes + byte, packed, byte < row_bytes)
 
 
 @torch.inference_mode()
-def fused_resize_and_pack(logits, size):
+def fused_resize_and_pack(logits, size, *, block=128, warps=4, direct=False):
     if (
         logits.ndim != 3
         or logits.dtype not in (torch.float16, torch.float32)
@@ -63,7 +67,7 @@ def fused_resize_and_pack(logits, size):
     row_bytes = triton.cdiv(oh * ow, 8)
     out = torch.empty((len(logits), row_bytes), device=logits.device, dtype=torch.uint8)
     if len(logits):
-        _resize_pack[(len(logits), triton.cdiv(row_bytes, 128))](
+        _resize_pack[(len(logits), triton.cdiv(row_bytes, block))](
             logits,
             out,
             *logits.shape[-2:],
@@ -71,7 +75,9 @@ def fused_resize_and_pack(logits, size):
             ow,
             *logits.stride(),
             logits.dtype == torch.float16,
-            128,
+            block,
+            direct,
+            num_warps=warps,
             enable_fp_fusion=False,
         )
     return out

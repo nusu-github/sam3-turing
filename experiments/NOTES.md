@@ -48,3 +48,9 @@ ViTのMLPは、元の解像度の残差を残したまま2×2平均した特徴�
 - MLP全層の空間平均化は126.90msだが、検出数が15→3に減るため不採用。平均IoUの集計は対応したマスクのみなので、検出数も必ず見る。
 - 全groundingのcompileはgeometry encoder内の`pin_memory`で失敗。Round 9では空の幾何promptに対する不要な計算を省く候補も試す。
 - 4Kマスク融合は採用し、`d0bf52f`でpush済み。8.18ms・0.257GiB。従来経路も選べる。
+
+## 次の探索候補
+
+- 平均化するMLP tokenを一律に選ばず、2×2セル内の特徴分散が小さい領域だけをまとめる。高分散セルは全tokenを残し、計算量と境界保持の両方を見る。
+- INT8のper-token最大値が一部のchannelに支配される場合に、channelごとのスケール調整を量子化kernelへ融合する。まず追加較正なしの重み統計による案から試す。
+- 4K pack kernelはblock/warp数とFP16の二値化cutoffをさらに比較する。`tune_mask_pack.py`と`fused_mask_pack.py`の追加設定は次の測定用。

@@ -1,0 +1,88 @@
+"""Exercise state reuse, geometric prompts and packed output on the public patch."""
+
+import gc
+import json
+import sys
+from pathlib import Path
+
+import torch
+from PIL import Image
+from huggingface_hub import hf_hub_download
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from sam3.model_builder import build_sam3_image_model
+from sam3.model.sam3_image_processor import Sam3Processor
+from sam3.turing import apply_turing_patch, freeze_text_prompts
+from sam3.turing_masks import resize_and_pack_masks, unpack_masks
+
+torch.set_num_threads(1)
+torch.backends.cuda.matmul.allow_tf32 = False
+torch.backends.cudnn.allow_tf32 = False
+model = build_sam3_image_model(
+    checkpoint_path=hf_hub_download(
+        "facebook/sam3", "sam3.pt", revision="3c879f39826c281e95690f02c7821c4de09afae7"
+    ),
+    load_from_HF=False,
+).eval()
+torch.set_num_threads(4)
+p = apply_turing_patch(
+    Sam3Processor(model), compile=True, compile_text=True, packed_masks=True
+)
+truck = Image.open(ROOT / "assets/images/truck.jpg").convert("RGB")
+groceries = Image.open(ROOT / "assets/images/groceries.jpg").convert("RGB")
+a = p.set_image(truck)
+a = p.set_text_prompt("truck", a)
+expected = a["masks_packed"].clone()
+b = p.set_image(groceries)
+b = p.set_text_prompt("paper bag", b)
+a = p.set_text_prompt("truck", a)
+assert torch.equal(
+    expected, a["masks_packed"]
+), "Old image state or cached text changed after another image"
+result = {
+    "truck_count": len(a["scores"]),
+    "bag_count": len(b["scores"]),
+    "image_state_reuse": True,
+}
+p.reset_all_prompts(a)
+assert "masks_packed" not in a and "mask_shape" not in a
+a = p.add_geometric_prompt([0.5, 0.5, 0.8, 0.8], True, a)
+result["geometric_count"] = len(a["scores"])
+a = p.set_confidence_threshold(1.0, a)
+assert len(a["scores"]) == 0
+assert unpack_masks(a["masks_packed"], a["mask_shape"][-2:]).shape[0] == 0
+p.set_confidence_threshold(0.5)
+before_freeze = torch.cuda.memory_allocated()
+text_weight_bytes = sum(
+    x.numel() * x.element_size() for x in model.backbone.language_backbone.parameters()
+)
+freeze_text_prompts(p, ["truck", "visual"])
+result["text_parameter_bytes_before_freeze"] = text_weight_bytes
+result["allocated_bytes_released_by_freeze"] = (
+    before_freeze - torch.cuda.memory_allocated()
+)
+assert model.backbone.language_backbone is None
+a = p.set_text_prompt("truck", p.set_image(truck))
+result["frozen_count"] = len(a["scores"])
+try:
+    p.set_text_prompt("unregistered", a)
+except ValueError:
+    result["unknown_frozen_prompt_rejected"] = True
+else:
+    raise AssertionError("Unknown frozen prompt was accepted")
+assert not torch.is_autocast_enabled("cuda")
+# Noncontiguous source strides are supported by the fused pack kernel.
+x = torch.randn(3, 17, 13, device="cuda", dtype=torch.float16).transpose(1, 2)
+fast = resize_and_pack_masks(x, (31, 37))
+old = resize_and_pack_masks(x, (31, 37), fused=False)
+result["strided_pack_changed_pixels"] = int(
+    (unpack_masks(fast, (31, 37)) != unpack_masks(old, (31, 37))).sum()
+)
+result["autocast_restored"] = True
+result["threshold_empty"] = True
+result["reset_clears_packed_output"] = True
+(ROOT / "experiments/results/api_smoke_continued.json").write_text(
+    json.dumps(result, indent=2) + "\n"
+)
+print(json.dumps(result, indent=2), flush=True)

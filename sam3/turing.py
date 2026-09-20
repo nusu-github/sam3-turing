@@ -15,6 +15,23 @@ from torch import nn
 from sam3.model import box_ops
 from sam3.model.data_misc import interpolate, NestedTensor
 from sam3.model.decoder import TransformerDecoderLayer
+from sam3.model.model_misc import MultiheadAttention
+
+
+def _compile_with_owned_output(fn, mode):
+    from torch.utils._pytree import tree_map
+
+    compiled = torch.compile(fn, mode=mode)
+
+    def call(*args, **kwargs):
+        output = compiled(*args, **kwargs)
+        # CUDA Graphs reuse output storage. Give subsequent compiled stages
+        # tensors with independent storage before entering another graph.
+        return tree_map(
+            lambda x: x.clone() if isinstance(x, torch.Tensor) else x, output
+        )
+
+    return call
 
 
 def _inference_call(model, fn):
@@ -36,6 +53,7 @@ def apply_turing_patch(
     text_cache_size=16,
     early_filter=False,
     compile=False,
+    compile_text=False,
     packed_masks=False,
     mask_chunk_size=8,
 ):
@@ -45,8 +63,9 @@ def apply_turing_patch(
     and the usual dense masks/probabilities/scores/boxes. SAM 1 interactivity,
     training, video and moving the model after patching are outside this patch.
     Text cache hits skip encoding; a new prompt still uses the text encoder.
-    compile=True compiles the vision trunk and segmentation head for repeated
-    inference. Smaller processor resolutions trade mask quality for speed.
+    compile=True compiles the vision trunk, detection decoder and segmentation
+    head. compile_text=True additionally compiles the text Transformer for
+    new prompts. Smaller resolutions trade mask quality for speed.
     compile="max-autotune" enables additional kernel tuning.
     packed_masks=True returns masks_packed + mask_shape instead of dense masks
     and probabilities; decode individual rows with turing_masks.unpack_masks.
@@ -93,6 +112,30 @@ def apply_turing_patch(
         if isinstance(module, (nn.Linear, nn.Conv2d, nn.ConvTranspose2d)):
             if id(module) not in protected:
                 module.to(dtype=torch.float16)
+        if isinstance(module, (nn.MultiheadAttention, MultiheadAttention)):
+            module.half()
+        if isinstance(module, nn.MultiheadAttention):
+            original = module.forward
+
+            def attention(*args, original=original, **kwargs):
+                if len(args) < 5:
+                    kwargs.setdefault("need_weights", False)
+                return original(*args, **kwargs)
+
+            module.forward = attention
+    model.backbone.language_backbone.encoder.token_embedding.half()
+
+    decoder = model.transformer.decoder
+    side = processor.resolution // 14
+    decoder.compilable_cord_cache = decoder._get_coords(side, side, processor.device)
+    decoder.compilable_stored_size = (side, side)
+    original_rpb = decoder._get_rpb_matrix
+
+    def rpb(reference_boxes, feat_size):
+        # Avoid reading CUDA scalar sizes in repeated cache comparisons/asserts.
+        return original_rpb(reference_boxes, (side, side))
+
+    decoder._get_rpb_matrix = rpb
 
     # The upstream fused MLP forces BF16. This path follows FP16 autocast.
     for block in neck.trunk.blocks:
@@ -246,6 +289,10 @@ def apply_turing_patch(
         mode = compile if isinstance(compile, str) else "reduce-overhead"
         neck.trunk.forward = torch.compile(neck.trunk.forward, mode=mode)
         head.forward = torch.compile(head.forward, mode=mode)
+        decoder.forward = _compile_with_owned_output(decoder.forward, mode)
+    if compile_text:
+        core = model.backbone.language_backbone.encoder.transformer
+        core.forward = torch.compile(core.forward, mode="reduce-overhead")
     processor._turing_patched = True
     return processor
 
@@ -279,4 +326,8 @@ def freeze_text_prompts(processor, prompts):
     backbone.forward_text = forward_text
     backbone.language_backbone = None
     processor._turing_text_cache.clear()
+    # Compiled bound methods can form cycles around the released text module.
+    import gc
+
+    gc.collect()
     return processor

@@ -1,0 +1,463 @@
+{
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.10.0a0+b558c986e8.nv25.11",
+    "cuda": "13.0",
+    "cudnn": 91500,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "capability": [
+      8,
+      6
+    ],
+    "physical_vram_bytes": 25296044032,
+    "tf32_matmul": true,
+    "tf32_cudnn": true,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "cublas_workspace_config": ":4096:8"
+  },
+  "scope": "Kernel tuning on 200 saved learned FP16 mask logits -> 4K",
+  "variants": [
+    {
+      "block": 64,
+      "warps": 4,
+      "direct_threshold": false,
+      "metrics": {
+        "cold_seconds": 0.35428880294784904,
+        "warmups": 2,
+        "repetitions": 7,
+        "wall_seconds": [
+          0.009372175903990865,
+          0.009355737129226327,
+          0.009307367028668523,
+          0.009302667109295726,
+          0.009305157931521535,
+          0.009298508055508137,
+          0.009297498036175966
+        ],
+        "gpu_seconds": [
+          0.009302016258239745,
+          0.009325568199157714,
+          0.009284607887268067,
+          0.00927948760986328,
+          0.009278464317321777,
+          0.009277407646179198,
+          0.009276351928710937
+        ],
+        "median_wall_seconds": 0.009305157931521535,
+        "median_gpu_seconds": 0.00927948760986328,
+        "peak_allocated_bytes": 448790528,
+        "peak_reserved_bytes": 450887680,
+        "allocated_before_bytes": 241172480,
+        "reserved_before_bytes": 243269632,
+        "end_device_used_bytes": 772997120,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1246756864,
+          "sampled_device_used_min_bytes": 1039138816,
+          "samples": 83,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "changed_bytes_vs_accepted": 0
+    },
+    {
+      "block": 128,
+      "warps": 4,
+      "direct_threshold": false,
+      "metrics": {
+        "cold_seconds": 0.15763368806801736,
+        "warmups": 2,
+        "repetitions": 7,
+        "wall_seconds": [
+          0.008484011981636286,
+          0.008454362861812115,
+          0.008449672954156995,
+          0.00820885505527258,
+          0.008168564876541495,
+          0.008172354893758893,
+          0.008166374871507287
+        ],
+        "gpu_seconds": [
+          0.008437760353088379,
+          0.008430591583251953,
+          0.008429568290710449,
+          0.008186880111694337,
+          0.008147808074951171,
+          0.008151007652282714,
+          0.008145919799804687
+        ],
+        "median_wall_seconds": 0.00820885505527258,
+        "median_gpu_seconds": 0.008186880111694337,
+        "peak_allocated_bytes": 448790528,
+        "peak_reserved_bytes": 448790528,
+        "allocated_before_bytes": 241172480,
+        "reserved_before_bytes": 241172480,
+        "end_device_used_bytes": 770899968,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1244659712,
+          "sampled_device_used_min_bytes": 1037041664,
+          "samples": 43,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "changed_bytes_vs_accepted": 0
+    },
+    {
+      "block": 256,
+      "warps": 4,
+      "direct_threshold": false,
+      "metrics": {
+        "cold_seconds": 0.21432432485744357,
+        "warmups": 2,
+        "repetitions": 7,
+        "wall_seconds": [
+          0.00720982113853097,
+          0.007189061958342791,
+          0.007315960945561528,
+          0.0077989178244024515,
+          0.0077916779555380344,
+          0.007796706864610314,
+          0.00778957805596292
+        ],
+        "gpu_seconds": [
+          0.007166975975036621,
+          0.007168928146362305,
+          0.007297920227050781,
+          0.007778272151947021,
+          0.007772160053253174,
+          0.007778240203857422,
+          0.007770112037658691
+        ],
+        "median_wall_seconds": 0.00778957805596292,
+        "median_gpu_seconds": 0.007770112037658691,
+        "peak_allocated_bytes": 448790528,
+        "peak_reserved_bytes": 448790528,
+        "allocated_before_bytes": 241172480,
+        "reserved_before_bytes": 241172480,
+        "end_device_used_bytes": 770899968,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1244659712,
+          "sampled_device_used_min_bytes": 1037041664,
+          "samples": 53,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "changed_bytes_vs_accepted": 0
+    },
+    {
+      "block": 128,
+      "warps": 8,
+      "direct_threshold": false,
+      "metrics": {
+        "cold_seconds": 0.14204036304727197,
+        "warmups": 2,
+        "repetitions": 7,
+        "wall_seconds": [
+          0.008527052123099566,
+          0.009092799155041575,
+          0.00904732896015048,
+          0.009041529148817062,
+          0.009035869035869837,
+          0.008985669119283557,
+          0.008956539910286665
+        ],
+        "gpu_seconds": [
+          0.008466431617736817,
+          0.009054112434387206,
+          0.009026464462280273,
+          0.00902143955230713,
+          0.00901529598236084,
+          0.00896611213684082,
+          0.008932352066040039
+        ],
+        "median_wall_seconds": 0.009035869035869837,
+        "median_gpu_seconds": 0.00901529598236084,
+        "peak_allocated_bytes": 448790528,
+        "peak_reserved_bytes": 448790528,
+        "allocated_before_bytes": 241172480,
+        "reserved_before_bytes": 241172480,
+        "end_device_used_bytes": 770899968,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1244659712,
+          "sampled_device_used_min_bytes": 1037041664,
+          "samples": 41,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "changed_bytes_vs_accepted": 0
+    },
+    {
+      "block": 256,
+      "warps": 8,
+      "direct_threshold": false,
+      "metrics": {
+        "cold_seconds": 0.15766052692197263,
+        "warmups": 2,
+        "repetitions": 7,
+        "wall_seconds": [
+          0.007594028953462839,
+          0.008087215013802052,
+          0.008156955009326339,
+          0.008165284991264343,
+          0.008153395028784871,
+          0.008153476053848863,
+          0.008151424815878272
+        ],
+        "gpu_seconds": [
+          0.007532544136047363,
+          0.008065024375915527,
+          0.008136704444885253,
+          0.008145055770874023,
+          0.008133631706237793,
+          0.008132608413696289,
+          0.008131487846374512
+        ],
+        "median_wall_seconds": 0.008153395028784871,
+        "median_gpu_seconds": 0.008132608413696289,
+        "peak_allocated_bytes": 448790528,
+        "peak_reserved_bytes": 448790528,
+        "allocated_before_bytes": 241172480,
+        "reserved_before_bytes": 241172480,
+        "end_device_used_bytes": 770899968,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1244659712,
+          "sampled_device_used_min_bytes": 1037041664,
+          "samples": 42,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "changed_bytes_vs_accepted": 0
+    },
+    {
+      "block": 64,
+      "warps": 4,
+      "direct_threshold": true,
+      "metrics": {
+        "cold_seconds": 0.13064129906706512,
+        "warmups": 2,
+        "repetitions": 7,
+        "wall_seconds": [
+          0.006734604015946388,
+          0.007223271066322923,
+          0.007221130887046456,
+          0.007267401088029146,
+          0.007298510987311602,
+          0.007297320058569312,
+          0.007283729966729879
+        ],
+        "gpu_seconds": [
+          0.006691840171813965,
+          0.007200767993927002,
+          0.007196671962738037,
+          0.00724070405960083,
+          0.007270400047302246,
+          0.007271423816680909,
+          0.007259136199951172
+        ],
+        "median_wall_seconds": 0.007267401088029146,
+        "median_gpu_seconds": 0.00724070405960083,
+        "peak_allocated_bytes": 448790528,
+        "peak_reserved_bytes": 448790528,
+        "allocated_before_bytes": 241172480,
+        "reserved_before_bytes": 241172480,
+        "end_device_used_bytes": 770899968,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1244659712,
+          "sampled_device_used_min_bytes": 1037041664,
+          "samples": 36,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "changed_bytes_vs_accepted": 0
+    },
+    {
+      "block": 128,
+      "warps": 4,
+      "direct_threshold": true,
+      "metrics": {
+        "cold_seconds": 0.13429949479177594,
+        "warmups": 2,
+        "repetitions": 7,
+        "wall_seconds": [
+          0.006208267994225025,
+          0.006194517947733402,
+          0.006187827792018652,
+          0.006483307108283043,
+          0.006815464934334159,
+          0.006827933946624398,
+          0.006818134104833007
+        ],
+        "gpu_seconds": [
+          0.006168575763702393,
+          0.006173696041107178,
+          0.00616755199432373,
+          0.006459487915039063,
+          0.006793216228485107,
+          0.006804480075836182,
+          0.006799359798431396
+        ],
+        "median_wall_seconds": 0.006483307108283043,
+        "median_gpu_seconds": 0.006459487915039063,
+        "peak_allocated_bytes": 448790528,
+        "peak_reserved_bytes": 448790528,
+        "allocated_before_bytes": 241172480,
+        "reserved_before_bytes": 241172480,
+        "end_device_used_bytes": 770899968,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1244659712,
+          "sampled_device_used_min_bytes": 1037041664,
+          "samples": 36,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "changed_bytes_vs_accepted": 0
+    },
+    {
+      "block": 256,
+      "warps": 4,
+      "direct_threshold": true,
+      "metrics": {
+        "cold_seconds": 0.1933367568999529,
+        "warmups": 2,
+        "repetitions": 7,
+        "wall_seconds": [
+          0.0057449121959507465,
+          0.005596962990239263,
+          0.005949540063738823,
+          0.006194057874381542,
+          0.006184188881888986,
+          0.006198658142238855,
+          0.00618800800293684
+        ],
+        "gpu_seconds": [
+          0.005627903938293457,
+          0.0055775361061096195,
+          0.005930975914001465,
+          0.00617574405670166,
+          0.006164480209350586,
+          0.006176767826080322,
+          0.006169600009918213
+        ],
+        "median_wall_seconds": 0.006184188881888986,
+        "median_gpu_seconds": 0.006164480209350586,
+        "peak_allocated_bytes": 448790528,
+        "peak_reserved_bytes": 448790528,
+        "allocated_before_bytes": 241172480,
+        "reserved_before_bytes": 241172480,
+        "end_device_used_bytes": 770899968,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1244659712,
+          "sampled_device_used_min_bytes": 1037041664,
+          "samples": 46,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "changed_bytes_vs_accepted": 0
+    },
+    {
+      "block": 128,
+      "warps": 8,
+      "direct_threshold": true,
+      "metrics": {
+        "cold_seconds": 0.12871447205543518,
+        "warmups": 2,
+        "repetitions": 7,
+        "wall_seconds": [
+          0.006765555124729872,
+          0.007290960988029838,
+          0.0073983799666166306,
+          0.007395890075713396,
+          0.00740875001065433,
+          0.007392280036583543,
+          0.007371869869530201
+        ],
+        "gpu_seconds": [
+          0.006726560115814209,
+          0.007270336151123047,
+          0.007377920150756836,
+          0.007374847888946533,
+          0.00738918399810791,
+          0.007365632057189942,
+          0.007351295948028564
+        ],
+        "median_wall_seconds": 0.007392280036583543,
+        "median_gpu_seconds": 0.007365632057189942,
+        "peak_allocated_bytes": 448790528,
+        "peak_reserved_bytes": 448790528,
+        "allocated_before_bytes": 241172480,
+        "reserved_before_bytes": 241172480,
+        "end_device_used_bytes": 770899968,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1244659712,
+          "sampled_device_used_min_bytes": 1037041664,
+          "samples": 35,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "changed_bytes_vs_accepted": 0
+    },
+    {
+      "block": 256,
+      "warps": 8,
+      "direct_threshold": true,
+      "metrics": {
+        "cold_seconds": 0.14230631105601788,
+        "warmups": 2,
+        "repetitions": 7,
+        "wall_seconds": [
+          0.006149518070742488,
+          0.0061232890002429485,
+          0.006152078043669462,
+          0.006727824918925762,
+          0.006730364169925451,
+          0.006725944811478257,
+          0.006734163966029882
+        ],
+        "gpu_seconds": [
+          0.006107135772705078,
+          0.006103040218353272,
+          0.006131711959838867,
+          0.006707200050354004,
+          0.006707200050354004,
+          0.006706111907958985,
+          0.006714367866516113
+        ],
+        "median_wall_seconds": 0.006725944811478257,
+        "median_gpu_seconds": 0.006706111907958985,
+        "peak_allocated_bytes": 448790528,
+        "peak_reserved_bytes": 448790528,
+        "allocated_before_bytes": 241172480,
+        "reserved_before_bytes": 241172480,
+        "end_device_used_bytes": 770899968,
+        "physical_vram_bytes": 25296044032,
+        "nvml": {
+          "sampled_device_used_peak_bytes": 1244659712,
+          "sampled_device_used_min_bytes": 1037041664,
+          "samples": 37,
+          "requested_interval_ms": 5,
+          "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+        }
+      },
+      "changed_bytes_vs_accepted": 0
+    }
+  ],
+  "fp16_cutoff_mismatches": 0
+}

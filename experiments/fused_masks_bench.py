@@ -40,6 +40,10 @@ state = processor.set_text_prompt(
 )
 hook.remove()
 low = captured.pop()[0]
+torch.save(low.cpu(), ROOT / "experiments/results/mask_logits.pt")
+if "--capture-only" in sys.argv:
+    print("Saved learned mask logits", flush=True)
+    raise SystemExit(0)
 del model, processor, state, captured, hook
 gc.collect()
 torch.cuda.empty_cache()

@@ -9,7 +9,9 @@ python experiments/image_sweep.py --sweep experiments/round2.json
 python experiments/image_sweep.py --sweep experiments/round3.json --cases 5 --reps 7
 python experiments/image_sweep.py --sweep experiments/round4.json --cases 5 --reps 9
 python experiments/image_sweep.py --sweep experiments/round5.json --cases 5 --reps 9
+python experiments/image_sweep.py --sweep experiments/round10.json --cases 5 --reps 9
 python experiments/packed_masks.py
+python experiments/fused_masks_bench.py
 python experiments/summarize.py
 ```
 
@@ -18,15 +20,19 @@ fetches the revision used by the supplied experiments from Hugging Face.
 `--output` selects a result directory. Each candidate runs in its own process.
 The default 180-second candidate timeout includes model construction/compilation.
 
-The five round files preserve the candidates, including losers. JSON results
+The round files preserve the candidates, including losers. JSON results
 contain whole-image latency, allocated/reserved VRAM, sampled whole-device NVML
 usage, detection counts, box-matched mask IoU, pixel differences, score error and
 box error. These are practical A/B checks against the stock BF16 and FP16 paths,
 not a ground-truth accuracy benchmark. Text caching timings include a cache hit;
 `combined_uncached` measures encoding the prompt on every image.
 
-There were 55 image attempts over 50 named candidates (including repeats and
-three initial failures later corrected). The three 4K output configurations
+The first pass had 55 image attempts over 50 named candidates (including repeats and
+three initial failures later corrected). Continued hypotheses and decisions are
+in [NOTES.md](NOTES.md). Rounds 6–9 compare candidates on the first public patch;
+round 10 checks the newly accepted public modules. Check out the corresponding
+implementation when repeating an older comparison, since `final` uses the public
+patch from the current checkout. The three initial 4K output configurations
 are recorded separately in `results/packed_masks.json`.
 
 `archive_reference/` contains the seven Python helpers used from the supplied
