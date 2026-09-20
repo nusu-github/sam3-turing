@@ -1,0 +1,6 @@
+{
+  "weight_only_group8_m64n64": {"final": true, "compile": true, "weight_only_int8": true, "weight_only_group": 8},
+  "weight_only_group8_m64n128": {"final": true, "compile": true, "weight_only_int8": true, "weight_only_group": 8, "weight_only_tile": [64, 128, 32, 4]},
+  "weight_only_group4_m64n128": {"final": true, "compile": true, "weight_only_int8": true, "weight_only_group": 4, "weight_only_tile": [64, 128, 32, 4]},
+  "weight_only_group8_m128n64": {"final": true, "compile": true, "weight_only_int8": true, "weight_only_group": 8, "weight_only_tile": [128, 64, 32, 8]}
+}

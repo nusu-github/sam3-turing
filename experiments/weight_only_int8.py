@@ -20,9 +20,23 @@ def _matmul(
     BM: tl.constexpr,
     BN: tl.constexpr,
     BK: tl.constexpr,
+    GROUP_M: tl.constexpr,
 ):
-    mi = tl.program_id(0) * BM + tl.arange(0, BM)
-    ni = tl.program_id(1) * BN + tl.arange(0, BN)
+    if GROUP_M:
+        pid = tl.program_id(0)
+        num_m = tl.cdiv(M, BM)
+        num_n = tl.cdiv(N, BN)
+        group = pid // (GROUP_M * num_n)
+        first_m = group * GROUP_M
+        group_m = tl.minimum(num_m - first_m, GROUP_M)
+        within = pid % (GROUP_M * num_n)
+        pid_m = first_m + within % group_m
+        pid_n = within // group_m
+    else:
+        pid_m = tl.program_id(0)
+        pid_n = tl.program_id(1)
+    mi = pid_m * BM + tl.arange(0, BM)
+    ni = pid_n * BN + tl.arange(0, BN)
     ki = tl.arange(0, BK)
     acc = tl.full((BM, BN), 0, tl.float32)
     for block in range(tl.cdiv(K, BK)):
@@ -42,9 +56,10 @@ def _matmul(
 
 
 class WeightOnlyInt8Linear(DynamicInt8Linear):
-    def __init__(self, linear, tile):
+    def __init__(self, linear, tile, group=0):
         super().__init__(linear)
         self.tile = tuple(tile)
+        self.group = group
 
     def forward(self, x):
         shape = x.shape
@@ -53,7 +68,10 @@ class WeightOnlyInt8Linear(DynamicInt8Linear):
         y = torch.empty((rows, self.out_features), device=x.device, dtype=torch.float16)
         if rows:
             bm, bn, bk, warps = self.tile
-            _matmul[(triton.cdiv(rows, bm), triton.cdiv(self.out_features, bn))](
+            num_m = triton.cdiv(rows, bm)
+            num_n = triton.cdiv(self.out_features, bn)
+            grid = (num_m * num_n,) if self.group else (num_m, num_n)
+            _matmul[grid](
                 x,
                 self.weight_int8,
                 self.weight_scale,
@@ -65,13 +83,14 @@ class WeightOnlyInt8Linear(DynamicInt8Linear):
                 bm,
                 bn,
                 bk,
+                self.group,
                 num_warps=warps,
                 num_stages=3,
             )
         return y.reshape(*shape[:-1], self.out_features)
 
 
-def apply_weight_only_int8(model, tile):
+def apply_weight_only_int8(model, tile, group=0):
     for block in model.backbone.vision_backbone.trunk.blocks:
-        block.mlp.fc1 = WeightOnlyInt8Linear(block.mlp.fc1, tile)
-        block.mlp.fc2 = WeightOnlyInt8Linear(block.mlp.fc2, tile)
+        block.mlp.fc1 = WeightOnlyInt8Linear(block.mlp.fc1, tile, group)
+        block.mlp.fc2 = WeightOnlyInt8Linear(block.mlp.fc2, tile, group)

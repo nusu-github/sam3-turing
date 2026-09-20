@@ -1,0 +1,6 @@
+{
+  "r25_fused_attention_control": {"final": true, "compile": true, "public_int8": true, "public_int8_attention": true, "public_int8_fused": true},
+  "asymmetric_gelu_w4": {"final": true, "compile": true, "public_int8": true, "public_int8_attention": true, "asymmetric_mlp": true, "asymmetric_warps": 4},
+  "asymmetric_gelu_w8": {"final": true, "compile": true, "public_int8": true, "public_int8_attention": true, "asymmetric_mlp": true, "asymmetric_warps": 8},
+  "asymmetric_mlp_only": {"final": true, "compile": true, "public_int8": true, "asymmetric_mlp": true, "asymmetric_warps": 8}
+}

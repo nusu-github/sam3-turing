@@ -182,3 +182,62 @@ efficient Attentionに固定するとFP16が118.83ms、融合INT8が90.93ms。
 `W * (gamma * (x - mean) / std + beta) + b`を、`W * gamma`と`W * beta + b`に分け、
 入力量子化では中心化のみを行って逆標準偏差を出力scaleへ含める。
 量子化前の実数演算では同値だが、INT8では誤差の分布が変わるためA/Bで確認する。
+
+Round 22はMLPだけを省略し、Attentionと元の残差を残す候補。
+checkpointのfc1/fc2重みRMSの積は後半の層ほど小さかったため、末尾1・2・4層と先頭1層を比較する。
+これは実タスクの重要度を測った値ではなく、候補選びの簡単なヒューリスティック。
+順位は`results/mlp_weight_ranking.json`に保存した。
+
+## Round 16：重みだけINT8
+
+FP16の基準114.44msに対し、独自GEMMはM64/N64が168.58ms、M128/N64が150.46ms、
+M64/N128が130.01ms。タイルで改善したが、現状では通常のFP16より遅い。
+Round 23ではCTAをM方向の小さいグループで並べ替え、L2キャッシュで入力・重みを
+再利用する案を試す。個々の積和の順序は同じで、タイルを実行する順序を変える。
+
+## TuringのSKU差
+
+GTX 1660系はTuringだがTensor Coreを搭載しない。
+[NVIDIA公式比較表](https://www.nvidia.com/en-eu/geforce/graphics-cards/compare/)と
+[NVIDIAのRTX/GTX解説](https://blogs.nvidia.com/blog/whats-the-difference-between-nvidia-rtx-and-gtx/)で確認した。
+RTX 2060などとのハードウェア差を含め、3090上のINT8やTensor Core GEMMの測定値を
+Turing全体へ外挿しない。ここでの実行環境は引き続き3090。
+
+## Round 19：入力と画像neck
+
+Attention射影INT8（GELU融合なし）の基準88.74msに対し、uint8 resize後の
+正規化融合はFP16出力88.51ms、FP32出力87.72ms。FP16出力の5条件の差は基準と同じ。
+neck全体のcompileは88.56ms、正規化FP16との組合せ86.87msだった。
+後者はCUDA allocated 1.454GiB・NVML 2.874GiB、平均IoU 0.996951・947画素変化。
+全設定で検出数1/4/6/4/0は一致。基準との速度差が小さく、
+neckのcompileには新たなGraph境界が増えるため、今回は実験候補として保存する。
+
+Round 16の重みのみINT8は全タイルで同じ出力差（平均IoU 0.999047・338画素変化）。
+標準FP16より出力差は増えるが、動的INT8より小さい。速度がまだ不利なため、
+Round 23のCTA並べ替えを先に実行して改善余地を見る。
+
+## 追加候補の準備
+
+Round 24はMLPの中間channelを重みノルムとbiasで順位付けし、残す幅を64の倍数に揃える。
+98%・95%・90%・75%を残す全層版と、後半8層だけ75%にする版を比較する。
+再学習や較正なしの近似であり、重要度を正解ラベルで確認したものではない。
+
+Sciteで[PTQ4SAM](https://arxiv.org/abs/2405.03144)と
+[SAQ-SAM](https://arxiv.org/abs/2503.06515)を見つけ、原著の概要を参照した。
+HFのpaper_search connectorは利用できなかったため、既存の`hf papers search`も使用。
+これらの手法を再現するのではなく、値の分布を考慮する簡単な候補を試す。
+Round 25はGELU後だけを非対称INT8にする。tokenごとのmin/maxからscaleとzero pointを作り、
+`INT8積 - zero_point * 重みの行和`で補正してから逆量子化する。
+正側へ偏ったGELUの分布にINT8の範囲を多く割り当てる案で、追加学習は行わない。
+
+Round 23の並べ替えは、[Triton公式GEMM資料](https://triton-lang.org/main/getting-started/tutorials/03-matrix-multiplication.html)の
+M方向のグループ化と同じ配置。上流コードもGitHub connectorで参照した。
+
+## Round 23：重みINT8のGEMM並べ替え
+
+グループ8・M64/N64が124.92ms、グループ8・M64/N128が117.71ms、
+グループ4・M64/N128が118.74ms、グループ8・M128/N64が127.69ms。
+全設定でallocated 1.575GiB・NVML 3.097GiB。
+並べ替え前と同じ5条件・15マスク・338画素変化・平均IoU 0.999047で、
+最速版は130.01→117.71msへ改善した。標準FP16の114.44msよりまだ遅いので、
+公開パッチには追加せず、後で再利用できるkernel候補として保存する。

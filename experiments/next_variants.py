@@ -6,6 +6,11 @@ import torch.nn.functional as F
 from torch import nn
 
 
+class ZeroMlp(nn.Module):
+    def forward(self, x):
+        return torch.zeros_like(x)
+
+
 def _compile_stage(fn, cfg):
     compiled = torch.compile(fn, mode=cfg.get("stage_mode", "reduce-overhead"))
     if not cfg.get("clone_stage_outputs"):
@@ -22,6 +27,18 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("prune_mlp_keep"):
+        from pruned_mlp import apply_pruned_mlp
+
+        apply_pruned_mlp(model, cfg["prune_mlp_keep"], cfg.get("prune_mlp_layers"))
+    if cfg.get("asymmetric_mlp"):
+        from asymmetric_mlp import apply_asymmetric_mlp
+
+        apply_asymmetric_mlp(model, stack, cfg.get("asymmetric_warps", 8))
+    if cfg.get("skip_mlp_layers"):
+        for i in cfg["skip_mlp_layers"]:
+            # Release the skipped weights; the residual and Attention remain.
+            model.backbone.vision_backbone.trunk.blocks[i].mlp = ZeroMlp()
     if cfg.get("folded_norm_int8"):
         from folded_norm_int8 import apply_folded_norm_int8
 
@@ -44,7 +61,11 @@ def apply_next_variants(model, processor, cfg, stack):
     if cfg.get("weight_only_int8"):
         from weight_only_int8 import apply_weight_only_int8
 
-        apply_weight_only_int8(model, cfg.get("weight_only_tile", [64, 64, 32, 4]))
+        apply_weight_only_int8(
+            model,
+            cfg.get("weight_only_tile", [64, 64, 32, 4]),
+            cfg.get("weight_only_group", 0),
+        )
     if cfg.get("int8_layernorm"):
         from norm_int8 import apply_norm_int8
 

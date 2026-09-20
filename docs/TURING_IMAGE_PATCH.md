@@ -8,6 +8,9 @@
 
 このRunPodコンテナの既存Python / NVIDIA PyTorch 2.10.0a0 / CUDA 13.0で測定した。
 専用の仮想環境は使用していない。Turing 6GB実機は未検証。
+6GBでもRTX 2060とGTX 1660系は構成が異なり、GTX 16系にはTensor Coreがない。
+[NVIDIA公式比較表](https://www.nvidia.com/en-eu/geforce/graphics-cards/compare/)を参照。
+FP16・INT8・コンパイルの効果は各GPUで個別に比較する。
 
 | 構成 | 1画像 ms | PyTorch allocated GiB | GPU全体 NVML GiB | マスク平均IoU（素の状態比） |
 |---|---:|---:|---:|---:|
@@ -61,7 +64,7 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [INT8・射影・GELU融合JSON](../experiments/results/accepted_fused_attention.json) /
 [固定語句INT8 JSON](../experiments/results/compact_fixed_all_int8.json)
 
-完了済みラウンドの比較は152候補・157試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は165候補・170試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
