@@ -1,0 +1,49 @@
+{
+  "r30_fused_attention_control": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true
+  },
+  "compact_int8_resolution896": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 896
+  },
+  "compact_int8_resolution840": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 840
+  },
+  "compact_int8_resolution784": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 784
+  },
+  "compact_int8_resolution672": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 672
+  },
+  "compact_int8_resolution560": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "resolution": 560
+  }
+}

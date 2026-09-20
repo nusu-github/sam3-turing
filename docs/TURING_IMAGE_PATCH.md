@@ -66,7 +66,7 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [INT8・射影・GELU融合JSON](../experiments/results/accepted_fused_attention.json) /
 [固定語句INT8 JSON](../experiments/results/compact_fixed_all_int8.json)
 
-完了済みラウンドの比較は173候補・178試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は188候補・193試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方

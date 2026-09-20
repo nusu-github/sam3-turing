@@ -27,6 +27,10 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("dequant_weight"):
+        from dequant_weight import apply_dequant_weight
+
+        apply_dequant_weight(model, cfg.get("dequant_weight_attention", False))
     if cfg.get("group_quantize"):
         from grouped_quantize import apply_grouped_quantize
 
