@@ -1,8 +1,9 @@
 """Exercise state reuse, geometric prompts and packed output on the public patch."""
 
-import gc
+import argparse
 import json
 import sys
+from contextlib import ExitStack
 from pathlib import Path
 
 import torch
@@ -15,6 +16,13 @@ from sam3.model_builder import build_sam3_image_model
 from sam3.model.sam3_image_processor import Sam3Processor
 from sam3.turing import apply_turing_patch, freeze_text_prompts
 from sam3.turing_masks import resize_and_pack_masks, unpack_masks
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--config", type=json.loads, default={})
+parser.add_argument(
+    "--output", type=Path, default=ROOT / "experiments/results/api_smoke_continued.json"
+)
+args = parser.parse_args()
 
 torch.set_num_threads(1)
 torch.backends.cuda.matmul.allow_tf32 = False
@@ -29,6 +37,15 @@ torch.set_num_threads(4)
 p = apply_turing_patch(
     Sam3Processor(model), compile=True, compile_text=True, packed_masks=True
 )
+if args.config.get("public_int8"):
+    from sam3.turing_int8 import apply_int8_mlp_patch
+
+    apply_int8_mlp_patch(p)
+stack = ExitStack()
+if args.config:
+    from next_variants import apply_next_variants
+
+    apply_next_variants(model, p, args.config, stack)
 truck = Image.open(ROOT / "assets/images/truck.jpg").convert("RGB")
 groceries = Image.open(ROOT / "assets/images/groceries.jpg").convert("RGB")
 a = p.set_image(truck)
@@ -41,10 +58,23 @@ assert torch.equal(
     expected, a["masks_packed"]
 ), "Old image state or cached text changed after another image"
 result = {
+    "config": args.config,
     "truck_count": len(a["scores"]),
     "bag_count": len(b["scores"]),
     "image_state_reuse": True,
 }
+with torch.inference_mode(), torch.autocast(
+    "cuda", dtype=torch.float16, cache_enabled=False
+):
+    direct = model.forward_grounding(
+        backbone_out=a["backbone_out"],
+        find_input=p.find_stage,
+        find_target=None,
+        geometric_prompt=a["geometric_prompt"],
+    )
+assert "prev_encoder_out" in direct and "encoder_hidden_states" in direct
+result["direct_model_output_preserved"] = True
+del direct
 p.reset_all_prompts(a)
 assert "masks_packed" not in a and "mask_shape" not in a
 a = p.add_geometric_prompt([0.5, 0.5, 0.8, 0.8], True, a)
@@ -82,7 +112,6 @@ result["strided_pack_changed_pixels"] = int(
 result["autocast_restored"] = True
 result["threshold_empty"] = True
 result["reset_clears_packed_output"] = True
-(ROOT / "experiments/results/api_smoke_continued.json").write_text(
-    json.dumps(result, indent=2) + "\n"
-)
+args.output.write_text(json.dumps(result, indent=2) + "\n")
 print(json.dumps(result, indent=2), flush=True)
+stack.close()

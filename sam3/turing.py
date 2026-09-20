@@ -34,6 +34,58 @@ def _compile_with_owned_output(fn, mode):
     return call
 
 
+def _compile_text_grounding(model, mode):
+    # Empty geometric inputs need no ROI scaling or pinned CPU allocation.
+    geometry = model.geometry_encoder
+    for method, field in (("_encode_points", "points"), ("_encode_boxes", "boxes")):
+        original = getattr(geometry, method)
+
+        def encode(*args, original=original, field=field, **kwargs):
+            values = kwargs[field]
+            if values.shape[0] == 0:
+                empty = values.new_empty(
+                    (0, values.shape[1], geometry.d_model),
+                    dtype=geometry.label_embed.weight.dtype,
+                )
+                return empty, kwargs[field + "_mask"]
+            return original(*args, **kwargs)
+
+        setattr(geometry, method, encode)
+
+    def compact(backbone_out, find_input, geometric_prompt):
+        output = model.forward_grounding(
+            backbone_out=backbone_out,
+            find_input=find_input,
+            geometric_prompt=geometric_prompt,
+            find_target=None,
+        )
+        return {
+            name: output[name]
+            for name in (
+                "pred_logits",
+                "presence_logit_dec",
+                "pred_boxes",
+                "pred_masks",
+            )
+        }
+
+    compiled = _compile_with_owned_output(compact, mode)
+
+    def grounding(*, backbone_out, find_input, geometric_prompt, find_target):
+        for name in ("box_embeddings", "point_embeddings", "mask_embeddings"):
+            value = getattr(geometric_prompt, name)
+            if value is not None and value.shape[0]:
+                return model.forward_grounding(
+                    backbone_out=backbone_out,
+                    find_input=find_input,
+                    geometric_prompt=geometric_prompt,
+                    find_target=find_target,
+                )
+        return compiled(backbone_out, find_input, geometric_prompt)
+
+    return grounding
+
+
 def _inference_call(model, fn):
     @wraps(fn)
     def call(*args, **kwargs):
@@ -63,9 +115,10 @@ def apply_turing_patch(
     and the usual dense masks/probabilities/scores/boxes. SAM 1 interactivity,
     training, video and moving the model after patching are outside this patch.
     Text cache hits skip encoding; a new prompt still uses the text encoder.
-    compile=True compiles the vision trunk, detection decoder and segmentation
-    head. compile_text=True additionally compiles the text Transformer for
-    new prompts. Smaller resolutions trade mask quality for speed.
+    compile=True compiles the vision trunk and text-prompt grounding. Geometric
+    prompts use separate compiled decoder/head stages. compile_text=True also
+    compiles the text Transformer for new prompts. Smaller resolutions trade
+    mask quality for speed.
     compile="max-autotune" enables additional kernel tuning.
     packed_masks=True returns masks_packed + mask_shape instead of dense masks
     and probabilities; decode individual rows with turing_masks.unpack_masks.
@@ -221,11 +274,13 @@ def apply_turing_patch(
     if early_filter:
         model._run_segmentation_heads = segmentation_heads
 
+    compiled_grounding = None
+
     def grounding(state):
         nonlocal selecting
         selecting = early_filter
         try:
-            outputs = model.forward_grounding(
+            outputs = (compiled_grounding or model.forward_grounding)(
                 backbone_out=state["backbone_out"],
                 find_input=processor.find_stage,
                 geometric_prompt=state["geometric_prompt"],
@@ -290,6 +345,8 @@ def apply_turing_patch(
         neck.trunk.forward = torch.compile(neck.trunk.forward, mode=mode)
         head.forward = torch.compile(head.forward, mode=mode)
         decoder.forward = _compile_with_owned_output(decoder.forward, mode)
+        if not early_filter:
+            compiled_grounding = _compile_text_grounding(model, mode)
     if compile_text:
         core = model.backbone.language_backbone.encoder.transformer
         core.forward = torch.compile(core.forward, mode="reduce-overhead")

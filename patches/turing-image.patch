@@ -1,9 +1,9 @@
 diff --git a/sam3/turing.py b/sam3/turing.py
 new file mode 100644
-index 0000000..e80e015
+index 0000000..8ad0465
 --- /dev/null
 +++ b/sam3/turing.py
-@@ -0,0 +1,333 @@
+@@ -0,0 +1,390 @@
 +"""Runtime patches for single-image SAM 3 inference on small CUDA GPUs.
 +
 +Usage: processor = apply_turing_patch(Sam3Processor(model))
@@ -40,6 +40,58 @@ index 0000000..e80e015
 +    return call
 +
 +
++def _compile_text_grounding(model, mode):
++    # Empty geometric inputs need no ROI scaling or pinned CPU allocation.
++    geometry = model.geometry_encoder
++    for method, field in (("_encode_points", "points"), ("_encode_boxes", "boxes")):
++        original = getattr(geometry, method)
++
++        def encode(*args, original=original, field=field, **kwargs):
++            values = kwargs[field]
++            if values.shape[0] == 0:
++                empty = values.new_empty(
++                    (0, values.shape[1], geometry.d_model),
++                    dtype=geometry.label_embed.weight.dtype,
++                )
++                return empty, kwargs[field + "_mask"]
++            return original(*args, **kwargs)
++
++        setattr(geometry, method, encode)
++
++    def compact(backbone_out, find_input, geometric_prompt):
++        output = model.forward_grounding(
++            backbone_out=backbone_out,
++            find_input=find_input,
++            geometric_prompt=geometric_prompt,
++            find_target=None,
++        )
++        return {
++            name: output[name]
++            for name in (
++                "pred_logits",
++                "presence_logit_dec",
++                "pred_boxes",
++                "pred_masks",
++            )
++        }
++
++    compiled = _compile_with_owned_output(compact, mode)
++
++    def grounding(*, backbone_out, find_input, geometric_prompt, find_target):
++        for name in ("box_embeddings", "point_embeddings", "mask_embeddings"):
++            value = getattr(geometric_prompt, name)
++            if value is not None and value.shape[0]:
++                return model.forward_grounding(
++                    backbone_out=backbone_out,
++                    find_input=find_input,
++                    geometric_prompt=geometric_prompt,
++                    find_target=find_target,
++                )
++        return compiled(backbone_out, find_input, geometric_prompt)
++
++    return grounding
++
++
 +def _inference_call(model, fn):
 +    @wraps(fn)
 +    def call(*args, **kwargs):
@@ -69,9 +121,10 @@ index 0000000..e80e015
 +    and the usual dense masks/probabilities/scores/boxes. SAM 1 interactivity,
 +    training, video and moving the model after patching are outside this patch.
 +    Text cache hits skip encoding; a new prompt still uses the text encoder.
-+    compile=True compiles the vision trunk, detection decoder and segmentation
-+    head. compile_text=True additionally compiles the text Transformer for
-+    new prompts. Smaller resolutions trade mask quality for speed.
++    compile=True compiles the vision trunk and text-prompt grounding. Geometric
++    prompts use separate compiled decoder/head stages. compile_text=True also
++    compiles the text Transformer for new prompts. Smaller resolutions trade
++    mask quality for speed.
 +    compile="max-autotune" enables additional kernel tuning.
 +    packed_masks=True returns masks_packed + mask_shape instead of dense masks
 +    and probabilities; decode individual rows with turing_masks.unpack_masks.
@@ -227,11 +280,13 @@ index 0000000..e80e015
 +    if early_filter:
 +        model._run_segmentation_heads = segmentation_heads
 +
++    compiled_grounding = None
++
 +    def grounding(state):
 +        nonlocal selecting
 +        selecting = early_filter
 +        try:
-+            outputs = model.forward_grounding(
++            outputs = (compiled_grounding or model.forward_grounding)(
 +                backbone_out=state["backbone_out"],
 +                find_input=processor.find_stage,
 +                geometric_prompt=state["geometric_prompt"],
@@ -296,6 +351,8 @@ index 0000000..e80e015
 +        neck.trunk.forward = torch.compile(neck.trunk.forward, mode=mode)
 +        head.forward = torch.compile(head.forward, mode=mode)
 +        decoder.forward = _compile_with_owned_output(decoder.forward, mode)
++        if not early_filter:
++            compiled_grounding = _compile_text_grounding(model, mode)
 +    if compile_text:
 +        core = model.backbone.language_backbone.encoder.transformer
 +        core.forward = torch.compile(core.forward, mode="reduce-overhead")
@@ -336,6 +393,113 @@ index 0000000..e80e015
 +    import gc
 +
 +    gc.collect()
++    return processor
+diff --git a/sam3/turing_int8.py b/sam3/turing_int8.py
+new file mode 100644
+index 0000000..811e5f7
+--- /dev/null
++++ b/sam3/turing_int8.py
+@@ -0,0 +1,101 @@
++"""Optional dynamic INT8 MLPs; trades a small output difference for speed/memory."""
++
++import torch
++from torch import nn
++import triton
++import triton.language as tl
++from triton.language.extra.cuda import libdevice
++
++
++@triton.jit
++def _quantize(src, dst, scales, K: tl.constexpr, BLOCK: tl.constexpr):
++    row = tl.program_id(0)
++    i = tl.arange(0, BLOCK)
++    x = tl.load(src + row * K + i, i < K, 0).to(tl.float32)
++    scale = tl.maximum(tl.max(tl.abs(x), 0), 1.0e-8) / 127.0
++    q = libdevice.nearbyint(x / scale).to(tl.int8)
++    tl.store(dst + row * K + i, q, i < K)
++    tl.store(scales + row, scale)
++
++
++class DynamicInt8Linear(nn.Module):
++    def __init__(self, linear):
++        super().__init__()
++        self.in_features = linear.in_features
++        self.out_features = linear.out_features
++        w = linear.weight.detach().float()
++        scales = w.abs().amax(1).clamp_min_(1.0e-8) / 127
++        self.register_buffer(
++            "weight_int8",
++            (w / scales[:, None]).round().clamp_(-127, 127).to(torch.int8),
++        )
++        self.register_buffer("weight_scale", scales)
++        self.register_buffer(
++            "bias",
++            (
++                linear.bias.detach()
++                if linear.bias is not None
++                else torch.zeros(
++                    self.out_features, device=w.device, dtype=torch.float16
++                )
++            ),
++        )
++
++    def forward(self, x):
++        shape = x.shape
++        x = x.reshape(-1, self.in_features).contiguous()
++        rows = x.shape[0]
++        if not rows:
++            return x.new_empty((*shape[:-1], self.out_features), dtype=torch.float16)
++        # Keep small/nonstandard resolutions compatible with INT8 GEMM tiles.
++        padded_rows = max(32, triton.cdiv(rows, 16) * 16)
++        if padded_rows != rows:
++            x = torch.nn.functional.pad(x, (0, 0, 0, padded_rows - rows))
++        q = torch.empty_like(x, dtype=torch.int8)
++        scales = torch.empty(x.shape[0], device=x.device, dtype=torch.float32)
++        _quantize[(x.shape[0],)](
++            x, q, scales, self.in_features, triton.next_power_of_2(self.in_features)
++        )
++        mm = torch._int_mm(q, self.weight_int8.T)
++        result = (mm.float() * scales[:, None]) * self.weight_scale[None, :] + self.bias
++        return result[:rows].to(torch.float16).reshape(*shape[:-1], self.out_features)
++
++
++def apply_int8_mlp_patch(processor, *, vision=True, text=False):
++    """Quantize selected MLPs after apply_turing_patch, before first inference.
++
++    Per-token activations and per-output-channel weights use signed INT8;
++    GEMM accumulates in INT32 and returns FP16. No calibration or retraining.
++    The original weights are released. Rebuild the model to undo the patch.
++    vision=True targets the ViT MLPs; text=True additionally targets the text
++    MLPs, reducing memory but potentially slowing new-prompt encoding.
++    """
++    if not getattr(processor, "_turing_patched", False):
++        raise ValueError("Apply the Turing image patch first")
++    if not vision and not text:
++        raise ValueError("Select vision and/or text MLPs")
++    model = processor.model
++    if model.training:
++        raise ValueError("INT8 MLPs are for inference only")
++    targets = []
++    if vision:
++        targets.extend(
++            (block.mlp, name)
++            for block in model.backbone.vision_backbone.trunk.blocks
++            for name in ("fc1", "fc2")
++        )
++    if text:
++        if model.backbone.language_backbone is None:
++            raise ValueError("The text encoder has already been released")
++        targets.extend(
++            (block.mlp, name)
++            for block in model.backbone.language_backbone.encoder.transformer.resblocks
++            for name in ("c_fc", "c_proj")
++        )
++    if any(
++        not isinstance(getattr(parent, name), nn.Linear) for parent, name in targets
++    ):
++        raise ValueError("Expected unquantized Linear MLPs; apply each selection once")
++    for parent, name in targets:
++        setattr(parent, name, DynamicInt8Linear(getattr(parent, name)))
 +    return processor
 diff --git a/sam3/turing_masks.py b/sam3/turing_masks.py
 new file mode 100644
@@ -492,110 +656,3 @@ index 0000000..a54ec97
 +            packed, out, pixels, row_bytes, 1024
 +        )
 +    return out
-diff --git a/sam3/turing_int8.py b/sam3/turing_int8.py
-new file mode 100644
-index 0000000..811e5f7
---- /dev/null
-+++ b/sam3/turing_int8.py
-@@ -0,0 +1,101 @@
-+"""Optional dynamic INT8 MLPs; trades a small output difference for speed/memory."""
-+
-+import torch
-+from torch import nn
-+import triton
-+import triton.language as tl
-+from triton.language.extra.cuda import libdevice
-+
-+
-+@triton.jit
-+def _quantize(src, dst, scales, K: tl.constexpr, BLOCK: tl.constexpr):
-+    row = tl.program_id(0)
-+    i = tl.arange(0, BLOCK)
-+    x = tl.load(src + row * K + i, i < K, 0).to(tl.float32)
-+    scale = tl.maximum(tl.max(tl.abs(x), 0), 1.0e-8) / 127.0
-+    q = libdevice.nearbyint(x / scale).to(tl.int8)
-+    tl.store(dst + row * K + i, q, i < K)
-+    tl.store(scales + row, scale)
-+
-+
-+class DynamicInt8Linear(nn.Module):
-+    def __init__(self, linear):
-+        super().__init__()
-+        self.in_features = linear.in_features
-+        self.out_features = linear.out_features
-+        w = linear.weight.detach().float()
-+        scales = w.abs().amax(1).clamp_min_(1.0e-8) / 127
-+        self.register_buffer(
-+            "weight_int8",
-+            (w / scales[:, None]).round().clamp_(-127, 127).to(torch.int8),
-+        )
-+        self.register_buffer("weight_scale", scales)
-+        self.register_buffer(
-+            "bias",
-+            (
-+                linear.bias.detach()
-+                if linear.bias is not None
-+                else torch.zeros(
-+                    self.out_features, device=w.device, dtype=torch.float16
-+                )
-+            ),
-+        )
-+
-+    def forward(self, x):
-+        shape = x.shape
-+        x = x.reshape(-1, self.in_features).contiguous()
-+        rows = x.shape[0]
-+        if not rows:
-+            return x.new_empty((*shape[:-1], self.out_features), dtype=torch.float16)
-+        # Keep small/nonstandard resolutions compatible with INT8 GEMM tiles.
-+        padded_rows = max(32, triton.cdiv(rows, 16) * 16)
-+        if padded_rows != rows:
-+            x = torch.nn.functional.pad(x, (0, 0, 0, padded_rows - rows))
-+        q = torch.empty_like(x, dtype=torch.int8)
-+        scales = torch.empty(x.shape[0], device=x.device, dtype=torch.float32)
-+        _quantize[(x.shape[0],)](
-+            x, q, scales, self.in_features, triton.next_power_of_2(self.in_features)
-+        )
-+        mm = torch._int_mm(q, self.weight_int8.T)
-+        result = (mm.float() * scales[:, None]) * self.weight_scale[None, :] + self.bias
-+        return result[:rows].to(torch.float16).reshape(*shape[:-1], self.out_features)
-+
-+
-+def apply_int8_mlp_patch(processor, *, vision=True, text=False):
-+    """Quantize selected MLPs after apply_turing_patch, before first inference.
-+
-+    Per-token activations and per-output-channel weights use signed INT8;
-+    GEMM accumulates in INT32 and returns FP16. No calibration or retraining.
-+    The original weights are released. Rebuild the model to undo the patch.
-+    vision=True targets the ViT MLPs; text=True additionally targets the text
-+    MLPs, reducing memory but potentially slowing new-prompt encoding.
-+    """
-+    if not getattr(processor, "_turing_patched", False):
-+        raise ValueError("Apply the Turing image patch first")
-+    if not vision and not text:
-+        raise ValueError("Select vision and/or text MLPs")
-+    model = processor.model
-+    if model.training:
-+        raise ValueError("INT8 MLPs are for inference only")
-+    targets = []
-+    if vision:
-+        targets.extend(
-+            (block.mlp, name)
-+            for block in model.backbone.vision_backbone.trunk.blocks
-+            for name in ("fc1", "fc2")
-+        )
-+    if text:
-+        if model.backbone.language_backbone is None:
-+            raise ValueError("The text encoder has already been released")
-+        targets.extend(
-+            (block.mlp, name)
-+            for block in model.backbone.language_backbone.encoder.transformer.resblocks
-+            for name in ("c_fc", "c_proj")
-+        )
-+    if any(
-+        not isinstance(getattr(parent, name), nn.Linear) for parent, name in targets
-+    ):
-+        raise ValueError("Expected unquantized Linear MLPs; apply each selection once")
-+    for parent, name in targets:
-+        setattr(parent, name, DynamicInt8Linear(getattr(parent, name)))
-+    return processor

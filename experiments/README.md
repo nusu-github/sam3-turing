@@ -32,7 +32,9 @@ not a ground-truth accuracy benchmark. Text caching timings include a cache hit;
 The first pass had 55 image attempts over 50 named candidates (including repeats and
 three initial failures later corrected). Continued hypotheses and decisions are
 in [NOTES.md](NOTES.md). Rounds 6–9 compare candidates on the first public patch;
-round 10 checks the newly accepted public modules. Check out the corresponding
+round 10 checks the first combined public modules, rounds 11–13 compare further
+candidates on those modules, and round 14 uses the accepted compact grounding.
+Check out the corresponding
 implementation when repeating an older comparison, since `final` uses the public
 patch from the current checkout. The three initial 4K output configurations
 are recorded separately in `results/packed_masks.json`.

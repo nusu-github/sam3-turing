@@ -97,4 +97,21 @@ MLPの後で元の配置に戻し、残差は元の解像度を保つ。`adaptiv
 全設定で検出数1/4/6/4/0は一致した。alpha 0.25に小幅な改善はあるが、
 追加設定を標準INT8へ採用するほどの差ではないため、候補として保存する。
 メモリもCUDA allocated 1.586〜1.588GiB、NVML 3.042〜3.062GiBでほぼ同じ。
-Round 13〜15は次の測定用として用意した。
+### Round 13の結果
+
+出力を4配列に絞ってGraph外でcloneする版は、FP16基準123.12msに対して115.36ms。
+CUDA allocatedは1.875→1.862GiB、NVMLは3.104→3.097GiBだった。
+5条件の検出数は一致し、変化画素は285、平均mask IoUは0.999205。
+Graphを使わないdefault compileは114.15msだがNVMLは3.208GiB。
+INT8との組合せは92.64ms。feature view・固定metadata・最終層だけのscore計算を追加しても
+92.79msで、追加効果はなかった。
+
+通常パッチではprocessor内だけでコンパイル結果を4配列に絞り、直接のmodel呼出しには
+元の出力辞書を返す形に変更した。box/point/mask promptとearly_filterは従来の段ごとの
+コンパイル経路を使う。INT8・packed maskを併用して、画像状態の再利用、box prompt、
+空出力、固定語句、直接modelを呼ぶ場合の出力を確認し、採用した。
+Round 14の公開API再測定はstock 210.81ms、FP16 114.31ms、INT8 92.26msだった。
+
+Round 14以降はこの更新版を基準に測る。Round 16には、重みだけINT8で保持し、
+入力はFP16のままTensor Core演算する別案も用意した。列ごとの重みスケールを
+積和の後に掛けることで、完全なFP16重み配列の展開を避ける。

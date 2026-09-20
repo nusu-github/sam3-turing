@@ -22,6 +22,10 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("weight_only_int8"):
+        from weight_only_int8 import apply_weight_only_int8
+
+        apply_weight_only_int8(model, cfg.get("weight_only_tile", [64, 64, 32, 4]))
     if cfg.get("fused_int8_mlp"):
         from fused_int8_mlp import apply_fused_int8_mlp
 
