@@ -88,7 +88,7 @@ def run(args):
         "name": f"prompt_batch_{args.mode}",
         "config": vars(args),
         "environment": environment(),
-        "scope": "One image encoding plus four prompts on truck.jpg, including preprocessing and text/mask processing; 2 warmups, 9 repeats, captions retained in text cache for patched modes.",
+        "scope": "One image encoding plus four prompts on truck.jpg, including preprocessing and text/mask processing; 2 warmups, 9 repeats, captions retained in text cache for patched modes. Allocator cache is not cleared after model construction; NVML can include unused build reserves.",
         "prompt_metrics": metrics,
         "checks": checks,
     }

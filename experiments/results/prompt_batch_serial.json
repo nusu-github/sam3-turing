@@ -1,0 +1,111 @@
+{
+  "name": "prompt_batch_serial",
+  "config": {
+    "checkpoint": "/workspace/.cache/huggingface/hub/models--facebook--sam3/snapshots/3c879f39826c281e95690f02c7821c4de09afae7/sam3.pt",
+    "mode": "serial"
+  },
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.10.0a0+b558c986e8.nv25.11",
+    "cuda": "13.0",
+    "cudnn": 91500,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "capability": [
+      8,
+      6
+    ],
+    "physical_vram_bytes": 25296044032,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "cublas_workspace_config": ":4096:8"
+  },
+  "scope": "One image encoding plus four prompts on truck.jpg, including preprocessing and text/mask processing; 2 warmups, 9 repeats, captions retained in text cache for patched modes. Allocator cache is not cleared after model construction; NVML can include unused build reserves.",
+  "prompt_metrics": {
+    "cold_seconds": 22.631592207122594,
+    "warmups": 2,
+    "repetitions": 9,
+    "wall_seconds": [
+      0.12648541294038296,
+      0.12443791097030044,
+      0.12415437400341034,
+      0.12429870199412107,
+      0.12336022197268903,
+      0.12375884782522917,
+      0.12245702999643981,
+      0.12346033100038767,
+      0.12395137501880527
+    ],
+    "gpu_seconds": [
+      0.12642816162109374,
+      0.12440048217773438,
+      0.12411698913574219,
+      0.12425830078125,
+      0.12332646179199219,
+      0.12372480010986328,
+      0.12242329406738281,
+      0.12342371368408203,
+      0.12391423797607422
+    ],
+    "median_wall_seconds": 0.12395137501880527,
+    "median_gpu_seconds": 0.12391423797607422,
+    "peak_allocated_bytes": 851654144,
+    "peak_reserved_bytes": 3833593856,
+    "allocated_before_bytes": 601776128,
+    "reserved_before_bytes": 3833593856,
+    "end_device_used_bytes": 2010316800,
+    "physical_vram_bytes": 25296044032,
+    "nvml": {
+      "sampled_device_used_peak_bytes": 4665114624,
+      "sampled_device_used_min_bytes": 2131755008,
+      "samples": 4273,
+      "requested_interval_ms": 5,
+      "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+    }
+  },
+  "checks": {
+    "truck": {
+      "reference_count": 1,
+      "count": 1,
+      "matched": 1,
+      "mean_mask_iou": 0.999685713477549,
+      "min_mask_iou": 0.999685713477549,
+      "changed_pixels": 200,
+      "compared_pixels": 2160000,
+      "probability_mae": 0.0007287077162000869,
+      "score_max_abs": 0.0107421875,
+      "box_max_abs_px": 0.5709228515625
+    },
+    "wheel": {
+      "reference_count": 4,
+      "count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9963910871103763,
+      "min_mask_iou": 0.9949948476372736,
+      "changed_pixels": 234,
+      "compared_pixels": 8640000,
+      "probability_mae": 3.4012097782558864e-05,
+      "score_max_abs": 0.00439453125,
+      "box_max_abs_px": 0.5277099609375
+    },
+    "vehicle": {
+      "reference_count": 1,
+      "count": 1,
+      "matched": 1,
+      "mean_mask_iou": 0.9996416698500696,
+      "min_mask_iou": 0.9996416698500696,
+      "changed_pixels": 227,
+      "compared_pixels": 2160000,
+      "probability_mae": 0.0007074857358579282,
+      "score_max_abs": 0.00439453125,
+      "box_max_abs_px": 0.7265625
+    },
+    "elephant": {
+      "reference_count": 0,
+      "count": 0,
+      "matched": 0
+    }
+  },
+  "allocator_cache_cleared_after_build": false
+}

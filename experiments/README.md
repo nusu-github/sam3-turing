@@ -52,3 +52,9 @@ with one CPU thread, then restore four threads for inference. The initial
 in-place output prototype had a Python decorator namespace error; the third
 round fixes it. Earlier successful baseline measurements are preserved with
 the `_before_round3` suffix.
+
+`prompt_batch_bench.py --checkpoint /path/to/sam3.pt` compares four prompts on one
+image using stock inference, patched serial calls and batches of 2 or 4. This
+probe retains the allocator cache from construction, so its NVML peaks include
+unused build reserves and differ in scope from `image_sweep.py`. The measured
+serial path was faster and used less allocated memory than prompt batching.

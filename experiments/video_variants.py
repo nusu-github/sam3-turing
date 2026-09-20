@@ -77,6 +77,16 @@ def apply_video_variant(predictor, variant):
         "fp16_int8_cpu_compile_efficient",
         "fp16_int8_cpu_trim_compile",
         "fp16_int8_cpu_trim_compile_efficient",
+        "fp16_int8_cpu_trim_compile_decoder",
+        "fp16_int8_cpu_trim_compile_detector",
+        "fp16_int8_cpu_trim_compile_necks",
+        "fp16_int8_cpu_trim_compile_tracker",
+        "fp16_int8_cpu_trim_compile_all",
+        "fp16_int8_cpu_trim_compile_all_efficient",
+        "fp16_int8_cpu_trim_compile_rpb",
+        "fp16_int8_cpu_trim_compile_decoder_rpb",
+        "fp16_int8_cpu_trim_compile_all_rpb",
+        "fp16_int8_cpu_trim_compile_all_rpb_efficient",
     ):
         raise ValueError(variant)
     model = predictor.model
@@ -198,11 +208,50 @@ def apply_video_variant(predictor, variant):
             )
 
         backbone._forward_text_no_ack_ckpt = cpu_text
+    if "rpb" in variant.split("_"):
+        decoder = model.detector.transformer.decoder
+        side = model.image_size // 14
+        device = next(backbone.vision_backbone.parameters()).device
+        decoder.compilable_cord_cache = decoder._get_coords(side, side, device)
+        decoder.compilable_stored_size = (side, side)
+        original_rpb = decoder._get_rpb_matrix
+
+        def rpb(reference_boxes, feat_size):
+            return original_rpb(reference_boxes, (side, side))
+
+        decoder._get_rpb_matrix = rpb
+        predictor._static_video_rpb_grid = (side, side)
     if "compile" in variant:
         from sam3.turing import _compile_with_owned_output
 
         trunk = backbone.vision_backbone.trunk
         trunk.forward = _compile_with_owned_output(trunk.forward, "reduce-overhead")
+        predictor._compiled_video_components = ["vision_trunk"]
+        parts = set(variant.split("_"))
+        targets = []
+        if parts & {"decoder", "detector", "all"}:
+            targets.append((model.detector.transformer.decoder, "detector_decoder"))
+        if parts & {"detector", "all"}:
+            targets.extend(
+                [
+                    (model.detector.transformer.encoder, "detector_encoder"),
+                    (model.detector.segmentation_head, "detector_masks"),
+                ]
+            )
+        if parts & {"necks", "all"}:
+            targets.append((backbone.vision_backbone, "vision_with_necks"))
+        if parts & {"tracker", "all"}:
+            tracker = model.tracker.model
+            targets.extend(
+                [
+                    (tracker.transformer.encoder, "tracker_memory_attention"),
+                    (tracker.maskmem_backbone, "tracker_memory_encoder"),
+                    (tracker.sam_mask_decoder, "tracker_masks"),
+                ]
+            )
+        for owner, name in targets:
+            owner.forward = _compile_with_owned_output(owner.forward, "reduce-overhead")
+            predictor._compiled_video_components.append(name)
     if "efficient" in variant:
         import sam3.model.decoder as decoder
 

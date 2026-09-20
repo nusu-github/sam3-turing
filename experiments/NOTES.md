@@ -1199,3 +1199,33 @@ CPU INT8＋8スレッドは58.84ms・9374画素で、FP32＋16の58.96ms・9352�
 784入力のAPI smokeも通過。28個のwindowブロックへの余白射影省略、画像INT8、CPU INT8＋padding省略、
 packed maskを併用し、A→B→A、幾何prompt、空出力、直接modelの辞書、固定語句への切替、
 autocast復帰を確認した。単独patchも再生成してreverse適用checkを通した。
+
+## 複数プロンプト：画像特徴を1回だけ計算する場合
+
+| 構成 | 4 prompt全体 ms | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| stock | 446.87 | 5.055 | 6.099 | 1.000000 | 0 |
+| serial | 123.95 | 0.793 | 4.345 | 0.997482 | 661 |
+| batch2 | 151.75 | 0.951 | 4.364 | 0.997474 | 663 |
+| batch4 | 131.10 | 1.140 | 4.364 | 0.997502 | 661 |
+
+truck画像にtruck / wheel / vehicle / elephantを処理。全構成で1/4/1/0、比較画素は12,960,000。
+素の状態446.87ms、既存パッチの逐次123.95msに対し、batch2=151.75ms、batch4=131.10msで一括化は採用しない。
+この専用プローブでは構築後のallocator cacheを解放していない。逐次の測定開始時には
+allocated 0.560GiBに対してreserved 3.570GiBがあり、NVMLはその未使用予約領域も含む。
+画像単体表のgc/empty_cache後の値とNVMLを直接比較しない。速度とallocatedでも一括化の利点は出なかった。
+
+## SAM 3.1：次のコンパイル箇所を探す計測
+
+[別パスのcomponent profile](results/video_profile_int8_cpu_trim.json)。24フレームの1 sequenceで
+画像trunkは26回・CUDA区間合計1616.84ms、necks込み2144.11ms。検出decoderは26回・882.69ms、
+追跡memory Attentionは23回・453.28msだった。区間は重なるため足し合わせない。
+検出encoderのCPU wall 2172.80msには先行GPU処理の待ちもあり、CPU演算時間とは解釈しない。
+
+次の動画候補として `fp16_int8_cpu_trim_compile_` に `decoder` / `detector` / `necks` / `tracker` /
+`all` / `all_efficient` を加えた構成を用意した。最初は個別に測る。
+CUDA Graph外で出力をcloneして、次フレームによる保存済み出力の上書きを避ける。
+
+画像で採用済みのRPB座標cacheも動画で試す。`rpb` suffixは`model.image_size // 14`の
+Python整数でgridを渡し、CUDA scalarを毎回読む同期を避ける。`decoder_rpb`、`all_rpb`、
+`all_rpb_efficient`との併用も用意した。まずrpb単独、decoder単独、両者の併用から測る。

@@ -206,6 +206,8 @@ def main():
         else outputs
     )
     data["reference"] = args.reference if reference_path.exists() else "self"
+    data["compiled_components"] = getattr(predictor, "_compiled_video_components", [])
+    data["static_rpb_grid"] = getattr(predictor, "_static_video_rpb_grid", None)
     if hasattr(predictor, "_cpu_text_calls"):
         data["cpu_text_calls"] = predictor._cpu_text_calls
     data["checks"] = compare_frames(outputs, reference)
