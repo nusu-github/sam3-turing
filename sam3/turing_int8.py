@@ -1,4 +1,4 @@
-"""Optional dynamic INT8 projections; trades output differences for speed/memory."""
+"""Optional INT8 weight storage and projections for image inference."""
 
 import torch
 from torch import nn
@@ -166,6 +166,14 @@ class DynamicInt8Linear(nn.Module):
         return result[:rows].to(torch.float16).reshape(*shape[:-1], self.out_features)
 
 
+class WeightOnlyInt8Linear(DynamicInt8Linear):
+    """Decode weights transiently; keep activations and the linear operation FP16."""
+
+    def forward(self, x):
+        weight = (self.weight_int8.float() * self.weight_scale[:, None]).half()
+        return torch.nn.functional.linear(x, weight, self.bias)
+
+
 def apply_int8_patch(
     processor,
     *,
@@ -174,6 +182,7 @@ def apply_int8_patch(
     attention_projections=False,
     fused_mlp=False,
     asymmetric_gelu=False,
+    weight_only=False,
 ):
     """Quantize selected MLPs after apply_turing_patch, before first inference.
 
@@ -187,6 +196,9 @@ def apply_int8_patch(
     fused_mlp=True fuses the vision MLP's dequantization, GELU and requantization.
     asymmetric_gelu=True uses a per-token zero point for GELU activations. It
     requires fused_mlp=True and offers a different output-error tradeoff.
+    weight_only=True instead decodes each layer's INT8 weights for a standard
+    FP16 linear operation. Activations are not quantized. It cannot be combined
+    with fused_mlp or asymmetric_gelu, which require dynamic INT8 activations.
     """
     if not getattr(processor, "_turing_patched", False):
         raise ValueError("Apply the Turing image patch first")
@@ -197,6 +209,8 @@ def apply_int8_patch(
         raise ValueError("INT8 MLPs are for inference only")
     if asymmetric_gelu and not fused_mlp:
         raise ValueError("asymmetric_gelu requires fused_mlp=True")
+    if weight_only and fused_mlp:
+        raise ValueError("weight_only cannot be combined with fused_mlp")
     if fused_mlp:
         if not vision:
             raise ValueError("fused_mlp requires vision MLP quantization")
@@ -234,8 +248,9 @@ def apply_int8_patch(
         raise ValueError(
             "Expected unquantized Linear layers; apply each selection once"
         )
+    linear_type = WeightOnlyInt8Linear if weight_only else DynamicInt8Linear
     for parent, name in targets:
-        setattr(parent, name, DynamicInt8Linear(getattr(parent, name)))
+        setattr(parent, name, linear_type(getattr(parent, name)))
     if fused_mlp:
         for block in model.backbone.vision_backbone.trunk.blocks:
             mlp = block.mlp

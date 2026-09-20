@@ -93,6 +93,9 @@ def apply_next_variants(model, processor, cfg, stack):
             model,
             cfg.get("weight_only_tile", [64, 64, 32, 4]),
             cfg.get("weight_only_group", 0),
+            cfg.get("weight_only_half_input", False),
+            cfg.get("weight_only_fc2_tile"),
+            cfg.get("weight_only_fc2_group"),
         )
     if cfg.get("int8_layernorm"):
         from norm_int8 import apply_norm_int8

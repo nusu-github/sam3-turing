@@ -1,0 +1,15 @@
+{
+  "accepted_weight_only_mlp": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_weight_only": true
+  },
+  "accepted_weight_only_attention": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_weight_only": true,
+    "public_int8_attention": true
+  }
+}

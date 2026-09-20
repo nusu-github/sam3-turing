@@ -46,6 +46,7 @@ if args.config.get("public_int8"):
         attention_projections=args.config.get("public_int8_attention", False),
         fused_mlp=args.config.get("public_int8_fused", False),
         asymmetric_gelu=args.config.get("public_int8_asymmetric", False),
+        weight_only=args.config.get("public_int8_weight_only", False),
     )
 stack = ExitStack()
 if args.config:

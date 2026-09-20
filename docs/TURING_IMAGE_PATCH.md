@@ -20,6 +20,7 @@ FP16・INT8・コンパイルの効果は各GPUで個別に比較する。
 | 採用FP16・コンパイルなし（Round 10） | 169.77 | 1.997 | 3.144 | 0.99917 |
 | 採用FP16・コンパイルあり | **114.31** | **1.862** | **3.095** | **0.99921** |
 | FP16・新規語句を毎回処理 | 116.32 | 1.862 | 3.095 | 0.99920 |
+| 重みのみINT8・MLP＋Attention射影 | 117.29 | 1.456 | 2.862 | 0.99876 |
 | 画像MLPのINT8＋コンパイル | **92.26** | **1.625** | **3.099** | **0.99740** |
 | INT8＋Attention射影＋GELU融合 | **85.46** | **1.455** | **2.872** | **0.99742** |
 | 非対称INT8・MLP＋GELU融合 | **89.47** | **1.628** | **3.190** | **0.99848** |
@@ -34,7 +35,7 @@ FP16コンパイル版は、素の状態から時間を約46%、GPU全体の使�
 INT8は追加学習なしの任意パッチで、速度・メモリと出力差の交換条件を選べる。
 
 表の通常FP16・MLPのINT8・素の状態はRound 14、GELU融合・語句の追加比較はRound 18。
-非対称INT8の2行はRound 32の公開API測定。
+非対称INT8の2行はRound 32、重みのみINT8はRound 34の公開API測定。
 コンパイルなしは変更のない経路のRound 10値。
 新規語句の行は `text_cache_size=0, compile_text=True`。
 GELU融合なしでAttention射影だけを追加した公開版は90.19ms・NVML 2.854GiBだった。
@@ -55,13 +56,15 @@ box最大差 **0.49画素**。検出数は同じ。
 非対称INT8のMLP版は **544画素（0.00302%）**、score最大差 **0.00586**、box最大差 **0.47画素**。
 Attention射影もINT8にする非対称版は **735画素（0.00407%）**、score最大差 **0.01172**、
 box最大差 **1.44画素**だった。マスク差が減る一方、box差は構成によって増える。
-これらも検出数は同じ。
+重みのみINT8・射影込みは **389画素（0.00216%）**、score最大差 **0.00537**、
+box最大差 **0.51画素**だった。これらも検出数は同じ。
 boxの対応付け後にマスクを比較した。正解ラベルに対する精度評価ではない。
 
 コンパイルの初回推論は、今回のキャッシュ状態でFP16が約20.5秒、MLPのINT8が約22.3秒だった。
 Round 13で新しい検出Graphをコンパイルした際は約48秒かかった。キャッシュ状況で変わる。
 新しいINT8＋GELU融合Graphは約55〜57秒、同系統のキャッシュを使った固定語句版は約21秒だった。
 非対称INT8の公開版はMLPのみ約63秒、Attention射影込み約37秒だった。
+重みのみINT8の公開版は、今回のキャッシュ状態で約23秒だった。
 
 FlashAttentionを使わずefficient Attentionに固定した3090上の更新版は、
 FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892GiBだった。
@@ -74,9 +77,10 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [INT8・射影・GELU融合JSON](../experiments/results/accepted_fused_attention.json) /
 [固定語句INT8 JSON](../experiments/results/compact_fixed_all_int8.json) /
 [非対称INT8・MLP JSON](../experiments/results/accepted_asymmetric_mlp.json) /
-[非対称INT8・射影 JSON](../experiments/results/accepted_asymmetric_attention.json)
+[非対称INT8・射影 JSON](../experiments/results/accepted_asymmetric_attention.json) /
+[重みのみINT8 JSON](../experiments/results/accepted_weight_only_attention.json)
 
-完了済みラウンドの比較は197候補・202試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は205候補・210試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -174,6 +178,18 @@ text compileを省く場合の起動時間・速度は別の交換条件にな�
 ```python
 apply_int8_patch(processor, fused_mlp=True, asymmetric_gelu=True)
 ```
+
+`weight_only=True` は重みをINT8で保存し、各層の計算時にFP16へ展開して通常の
+`linear` に渡す。入力をINT8に量子化せず、選択した層はFP16で行列計算する。
+`fused_mlp` / `asymmetric_gelu` とは併用しない。
+
+```python
+apply_int8_patch(processor, attention_projections=True, weight_only=True)
+```
+
+この構成は117.29ms・allocated 1.456GiB・NVML 2.862GiB、平均mask IoU 0.998763だった。
+MLPだけなら115.57ms・1.574GiB・3.030GiB、平均IoU 0.999030・343画素変化。
+通常FP16に近い速度で、重みのメモリを減らす選択肢として使える。
 
 従来の `apply_int8_mlp_patch` もMLPだけの入口として利用できる。
 解除する場合はモデルを作り直す。

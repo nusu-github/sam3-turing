@@ -56,14 +56,17 @@ def _matmul(
 
 
 class WeightOnlyInt8Linear(DynamicInt8Linear):
-    def __init__(self, linear, tile, group=0):
+    def __init__(self, linear, tile, group=0, half_input=False):
         super().__init__(linear)
         self.tile = tuple(tile)
         self.group = group
+        self.half_input = half_input
 
     def forward(self, x):
         shape = x.shape
         x = x.reshape(-1, self.in_features).contiguous()
+        if self.half_input:
+            x = x.to(torch.float16)
         rows = x.shape[0]
         y = torch.empty((rows, self.out_features), device=x.device, dtype=torch.float16)
         if rows:
@@ -90,7 +93,14 @@ class WeightOnlyInt8Linear(DynamicInt8Linear):
         return y.reshape(*shape[:-1], self.out_features)
 
 
-def apply_weight_only_int8(model, tile, group=0):
+def apply_weight_only_int8(
+    model, tile, group=0, half_input=False, fc2_tile=None, fc2_group=None
+):
     for block in model.backbone.vision_backbone.trunk.blocks:
-        block.mlp.fc1 = WeightOnlyInt8Linear(block.mlp.fc1, tile, group)
-        block.mlp.fc2 = WeightOnlyInt8Linear(block.mlp.fc2, tile, group)
+        block.mlp.fc1 = WeightOnlyInt8Linear(block.mlp.fc1, tile, group, half_input)
+        block.mlp.fc2 = WeightOnlyInt8Linear(
+            block.mlp.fc2,
+            fc2_tile or tile,
+            group if fc2_group is None else fc2_group,
+            half_input,
+        )

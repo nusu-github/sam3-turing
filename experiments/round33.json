@@ -1,0 +1,42 @@
+{
+  "weight_half_group8": {
+    "final": true,
+    "compile": true,
+    "weight_only_int8": true,
+    "weight_only_tile": [
+      64,
+      128,
+      32,
+      4
+    ],
+    "weight_only_group": 8,
+    "weight_only_half_input": true
+  },
+  "weight_half_tuned_groups": {
+    "final": true,
+    "compile": true,
+    "weight_only_int8": true,
+    "weight_only_tile": [
+      64,
+      128,
+      32,
+      4
+    ],
+    "weight_only_group": 16,
+    "weight_only_fc2_group": 4,
+    "weight_only_half_input": true
+  },
+  "weight_fp32_tuned_groups": {
+    "final": true,
+    "compile": true,
+    "weight_only_int8": true,
+    "weight_only_tile": [
+      64,
+      128,
+      32,
+      4
+    ],
+    "weight_only_group": 16,
+    "weight_only_fc2_group": 4
+  }
+}
