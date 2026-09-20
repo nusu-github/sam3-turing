@@ -1229,3 +1229,30 @@ CUDA Graph外で出力をcloneして、次フレームによる保存済み出�
 画像で採用済みのRPB座標cacheも動画で試す。`rpb` suffixは`model.image_size // 14`の
 Python整数でgridを渡し、CUDA scalarを毎回読む同期を避ける。`decoder_rpb`、`all_rpb`、
 `all_rpb_efficient`との併用も用意した。まずrpb単独、decoder単独、両者の併用から測る。
+
+## Round 40：検出decoderの層を減らす
+
+| 構成 | ms | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| r40_fused_attention_control | 86.716 | 1.4562 | 2.8506 | 0.99742137 | 916 |
+| decoder_first5 | 84.975 | 1.4497 | 2.8467 | 0.99304593 | 2186 |
+| decoder_keep_last5 | 85.216 | 1.4506 | 2.8916 | 0.99686603 | 1060 |
+| decoder_first4 | 84.305 | 1.4441 | 3.0237 | 0.99012485 | 2755 |
+| decoder_spaced4 | 83.918 | 1.4982 | 2.8721 | 0.9950166 | 1444 |
+
+全構成1/4/6/4/0。6層の86.72msに対し、最速の[0,1,3,5]でも83.92msで約3%の短縮だった。
+変化画素は916→1444、allocatedは1.456→1.498GiBで、この構成ではメモリも減らない。
+先頭5層2186画素、先頭4層2755画素。途中1層だけを省く[0,1,2,3,5]は1060画素・85.22ms。
+小さな速度改善に対して出力差が増えるため、公開decoderは6層のままにする。
+
+## 動画 Round 3：RPB固定と検出decoderのコンパイル
+
+| 構成 | ms/frame | allocated GiB | NVML GiB | 変化画素 |
+|---|---:|---:|---:|---:|
+| video_fp16_int8_cpu_trim_compile_rpb_b1 | 197.79 | 2.849 | 4.485 | 8305 |
+| video_fp16_int8_cpu_trim_compile_decoder_b1 | 162.73 | 2.835 | 4.427 | 8331 |
+| video_fp16_int8_cpu_trim_compile_decoder_rpb_b1 | 164.79 | 2.835 | 4.427 | 8331 |
+
+すべて24フレーム×4人。既存CPU trim構成198.79ms/frameに対し、RPB固定のみ197.79msで差は小さかった。
+検出decoderのコンパイルは162.73ms、RPB併用164.79ms。後者2構成は8331画素で同じ。
+まずdecoderコンパイルを保持し、検出器・necks・追跡側への追加コンパイルを個別に測る。

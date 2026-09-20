@@ -66,3 +66,22 @@ CPUの短い語句でpadding省略を使い、この待ち時間を減らす候�
 226.79→198.79ms/frameへ短縮し、allocated 2.838GiB。score最大差0.00771。
 テキスト計算は各runで1回、3 captionをまとめていた。省略後のCPU計算は約0.10〜0.14秒/run。
 画像で採用した末尾padding省略が動画でも待ち時間の軽減に有効だった。
+
+## 動画 Round 3：検出decoderのコンパイル
+
+| 構成 | ms/frame | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| [video_fp16_int8_cpu_trim_compile_rpb_b1](../experiments/results/video_fp16_int8_cpu_trim_compile_rpb_b1.json) | 197.79 | 2.849 | 4.485 | 0.998079 | 8305 |
+| [video_fp16_int8_cpu_trim_compile_decoder_b1](../experiments/results/video_fp16_int8_cpu_trim_compile_decoder_b1.json) | 162.73 | 2.835 | 4.427 | 0.998076 | 8331 |
+| [video_fp16_int8_cpu_trim_compile_decoder_rpb_b1](../experiments/results/video_fp16_int8_cpu_trim_compile_decoder_rpb_b1.json) | 164.79 | 2.835 | 4.427 | 0.998076 | 8331 |
+
+全フレーム4人・96件のID対応を維持。decoderコンパイルで198.79→162.73ms/frameへ短縮した。
+RPB座標にPython整数を渡すだけでは197.79ms/frameで差は小さかった。
+decoderとRPBの併用は164.79ms/frameで、decoder単独と出力比較値は同じだった。
+decoder単独のcold runは今回のキャッシュで19.34秒。追加の保存出力はCUDA Graph外でcloneする。
+
+```bash
+python experiments/video_sweep.py \
+  --checkpoint checkpoints/sam3.1/sam3.1_multiplex.pt \
+  --variants fp16_int8_cpu_trim_compile_decoder
+```

@@ -1,0 +1,453 @@
+{
+  "name": "video_fp16_int8_cpu_trim_compile_decoder_b1",
+  "config": {
+    "name": "video_fp16_int8_cpu_trim_compile_decoder_b1",
+    "checkpoint": "/workspace/.cache/huggingface/hub/models--facebook--sam3.1/snapshots/daa63191845a41281374e725f4c9e51c7a824460/sam3.1_multiplex.pt",
+    "frames": 24,
+    "reps": 3,
+    "grounding_batch": 1,
+    "reference": "video_stock_bf16_b1",
+    "variant": "fp16_int8_cpu_trim_compile_decoder",
+    "profile": false
+  },
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.10.0a0+b558c986e8.nv25.11",
+    "cuda": "13.0",
+    "cudnn": 91500,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "capability": [
+      8,
+      6
+    ],
+    "physical_vram_bytes": 25296044032,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "cublas_workspace_config": ":4096:8"
+  },
+  "build_seconds": 22.017532154917717,
+  "build_allocated_bytes": 3926040576,
+  "shared_api_compatibility": [
+    "Ignore unsupported default offload_state_to_cpu=False passed by Sam3BasePredictor; same shim for stock and patched"
+  ],
+  "scope": "SAM 3.1, first consecutive frames of assets/videos/0001, person. Uncompiled, FA3 off, TF32 off, frames on CPU, grounding batch explicitly configured. Timed add_prompt + forward propagation; frame loading/session construction excluded.",
+  "after_patch_allocated_bytes": 1066138112,
+  "video_metrics": {
+    "cold_seconds": 19.336773436982185,
+    "wall_seconds": [
+      3.8651980308350176,
+      3.978551615960896,
+      3.905411586165428
+    ],
+    "median_wall_seconds": 3.905411586165428,
+    "median_ms_per_frame": 162.72548275689283,
+    "frames": 24,
+    "peak_allocated_bytes": 3044175872,
+    "peak_reserved_bytes": 3875536896,
+    "nvml": {
+      "sampled_device_used_peak_bytes": 4753195008,
+      "sampled_device_used_min_bytes": 2735734784,
+      "samples": 4997,
+      "requested_interval_ms": 5,
+      "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+    },
+    "last_run_allocated_by_frame": [
+      [
+        0,
+        1659554816
+      ],
+      [
+        0,
+        2351873536
+      ],
+      [
+        1,
+        2351873536
+      ],
+      [
+        2,
+        2351873536
+      ],
+      [
+        3,
+        2351873536
+      ],
+      [
+        4,
+        2351873536
+      ],
+      [
+        5,
+        2351873536
+      ],
+      [
+        6,
+        2351873536
+      ],
+      [
+        7,
+        2351873536
+      ],
+      [
+        8,
+        2351873536
+      ],
+      [
+        9,
+        2351873536
+      ],
+      [
+        10,
+        2351873536
+      ],
+      [
+        11,
+        2351873536
+      ],
+      [
+        12,
+        2351873536
+      ],
+      [
+        13,
+        2351873536
+      ],
+      [
+        14,
+        2351873536
+      ],
+      [
+        15,
+        2351873536
+      ],
+      [
+        16,
+        2351873536
+      ],
+      [
+        17,
+        2351873536
+      ],
+      [
+        18,
+        2351873536
+      ],
+      [
+        19,
+        2351873536
+      ],
+      [
+        20,
+        2351873536
+      ],
+      [
+        21,
+        2351873536
+      ],
+      [
+        22,
+        2351873536
+      ],
+      [
+        23,
+        2351873536
+      ]
+    ]
+  },
+  "reference": "video_stock_bf16_b1",
+  "compiled_components": [
+    "vision_trunk",
+    "detector_decoder"
+  ],
+  "static_rpb_grid": null,
+  "cpu_text_calls": [
+    {
+      "captions": 3,
+      "additional": 0,
+      "cpu_seconds": 0.10369675187394023
+    },
+    {
+      "captions": 3,
+      "additional": 0,
+      "cpu_seconds": 0.10923841805197299
+    },
+    {
+      "captions": 3,
+      "additional": 0,
+      "cpu_seconds": 0.12049921695142984
+    },
+    {
+      "captions": 3,
+      "additional": 0,
+      "cpu_seconds": 0.12660269695334136
+    }
+  ],
+  "checks": {
+    "0": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9989217358042315,
+      "min_mask_iou": 0.9983438723276121,
+      "changed_pixels": 197,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "1": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9989420011093819,
+      "min_mask_iou": 0.9983159511921292,
+      "changed_pixels": 199,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "2": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9991760523529319,
+      "min_mask_iou": 0.9989413010234091,
+      "changed_pixels": 159,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "3": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.999146748627166,
+      "min_mask_iou": 0.998874240853207,
+      "changed_pixels": 173,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "4": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.999047400032804,
+      "min_mask_iou": 0.9985576356999882,
+      "changed_pixels": 185,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "5": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.997715186990012,
+      "min_mask_iou": 0.9952588322524724,
+      "changed_pixels": 607,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "6": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9989287297653071,
+      "min_mask_iou": 0.9980898632515737,
+      "changed_pixels": 185,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "7": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9987638041771346,
+      "min_mask_iou": 0.9978545470467184,
+      "changed_pixels": 202,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "8": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9980093151128179,
+      "min_mask_iou": 0.9956688068230602,
+      "changed_pixels": 586,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "9": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.998580959947776,
+      "min_mask_iou": 0.9974130619168787,
+      "changed_pixels": 253,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "10": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9967402997609516,
+      "min_mask_iou": 0.9943769659741489,
+      "changed_pixels": 841,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "11": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9981706344292463,
+      "min_mask_iou": 0.9965036028092792,
+      "changed_pixels": 310,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "12": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9987660978668352,
+      "min_mask_iou": 0.9978099906142455,
+      "changed_pixels": 230,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "13": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9980216760987078,
+      "min_mask_iou": 0.995930565269918,
+      "changed_pixels": 367,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "14": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9981012097267808,
+      "min_mask_iou": 0.996497034891739,
+      "changed_pixels": 344,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "15": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9959168737410901,
+      "min_mask_iou": 0.9882941565184555,
+      "changed_pixels": 515,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "16": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9956488397206543,
+      "min_mask_iou": 0.9884914278934567,
+      "changed_pixels": 575,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "17": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9964926432548852,
+      "min_mask_iou": 0.9912923234165356,
+      "changed_pixels": 1070,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "18": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9985821402439199,
+      "min_mask_iou": 0.9972953736654804,
+      "changed_pixels": 231,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "19": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9984931725302976,
+      "min_mask_iou": 0.996948036302305,
+      "changed_pixels": 246,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "20": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.998735765489351,
+      "min_mask_iou": 0.9973996255460786,
+      "changed_pixels": 196,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "21": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9984144283251541,
+      "min_mask_iou": 0.9959833153097482,
+      "changed_pixels": 183,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "22": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9968496437123562,
+      "min_mask_iou": 0.9900613237470924,
+      "changed_pixels": 242,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    },
+    "23": {
+      "count": 4,
+      "reference_count": 4,
+      "matched": 4,
+      "mean_mask_iou": 0.9976603562880229,
+      "min_mask_iou": 0.9937806873977086,
+      "changed_pixels": 235,
+      "compared_pixels": 3686400,
+      "score_max_abs": 0.0077054500579833984,
+      "matched_id_agreement": 4
+    }
+  }
+}

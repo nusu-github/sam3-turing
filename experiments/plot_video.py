@@ -19,6 +19,7 @@ rows = [
     ("Same / efficient attention", "video_fp16_int8_cpu_compile_efficient_b1"),
     ("INT8 + compile + trimmed CPU text", "video_fp16_int8_cpu_trim_compile_b1"),
     ("Same / efficient attention", "video_fp16_int8_cpu_trim_compile_efficient_b1"),
+    ("INT8 + CPU trim + ViT/decoder compile", "video_fp16_int8_cpu_trim_compile_decoder_b1"),
 ]
 metrics = [
     json.loads((ROOT / f"experiments/results/{name}.json").read_text())["video_metrics"]
@@ -28,13 +29,14 @@ latency = [m["median_ms_per_frame"] for m in metrics]
 allocated = [m["peak_allocated_bytes"] / 2**30 for m in metrics]
 nvml = [m["nvml"]["sampled_device_used_peak_bytes"] / 2**30 for m in metrics]
 y = list(range(len(rows)))
-fig, (left, right) = plt.subplots(1, 2, figsize=(12.8, 6.6), sharey=True)
+fig, (left, right) = plt.subplots(1, 2, figsize=(12.8, 7.1), sharey=True)
 colors = (
     ["#8b96a5"]
     + ["#447bc5"] * 3
     + ["#20875b"]
     + ["#447bc5"] * 2
     + ["#20875b", "#447bc5"]
+    + ["#9b4f96"]
 )
 left.barh(y, latency, color=colors, height=0.6)
 left.set_yticks(y, [label for label, _ in rows])
