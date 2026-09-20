@@ -328,7 +328,9 @@ def run(args):
             from sam3.turing import offload_text_encoder
 
             offload_text_encoder(
-                processor, int8_mlp=cfg.get("public_cpu_text_int8", False)
+                processor,
+                int8_mlp=cfg.get("public_cpu_text_int8", False),
+                trim_padding=cfg.get("public_cpu_trim_padding", False),
             )
             if cfg.get("public_cpu_text_int8"):
                 from cpu_text_quantize import quantized_text_stats
@@ -341,6 +343,10 @@ def run(args):
                 processor,
                 ["truck", "paper bag", "child", "wheel", "elephant", "visual"],
             )
+        if cfg.get("public_refinements"):
+            from sam3.turing_refinements import apply_image_refinements
+
+            apply_image_refinements(processor)
     cases = [
         ("truck", "images/truck.jpg", "truck"),
         ("bag", "images/groceries.jpg", "paper bag"),

@@ -1,0 +1,29 @@
+{
+  "accepted_refined_int8_cpu": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "public_int8_asymmetric": true,
+    "public_int8_optimize_scales": true,
+    "public_refinements": true,
+    "public_cpu_text": true
+  },
+  "accepted_refined_int8_gpu": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "public_int8_asymmetric": true,
+    "public_int8_optimize_scales": true,
+    "public_refinements": true
+  },
+  "refined_fp16_cpu": {
+    "final": true,
+    "compile": true,
+    "public_cpu_text": true,
+    "public_refinements": true
+  }
+}

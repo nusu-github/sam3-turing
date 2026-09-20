@@ -1,0 +1,29 @@
+{
+  "accepted_refined_trimmed_fp32": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "public_int8_asymmetric": true,
+    "public_int8_optimize_scales": true,
+    "public_refinements": true,
+    "public_cpu_text": true,
+    "public_cpu_trim_padding": true,
+    "text_cache_size": 0
+  },
+  "accepted_refined_trimmed_int8": {
+    "final": true,
+    "compile": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "public_int8_asymmetric": true,
+    "public_int8_optimize_scales": true,
+    "public_refinements": true,
+    "public_cpu_text": true,
+    "public_cpu_trim_padding": true,
+    "public_cpu_text_int8": true,
+    "text_cache_size": 0
+  }
+}

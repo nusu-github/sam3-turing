@@ -1,0 +1,36 @@
+{
+  "r54_int4_uniform32_control": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 32,
+    "weight_only_int4_attention": true
+  },
+  "int4_gaussian_group16": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 16,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_gaussian": true
+  },
+  "int4_gaussian_group32": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 32,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_gaussian": true
+  },
+  "int4_gaussian_group64": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 64,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_gaussian": true
+  },
+  "int4_gaussian_group128": {
+    "final": true,
+    "compile": true,
+    "weight_only_int4": 128,
+    "weight_only_int4_attention": true,
+    "weight_only_int4_gaussian": true
+  }
+}

@@ -29,6 +29,8 @@ FP16・INT8・コンパイルの効果は各GPUで個別に比較する。
 | 同＋重み調整＋CPUテキスト・cacheあり | **86.30** | **0.793** | **2.368** | **0.99806** |
 | 同＋CPUテキストMLPもINT8・cacheあり | 84.79 | 0.793 | 2.368 | 0.99779 |
 | 同＋CPUテキストMLPもINT8・新規語句を毎回処理 | **100.80** | **0.793** | **2.345** | **0.99779** |
+| 画像追加パッチ＋CPU FP32・padding省略・新規語句 | **85.37** | **0.782** | **2.573** | **0.99800** |
+| 同・CPUテキストMLPもINT8 | **84.38** | **0.782** | **2.321** | **0.99774** |
 | CPUテキスト＋FP16・語句cacheあり | 113.39 | 1.202 | 2.370 | 0.99919 |
 | CPUテキスト＋INT8・射影・GELU融合・cacheあり | **84.94** | **0.793** | **2.333** | **0.99742** |
 | CPUテキスト＋INT8・新規語句を毎回処理 | 187.33 | 0.793 | 2.333 | 0.99742 |
@@ -110,7 +112,7 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [CPU動的INT8・cacheあり JSON](../experiments/results/accepted_cpu_dynamic_text.json) /
 [CPU動的INT8・cacheなし JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json)
 
-完了済みラウンドの比較は279候補・284試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は298候補・303試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -166,6 +168,21 @@ offload_text_encoder(processor)
 CPU側には約1.32GiBのテキスト重みを保持する。画像状態の再利用・box・packed出力・
 固定語句への切替も[API確認](../experiments/results/api_smoke_cpu_text.json)で通過した。
 
+CPUテキストで短い語句を使う場合は、EOS以降のpadding計算を省ける。
+GPUへ渡す前に元のtoken数へ戻すため、後段のTensor形状は維持する。
+
+```python
+offload_text_encoder(processor, trim_padding=True)
+```
+
+因果Attentionのある標準テキストエンコーダーが対象。CPU演算の形状が変わるため、
+小さい丸め差は発生する。語句が長くpaddingが少ない場合は短縮も小さくなる。
+
+公開版の新規語句測定はFP32で87.48ms・698画素変化、INT8併用で87.64ms・904画素変化。
+どちらも5条件の検出数は1/4/6/4/0で、試作版と比較指標が一致した。
+[FP32測定](../experiments/results/accepted_cpu_trimmed_text_fp32.json) /
+[INT8測定](../experiments/results/accepted_cpu_trimmed_text_int8.json)
+
 新規語句の待ち時間とCPUの重み容量を減らす場合は、CPUテキストMLPも動的INT8にできる。
 既定のCPU FP32と出力が変わるため、明示的な追加設定にしている。
 
@@ -213,6 +230,54 @@ from sam3.turing_int8 import apply_int8_patch
 processor = apply_turing_patch(Sam3Processor(model, resolution=784), compile=True)
 apply_int8_patch(processor, attention_projections=True, fused_mlp=True)
 ```
+
+## 任意の画像追加パッチ
+
+ViTブロックの出力とdecoder FFNをFP16へ揃え、mask headの最後の射影を前計算する
+3つの変更をまとめた。`compile=True`で作り、最初の推論より前に1回適用する。
+通常パッチや画像INT8を設定した後に呼ぶ。
+
+```python
+from sam3.turing_refinements import apply_image_refinements
+
+apply_image_refinements(processor)
+```
+
+公開版のINT8画像＋CPUテキストは83.08ms・allocated 0.837GiB・NVML 2.382GiBだった。
+5条件の検出数は1/4/6/4/0で、673画素変化、平均mask IoU 0.997999、
+score最大差0.01074、box最大差0.556画素。丸め方が変わるため、通常パッチの任意追加にしている。
+同じ画像側でテキストをGPUに残す版は83.08ms・NVML 2.813GiB・675画素変化。
+画像INT8を使わないFP16画像＋CPUテキストでは112.09ms・293画素変化だった。
+[CPUテキスト版](../experiments/results/accepted_refined_int8_cpu.json) /
+[GPUテキスト版](../experiments/results/accepted_refined_int8_gpu.json) /
+[FP16画像版](../experiments/results/refined_fp16_cpu.json)
+
+入力前処理は通常のままで、追加の独自CUDA kernelも使わない。
+neck compileと正規化も加えた5変更の候補は83.78msだったため、今回はこちらの3変更を選んだ。
+GPU割当の試作値0.782GiBと公開値0.837GiBには差があり、公開値を記載している。
+
+CPUのpadding省略も組み合わせる場合は、次の順で適用する。
+画像INT8は上の例と同じ非対称GELU＋重みスケール調整を使う。
+
+```python
+from sam3.turing import offload_text_encoder
+from sam3.turing_refinements import apply_image_refinements
+
+offload_text_encoder(processor, trim_padding=True)
+apply_image_refinements(processor)
+```
+
+CPU FP32では新規語句を毎回処理して85.37ms・allocated 0.782GiB・NVML 2.573GiB。
+674画素変化・平均IoU 0.997997・score最大差0.01074・box最大差0.571画素だった。
+CPU側の重み容量も減らす場合は`int8_mlp=True`を加える。この版は84.38ms・
+allocated 0.782GiB・NVML 2.321GiB、822画素変化・IoU 0.997737・score最大差0.02783・
+box最大差0.552画素。どちらも検出数1/4/6/4/0は一致した。速度差は小さく、
+この短い語句ではCPU FP32を出力差の小さい選択肢にできる。
+[併用FP32測定](../experiments/results/accepted_refined_trimmed_fp32.json) /
+[併用INT8測定](../experiments/results/accepted_refined_trimmed_int8.json)
+
+全機能を併用した[API確認](../experiments/results/api_smoke_refined_cpu_trimmed.json)でも、
+画像状態の再利用・box・しきい値変更・空出力・固定語句への切替・packed maskを通過した。
 
 ## 取り込んだ変更
 

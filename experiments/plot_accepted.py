@@ -18,6 +18,7 @@ CONFIGS = [
     ("INT8 + projections + fused GELU", "accepted_fused_attention"),
     ("INT8 + CPU text encoder/cache", "accepted_cpu_text_int8"),
     ("Asym INT8 + tuned weights + CPU text", "accepted_optimized_asymmetric_cpu"),
+    ("INT8 + refinements + trimmed CPU text", "accepted_refined_trimmed_fp32"),
     ("INT8 + fixed text vocabulary", "compact_fixed_all_int8"),
 ]
 
@@ -48,7 +49,7 @@ def main():
     fig, axes = plt.subplots(
         1,
         3,
-        figsize=(12, 5.5),
+        figsize=(12, 6.0),
         sharey=True,
         gridspec_kw={"width_ratios": [1.3, 1.1, 1]},
     )
@@ -61,6 +62,7 @@ def main():
         "#16806a",
         "#b7791f",
         "#b45309",
+        "#c05621",
         "#805ad5",
     ]
     for ax, column, title, maximum in zip(
@@ -93,7 +95,7 @@ def main():
     fig.text(
         0.02,
         0.025,
-        "Latency: repeated truck image + prompt, 9-run median. IoU: 3 images / 5 prompts, output agreement (not ground-truth accuracy).",
+        "Latency: truck image + prompt, 9-run median; trimmed CPU text uses no cache. IoU: 3 images / 5 prompts, agreement with stock.",
         fontsize=8,
     )
     fig.tight_layout(rect=(0, 0.065, 1, 0.93))

@@ -351,6 +351,7 @@ def apply_turing_patch(
         core = model.backbone.language_backbone.encoder.transformer
         core.forward = torch.compile(core.forward, mode="reduce-overhead")
     processor._turing_compile_text = bool(compile_text)
+    processor._turing_compile_mode = mode if compile else None
     processor._turing_patched = True
     return processor
 
@@ -391,7 +392,7 @@ def freeze_text_prompts(processor, prompts):
     return processor
 
 
-def offload_text_encoder(processor, *, int8_mlp=False):
+def offload_text_encoder(processor, *, int8_mlp=False, trim_padding=False):
     """Keep arbitrary text prompts while moving their encoder to CPU.
 
     Apply after the image patch, before inference. Cached prompts reuse GPU
@@ -400,6 +401,8 @@ def offload_text_encoder(processor, *, int8_mlp=False):
     compatible. Clear cached text when switching so all features use this path.
     CPU computation is FP32 by default. int8_mlp=True dynamically quantizes only
     the CPU text MLPs, trading output differences for faster uncached prompts.
+    trim_padding=True skips CPU tokens after EOT and restores masked padding
+    before returning features, preserving the GPU input shapes.
     """
     if not getattr(processor, "_turing_patched", False):
         raise ValueError("Apply the Turing image patch first")
@@ -416,6 +419,8 @@ def offload_text_encoder(processor, *, int8_mlp=False):
         raise ValueError("The text encoder has already been released")
     if any(hasattr(module, "weight_int8") for module in text.modules()):
         raise ValueError("CPU text offload cannot use CUDA INT8 text layers")
+    if trim_padding and text.encoder.attn_mask is None:
+        raise ValueError("Padding trim requires the causal text encoder")
     text.to(device="cpu", dtype=torch.float32)
     if int8_mlp:
         from torch.ao.quantization import default_dynamic_qconfig, quantize_dynamic
@@ -424,6 +429,21 @@ def offload_text_encoder(processor, *, int8_mlp=False):
             quantize_dynamic(
                 block.mlp, {nn.Linear: default_dynamic_qconfig}, inplace=True
             )
+    if trim_padding:
+        original_encoder = text.encoder.forward
+
+        def encode(tokens):
+            # CLIP EOT is the highest token ID; interior token IDs can be zero.
+            length = int(tokens.argmax(1).max()) + 1
+            pooled, memory = original_encoder(tokens[:, :length])
+            padding = tokens.shape[1] - length
+            if padding:
+                memory = F.pad(memory, (0, 0, 0, padding))
+                if pooled.ndim == 3:
+                    pooled = F.pad(pooled, (0, 0, 0, padding))
+            return pooled, memory
+
+        text.encoder.forward = encode
     original = backbone._forward_text_no_ack_ckpt
 
     def forward(captions, input_boxes=None, additional_text=None, device="cuda"):
@@ -443,4 +463,5 @@ def offload_text_encoder(processor, *, int8_mlp=False):
     processor._turing_text_cache.clear()
     processor._turing_cpu_text = True
     processor._turing_cpu_text_int8 = bool(int8_mlp)
+    processor._turing_cpu_trim_padding = bool(trim_padding)
     return processor

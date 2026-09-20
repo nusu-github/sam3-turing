@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 
 class WeightOnlyInt4Linear(nn.Module):
-    def __init__(self, linear, group_size=32, asymmetric=False):
+    def __init__(self, linear, group_size=32, asymmetric=False, gaussian=False):
         super().__init__()
         self.in_features = linear.in_features
         self.out_features = linear.out_features
@@ -14,7 +14,19 @@ class WeightOnlyInt4Linear(nn.Module):
         if self.in_features % group_size or group_size % 2:
             raise ValueError("Group size must be even and divide the input width")
         w = linear.weight.detach().float().reshape(self.out_features, -1, group_size)
-        if asymmetric:
+        self.register_buffer("weight_levels", None)
+        if gaussian:
+            if asymmetric:
+                raise ValueError("Choose either Gaussian levels or asymmetric uniform")
+            probabilities = (torch.arange(15, device=w.device).float() + 0.5) / 15
+            levels = (2 * probabilities - 1).erfinv()
+            levels = levels / levels.abs().max()
+            self.weight_levels = levels
+            scale = w.abs().amax(2, keepdim=True).clamp_min(1e-8)
+            offset = torch.zeros_like(scale)
+            boundaries = (levels[:-1] + levels[1:]) * 0.5
+            q = torch.bucketize((w / scale).contiguous(), boundaries).to(torch.uint8)
+        elif asymmetric:
             lo, hi = w.amin(2, keepdim=True), w.amax(2, keepdim=True)
             scale = (hi - lo).clamp_min(1e-8) / 15
             offset = lo
@@ -33,22 +45,26 @@ class WeightOnlyInt4Linear(nn.Module):
     def forward(self, x):
         low = self.weight_packed & 15
         high = self.weight_packed >> 4
-        q = torch.stack((low, high), dim=-1).flatten(-2).float()
-        weight = (
-            (q * self.weight_scale + self.weight_offset)
-            .reshape(self.out_features, self.in_features)
-            .half()
-        )
+        q = torch.stack((low, high), dim=-1).flatten(-2)
+        if self.weight_levels is not None:
+            weight = self.weight_levels[q.long()] * self.weight_scale
+        else:
+            weight = q.float() * self.weight_scale + self.weight_offset
+        weight = weight.reshape(self.out_features, self.in_features).half()
         return F.linear(x, weight, self.bias)
 
 
-def apply_weight_only_int4(model, group_size=32, attention=False, asymmetric=False):
+def apply_weight_only_int4(
+    model, group_size=32, attention=False, asymmetric=False, gaussian=False
+):
     for block in model.backbone.vision_backbone.trunk.blocks:
         for name in ("fc1", "fc2"):
             setattr(
                 block.mlp,
                 name,
-                WeightOnlyInt4Linear(getattr(block.mlp, name), group_size, asymmetric),
+                WeightOnlyInt4Linear(
+                    getattr(block.mlp, name), group_size, asymmetric, gaussian
+                ),
             )
         if attention:
             for name in ("qkv", "proj"):
@@ -56,6 +72,6 @@ def apply_weight_only_int4(model, group_size=32, attention=False, asymmetric=Fal
                     block.attn,
                     name,
                     WeightOnlyInt4Linear(
-                        getattr(block.attn, name), group_size, asymmetric
+                        getattr(block.attn, name), group_size, asymmetric, gaussian
                     ),
                 )

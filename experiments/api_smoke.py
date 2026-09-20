@@ -62,7 +62,11 @@ if args.config.get("public_cpu_text"):
     from sam3.turing import offload_text_encoder
     from sam3.turing_int8 import apply_int8_patch
 
-    offload_text_encoder(p, int8_mlp=args.config.get("public_cpu_text_int8", False))
+    offload_text_encoder(
+        p,
+        int8_mlp=args.config.get("public_cpu_text_int8", False),
+        trim_padding=args.config.get("public_cpu_trim_padding", False),
+    )
     assert all(
         x.device.type == "cpu" for x in model.backbone.language_backbone.parameters()
     )
@@ -79,6 +83,10 @@ if args.config.get("public_cpu_text"):
         assert "CPU text" in str(exc)
     else:
         raise AssertionError("CPU text accepted incompatible INT8 conversion")
+if args.config.get("public_refinements"):
+    from sam3.turing_refinements import apply_image_refinements
+
+    apply_image_refinements(p)
 stack = ExitStack()
 if args.config:
     from next_variants import apply_next_variants

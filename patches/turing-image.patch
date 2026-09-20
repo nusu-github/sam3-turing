@@ -1,9 +1,9 @@
 diff --git a/sam3/turing.py b/sam3/turing.py
 new file mode 100644
-index 0000000..cd0a8f3
+index 0000000..01707ca
 --- /dev/null
 +++ b/sam3/turing.py
-@@ -0,0 +1,446 @@
+@@ -0,0 +1,467 @@
 +"""Runtime patches for single-image SAM 3 inference on small CUDA GPUs.
 +
 +Usage: processor = apply_turing_patch(Sam3Processor(model))
@@ -357,6 +357,7 @@ index 0000000..cd0a8f3
 +        core = model.backbone.language_backbone.encoder.transformer
 +        core.forward = torch.compile(core.forward, mode="reduce-overhead")
 +    processor._turing_compile_text = bool(compile_text)
++    processor._turing_compile_mode = mode if compile else None
 +    processor._turing_patched = True
 +    return processor
 +
@@ -397,7 +398,7 @@ index 0000000..cd0a8f3
 +    return processor
 +
 +
-+def offload_text_encoder(processor, *, int8_mlp=False):
++def offload_text_encoder(processor, *, int8_mlp=False, trim_padding=False):
 +    """Keep arbitrary text prompts while moving their encoder to CPU.
 +
 +    Apply after the image patch, before inference. Cached prompts reuse GPU
@@ -406,6 +407,8 @@ index 0000000..cd0a8f3
 +    compatible. Clear cached text when switching so all features use this path.
 +    CPU computation is FP32 by default. int8_mlp=True dynamically quantizes only
 +    the CPU text MLPs, trading output differences for faster uncached prompts.
++    trim_padding=True skips CPU tokens after EOT and restores masked padding
++    before returning features, preserving the GPU input shapes.
 +    """
 +    if not getattr(processor, "_turing_patched", False):
 +        raise ValueError("Apply the Turing image patch first")
@@ -422,6 +425,8 @@ index 0000000..cd0a8f3
 +        raise ValueError("The text encoder has already been released")
 +    if any(hasattr(module, "weight_int8") for module in text.modules()):
 +        raise ValueError("CPU text offload cannot use CUDA INT8 text layers")
++    if trim_padding and text.encoder.attn_mask is None:
++        raise ValueError("Padding trim requires the causal text encoder")
 +    text.to(device="cpu", dtype=torch.float32)
 +    if int8_mlp:
 +        from torch.ao.quantization import default_dynamic_qconfig, quantize_dynamic
@@ -430,6 +435,21 @@ index 0000000..cd0a8f3
 +            quantize_dynamic(
 +                block.mlp, {nn.Linear: default_dynamic_qconfig}, inplace=True
 +            )
++    if trim_padding:
++        original_encoder = text.encoder.forward
++
++        def encode(tokens):
++            # CLIP EOT is the highest token ID; interior token IDs can be zero.
++            length = int(tokens.argmax(1).max()) + 1
++            pooled, memory = original_encoder(tokens[:, :length])
++            padding = tokens.shape[1] - length
++            if padding:
++                memory = F.pad(memory, (0, 0, 0, padding))
++                if pooled.ndim == 3:
++                    pooled = F.pad(pooled, (0, 0, 0, padding))
++            return pooled, memory
++
++        text.encoder.forward = encode
 +    original = backbone._forward_text_no_ack_ckpt
 +
 +    def forward(captions, input_boxes=None, additional_text=None, device="cuda"):
@@ -449,6 +469,7 @@ index 0000000..cd0a8f3
 +    processor._turing_text_cache.clear()
 +    processor._turing_cpu_text = True
 +    processor._turing_cpu_text_int8 = bool(int8_mlp)
++    processor._turing_cpu_trim_padding = bool(trim_padding)
 +    return processor
 diff --git a/sam3/turing_int8.py b/sam3/turing_int8.py
 new file mode 100644
@@ -915,3 +936,92 @@ index 0000000..a54ec97
 +            packed, out, pixels, row_bytes, 1024
 +        )
 +    return out
+diff --git a/sam3/turing_refinements.py b/sam3/turing_refinements.py
+new file mode 100644
+index 0000000..50ea3d1
+--- /dev/null
++++ b/sam3/turing_refinements.py
+@@ -0,0 +1,83 @@
++"""Optional image refinements: more FP16 intermediates and fewer head operations."""
++
++import torch
++import torch.nn.functional as F
++from torch import nn
++
++from sam3.model.decoder import TransformerDecoderLayer
++
++
++@torch.no_grad()
++def apply_image_refinements(processor):
++    """Apply the measured image combination before the first inference.
++
++    Requires apply_turing_patch(..., compile=True). Uses FP16 decoder FFNs and
++    ViT block outputs and folds the mask projection. Output rounding differs
++    from the base patch. The existing preprocessing and neck are preserved.
++    Compatible with vision INT8, CPU text and packed masks. Returns processor.
++    """
++    mode = getattr(processor, "_turing_compile_mode", None)
++    if not getattr(processor, "_turing_patched", False) or not mode:
++        raise ValueError("Apply the compiled Turing image patch first")
++    if getattr(processor, "_turing_refined", False):
++        raise ValueError("Image refinements have already been applied")
++    model = processor.model
++    if model.training:
++        raise ValueError("Image refinements are for inference only")
++    head = model.segmentation_head
++    predictor = head.mask_predictor
++    mlp = predictor.mask_embed
++    projection = head.instance_seg_head
++    if (
++        head.no_dec
++        or head.aux_masks
++        or mlp.residual
++        or not isinstance(mlp.out_norm, nn.Identity)
++        or projection.kernel_size != (1, 1)
++        or projection.bias is None
++        or mlp.layers[-1].bias is None
++    ):
++        raise ValueError("Expected the standard final-query image mask head")
++
++    final = mlp.layers[-1]
++    a = projection.weight[:, :, 0, 0].double()
++    b = projection.bias.double()
++    w, bias = final.weight.double(), final.bias.double()
++    folded_weight = torch.cat((a.T @ w, (b @ w)[None]), dim=0).to(final.weight.dtype)
++    folded_bias = torch.cat((a.T @ bias, (b @ bias).reshape(1))).to(final.weight.dtype)
++    predictor.register_buffer("_turing_query_weight", folded_weight, persistent=False)
++    predictor.register_buffer("_turing_query_bias", folded_bias, persistent=False)
++
++    def masks(queries, pixels):
++        hidden = queries
++        for layer in mlp.layers[:-1]:
++            hidden = mlp.drop(F.relu(layer(hidden)))
++        embedding = F.linear(
++            hidden, predictor._turing_query_weight, predictor._turing_query_bias
++        )
++        out = torch.einsum("bqc,bchw->bqhw", embedding[..., :-1], pixels)
++        return out.add_(embedding[..., -1, None, None])
++
++    projection.forward = lambda x: x
++    predictor.forward = masks
++    for module in model.modules():
++        if isinstance(module, TransformerDecoderLayer):
++            module.linear1.half()
++            module.linear2.half()
++
++            def ffn(x, module=module):
++                y = module.linear2(module.activation(module.linear1(x)))
++                return module.norm3(x + y)
++
++            module.forward_ffn = ffn
++    neck = model.backbone.vision_backbone
++    for block in neck.trunk.blocks:
++        original = block.forward
++
++        def half_output(x, original=original):
++            return original(x).to(torch.float16)
++
++        block.forward = half_output
++
++    processor._turing_refined = True
++    return processor

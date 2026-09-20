@@ -1,0 +1,15 @@
+{
+  "combined_minimal_half_ffn_head": {
+    "final": true,
+    "compile": true,
+    "public_cpu_text": true,
+    "public_int8": true,
+    "public_int8_attention": true,
+    "public_int8_fused": true,
+    "public_int8_asymmetric": true,
+    "public_int8_optimize_scales": true,
+    "half_block_output": true,
+    "decoder_half_ffn": true,
+    "fold": "static"
+  }
+}
