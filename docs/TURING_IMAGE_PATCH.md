@@ -25,6 +25,8 @@ FP16・INT8・コンパイルの効果は各GPUで個別に比較する。
 | INT8＋Attention射影＋GELU融合 | **85.46** | **1.455** | **2.872** | **0.99742** |
 | 非対称INT8・MLP＋GELU融合 | **89.47** | **1.628** | **3.190** | **0.99848** |
 | 非対称INT8＋Attention射影＋GELU融合 | 85.01 | 1.456 | 2.851 | 0.99805 |
+| 同＋重みスケール調整 | 86.91 | 1.456 | 2.851 | 0.99807 |
+| 同＋重み調整＋CPUテキスト・cacheあり | **86.30** | **0.793** | **2.368** | **0.99806** |
 | CPUテキスト＋FP16・語句cacheあり | 113.39 | 1.202 | 2.370 | 0.99919 |
 | CPUテキスト＋INT8・射影・GELU融合・cacheあり | **84.94** | **0.793** | **2.333** | **0.99742** |
 | CPUテキスト＋INT8・新規語句を毎回処理 | 187.33 | 0.793 | 2.333 | 0.99742 |
@@ -39,6 +41,7 @@ INT8は追加学習なしの任意パッチで、速度・メモリと出力差�
 
 表の通常FP16・MLPのINT8・素の状態はRound 14、GELU融合・語句の追加比較はRound 18。
 非対称INT8の2行はRound 32、重みのみINT8はRound 34、CPUテキストはRound 42の公開API測定。
+重みスケール調整とCPU併用の2行はRound 44。
 コンパイルなしは変更のない経路のRound 10値。
 GPUで新規語句を毎回処理する行は `text_cache_size=0, compile_text=True`。
 CPUテキストは `compile_text=False`、AMD EPYC 7763を4スレッドで使った。
@@ -66,6 +69,8 @@ box最大差 **1.44画素**だった。マスク差が減る一方、box差は�
 box最大差 **0.51画素**だった。これらも検出数は同じ。
 CPUテキストのFP16画像版は289画素、INT8画像版は915画素変化し、検出数は同じだった。
 後者のscore最大差0.00830、box最大差0.51画素。
+非対称INT8＋重み調整は697画素・score最大差0.00391・box最大差0.57画素。
+CPUテキストも組み合わせると698画素となり、検出数は両方とも同じだった。
 boxの対応付け後にマスクを比較した。正解ラベルに対する精度評価ではない。
 
 コンパイルの初回推論は、今回のキャッシュ状態でFP16が約20.5秒、MLPのINT8が約22.3秒だった。
@@ -73,7 +78,7 @@ Round 13で新しい検出Graphをコンパイルした際は約48秒かかっ�
 新しいINT8＋GELU融合Graphは約55〜57秒、同系統のキャッシュを使った固定語句版は約21秒だった。
 非対称INT8の公開版はMLPのみ約63秒、Attention射影込み約37秒だった。
 重みのみINT8の公開版は、今回のキャッシュ状態で約23秒だった。
-CPUテキスト版も約21〜23秒だった。
+CPUテキスト版も約21〜23秒だった。重み調整の公開版は約24秒だった。
 
 FlashAttentionを使わずefficient Attentionに固定した3090上の更新版は、
 FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892GiBだった。
@@ -90,9 +95,11 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [重みのみINT8 JSON](../experiments/results/accepted_weight_only_attention.json) /
 [CPUテキスト＋FP16 JSON](../experiments/results/accepted_cpu_text_fp16.json) /
 [CPUテキスト＋INT8 JSON](../experiments/results/accepted_cpu_text_int8.json) /
-[CPUテキストuncached JSON](../experiments/results/accepted_cpu_text_int8_uncached.json)
+[CPUテキストuncached JSON](../experiments/results/accepted_cpu_text_int8_uncached.json) /
+[重み調整＋非対称INT8 JSON](../experiments/results/accepted_optimized_asymmetric.json) /
+[同＋CPUテキスト JSON](../experiments/results/accepted_optimized_asymmetric_cpu.json)
 
-完了済みラウンドの比較は241候補・246試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は250候補・255試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -206,6 +213,29 @@ text compileを省く場合の起動時間・速度は別の交換条件にな�
 ```python
 apply_int8_patch(processor, fused_mlp=True, asymmetric_gelu=True)
 ```
+
+`optimize_weight_scales=True`は、初期化時にINT8重みの刻み幅を探索して二乗誤差を減らす。
+推論の演算は増えず、画像による較正も不要。出力差が小さくなるかは構成による。
+今回の非対称GELU＋射影では、調整なしの735画素変化から697画素へ減り、
+score最大差0.01172→0.00391、box最大差1.44→0.57画素となった。
+直近の比較で時間は85.67→86.91ms。通常の対称GELUや重みのみ版では改善が一定せず、既定は無効。
+
+```python
+from sam3.turing import offload_text_encoder
+
+apply_int8_patch(
+    processor,
+    attention_projections=True,
+    fused_mlp=True,
+    asymmetric_gelu=True,
+    optimize_weight_scales=True,
+)
+# 自由な語句のままVRAMも減らす場合。compile_text=Falseで作成する。
+offload_text_encoder(processor)
+```
+
+このCPU併用構成は86.30ms・allocated 0.793GiB・NVML 2.368GiB、平均IoU 0.998065だった。
+語句を繰り返す測定であり、CPUで新しい語句を処理する場合の待ち時間は前述の通り増える。
 
 `weight_only=True` は重みをINT8で保存し、各層の計算時にFP16へ展開して通常の
 `linear` に渡す。入力をINT8に量子化せず、選択した層はFP16で行列計算する。

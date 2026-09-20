@@ -174,6 +174,29 @@ class WeightOnlyInt8Linear(DynamicInt8Linear):
         return torch.nn.functional.linear(x, weight, self.bias)
 
 
+@torch.no_grad()
+def _optimize_weight_scales(quantized, original_weight):
+    """Minimize each weight row's reconstruction error before inference."""
+    w = original_weight.detach().float()
+    initial = quantized.weight_scale.clone()
+    best_scale = initial.clone()
+    best_error = (w - quantized.weight_int8.float() * initial[:, None]).square().sum(1)
+    for ratio in (1.0, 0.995, 0.99, 0.985, 0.975, 0.95, 0.925, 0.9, 0.85, 0.8):
+        scale = initial * ratio
+        q = (w / scale[:, None]).round().clamp(-127, 127)
+        for _ in range(2):
+            scale = ((w * q).sum(1) / q.square().sum(1).clamp_min(1)).clamp_min(1e-10)
+            q = (w / scale[:, None]).round().clamp(-127, 127)
+        error = (w - q * scale[:, None]).square().sum(1)
+        better = error < best_error
+        best_scale = torch.where(better, scale, best_scale)
+        best_error = torch.minimum(best_error, error)
+    quantized.weight_scale = best_scale
+    quantized.weight_int8 = (
+        (w / best_scale[:, None]).round().clamp(-127, 127).to(torch.int8)
+    )
+
+
 def apply_int8_patch(
     processor,
     *,
@@ -183,6 +206,7 @@ def apply_int8_patch(
     fused_mlp=False,
     asymmetric_gelu=False,
     weight_only=False,
+    optimize_weight_scales=False,
 ):
     """Quantize selected MLPs after apply_turing_patch, before first inference.
 
@@ -199,6 +223,9 @@ def apply_int8_patch(
     weight_only=True instead decodes each layer's INT8 weights for a standard
     FP16 linear operation. Activations are not quantized. It cannot be combined
     with fused_mlp or asymmetric_gelu, which require dynamic INT8 activations.
+    optimize_weight_scales=True searches per-row scales once using weight error
+    only. It changes no inference operations and needs no calibration images.
+    Output differences can improve or worsen depending on the selected path.
     """
     if not getattr(processor, "_turing_patched", False):
         raise ValueError("Apply the Turing image patch first")
@@ -252,7 +279,11 @@ def apply_int8_patch(
         )
     linear_type = WeightOnlyInt8Linear if weight_only else DynamicInt8Linear
     for parent, name in targets:
-        setattr(parent, name, linear_type(getattr(parent, name)))
+        linear = getattr(parent, name)
+        quantized = linear_type(linear)
+        if optimize_weight_scales:
+            _optimize_weight_scales(quantized, linear.weight)
+        setattr(parent, name, quantized)
     if fused_mlp:
         for block in model.backbone.vision_backbone.trunk.blocks:
             mlp = block.mlp
