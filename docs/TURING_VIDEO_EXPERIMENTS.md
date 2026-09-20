@@ -1,5 +1,7 @@
 # SAM 3.1の動画試作
 
+![SAM 3.1 video benchmarks](images/video_benchmarks.png)
+
 RTX 3090・同梱動画0001の先頭24フレーム・person prompt。既存コンテナのPythonを使用。
 両構成ともgrounding batch 1、フレームはCPU保存、FA3とTF32はOFF、compileなし。
 cold run後の3回の中央値。add_prompt＋順方向追跡を計測し、フレーム読込み・モデル構築は除外。
@@ -40,3 +42,15 @@ CPUテキストはallocated 2.849GiBに下がる一方226.79ms/frameへ遅くな
 CPUテキスト＋efficientでも226.65ms/frame・2.838GiB。
 CPUの短い語句でpadding省略を使い、この待ち時間を減らす候補を追加する。
 画像の公開パッチと同じ非対称INT8・重み調整を使うが、動画では別途そのまま同じ数値になるとは限らない。
+
+## 動画 Round 2b：CPUテキストpadding省略
+
+| 構成 | ms/frame | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| [video_fp16_int8_cpu_trim_compile_b1](../experiments/results/video_fp16_int8_cpu_trim_compile_b1.json) | 198.79 | 2.838 | 4.485 | 0.998079 | 8305 |
+| [video_fp16_int8_cpu_trim_compile_efficient_b1](../experiments/results/video_fp16_int8_cpu_trim_compile_efficient_b1.json) | 221.11 | 2.838 | 4.485 | 0.997859 | 7565 |
+
+全フレーム4人・96件のID対応を維持。通常AttentionのCPUテキスト版はpadding省略で
+226.79→198.79ms/frameへ短縮し、allocated 2.838GiB。score最大差0.00771。
+テキスト計算は各runで1回、3 captionをまとめていた。省略後のCPU計算は約0.10〜0.14秒/run。
+画像で採用した末尾padding省略が動画でも待ち時間の軽減に有効だった。

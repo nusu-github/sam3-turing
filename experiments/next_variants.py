@@ -27,6 +27,10 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("mixed_weight_only"):
+        from mixed_weight_only import apply_mixed_weight_only
+
+        apply_mixed_weight_only(model, stack, cfg["mixed_weight_only"])
     if cfg.get("cpu_text_quantize"):
         from cpu_text_quantize import apply_cpu_text_quantize
 

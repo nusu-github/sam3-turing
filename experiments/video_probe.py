@@ -74,6 +74,7 @@ def main():
     parser.add_argument("--grounding-batch", type=int, default=1)
     parser.add_argument("--reference", default="video_stock_bf16_b1")
     parser.add_argument("--variant", default="stock")
+    parser.add_argument("--profile", action="store_true")
     args = parser.parse_args()
     outdir = ROOT / "experiments/results"
     outdir.mkdir(exist_ok=True)
@@ -208,6 +209,12 @@ def main():
     if hasattr(predictor, "_cpu_text_calls"):
         data["cpu_text_calls"] = predictor._cpu_text_calls
     data["checks"] = compare_frames(outputs, reference)
+    if args.profile:
+        from video_profile import component_profile
+
+        with torch.inference_mode(), component_profile(predictor) as profile:
+            run()
+        data["component_profile"] = profile
     torch.save(outputs, outdir / f"{args.name}.pt")
     (outdir / f"{args.name}.json").write_text(json.dumps(data, indent=2) + "\n")
     print(json.dumps(data["video_metrics"]), flush=True)

@@ -941,3 +941,47 @@ CPUテキストはallocated 2.849GiBに下がる一方226.79ms/frameへ遅くな
 CPUテキスト＋efficientでも226.65ms/frame・2.838GiB。
 CPUの短い語句でpadding省略を使い、この待ち時間を減らす候補を追加する。
 画像の公開パッチと同じ非対称INT8・重み調整を使うが、動画では別途そのまま同じ数値になるとは限らない。
+
+## 同じ画像への複数語句の候補
+
+truck画像を1回だけencodeし、truck / wheel / vehicle / elephantの4語句を処理する。
+stockと公開パッチの逐次処理に加え、同じ画像特徴を参照する2語句・4語句batchを比較する。
+画像batchは1のまま。FindStageの画像IDを繰り返し、テキストIDを分ける独立の試作。
+画像前処理＋4語句＋マスク出力まで計測し、2 warmup・9回中央値。batch化のVRAM増加も比較する。
+CPUテキストは短い語句のpadding省略を使う。公開APIには未採用で、実行結果はまだない。
+
+## Round 36：重みから選んだheadの削減
+
+| 構成 | ms | allocated GiB | 平均IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|
+| prune_heads_all_14_comp | 82.181 | 1.4257 | 0.97205003 | 11178 |
+| prune_heads_global_14_comp | 83.427 | 1.5077 | 0.99269399 | 2901 |
+| prune_heads_all_15_comp | 84.516 | 1.4865 | 0.98760838 | 4468 |
+| prune_heads_global_15 | 84.521 | 1.4513 | 0.99554614 | 1667 |
+| prune_heads_window_15_comp | 84.524 | 1.4338 | 0.98692144 | 4590 |
+| prune_heads_global_15_comp | 85.251 | 1.4513 | 0.99549641 | 1655 |
+| r36_fused_attention_control | 85.513 | 1.4562 | 0.99742137 | 916 |
+
+全構成で1/4/6/4/0を維持。global 1 head削減は約1msの短縮に対して916→1667画素へ差が増えた。
+平均寄与のbias補正でも85.25ms・1655画素で改善は小さい。window側・全層へ広げると差が増える。
+全層2 head削減は82.18ms・11178画素、NVMLも基準2.839GiBに対し3.024GiB。
+この重みだけのhead選択は採用しない。別画像1枚の出力寄与で選ぶRound 60は独立に比較する。
+
+## Round 61の候補：一部だけactivationをFP16に戻す
+
+全層の重みは調整済みINT8のまま保存し、一部のLinearだけ重みを一時FP16へ復元して計算する。
+QKVのglobal / 先頭8 / 全層、出力射影の全層、MLPの先頭4 / 末尾4を比較する。
+全体をweight-onlyにするより小さい速度負担で、activation量子化による差を減らせるかを見る。
+選択したMLPではGELU再量子化の融合も外す。選択以外の層・画像追加パッチ・CPU padding省略は維持する。
+
+## 動画 Round 2b：CPUテキストpadding省略
+
+| 構成 | ms/frame | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| [video_fp16_int8_cpu_trim_compile_b1](results/video_fp16_int8_cpu_trim_compile_b1.json) | 198.79 | 2.838 | 4.485 | 0.998079 | 8305 |
+| [video_fp16_int8_cpu_trim_compile_efficient_b1](results/video_fp16_int8_cpu_trim_compile_efficient_b1.json) | 221.11 | 2.838 | 4.485 | 0.997859 | 7565 |
+
+全フレーム4人・96件のID対応を維持。通常AttentionのCPUテキスト版はpadding省略で
+226.79→198.79ms/frameへ短縮し、allocated 2.838GiB。score最大差0.00771。
+テキスト計算は各runで1回、3 captionをまとめていた。省略後のCPU計算は約0.10〜0.14秒/run。
+画像で採用した末尾padding省略が動画でも待ち時間の軽減に有効だった。

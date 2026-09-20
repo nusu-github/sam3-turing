@@ -6,6 +6,7 @@ FP16化・メモリ削減・テキストキャッシュ・任意のコンパイ�
 
 - [使い方とRTX 3090での比較結果](docs/TURING_IMAGE_PATCH.md)
 - [全候補の測定結果](experiments/results/README.md)
+- [SAM 3.1動画の試作・比較結果](docs/TURING_VIDEO_EXPERIMENTS.md)
 - [単独で適用できるパッチ](patches/turing-image.patch)
 
 以下は上流SAM 3 / SAM 3.1の説明です。
