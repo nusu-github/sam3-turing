@@ -152,6 +152,11 @@ FP16/FP32ではこの方式を既定にした。`mask_chunk_size`は他のdtype�
 直接 `resize_and_pack_masks(logits, size, fused=False)` を呼べば従来経路も選べる。
 [追加測定JSON](../experiments/results/fused_masks.json)
 
+続いてブロックサイズを調整し、FP16ではsigmoidの丸めに対応するcutoffを直接比較すると
+**6.18ms**まで短縮できた。現在の既定はこの方式。全65,536通りのFP16ビットパターンで
+PyTorchのsigmoid→閾値処理と一致し、200枚の4Kマスクも先の融合版から変化0だった。
+FP32はsigmoidを使う。[カーネル調整の測定JSON](../experiments/results/mask_pack_tuning.json)
+
 ```python
 from sam3.turing_masks import unpack_masks
 

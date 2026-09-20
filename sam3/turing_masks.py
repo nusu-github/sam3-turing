@@ -43,10 +43,12 @@ def _resize_pack(
     value = (1 - wy) * ((1 - wx) * v00 + wx * v01) + wy * ((1 - wx) * v10 + wx * v11)
     if HALF:
         value = value.to(tl.float16).to(tl.float32)
-    prob = 1.0 / (1.0 + tl.exp(-value))
     if HALF:
-        prob = prob.to(tl.float16).to(tl.float32)
-    yes = ((prob > 0.5) & valid).to(tl.uint32)
+        # Match sigmoid's FP16 rounding at 0.5 without computing an exponential.
+        yes = ((value > 0.0009765625) & valid).to(tl.uint32)
+    else:
+        prob = 1.0 / (1.0 + tl.exp(-value))
+        yes = ((prob > 0.5) & valid).to(tl.uint32)
     packed = tl.sum(yes << bit[None, :], 1).to(tl.uint8)
     row_bytes: tl.constexpr = (OH * OW + 7) // 8
     tl.store(dst + row * row_bytes + byte, packed, byte < row_bytes)
@@ -95,14 +97,14 @@ def resize_and_pack_masks(logits, size, chunk_size=8, *, fused=True):
     )
     if fused and logits.dtype in (torch.float16, torch.float32):
         if len(logits):
-            _resize_pack[(len(logits), triton.cdiv(row_bytes, 128))](
+            _resize_pack[(len(logits), triton.cdiv(row_bytes, 256))](
                 logits,
                 out,
                 *logits.shape[-2:],
                 *size,
                 *logits.stride(),
                 logits.dtype == torch.float16,
-                128,
+                256,
                 enable_fp_fusion=False,
             )
         return out
