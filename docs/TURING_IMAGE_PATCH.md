@@ -92,7 +92,7 @@ FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892Gi
 [CPUテキスト＋INT8 JSON](../experiments/results/accepted_cpu_text_int8.json) /
 [CPUテキストuncached JSON](../experiments/results/accepted_cpu_text_int8_uncached.json)
 
-完了済みラウンドの比較は234候補・239試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は241候補・246試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方

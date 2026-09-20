@@ -52,6 +52,11 @@ if args.config.get("public_int8"):
         fused_mlp=args.config.get("public_int8_fused", False),
         asymmetric_gelu=args.config.get("public_int8_asymmetric", False),
         weight_only=args.config.get("public_int8_weight_only", False),
+        **(
+            {"optimize_weight_scales": True}
+            if args.config.get("public_int8_optimize_scales")
+            else {}
+        ),
     )
 if args.config.get("public_cpu_text"):
     from sam3.turing import offload_text_encoder

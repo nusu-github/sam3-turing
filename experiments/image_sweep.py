@@ -305,6 +305,12 @@ def run(args):
                     result["weight_quantization"] = quant_stack.enter_context(
                         weight_scale_search(cfg.get("weight_scale_refine", 0))
                     )
+                if cfg.get("weight_bias_correction"):
+                    from weight_bias_correction import weight_bias_correction
+
+                    result["weight_bias_correction"] = quant_stack.enter_context(
+                        weight_bias_correction(model, cfg["weight_bias_correction"])
+                    )
                 apply_int8_patch(
                     processor,
                     text=cfg.get("public_int8_text", False),
@@ -312,6 +318,11 @@ def run(args):
                     fused_mlp=cfg.get("public_int8_fused", False),
                     asymmetric_gelu=cfg.get("public_int8_asymmetric", False),
                     weight_only=cfg.get("public_int8_weight_only", False),
+                    **(
+                        {"optimize_weight_scales": True}
+                        if cfg.get("public_int8_optimize_scales")
+                        else {}
+                    ),
                 )
         if cfg.get("public_cpu_text"):
             from sam3.turing import offload_text_encoder

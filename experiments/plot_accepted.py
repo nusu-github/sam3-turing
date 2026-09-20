@@ -91,7 +91,7 @@ def main():
     fig.text(
         0.02,
         0.025,
-        "Latency: truck image + cached prompt, 9-run median. IoU: 3 images / 5 prompts, output agreement (not ground-truth accuracy).",
+        "Latency: repeated truck image + prompt, 9-run median. IoU: 3 images / 5 prompts, output agreement (not ground-truth accuracy).",
         fontsize=8,
     )
     fig.tight_layout(rect=(0, 0.065, 1, 0.93))
