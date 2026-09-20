@@ -14,19 +14,22 @@
 | 素の状態・BF16 | 210.81 | 4.994 | 6.017 | 1.0 |
 | 採用FP16・コンパイルなし（Round 10） | 169.77 | 1.997 | 3.144 | 0.99917 |
 | 採用FP16・コンパイルあり | **114.31** | **1.862** | **3.095** | **0.99921** |
+| FP16・新規語句を毎回処理 | 116.32 | 1.862 | 3.095 | 0.99920 |
 | 画像MLPのINT8＋コンパイル | **92.26** | **1.625** | **3.099** | **0.99740** |
-| INT8＋Attention射影＋コンパイル | **90.19** | **1.455** | **2.854** | **0.99694** |
+| INT8＋Attention射影＋GELU融合 | **85.46** | **1.455** | **2.872** | **0.99742** |
+| 固定語句＋FP16 | 114.52 | 1.256 | 2.411 | 0.99921 |
+| 固定語句＋INT8・射影・GELU融合 | **84.18** | **0.850** | **2.401** | **0.99742** |
+| 画像・テキストINT8＋融合・新規語句を毎回処理 | 87.64 | 1.265 | 2.849 | 0.99745 |
 
 FP16コンパイル版は、素の状態から時間を約46%、GPU全体の使用量を約49%削減した。
 初回の採用版153.53ms、前回121.30msから、検出処理の一括コンパイルでさらに短縮した。
-同じ語句ではテキスト特徴を再利用する。INT8の時間削減は約56〜57%。
+同じ語句ではテキスト特徴を再利用する。INT8＋射影＋GELU融合の時間削減は約59%。
 INT8は追加学習なしの任意パッチで、速度・メモリと出力差の交換条件を選べる。
 
-表のFP16・MLPのINT8・素の状態はRound 14、Attention射影追加はRound 15。
+表の通常FP16・MLPのINT8・素の状態はRound 14、GELU融合・語句の追加比較はRound 18。
 コンパイルなしは変更のない経路のRound 10値。
-前回の段ごとコンパイルでは、語句キャッシュ無効＋text compileが127.39ms、
-固定語句＋FP16が120.97ms・NVML 2.401GiBだった。
-この2オプションは今回も動作確認済みで、更新後の速度・メモリの再測定は別途行う。
+新規語句の行は `text_cache_size=0, compile_text=True`。
+GELU融合なしでAttention射影だけを追加した公開版は90.19ms・NVML 2.854GiBだった。
 
 速度は `truck.jpg` + `truck` の `set_image` + `set_text_prompt` 全体。
 前処理とGPU転送を含み、画像ファイルの読込み・モデル構築は含めない。
@@ -39,23 +42,26 @@ NVMLは5ms間隔のGPU全体の標本最大値。メモリはパッチ適用後�
 FP16のマスク差は **285 / 18,038,400画素（0.00158%）**、
 score最大差 **0.00391**、box最大差 **0.49画素**。
 INT8は **836画素（0.00463%）**、score最大差 **0.01367**、box最大差 **0.66画素**。
-Attention射影も含めたINT8では **950画素（0.00527%）**、score最大差 **0.01172**、
-box最大差 **0.90画素**。検出数は同じ。
+GELU融合＋Attention射影のINT8では **916画素（0.00508%）**、score最大差 **0.00781**、
+box最大差 **0.49画素**。検出数は同じ。
 boxの対応付け後にマスクを比較した。正解ラベルに対する精度評価ではない。
 
 コンパイルの初回推論は、今回のキャッシュ状態でFP16が約20.5秒、MLPのINT8が約22.3秒だった。
 Round 13で新しい検出Graphをコンパイルした際は約48秒かかった。キャッシュ状況で変わる。
+新しいINT8＋GELU融合Graphは約55〜57秒、同系統のキャッシュを使った固定語句版は約21秒だった。
 
-FlashAttentionを使わずefficient Attentionに固定した3090上の比較でも、
-旧FP16パッチ156.40ms → 今回のFP16構成125.10ms、INT8構成102.55msだった。
+FlashAttentionを使わずefficient Attentionに固定した3090上の更新版は、
+FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892GiBだった。
+検出数は同じで、後者の平均mask IoUは0.997066。
 これはAttention経路の確認であり、Turing実機の速度測定ではない。
 
 [全候補の表](../experiments/results/README.md) / [CSV](../experiments/results/summary.csv) /
 [採用FP16 JSON](../experiments/results/r14_fp16_control.json) /
 [採用INT8 JSON](../experiments/results/r14_int8_control.json) /
-[Attention射影もINT8にしたJSON](../experiments/results/accepted_attention_int8.json)
+[INT8・射影・GELU融合JSON](../experiments/results/accepted_fused_attention.json) /
+[固定語句INT8 JSON](../experiments/results/compact_fixed_all_int8.json)
 
-Round 15までに137候補・142試行を完了した（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は152候補・157試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -133,13 +139,17 @@ processor = apply_turing_patch(Sam3Processor(model, resolution=784), compile=Tru
 ```python
 from sam3.turing_int8 import apply_int8_patch
 
-apply_int8_patch(processor, attention_projections=True)
+apply_int8_patch(processor, attention_projections=True, fused_mlp=True)
 ```
 
 `attention_projections=False`（既定）なら画像MLPだけをINT8化する。
 `True`ではViTのQKV射影・出力射影も対象にする。Attention本体にはFP16のQ/K/Vを渡す。
+`fused_mlp=True`はMLPの逆量子化・通常GELU・再量子化を融合する。Tritonの8 warps設定を使い、
+FP16の中間丸めを残す。`False`（既定）では各演算を個別に呼ぶ。
 `text=True` はテキストMLPも対象にする。`vision=False, text=True` ならテキストだけ。
-テキストのINT8化はメモリ優先で、新しい語句の処理が少し遅くなる場合がある。
+今回の `text=True, attention_projections=True, fused_mlp=True` と
+`compile_text=True, text_cache_size=0` の組合せは、新規語句を毎回処理して87.64msだった。
+text compileを省く場合の起動時間・速度は別の交換条件になる。
 従来の `apply_int8_mlp_patch` もMLPだけの入口として利用できる。
 解除する場合はモデルを作り直す。
 

@@ -1,0 +1,6 @@
+{
+  "r20_fp16_control": {"final": true, "compile": true},
+  "decoder_half_compact": {"final": true, "compile": true, "decoder_half_ffn": true},
+  "r20_fused_attention_control": {"final": true, "compile": true, "public_int8": true, "public_int8_attention": true, "fused_int8_mlp": true, "fused_int8_warps": 8},
+  "decoder_half_fused_int8": {"final": true, "compile": true, "public_int8": true, "public_int8_attention": true, "fused_int8_mlp": true, "fused_int8_warps": 8, "decoder_half_ffn": true}
+}

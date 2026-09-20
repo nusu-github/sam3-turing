@@ -38,9 +38,14 @@ p = apply_turing_patch(
     Sam3Processor(model), compile=True, compile_text=True, packed_masks=True
 )
 if args.config.get("public_int8"):
-    from sam3.turing_int8 import apply_int8_mlp_patch
+    from sam3.turing_int8 import apply_int8_patch
 
-    apply_int8_mlp_patch(p)
+    apply_int8_patch(
+        p,
+        text=args.config.get("public_int8_text", False),
+        attention_projections=args.config.get("public_int8_attention", False),
+        fused_mlp=args.config.get("public_int8_fused", False),
+    )
 stack = ExitStack()
 if args.config:
     from next_variants import apply_next_variants

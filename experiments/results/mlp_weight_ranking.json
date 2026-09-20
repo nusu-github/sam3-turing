@@ -1,0 +1,133 @@
+{
+  "method": "Product of fc1/fc2 weight RMS; an uncalibrated pruning heuristic, not measured task importance",
+  "ranking": [
+    {
+      "block": 31,
+      "weight_rms_product": 0.00038856419268995523
+    },
+    {
+      "block": 30,
+      "weight_rms_product": 0.00043327853200025856
+    },
+    {
+      "block": 29,
+      "weight_rms_product": 0.0004644811851903796
+    },
+    {
+      "block": 28,
+      "weight_rms_product": 0.00047949806321412325
+    },
+    {
+      "block": 27,
+      "weight_rms_product": 0.0005020505632273853
+    },
+    {
+      "block": 26,
+      "weight_rms_product": 0.0005240449099801481
+    },
+    {
+      "block": 25,
+      "weight_rms_product": 0.0005505956360138953
+    },
+    {
+      "block": 24,
+      "weight_rms_product": 0.0005836978671140969
+    },
+    {
+      "block": 23,
+      "weight_rms_product": 0.0006152016576379538
+    },
+    {
+      "block": 22,
+      "weight_rms_product": 0.0006527375662699342
+    },
+    {
+      "block": 21,
+      "weight_rms_product": 0.0006821451243013144
+    },
+    {
+      "block": 0,
+      "weight_rms_product": 0.000708452076651156
+    },
+    {
+      "block": 19,
+      "weight_rms_product": 0.0007158035878092051
+    },
+    {
+      "block": 20,
+      "weight_rms_product": 0.0007206164882518351
+    },
+    {
+      "block": 18,
+      "weight_rms_product": 0.0007325822953134775
+    },
+    {
+      "block": 17,
+      "weight_rms_product": 0.0007538371137343347
+    },
+    {
+      "block": 16,
+      "weight_rms_product": 0.0007625146536156535
+    },
+    {
+      "block": 15,
+      "weight_rms_product": 0.0007792357355356216
+    },
+    {
+      "block": 14,
+      "weight_rms_product": 0.0007915042224340141
+    },
+    {
+      "block": 13,
+      "weight_rms_product": 0.0008036045474000275
+    },
+    {
+      "block": 12,
+      "weight_rms_product": 0.0008234882261604071
+    },
+    {
+      "block": 1,
+      "weight_rms_product": 0.0008276485605165362
+    },
+    {
+      "block": 11,
+      "weight_rms_product": 0.0008322402718476951
+    },
+    {
+      "block": 2,
+      "weight_rms_product": 0.0008538843831047416
+    },
+    {
+      "block": 10,
+      "weight_rms_product": 0.0008675862918607891
+    },
+    {
+      "block": 9,
+      "weight_rms_product": 0.0008760347845964134
+    },
+    {
+      "block": 8,
+      "weight_rms_product": 0.0008924508583731949
+    },
+    {
+      "block": 3,
+      "weight_rms_product": 0.0008948321919888258
+    },
+    {
+      "block": 7,
+      "weight_rms_product": 0.0008981277351267636
+    },
+    {
+      "block": 6,
+      "weight_rms_product": 0.000898191996384412
+    },
+    {
+      "block": 4,
+      "weight_rms_product": 0.0009076877031475306
+    },
+    {
+      "block": 5,
+      "weight_rms_product": 0.0009123996132984757
+    }
+  ]
+}

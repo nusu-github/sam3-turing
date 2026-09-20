@@ -18,6 +18,57 @@ def _quantize(src, dst, scales, K: tl.constexpr, BLOCK: tl.constexpr):
     tl.store(scales + row, scale)
 
 
+@triton.jit
+def _gelu_quantize(
+    mm, row_scales, weight_scales, bias, q, scales, K: tl.constexpr, BLOCK: tl.constexpr
+):
+    row = tl.program_id(0)
+    i = tl.arange(0, BLOCK)
+    x = tl.load(mm + row * K + i, i < K, 0).to(tl.float32)
+    x *= tl.load(row_scales + row)
+    x = x * tl.load(weight_scales + i, i < K, 0) + tl.load(bias + i, i < K, 0)
+    x = x.to(tl.float16).to(tl.float32)
+    y = 0.5 * x * (1 + libdevice.erf(x * 0.7071067811865476))
+    y = y.to(tl.float16).to(tl.float32)
+    scale = tl.maximum(tl.max(tl.abs(y), 0), 1.0e-8) / 127.0
+    quantized = libdevice.nearbyint(y / scale).to(tl.int8)
+    tl.store(q + row * K + i, quantized, i < K)
+    tl.store(scales + row, scale)
+
+
+def _fused_mlp(x, fc1, fc2):
+    shape = x.shape
+    x = x.reshape(-1, fc1.in_features).contiguous()
+    rows = x.shape[0]
+    if not rows:
+        return x.new_empty((*shape[:-1], fc2.out_features), dtype=torch.float16)
+    padded_rows = max(32, triton.cdiv(rows, 16) * 16)
+    if padded_rows != rows:
+        x = torch.nn.functional.pad(x, (0, 0, 0, padded_rows - rows))
+    q1 = torch.empty_like(x, dtype=torch.int8)
+    scale1 = torch.empty(padded_rows, device=x.device, dtype=torch.float32)
+    _quantize[(padded_rows,)](
+        x, q1, scale1, fc1.in_features, triton.next_power_of_2(fc1.in_features)
+    )
+    mm1 = torch._int_mm(q1, fc1.weight_int8.T)
+    q2 = torch.empty_like(mm1, dtype=torch.int8)
+    scale2 = torch.empty_like(scale1)
+    _gelu_quantize[(padded_rows,)](
+        mm1,
+        scale1,
+        fc1.weight_scale,
+        fc1.bias,
+        q2,
+        scale2,
+        fc2.in_features,
+        triton.next_power_of_2(fc2.in_features),
+        num_warps=8,
+    )
+    mm2 = torch._int_mm(q2, fc2.weight_int8.T)
+    y = (mm2.float() * scale2[:, None]) * fc2.weight_scale[None, :] + fc2.bias
+    return y[:rows].to(torch.float16).reshape(*shape[:-1], fc2.out_features)
+
+
 class DynamicInt8Linear(nn.Module):
     def __init__(self, linear):
         super().__init__()
@@ -62,7 +113,7 @@ class DynamicInt8Linear(nn.Module):
 
 
 def apply_int8_patch(
-    processor, *, vision=True, text=False, attention_projections=False
+    processor, *, vision=True, text=False, attention_projections=False, fused_mlp=False
 ):
     """Quantize selected MLPs after apply_turing_patch, before first inference.
 
@@ -73,6 +124,7 @@ def apply_int8_patch(
     MLPs, reducing memory but potentially slowing new-prompt encoding.
     attention_projections=True also targets the ViT QKV and output projections.
     The attention operation itself remains FP16.
+    fused_mlp=True fuses the vision MLP's dequantization, GELU and requantization.
     """
     if not getattr(processor, "_turing_patched", False):
         raise ValueError("Apply the Turing image patch first")
@@ -81,6 +133,16 @@ def apply_int8_patch(
     model = processor.model
     if model.training:
         raise ValueError("INT8 MLPs are for inference only")
+    if fused_mlp:
+        if not vision:
+            raise ValueError("fused_mlp requires vision MLP quantization")
+        for block in model.backbone.vision_backbone.trunk.blocks:
+            if (
+                not isinstance(block.mlp.norm, nn.Identity)
+                or not isinstance(block.mlp.act, nn.GELU)
+                or block.mlp.act.approximate != "none"
+            ):
+                raise ValueError("Fused MLPs require GELU without an intermediate norm")
     targets = []
     if vision:
         targets.extend(
@@ -110,6 +172,14 @@ def apply_int8_patch(
         )
     for parent, name in targets:
         setattr(parent, name, DynamicInt8Linear(getattr(parent, name)))
+    if fused_mlp:
+        for block in model.backbone.vision_backbone.trunk.blocks:
+            mlp = block.mlp
+
+            def forward(x, mlp=mlp):
+                return _fused_mlp(x, mlp.fc1, mlp.fc2)
+
+            mlp.forward = forward
     return processor
 
 

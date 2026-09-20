@@ -22,6 +22,10 @@ def _compile_stage(fn, cfg):
 
 
 def apply_next_variants(model, processor, cfg, stack):
+    if cfg.get("folded_norm_int8"):
+        from folded_norm_int8 import apply_folded_norm_int8
+
+        apply_folded_norm_int8(model, cfg.get("folded_norm_warps", 4))
     if cfg.get("fast_normalize"):
         from image_input import apply_fast_normalize
 

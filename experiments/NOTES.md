@@ -146,3 +146,39 @@ tanh近似は89.17ms・1.628GiB allocated・平均IoU 0.997269だった。
 
 通常GELUの8 warpsを優先し、Round 17のLayerNorm融合・Attention射影INT8との組合せを
 先に実行する。Round 16の重みのみINT8は準備済みで、その後に比較する。
+
+## Round 17：LayerNorm融合と組み合わせ
+
+| 構成 | ms | CUDA allocated GiB | NVML GiB | 平均mask IoU |
+|---|---:|---:|---:|---:|
+| MLPのINT8基準 | 91.53 | 1.624 | 3.079 | 0.99740 |
+| LayerNorm融合・4 warps | 93.72 | 1.629 | 3.103 | 0.99751 |
+| LayerNorm融合・8 warps | 93.51 | 1.629 | 3.103 | 0.99740 |
+| LayerNorm＋GELU融合 | 91.91 | 1.628 | 3.071 | 0.99745 |
+| GELU融合＋Attention射影INT8 | 84.91 | 1.455 | 2.819 | 0.99742 |
+| LayerNorm＋GELU融合＋Attention射影INT8 | 84.81 | 1.509 | 2.860 | 0.99738 |
+
+全構成で1/4/6/4/0の検出数は一致。最後の2構成は約0.1msの差で、LayerNormを含む方の
+メモリが大きいので、通常GELUの8 warps融合＋Attention射影を選ぶ。
+この組合せはstock比916画素が変化し、score最大差0.0078125、box最大差0.495画素。
+
+公開APIに`fused_mlp=True`を追加し、Round 18で公開版・固定語句・新規語句・
+efficient Attentionを測定する。Round 16はその後に実行し、続いてRound 19の画像入力、
+Round 20の一括コンパイル下でのdecoder FFNのFP16化を試す。
+
+## Round 18：公開APIと用途ごとの比較
+
+公開APIのGELU融合は90.43ms、Attention射影も含めると85.46ms・NVML 2.872GiB。
+後者の出力差は試作版と同じ916画素、平均IoU 0.997421で、5条件の検出数は一致した。
+固定語句FP16は114.52ms・1.256GiB allocated・2.411GiB NVML。
+固定語句のINT8＋射影＋GELU融合は84.18ms・0.850GiB allocated・2.401GiB NVML。
+語句キャッシュを無効にしてtext compileを使うFP16は116.32msだった。
+テキストMLPもINT8化した融合版はキャッシュ有効で85.10ms・NVML 2.831GiB、
+無効＋text compileで87.64ms・2.849GiB。後者の平均IoUは0.997450、変化909画素。
+efficient Attentionに固定するとFP16が118.83ms、融合INT8が90.93ms。
+全9構成で検出数1/4/6/4/0は一致した。Turing実機の速度ではなく3090上の別経路の確認。
+
+次のRound 21はLayerNormのaffine係数をfc1へ前計算する案。
+`W * (gamma * (x - mean) / std + beta) + b`を、`W * gamma`と`W * beta + b`に分け、
+入力量子化では中心化のみを行って逆標準偏差を出力scaleへ含める。
+量子化前の実数演算では同値だが、INT8では誤差の分布が変わるためA/Bで確認する。
