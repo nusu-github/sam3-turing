@@ -1119,3 +1119,44 @@ GPU画像処理は非同期なので、CPUテキスト単体の時間を全体�
 784入力のINT8では画像処理の短縮がCPU側の待ちに隠れている可能性がある。
 余白の射影省略を使った4スレッドFP32を基準に、16スレッドFP32と8スレッドCPU INT8を比較する。
 16スレッドFP32では通常の射影も測り、CPU短縮後に射影省略の効果が現れるかを見る。
+
+## Round 67の候補：公開用4bitパッチ
+
+`sam3/turing_int4.py`にGaussian group 16/32と非対称group 16の選択肢をまとめる。
+CPUテキストpadding省略・画像追加パッチと組み合わせた5条件比較でRound 63と照合する。
+Gaussian group 32はefficient Attentionでも測る。速度優先のINT8経路は維持し、4bitはメモリ優先の任意機能とする。
+モデル測定の後、packed mask・旧画像state再利用・幾何prompt・空出力などのAPI smokeも実行する。
+
+## Round 63：4bit＋CPUテキスト＋画像追加パッチ
+
+| 構成 | ms | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| r63_refined_fp16_cpu_control | 113.502 | 1.2437 | 2.3916 | 0.99914653 | 294 |
+| refined_int4_cpu_group16_gaussian | 116.334 | 0.6817 | 2.1807 | 0.99388643 | 1946 |
+| refined_int4_cpu_group32_gaussian | 116.419 | 0.6042 | 2.0264 | 0.9932918 | 1995 |
+| refined_int4_cpu_group16_asym | 116.278 | 0.6807 | 2.1553 | 0.99448496 | 1744 |
+| refined_int4_cpu_group32_gaussian_efficient | 121.662 | 0.6067 | 2.0674 | 0.99330282 | 1993 |
+
+すべて1/4/6/4/0。Gaussian group 32はFP16基準のallocated 1.244→0.604GiB、
+113.50→116.42ms、294→1995画素。非対称group 16は0.681GiB・1744画素。
+efficient Attentionでもgroup 32は121.66ms・0.607GiB・1993画素で動作した。
+メモリ優先の任意パッチとして公開用コードを用意し、Round 67で照合する。
+
+## Round 67：公開用4bitパッチ
+
+| 構成 | ms | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| accepted_int4_gaussian16_cpu | 116.942 | 0.6157 | 2.2197 | 0.99388643 | 1946 |
+| accepted_int4_gaussian32_cpu | 116.362 | 0.5899 | 2.4026 | 0.9932918 | 1995 |
+| accepted_int4_gaussian32_cpu_efficient | 121.374 | 0.5894 | 2.1729 | 0.99330282 | 1993 |
+| accepted_int4_asymmetric16_cpu | 116.751 | 0.6676 | 2.2295 | 0.99448496 | 1744 |
+
+4構成すべてで試作版と全5条件の比較dictが一致し、検出数1/4/6/4/0。
+公開Gaussian group 32のallocatedは0.590GiB、NVML最大値は2.403GiB。
+試作時のNVML 2.026GiBを公開APIの値として使わず、ここでは今回の公開コードの測定値を報告する。
+Gaussian group 32は速度より重み保存量を優先する任意機能。
+
+Round 67のAPI確認も通過。128個の4bit Linear＋48個のCPU INT8 Linear、CPU padding省略、
+画像追加パッチ、packed maskを併用した。A→B→Aの画像state再利用でマスクは完全一致。
+幾何prompt・直接modelの出力dict・空出力・固定語句への切替・autocast復帰も確認した。
+単独patchに5つ目の公開モジュールを含め、reverse適用checkを通した。

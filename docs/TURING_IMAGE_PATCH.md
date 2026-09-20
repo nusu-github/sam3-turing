@@ -21,6 +21,8 @@ FP16・INT8・コンパイルの効果は各GPUで個別に比較する。
 | 採用FP16・コンパイルあり | **114.31** | **1.862** | **3.095** | **0.99921** |
 | FP16・新規語句を毎回処理 | 116.32 | 1.862 | 3.095 | 0.99920 |
 | 重みのみINT8・MLP＋Attention射影 | 117.29 | 1.456 | 2.862 | 0.99876 |
+| 4bit Gaussian group 32＋CPUテキスト・画像追加パッチ | 116.36 | 0.590 | 2.403 | 0.99329 |
+| 4bit 非対称 group 16＋CPUテキスト・画像追加パッチ | 116.75 | 0.668 | 2.229 | 0.99448 |
 | 画像MLPのINT8＋コンパイル | **92.26** | **1.625** | **3.099** | **0.99740** |
 | INT8＋Attention射影＋GELU融合 | **85.46** | **1.455** | **2.872** | **0.99742** |
 | 非対称INT8・MLP＋GELU融合 | **89.47** | **1.628** | **3.190** | **0.99848** |
@@ -46,6 +48,7 @@ INT8は追加学習なしの任意パッチで、速度・メモリと出力差�
 表の通常FP16・MLPのINT8・素の状態はRound 14、GELU融合・語句の追加比較はRound 18。
 非対称INT8の2行はRound 32、重みのみINT8はRound 34、CPUテキストはRound 42の公開API測定。
 重みスケール調整とCPU併用の2行はRound 44。
+4bitの2行はRound 67の公開API測定で、CPUテキストpadding省略・画像追加パッチを併用した。
 コンパイルなしは変更のない経路のRound 10値。
 GPUで新規語句を毎回処理する行は `text_cache_size=0, compile_text=True`。
 CPUテキストは `compile_text=False`、AMD EPYC 7763を4スレッドで使った。
@@ -117,7 +120,7 @@ CPUテキストもINT8にすると90.01ms・allocated 0.782GiB・NVML 2.351GiB�
 [CPU動的INT8・cacheあり JSON](../experiments/results/accepted_cpu_dynamic_text.json) /
 [CPU動的INT8・cacheなし JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json)
 
-完了済みラウンドの比較は348候補・356試行（再測定と失敗を含む）。追加候補も継続中。
+完了済みラウンドの比較は357候補・365試行（再測定と失敗を含む）。追加候補も継続中。
 候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
 
 ## 使い方
@@ -373,6 +376,55 @@ MLPだけなら115.57ms・1.574GiB・3.030GiB、平均IoU 0.999030・343画素�
 
 従来の `apply_int8_mlp_patch` もMLPだけの入口として利用できる。
 解除する場合はモデルを作り直す。
+
+## 重みを4bitで保持する
+
+メモリを優先する場合は、任意の `apply_int4_patch` を使う。画像ViTのMLPとAttention射影を
+4bitで保存し、各Linearの直前にFP16へ復元する。入力と行列積はFP16で、動的INT8より遅く、
+出力差も増える。追加のINT4演算カーネルや学習は使用しない。
+
+```python
+from sam3.turing import apply_turing_patch, offload_text_encoder
+from sam3.turing_int4 import apply_int4_patch
+from sam3.turing_refinements import apply_image_refinements
+
+# 新しい画像modelに、推論前に適用する。
+processor = apply_turing_patch(Sam3Processor(model), compile=True)
+apply_int4_patch(processor, group_size=32)
+offload_text_encoder(processor, trim_padding=True)
+apply_image_refinements(processor)
+```
+
+既定はGaussian分位点から作る対称15段階とFP16 scaleを使う。NF4の実装ではない。
+`group_size=16` または `32` を選べる。`asymmetric=True` は16段階の等間隔量子化と
+FP16 offsetを使う。今回の比較では、group 32のGaussianがメモリを抑え、
+group 16の非対称版はマスク差が少ない選択肢だった。
+
+```python
+apply_int4_patch(processor, group_size=16, asymmetric=True)
+```
+
+上の2つは選択肢。量子化済みの同じ層へ重ねて適用するとエラーになる。
+`attention_projections=False` ならMLPだけを対象にする。CPUテキスト処理、画像追加パッチ、
+`packed_masks=True` と組み合わせられる。Turing実機の速度は未測定。
+
+公開APIの測定値は以下。CPUテキストはFP32・4スレッド・padding省略で、毎回テキストを処理する。
+検出数は全構成1/4/6/4/0。表は通常のマスク配列を返す画像推論全体。
+
+| 4bit方式 | ms | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| [Gaussian 16](../experiments/results/accepted_int4_gaussian16_cpu.json) | 116.94 | 0.616 | 2.220 | 0.993886 | 1946 |
+| [Gaussian 32](../experiments/results/accepted_int4_gaussian32_cpu.json) | 116.36 | 0.590 | 2.403 | 0.993292 | 1995 |
+| [Gaussian 32・efficient Attention](../experiments/results/accepted_int4_gaussian32_cpu_efficient.json) | 121.37 | 0.589 | 2.173 | 0.993303 | 1993 |
+| [非対称 16](../experiments/results/accepted_int4_asymmetric16_cpu.json) | 116.75 | 0.668 | 2.229 | 0.994485 | 1744 |
+
+同じCPUテキスト・画像追加パッチのFP16基準は113.50ms・allocated 1.244GiB・NVML 2.392GiB。
+4bitでallocatedは減るが、コンパイルを含むNVML最大値の減少は同じ割合ではない。
+重み展開などの一時メモリもあり、両方の値を掲載している。初期モデル構築のallocatedは約3.330GiB。
+
+Gaussian group 32＋CPUテキストMLP INT8＋padding省略＋画像追加パッチのAPI確認では、
+128層の4bit化、packed mask、旧画像state再利用、幾何prompt、空出力、固定語句への切替を確認した。
+[API確認JSON](../experiments/results/api_smoke_int4_cpu_trimmed.json)
 
 ## 多数の二値マスクを小さく返す
 

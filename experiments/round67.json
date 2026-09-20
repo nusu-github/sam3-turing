@@ -1,0 +1,44 @@
+{
+  "accepted_int4_gaussian16_cpu": {
+    "final": true,
+    "compile": true,
+    "public_refinements": true,
+    "public_cpu_text": true,
+    "public_cpu_trim_padding": true,
+    "text_cache_size": 0,
+    "public_int4": true,
+    "public_int4_group_size": 16
+  },
+  "accepted_int4_gaussian32_cpu": {
+    "final": true,
+    "compile": true,
+    "public_refinements": true,
+    "public_cpu_text": true,
+    "public_cpu_trim_padding": true,
+    "text_cache_size": 0,
+    "public_int4": true,
+    "public_int4_group_size": 32
+  },
+  "accepted_int4_gaussian32_cpu_efficient": {
+    "final": true,
+    "compile": true,
+    "public_refinements": true,
+    "public_cpu_text": true,
+    "public_cpu_trim_padding": true,
+    "text_cache_size": 0,
+    "public_int4": true,
+    "public_int4_group_size": 32,
+    "backend": "efficient"
+  },
+  "accepted_int4_asymmetric16_cpu": {
+    "final": true,
+    "compile": true,
+    "public_refinements": true,
+    "public_cpu_text": true,
+    "public_cpu_trim_padding": true,
+    "text_cache_size": 0,
+    "public_int4": true,
+    "public_int4_group_size": 16,
+    "public_int4_asymmetric": true
+  }
+}

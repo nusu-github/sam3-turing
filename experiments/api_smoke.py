@@ -58,6 +58,20 @@ if args.config.get("public_int8"):
             else {}
         ),
     )
+if args.config.get("public_int4"):
+    from sam3.turing_int4 import apply_int4_patch
+
+    apply_int4_patch(
+        p,
+        group_size=args.config.get("public_int4_group_size", 32),
+        asymmetric=args.config.get("public_int4_asymmetric", False),
+    )
+    try:
+        apply_int4_patch(p)
+    except ValueError as exc:
+        assert "unquantized" in str(exc)
+    else:
+        raise AssertionError("INT4 conversion accepted a second application")
 if args.config.get("public_cpu_text"):
     from sam3.turing import offload_text_encoder
     from sam3.turing_int8 import apply_int8_patch
@@ -109,6 +123,14 @@ result = {
     "bag_count": len(b["scores"]),
     "image_state_reuse": True,
 }
+if args.config.get("public_int4"):
+    from sam3.turing_int4 import WeightOnlyInt4Linear
+
+    result["vision_int4_linears"] = sum(
+        isinstance(module, WeightOnlyInt4Linear) for module in model.modules()
+    )
+    assert result["vision_int4_linears"] == 128
+    result["int4_reapply_rejected"] = True
 if args.config.get("public_cpu_text_int8"):
     result["cpu_text_int8_linears"] = sum(
         isinstance(module, torch.ao.nn.quantized.dynamic.Linear)

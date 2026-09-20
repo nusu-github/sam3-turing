@@ -325,6 +325,15 @@ def run(args):
                         else {}
                     ),
                 )
+        if cfg.get("public_int4"):
+            from sam3.turing_int4 import apply_int4_patch
+
+            apply_int4_patch(
+                processor,
+                group_size=cfg.get("public_int4_group_size", 32),
+                attention_projections=cfg.get("public_int4_attention", True),
+                asymmetric=cfg.get("public_int4_asymmetric", False),
+            )
         if cfg.get("public_cpu_text"):
             from sam3.turing import offload_text_encoder
 

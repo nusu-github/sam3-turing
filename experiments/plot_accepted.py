@@ -13,6 +13,8 @@ CONFIGS = [
     ("Stock BF16", "r14_stock_control"),
     ("Patched FP16", "r14_fp16_control"),
     ("INT8 weights only, FP16 linear", "accepted_weight_only_attention"),
+    ("INT4 Gaussian32 + trimmed CPU text", "accepted_int4_gaussian32_cpu"),
+    ("INT4 asymmetric16 + trimmed CPU text", "accepted_int4_asymmetric16_cpu"),
     ("INT8 MLP", "r14_int8_control"),
     ("Asymmetric INT8 MLP + fused GELU", "accepted_asymmetric_mlp"),
     ("INT8 + projections + fused GELU", "accepted_fused_attention"),
@@ -49,7 +51,7 @@ def main():
     fig, axes = plt.subplots(
         1,
         3,
-        figsize=(12, 6.0),
+        figsize=(13, 6.8),
         sharey=True,
         gridspec_kw={"width_ratios": [1.3, 1.1, 1]},
     )
@@ -57,6 +59,8 @@ def main():
         "#718096",
         "#2b6cb0",
         "#4c86b8",
+        "#a64d79",
+        "#8064a2",
         "#38a169",
         "#319795",
         "#16806a",

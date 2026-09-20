@@ -2,7 +2,7 @@
 
 6GB級GPU向けのSAM 3画像推論パッチを開発しています。
 FP16化・メモリ削減・テキストキャッシュ・任意のコンパイルを、実行時に適用します。
-任意のINT8（MLP・Attention射影）と、4Kマスクの補間・bitpackを融合するパッチも含みます。
+任意のINT8（MLP・Attention射影）、メモリ優先の4bit重み、4Kマスクの補間・bitpackを融合するパッチも含みます。
 
 - [使い方とRTX 3090での比較結果](docs/TURING_IMAGE_PATCH.md)
 - [全候補の測定結果](experiments/results/README.md)
