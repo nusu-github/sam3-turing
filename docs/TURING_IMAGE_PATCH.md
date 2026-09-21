@@ -120,8 +120,11 @@ CPUテキストもINT8にすると90.01ms・allocated 0.782GiB・NVML 2.351GiB�
 [CPU動的INT8・cacheあり JSON](../experiments/results/accepted_cpu_dynamic_text.json) /
 [CPU動的INT8・cacheなし JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json)
 
-完了済みラウンドの比較は369候補・377試行（再測定と失敗を含む）。追加候補も継続中。
-候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。
+今回の探索は2026-09-21に終了。完了済みラウンドの比較は376候補・384試行
+（再測定と失敗を含む）で、有効な画像測定373件を表に保存した。
+最後のRound 43ではINT8重みのbias補正を比較したが、採用済みの非対称INT8＋重み調整では
+変化画素が697→769と増えたため、公開パッチへの追加は見送った。
+候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。未実行の候補設定は測定結果に含めない。
 
 ## 使い方
 

@@ -1256,3 +1256,49 @@ Python整数でgridを渡し、CUDA scalarを毎回読む同期を避ける。`d
 すべて24フレーム×4人。既存CPU trim構成198.79ms/frameに対し、RPB固定のみ197.79msで差は小さかった。
 検出decoderのコンパイルは162.73ms、RPB併用164.79ms。後者2構成は8331画素で同じ。
 まずdecoderコンパイルを保持し、検出器・necks・追跡側への追加コンパイルを個別に測る。
+
+## 動画 Round 3b：コンパイルする範囲を広げる
+
+| 構成 | ms/frame | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| [video_fp16_int8_cpu_trim_compile_detector_b1](results/video_fp16_int8_cpu_trim_compile_detector_b1.json) | 154.02 | 2.672 | 4.339 | 0.998157 | 7559 |
+| [video_fp16_int8_cpu_trim_compile_necks_b1](results/video_fp16_int8_cpu_trim_compile_necks_b1.json) | 192.27 | 2.832 | 4.595 | 0.997950 | 8720 |
+| [video_fp16_int8_cpu_trim_compile_tracker_b1](results/video_fp16_int8_cpu_trim_compile_tracker_b1.json) | 189.74 | 2.840 | 4.739 | 0.998078 | 8316 |
+| [video_fp16_int8_cpu_trim_compile_all_b1](results/video_fp16_int8_cpu_trim_compile_all_b1.json) | 139.90 | 2.666 | 4.628 | 0.997945 | 8729 |
+| [video_fp16_int8_cpu_trim_compile_all_efficient_b1](results/video_fp16_int8_cpu_trim_compile_all_efficient_b1.json) | 155.41 | 2.666 | 4.628 | 0.998171 | 7346 |
+
+全24フレーム4人・96件の人物ID対応を維持。検出器全体は154.02ms/frameでdecoder単独162.73より短縮。
+画像特徴の後段だけは192.27、追跡側だけは189.74ms/frameで改善は小さかった。
+全体を併用すると139.90ms/frame、allocated 2.666GiB、NVML 4.628GiB。素の261.00から約46%短縮した。
+同じ全体構成をefficient Attentionにすると155.41ms/frame、7346画素変化。
+cold runは今回のキャッシュで全体38.43秒、efficient全体98.70秒。画像のneck削除などは使わず、
+動画が使用する全てのFPNを保持したままコンパイルしている。現時点では実験用の動画monkeypatch。
+
+## Round 43：INT8重みの平均誤差をbiasで補正する（最終回）
+
+LayerNormのbiasを入力平均の近似とし、元重みとINT8復元重みの差から出力平均のずれを補う。
+MLP後段には正規分布を仮定したGELU平均、Attention出力射影にはV射影の平均も使った。
+画像を使った追加学習はなく、補正は初期化時のみ。既存Pythonで7構成を測定した。
+
+| 構成 | ms | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| r43_fused_attention_control | 84.950 | 1.4553 | 2.8467 | 0.99742137 | 916 |
+| bias_correct_norm | 85.278 | 1.4553 | 2.8232 | 0.99716299 | 959 |
+| bias_correct_mlp | 84.899 | 1.4553 | 2.8232 | 0.99728928 | 897 |
+| bias_correct_all | 85.170 | 1.4546 | 2.8311 | 0.99746641 | 876 |
+| bias_norm_asymmetric | 85.189 | 1.4540 | 2.8428 | 0.99726124 | 843 |
+| bias_mlp_asymmetric | 84.859 | 1.4540 | 2.8428 | 0.99792262 | 770 |
+| bias_mlp_mse_asymmetric | 84.941 | 1.4554 | 2.8115 | 0.99789862 | 769 |
+
+全構成で検出数1/4/6/4/0、15件対応、比較18,038,400画素。対称INT8に全補正を入れると
+916→876画素へ少し減ったが、score最大差は0.0078125→0.0126953と増えた。
+既存の非対称INT8（735画素）に対しては、norm補正843画素、MLP補正770画素で悪化した。
+重みスケール調整も併用した補正769画素・IoU 0.99789862は、既存の補正なし
+`accepted_optimized_asymmetric`の697画素・IoU 0.998074より差が大きい。
+この既存対照はRound 44の保存値であり、今回同時に測り直した対照ではない。
+同時比較の対称INT8では時間・allocatedともほぼ変わらず、最終パッチへの追加は見送る。
+[実験パッチ](weight_bias_correction.py)と[7構成](round43.json)、各JSONは保存する。
+
+ユーザーの「次回の改善項目で終了」に従い、2026-09-21のこの比較で探索を終了した。
+公開画像パッチは検証済みの5モジュールを維持し、単独適用用の`patches/turing-image.patch`にまとめてある。
+Round 47・60・61・65などの未実行設定には進まず、完了済みの動画Round 3bも結果と試作コードを保存した。

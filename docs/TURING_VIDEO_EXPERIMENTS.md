@@ -85,3 +85,26 @@ python experiments/video_sweep.py \
   --checkpoint checkpoints/sam3.1/sam3.1_multiplex.pt \
   --variants fp16_int8_cpu_trim_compile_decoder
 ```
+
+## 動画 Round 3b：コンパイルする範囲を広げる
+
+| 構成 | ms/frame | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+|---|---:|---:|---:|---:|---:|
+| [video_fp16_int8_cpu_trim_compile_detector_b1](../experiments/results/video_fp16_int8_cpu_trim_compile_detector_b1.json) | 154.02 | 2.672 | 4.339 | 0.998157 | 7559 |
+| [video_fp16_int8_cpu_trim_compile_necks_b1](../experiments/results/video_fp16_int8_cpu_trim_compile_necks_b1.json) | 192.27 | 2.832 | 4.595 | 0.997950 | 8720 |
+| [video_fp16_int8_cpu_trim_compile_tracker_b1](../experiments/results/video_fp16_int8_cpu_trim_compile_tracker_b1.json) | 189.74 | 2.840 | 4.739 | 0.998078 | 8316 |
+| [video_fp16_int8_cpu_trim_compile_all_b1](../experiments/results/video_fp16_int8_cpu_trim_compile_all_b1.json) | 139.90 | 2.666 | 4.628 | 0.997945 | 8729 |
+| [video_fp16_int8_cpu_trim_compile_all_efficient_b1](../experiments/results/video_fp16_int8_cpu_trim_compile_all_efficient_b1.json) | 155.41 | 2.666 | 4.628 | 0.998171 | 7346 |
+
+全24フレーム4人・96件の人物ID対応を維持。検出器全体は154.02ms/frameでdecoder単独162.73より短縮。
+画像特徴の後段だけは192.27、追跡側だけは189.74ms/frameで改善は小さかった。
+全体を併用すると139.90ms/frame、allocated 2.666GiB、NVML 4.628GiB。素の261.00から約46%短縮した。
+同じ全体構成をefficient Attentionにすると155.41ms/frame、7346画素変化。
+cold runは今回のキャッシュで全体38.43秒、efficient全体98.70秒。画像のneck削除などは使わず、
+動画が使用する全てのFPNを保持したままコンパイルしている。現時点では実験用の動画monkeypatch。
+
+```bash
+python experiments/video_sweep.py \
+  --checkpoint checkpoints/sam3.1/sam3.1_multiplex.pt \
+  --variants fp16_int8_cpu_trim_compile_all fp16_int8_cpu_trim_compile_all_efficient
+```
