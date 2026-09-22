@@ -1020,3 +1020,53 @@ Remaining work includes codecs (and their decode/resize parity), SAM3.1 sessions
 and rebucketing, high-level text/video association, C ABI, multi-GPU, packaging
 and further accuracy/performance/size optimization. The earlier CPU source
 prompt-encoder issue remains unresolved; this is not a stability claim for it.
+
+## 2026-09-22 — SAM3.1 multiplex inference frame host
+
+Added `Sam31TrackingFrame`, connecting both decoder heads, temporal selection,
+object-pointer multiplexing and mask-memory encoding. The frame request selects
+direct masks, interactive initialization/refinement, pure propagation, or
+propagation plus corrections to selected objects. It retains all input points,
+full 1008px output and arbitrary compatible bucket counts. Mixed corrections
+preserve the source's indexed replacement/broadcast of candidate masks, IoUs,
+pointers and logits. Conditioning object flags, deferred memory, saved image
+features, CPU offload and temporal trimming follow the source frame policies.
+Added the optional SAM3.1 interactive IoU stability attenuation, also used to
+choose its best mask. Default SAM3 behavior is unchanged.
+
+A parity failure exposed another singleton-stride requirement: the SAM3.1
+memory encoder consumes the source's sequence-to-BCHW view. Passing the same
+channels-last pixels with a different singleton batch stride changed FP16
+convolution results despite identical masks. Reproducing that view restores
+exact memory equality without a numeric tolerance or precision workaround.
+
+`multiplex-frame-*-validation.json` records 63 CUDA comparisons (21 each FP16,
+BF16-reference and FP32), 21 CPU FP32 comparisons, and three CUDA FP16 math-SDPA
+fallback comparisons. All 1,099 compared tensor outputs match exactly. Cases
+include 17-point initialization, empty points, 1008/1152 mask inputs, previous
+logits, 17-object/two-bucket propagation, ordered partial corrections, reverse
+selection, optional scores, deferred encoding, overlap handling, offload and
+old/distant history trimming. Math tests use three objects to fit the fallback
+working set; this is a test-fixture choice, not an API cap. These are synthetic
+full-grid features, not a real-video quality benchmark. CUDA FP32 removes the
+source Flash-only context; CPU adapts source CUDA transfers and rotary caches.
+
+The standalone `sam3_multiplex_frame` passed with PATH=/nonexistent on CUDA FP16
+(17 objects, two buckets, three frames) and CPU FP32 (two objects, three frames).
+It chains a 17-point preview/refinement, partial correction and propagation with
+CPU-offloaded memory. CTest passed 9/9 CUDA-enabled and 5/5 custom-CUDA-disabled
+checks. Native linkage has no libpython/libtorch_python dependency; sm_75 cubins
+remain present. Development binaries still require matching LibTorch/ICU/zlib
+and are not a relocatable release. The intermittent original CPU prompt-encoder
+issue remains unresolved despite this passing CPU run.
+
+The frame host expects compatible history/bucket assignments. Dynamic object
+insertion/reconditioning and demo-session singleton extraction/reintegration
+remain to be ported; interaction-only requests with a subset require a matching
+extracted state. Ground-truth-driven training correction is outside inference.
+Code/reports are pushed to `codex/native-onboarding`; private development builds
+and logs are stored under `native-foundation/multiplex-frame-linux-cuda13`.
+The larger goal remains active: SAM3.1 sessions/rebucketing, codecs, high-level
+text/video association, C ABI, multi-GPU, packaging and quality/performance/size
+optimization are unfinished. No GitHub Actions were used; Turing/Windows runtime
+verification remains with the user.

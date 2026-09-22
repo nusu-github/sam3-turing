@@ -1,0 +1,177 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cpu",
+  "cases": [
+    {
+      "mode": "fp32",
+      "case": "initial_points",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "initial_17_points",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "initial_empty_points",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "initial_mask_1152",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "initial_mask_1008",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "refine_previous",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "forward",
+      "objects": 2,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "reverse",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "propagate_correct_multi",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "propagate_correct_single",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "deferred",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 11,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "interactive_only_features",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 9,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "scores",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 15,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "offloaded",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 10,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "overlap",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "stability",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "disabled_memory",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 11,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "trim_low",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 15,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "trim_high",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 15,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "trim_offload",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 10,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "trim_unfiltered",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    }
+  ],
+  "math_fallback": false,
+  "scope": "Original VideoTrackingMultiplex.track_step inference with no ground-truth training correction loop. Synthetic full-grid cached features; dynamic insert/recondition and demo session singleton extraction/merge remain separate.",
+  "adaptations": "CUDA FP32 removes the source Flash-only context. CPU redirects CUDA transfers and rotary caches."
+}

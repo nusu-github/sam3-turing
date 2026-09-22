@@ -16,7 +16,7 @@ class SAM3_NATIVE_EXPORT VideoInteractiveHeads {
   // prompt batch entry; SAM3.1 repeats one image for multiple objects.
   VideoMaskOutput forward(const at::Tensor& image,const std::vector<at::Tensor>& projected_high,
       const at::Tensor& points={},const at::Tensor& labels={},const at::Tensor& masks={},
-      bool multimask=false,const std::string& mode="fp32",double object_threshold=0.) const;
+      bool multimask=false,const std::string& mode="fp32",double object_threshold=0.,bool attenuate_iou_by_stability=false) const;
   VideoMaskOutput use_mask_as_output(const at::Tensor& image,const std::vector<at::Tensor>& projected_high,
       const at::Tensor& mask,const std::string& mode="fp32",double object_threshold=0.) const;
  private:

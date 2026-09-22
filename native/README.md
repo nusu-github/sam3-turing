@@ -632,3 +632,47 @@ does not validate a compressed-video codec. `tracking_preprocess_parity.py`
 separately compares byte resizing/normalization against Pillow and source loader
 rounding. `compare_tracking_modes.py` measures FP16/FP32 agreement with BF16
 artifacts; same-mode port parity is separate from precision-mode quality changes.
+
+### SAM3.1 multiplex frame host
+
+`sam3/multiplex_frame.h` exposes `Sam31TrackingFrame`, joining the interactive
+head, propagation decoder, temporal selector and memory encoder. Supply the
+shared image's interactive and propagation features (72px image/position and
+projected 288px/144px high-resolution maps), a `MultiplexState`, ordered history,
+and a frame request. Both necks share the model's visual trunk; this API adds no
+weight copies or image/video model variants.
+
+The host supports direct mask initialization, point initialization, refinement
+with previous logits, pure propagation, and propagation with corrections to
+selected objects. All points are passed to the decoder. The source's multimask
+policy chooses the output mode without truncating points. During mixed
+propagation/correction, interactive results replace the selected object rows,
+including the source's broadcast into three propagation candidates. Pointers
+are multiplexed into 16-slot buckets; memory includes conditioning flags.
+Requests can defer memory encoding, reverse temporal selection, offload output
+to CPU, retain image features and trim old history according to source policy.
+Optional IoU stability attenuation is supported by both heads.
+
+History passed to this layer must already have compatible bucket assignments.
+The caller inserts the returned frame into conditioning/tracked history. An
+interaction-only request with a strict subset needs a matching extracted local
+state; demo-session singleton extraction/reintegration and dynamic object
+insertion/reconditioning are subsequent layers, not provided by this frame API.
+The original ground-truth-driven training correction loop is not an inference
+operation and is not implemented here. Offloading follows the source frame
+policy, which drops candidate masks and IoU/confidence after producing memory.
+
+```sh
+build/native/sam3_multiplex_frame /private/native-weights-v1 cuda fp16 17 3
+build/native-cpu/sam3_multiplex_frame /private/native-weights-v1 cpu fp32 2 3
+```
+
+This standalone development probe uses full-grid synthetic features, a
+17-point preview/refinement, partial correction, propagation and CPU-offloaded
+memory. Object/frame counts are probe arguments; the runtime accepts arbitrary
+compatible bucket counts. The optional final `math` argument selects ordinary
+SDPA math for fallback testing. `multiplex_frame_parity.py` compares the original
+`VideoTrackingMultiplex.track_step` across direct masks, points, partial
+corrections, temporal direction, memory deferral, scoring, offload and trimming.
+These synthetic-feature checks are separate from real-video quality evaluation
+and user-owned Turing/Windows hardware verification.
