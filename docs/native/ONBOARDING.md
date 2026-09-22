@@ -86,11 +86,15 @@ python -m venv --system-site-packages .venv
 ネイティブ確認は Python 起動不要。CPU 版または CUDA 版の適合する LibTorch を用意し、prefix を置換する。
 
 ```bash
-cmake -S native -B build/native -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/absolute/path/to/libtorch -DSAM3_TEST_CUDA=ON
+cmake -S native -B build/native -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/absolute/path/to/libtorch -DSAM3_WITH_CUDA=ON -DSAM3_TEST_CUDA=ON
 cmake --build build/native --config Release --parallel 2
 ctest --test-dir build/native -C Release --output-on-failure
 ```
 
 CPU のみなら `SAM3_TEST_CUDA=OFF`。Windows は Release LibTorch と MSVC の構成を合わせ、prefix に Windows パスを指定する。今回の Linux prefix は `/usr/local/lib/python3.12/dist-packages/torch`。実行ファイルの検証をモデル完成の判定に使わない。
 
-次の順序: Turing/Windows ツールチェーン確定 → 参照出力取得 → C++ 重み読み出しと共有 manifest → Triton 演算の置換 → 画像全機能 → 動画 session と multiplex → 両 OS / Turing 実機で同等性・サイズ・性能検証 → Python/Triton を持たないクリーン環境で配布試験。
+次の順序: Turing/Windows ツールチェーン確定 → 参照出力取得 → C++ 重み読み出しと共有 manifest → Triton 演算の置換 → 画像全機能 → 動画 session と multiplex → 両 OS / sm_75 ビルド確認および Blackwell で同等性・サイズ・性能検証 → Python/Triton を持たないクリーン環境で配布試験。
+
+## 自律開発開始後の追記
+
+ユーザーより Turing 実機を調達できない旨の指示を受領。実機調達をブロッカーにせず、sm_75 を含む事前コンパイルと Blackwell 上の検証で進める。Turing の実行・性能保証はしない。機能完成後も停止指示まで最適化を継続する。進捗は `PROGRESS.md` に保存する。
