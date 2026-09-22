@@ -473,3 +473,53 @@ Next: connect visual features and interactive host behavior (coordinate/mask
 transforms, no-memory embeddings, object gating/pointers, postprocessing and
 reusable image sessions), then memory/video tracking and multiplex orchestration.
 Standalone packaging and stable C ABI remain outstanding.
+
+## 2026-09-22 — reusable real-image interaction
+
+`InteractiveImageSession` now connects canonical RGB-byte preprocessing, the
+selected interactive vision neck, no-memory embedding, prompt transforms,
+decoder, component cleanup and original-size masks. It caches projected high
+features and can accept an externally shared pyramid. The host may release the
+vision trunk after setting the image. Variable point/box counts, normalized or
+pixel coordinates, previous-mask prompts, multiple original image sizes and
+batched images are supported. No model variants or weight copies were added.
+
+The implementation preserves box corners prepended to the point stream, source
+padding, separate single-image/batch tensor layouts, and both component passes
+reading the original logits. Returned low-resolution logits are clamped only
+after full-size postprocessing, as in the source. Image predictions do not use
+the video-only object gate. `sam3_interactive_image` demonstrates initial
+three-candidate inference followed by mask refinement using cached features.
+
+Validation against original code:
+
+- `interactive-image-cuda-validation.json`: 57 exactly matching cases across
+  both models and three precision modes, including projected feature reuse.
+- `interactive-image-cpu-validation.json`: 29 exactly matching completed cases;
+  an intermittent original-only CPU crash remains open (see below).
+- `interactive-image-probe-validation.json`: 12 exactly matching real-image
+  outputs, both models × FP32/FP16/BF16-reference × initial/refined stages.
+  All IoU values, low-resolution logits and original-size mask pixels match;
+  the standalone C++ child runs with `PATH=/nonexistent`.
+- `interactive-image-batch-validation.json`: four real-image batch comparisons
+  (both models, FP16, batch size one/two) match in cached embeddings and outputs.
+- Existing text-image probe regression still matches all three saved prompts.
+  CTest passed 7/7 CUDA-enabled and 4/4 custom-CUDA-disabled tests. The native
+  probe has no Python library dependency; CUDA objects include sm_75.
+
+CPU comparison failed intermittently in the original Python prompt encoder's
+positional-encoding trigonometric expression. A reproduction without loading any
+new native library failed once in five fresh processes. The cause is unresolved;
+the successful parity report is not a CPU stability claim. The original-only
+diagnostic is checked in, and failure/success/GDB logs are preserved privately.
+See `CPU_RUNTIME_ISSUE.md`. Reference-only component-labeling dependencies are
+pinned to NumPy 1.26.4 / scikit-image 0.25.2 / tifffile 2025.6.11.
+
+Code/reports are pushed to `codex/native-onboarding`; development binaries and
+logs are saved under `native-foundation/interactive-image-linux-cuda13`, and
+real-image outputs under `reference/interactive-image-native-v1`. These still
+require the development LibTorch/ICU/zlib installation. SAM3.1 comparisons cover
+its interactive modules with a common image host, not multiplex scheduling.
+Next are video object gating/pointers, memory encoding/attention and tracking
+orchestration; codecs, stable C ABI and standalone packaging also remain.
+No GitHub Actions were used. Windows/Turing execution remains with the user.

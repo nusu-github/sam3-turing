@@ -161,7 +161,7 @@ the dimensions, mask row byte count, query IDs, scores and pixel-space boxes.
 Masks use one row per detection, row-major pixels packed least-significant-bit
 first. The example uses FP16 for the intended Turing path; `bf16_reference` is
 only for reference comparisons on supporting hardware. Image codecs,
-interactive/video/multiplex session orchestration,
+video/multiplex session orchestration,
 a stable C ABI and a relocatable LibTorch distribution remain outstanding.
 Windows/Turing execution is left to the user; no GitHub Actions are used.
 
@@ -222,9 +222,48 @@ build/native/sam3_interactive /private/native-weights-v1 sam3.1 cuda fp16 3 9
 ```
 
 This executable chains prompt encoding and mask decoding on synthetic full-size
-features with variable batch/point counts. It verifies native execution without
-Python; it does not yet implement the real-image interactive session. Coordinate
-transforms, input-mask resizing, no-memory feature injection, object gating and
-pointers, original-size mask postprocessing and image/video session control are
-the next integration steps. The separate multiplex propagation decoder is still
-outstanding. Existing weight shards serve these modules without duplication.
+features with variable batch/point counts. Existing weight shards serve these
+modules without duplication. Video-specific input-mask resizing, object gating,
+pointers and the separate multiplex propagation decoder remain outstanding.
+
+`InteractiveImageSession` in `interactive_image.h` connects real image features,
+pixel/normalized point and box coordinates, no-memory embeddings, original-size
+mask postprocessing and repeated mask prompts. It retains projected high-resolution
+features and the small interactive modules so the separately owned vision trunk
+can be released after `set_image`. `set_images` and `predict_batch` accept image
+batches with differing original sizes and differing prompt counts. `set_features`
+also accepts a shared vision pyramid, including already projected high-resolution
+features. This allows grounding and interaction to reuse the same trunk execution.
+
+Preprocessing follows the canonical SAM3 image processor: resize RGB bytes to
+1008, then convert/normalize. `set_image` and `set_images` preserve their respective
+source tensor layouts, including a batch containing only one image. This matters
+for exact convolution results. The standalone SAM2 float-before-resize transform
+is a different preprocessing path; externally prepared features can be supplied
+through `set_features`.
+
+```sh
+build/native/sam3_interactive_image /private/native-weights-v1 sam3 cuda fp16 image.ppm result 500 600 1 100 100 0
+```
+
+This development probe accepts any number of point triples, writes all three
+initial candidates, and reuses the cached image features to refine the best-IoU
+candidate with its returned low-resolution mask. Outputs are `result.initial.*`
+and `result.refined.*`: JSON dimensions/IoU, little-endian packed boolean masks,
+and float32 low-resolution logits. The C++ session also accepts boxes, previous
+288×288 mask logits, normalized coordinates, and configurable mask thresholds,
+hole/sprinkle areas and single/multimask output. Image predictions preserve the
+source behavior of not applying the video object-presence gate. SAM3.1 here uses
+its interactive modules with the common image host; its multiplex scheduler is
+still to be ported.
+
+Development parity scripts are `interactive_image_parity.py` (host transforms
+and postprocessing), `interactive_image_probe_parity.py` (real-image standalone
+execution, initial and repeated prompts), and `interactive_image_batch_parity.py`
+(real batched images). Their Python reference's CPU component labeling requires
+`numpy==1.26.4 scikit-image==0.25.2 tifffile==2025.6.11`; these are development
+dependencies only. Reports under `docs/native` record exact tensor comparisons.
+An intermittent CPU crash in this development PyTorch build also reproduces with
+the original Python prompt encoder alone; see
+[`CPU_RUNTIME_ISSUE.md`](../docs/native/CPU_RUNTIME_ISSUE.md). A successful parity
+run does not establish CPU runtime stability. No GitHub Actions are used.

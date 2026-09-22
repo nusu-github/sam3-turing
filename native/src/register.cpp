@@ -8,6 +8,7 @@
 #include "sam3/image_results.h"
 #include "sam3/interactive_prompt.h"
 #include "sam3/interactive_decoder.h"
+#include "sam3/interactive_image.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
 #include <torch/library.h>
@@ -25,6 +26,32 @@ c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& ou
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("interactive_image_batch_pixels(str directory, str model, Tensor[] pixels, str mode) -> (Tensor[], Tensor[], Tensor[], Tensor)",
+      [](const std::string& directory,const std::string& model,const std::vector<at::Tensor>& pixels,const std::string& mode) {
+        TORCH_CHECK(!pixels.empty(),"empty image batch");
+        const sam3::WeightStore store(std::filesystem::u8path(directory));
+        sam3::InteractiveImageSession session(store,model,pixels[0].device());
+        { const sam3::VisionEncoder vision(store,model,pixels[0].device());session.set_images(pixels,vision,mode); }
+        const auto results=session.predict_batch(std::vector<sam3::InteractiveImagePrompt>(pixels.size()));
+        std::vector<at::Tensor> masks,iou,low;
+        for (const auto& out:results) { masks.push_back(out.masks);iou.push_back(out.iou);low.push_back(out.low_res_logits); }
+        return std::make_tuple(masks,iou,low,session.image_embedding());
+      });
+  m.def("interactive_image(str directory, str model, Tensor[] pyramid, int[] heights, int[] widths, int index, Tensor? points, Tensor? labels, Tensor? boxes, Tensor? masks, bool pixels, bool multimask, bool logits, float threshold, float holes, float sprinkles, str mode, bool projected_high=False) -> (Tensor, Tensor, Tensor, Tensor)",
+      [](const std::string& directory,const std::string& model,const std::vector<at::Tensor>& pyramid,const std::vector<int64_t>& heights,const std::vector<int64_t>& widths,int64_t index,
+         const std::optional<at::Tensor>& points,const std::optional<at::Tensor>& labels,const std::optional<at::Tensor>& boxes,const std::optional<at::Tensor>& masks,
+         bool pixels,bool multimask,bool logits,double threshold,double holes,double sprinkles,const std::string& mode,bool projected_high) {
+        TORCH_CHECK(!pyramid.empty(),"empty image pyramid");
+        const sam3::WeightStore store(std::filesystem::u8path(directory));sam3::InteractiveImageSession session(store,model,pyramid[0].device());
+        session.set_features(pyramid,heights,widths,mode,projected_high);
+        const auto out=session.predict(index,{points.value_or(at::Tensor()),labels.value_or(at::Tensor()),boxes.value_or(at::Tensor()),masks.value_or(at::Tensor()),pixels},
+            {multimask,logits,threshold,holes,sprinkles});
+        return std::make_tuple(out.masks,out.iou,out.low_res_logits,session.image_embedding());
+      });
+  m.def("interactive_postprocess(Tensor masks, int height, int width, float threshold, float holes, float sprinkles) -> Tensor",
+      [](const at::Tensor& masks,int64_t height,int64_t width,double threshold,double holes,double sprinkles) {
+        return sam3::postprocess_interactive_masks(masks,height,width,{true,true,threshold,holes,sprinkles});
+      });
   m.def("interactive_decode(str directory, str model, Tensor image, Tensor sparse, Tensor dense, Tensor position, Tensor[] high, bool project_high, bool multimask, bool repeat_image, str mode, bool dynamic_stability, float delta, float threshold) -> Tensor[]",
       [](const std::string& directory,const std::string& model,const at::Tensor& image,const at::Tensor& sparse,const at::Tensor& dense,const at::Tensor& position,
          const std::vector<at::Tensor>& high,bool project_high,bool multimask,bool repeat_image,const std::string& mode,bool dynamic_stability,double delta,double threshold) {

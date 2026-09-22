@@ -11,33 +11,9 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
-#include <cctype>
+#include "ppm.h"
 
 namespace {
-std::string ppm_token(std::istream& in) {
-  std::string token;
-  while (in) {
-    in>>std::ws;
-    if (in.peek()!='#') { in>>token;return token; }
-    in.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
-  }
-  TORCH_CHECK(false,"truncated PPM header");
-}
-at::Tensor read_ppm(const std::filesystem::path& path) {
-  std::ifstream in(path,std::ios::binary);
-  TORCH_CHECK(in,"cannot open input image");
-  TORCH_CHECK(ppm_token(in)=="P6","this development probe accepts binary P6 RGB PPM");
-  const auto w=std::stoll(ppm_token(in)),h=std::stoll(ppm_token(in));
-  TORCH_CHECK(ppm_token(in)=="255","PPM must have 8-bit RGB samples");
-  const int delimiter=in.get();
-  TORCH_CHECK(delimiter!=EOF && std::isspace(static_cast<unsigned char>(delimiter)),"invalid PPM separator");
-  if (delimiter=='\r' && in.peek()=='\n') in.get();
-  TORCH_CHECK(w>0 && h>0 && w<=std::numeric_limits<int64_t>::max()/3/h,"invalid PPM dimensions");
-  auto pixels=at::empty({h,w,3},at::TensorOptions().dtype(at::kByte));
-  in.read(reinterpret_cast<char*>(pixels.mutable_data_ptr<uint8_t>()),pixels.numel());
-  TORCH_CHECK(in.gcount()==pixels.numel(),"truncated PPM pixels");
-  return pixels.permute({2,0,1});
-}
 void write_result(const std::filesystem::path& prefix,const sam3::ImageResult& result,int64_t h,int64_t w) {
   if (!prefix.parent_path().empty()) std::filesystem::create_directories(prefix.parent_path());
   auto json_path=prefix;json_path+=".json";
@@ -70,7 +46,7 @@ int main(int argc,char** argv) {
     TORCH_CHECK(model=="sam3" || model=="sam3.1","unknown model");
     const at::Device device(argv[3]);
     const sam3::WeightStore store(std::filesystem::u8path(argv[1]));
-    auto pixels=read_ppm(std::filesystem::u8path(argv[5]));
+    auto pixels=sam3::cli::read_ppm(std::filesystem::u8path(argv[5]));
     const auto h=pixels.size(1),w=pixels.size(2);
     std::vector<at::Tensor> pyramid;at::Tensor positions;
     {
