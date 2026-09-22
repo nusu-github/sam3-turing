@@ -1,0 +1,407 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cpu",
+  "cases": [
+    {
+      "mode": "fp32",
+      "case": "initial_one",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "initial_many",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "initial_empty",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "refine_previous",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "forward",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "reverse",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "direct_mask_1008",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "direct_mask_1152",
+      "mask_shape": [
+        2,
+        1,
+        328,
+        328
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "deferred_memory",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": false,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "disabled_memory",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": false,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "non_overlap_memory",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "offloaded_scores",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "iou_score": 0.0,
+        "eff_iou_score": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "trim_low_score",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "iou_score": 0.0,
+        "eff_iou_score": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "trim_high_score",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "iou_score": 0.0,
+        "eff_iou_score": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "trim_offloaded",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "iou_score": 0.0,
+        "eff_iou_score": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "trim_reverse",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "single_output",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "single_tracking",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "mask_device": "cpu",
+      "memory_encoded": true,
+      "max_errors": {
+        "pred_masks": 0.0,
+        "pred_masks_high_res": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "maskmem_features": 0.0,
+        "maskmem_pos_enc": 0.0,
+        "history_status": 0.0
+      },
+      "exact": true
+    }
+  ],
+  "scope": "Original SAM3 inference track_step: temporal conditioning, interactive/direct-mask heads, optional memory encoding, score outputs, CPU offload and history trimming. Synthetic cached image features; session prompt/consolidation policy is not tested. CPU source adapts CUDA transfers and rotary caches."
+}

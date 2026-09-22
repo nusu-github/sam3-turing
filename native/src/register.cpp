@@ -16,6 +16,7 @@
 #include "sam3/multiplex.h"
 #include "sam3/multiplex_decoder.h"
 #include "sam3/multiplex_temporal.h"
+#include "sam3/tracking_frame.h"
 #include "sam3/autocast.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
@@ -50,6 +51,35 @@ c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& ou
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("tracking_frame(str directory, Tensor image, Tensor position, Tensor[] high, Tensor? points, Tensor? labels, Tensor? mask, Tensor? previous, int[] ids, bool[] conditioning, Tensor[] memory, Tensor[] memory_positions, Tensor[] pointers, Tensor[] scores, int[] settings, bool[] flags, str mode) -> Dict(str, Tensor)",
+      [](const std::string& directory,const at::Tensor& image,const at::Tensor& position,const std::vector<at::Tensor>& high,
+         const std::optional<at::Tensor>& points,const std::optional<at::Tensor>& labels,const std::optional<at::Tensor>& mask,const std::optional<at::Tensor>& previous,
+         const std::vector<int64_t>& ids,const c10::List<bool>& conditioning,const std::vector<at::Tensor>& memory,
+         const std::vector<at::Tensor>& positions,const std::vector<at::Tensor>& pointers,const std::vector<at::Tensor>& scores,
+         const std::vector<int64_t>& settings,const c10::List<bool>& flags,const std::string& mode) {
+        TORCH_CHECK(settings.size()==8 && flags.size()==10,"invalid tracking-frame test options");
+        TORCH_CHECK(ids.size()==conditioning.size() && ids.size()==memory.size() && ids.size()==positions.size() && ids.size()==pointers.size() && ids.size()==scores.size(),"inconsistent tracking history");
+        sam3::TrackingHistory history;
+        for (size_t i=0;i<ids.size();++i) {
+          sam3::TrackingFrame frame;frame.index=ids[i];frame.memory=memory[i];frame.memory_position=positions[i];frame.pointer=pointers[i];
+          frame.confidence=scores[i].numel()?scores[i]:at::Tensor();frame.iou=at::ones({image.size(0)});frame.high_mask=at::ones({image.size(0),1,1,1});
+          (conditioning[i]?history.conditioning:history.tracked).push_back(std::move(frame));
+        }
+        sam3::TrackingFrameRequest request;request.index=settings[0];request.frame_count=settings[1];request.initial=flags[0];request.reverse=flags[1];request.use_previous=flags[2];request.encode_memory=flags[3];
+        request.points=points.value_or(at::Tensor());request.labels=labels.value_or(at::Tensor());request.mask=mask.value_or(at::Tensor());request.previous_logits=previous.value_or(at::Tensor());
+        sam3::TrackingFrameOptions options;options.temporal.memory_slots=settings[2];options.temporal.max_conditioning_frames=settings[3];options.temporal.max_pointer_frames=settings[4];options.temporal.stride=settings[5];
+        options.multimask_min_points=settings[6];options.multimask_max_points=settings[7];options.temporal.select_by_score=flags[4];options.non_overlap_memory=flags[5];options.offload_output=flags[6];options.trim_history=flags[7];options.multimask=flags[8];options.multimask_tracking=flags[9];
+        const sam3::Sam3TrackingFrame core(sam3::WeightStore(std::filesystem::u8path(directory)),image.device());
+        const auto frame=core.forward({image,position,high},request,history,options,mode);
+        c10::Dict<std::string,at::Tensor> out;
+        out.insert("pred_masks",frame.low_mask);out.insert("pred_masks_high_res",frame.high_mask);out.insert("obj_ptr",frame.pointer);out.insert("object_score_logits",frame.object_logits);
+        if (frame.iou.defined()) {out.insert("iou_score",frame.iou);out.insert("eff_iou_score",frame.confidence);}
+        if (frame.memory.defined()) {out.insert("maskmem_features",frame.memory);out.insert("maskmem_pos_enc",frame.memory_position);}
+        std::vector<int64_t> status;
+        for (const auto* frames:{&history.conditioning,&history.tracked}) for (const auto& past:*frames)
+          status.insert(status.end(),{past.index,int64_t(past.memory.defined()),int64_t(past.memory_position.defined()),int64_t(past.high_mask.defined()),int64_t(past.iou.defined()),int64_t(past.confidence.defined())});
+        out.insert("history_status",at::tensor(status,at::kLong).reshape({-1,6}));return out;
+      });
   m.def("multiplex_temporal(str directory, Tensor source, Tensor source_position, int[][] assignments, int[] ids, bool[] conditioning, Tensor[] features, Tensor[] positions, Tensor[] pointers, Tensor[] scores, Tensor[] images, Tensor[] image_positions, int[] settings, bool[] flags, float threshold, str mode) -> Dict(str, Tensor)",
       [](const std::string& directory,const at::Tensor& source,const at::Tensor& source_position,
          const std::vector<std::vector<int64_t>>& assignments,const std::vector<int64_t>& ids,const c10::List<bool>& conditioning,

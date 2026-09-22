@@ -852,3 +852,49 @@ prompt-encoder runtime issue remains unresolved. Code/reports are pushed to
 reused. Full tracking sessions, real-video parity, codecs, C ABI and final
 packaging remain. No GitHub Actions were used; Windows/Turing execution remains
 with the user.
+
+## 2026-09-22 — SAM3 frame inference API for video sessions
+
+Added `Sam3TrackingFrame`, `TrackingFeatures`, `TrackingFrameRequest` and ordered
+`TrackingHistory`. The frame host composes memory conditioning, interactive or
+direct-mask heads, optional memory encoding, confidence calculation, output
+offload and source history trimming. It accepts cached/expanded image features
+and projected high-resolution maps so multiple objects share backbone work.
+Previous logits remain caller-supplied, supporting repeated edits before memory
+consolidation. Memory encoding is also callable separately after per-object
+results are consolidated. Prompt metadata remains in the request/session layer.
+
+The source multimask policy is retained without limiting point count; 17-point
+input is tested. Disabling memory encoding supports interactive previews.
+Offload moves masks/spatial memory and optional IoU/confidence to CPU while
+keeping pointers/object logits on the execution device. Trimming removes high
+masks, IoU/confidence and spatial memory but preserves low masks, pointers and
+object logits. Source score/offload-dependent pruning rules and reverse-tracking
+index behavior are preserved. Disabled score selection avoids an unnecessary
+GPU score read during trimming.
+
+`tracking-frame-cuda-validation.json` contains 54 exact comparisons against
+`Sam3TrackerBase.track_step` across FP32, FP16 and BF16-reference.
+`tracking-frame-cpu-validation.json` contains 18 exact FP32 comparisons. Cases
+cover one/17/zero points, previous-logit refinement, forward/reverse propagation,
+1008/1152px supplied masks, deferred/disabled encoding, memory non-overlap,
+offloaded confidence, low/high-score pruning, offload-dependent distant-history
+pruning and single/multimask policies. Numerical outputs, tensor devices and
+history retention are compared. CPU reference adapts hard-coded CUDA transfers
+and rotary caches; no model equations are changed.
+
+`sam3_tracking_frame` passed with Python absent from PATH on CUDA FP16 and CPU
+FP32, using two objects over three synthetic frames. The first frame runs a
+preview without memory, refines it with additional points/previous logits, then
+encodes memory. Later frames propagate from CPU-offloaded history. CTest passed
+9/9 CUDA-enabled and 5/5 custom-CUDA-disabled checks. No Python libraries are
+linked and custom CUDA kernels retain sm_75 builds. The earlier intermittent
+CPU prompt-encoder issue remains unresolved.
+
+Code/reports are pushed to `codex/native-onboarding`; development binaries/logs
+are saved privately under `native-foundation/tracking-frame-linux-cuda13`.
+Existing weight shards are reused. Next is the session layer: prompt
+accumulation, per-object consolidation, edits/deletions and propagation state.
+Real-video parity, SAM3.1 session rebucketing, text-driven tracking, codecs,
+C ABI and final packaging remain. No GitHub Actions were used; Windows/Turing
+runtime verification remains with the user.

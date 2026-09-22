@@ -478,3 +478,31 @@ conditioned features, including reverse/strided/score-based selection, cleared
 memory and 5D state normalization. CUDA FP32/math reference removes the source
 Flash-only context; CPU redirects hard-coded CUDA transfers and recreates rotary
 caches on CPU. These backend adaptations are recorded in the reports.
+
+`Sam3TrackingFrame` in `tracking_frame.h` exposes the SAM3 inference frame host
+used to build a video session. `TrackingFrameRequest` carries frame identity,
+direction, initial/bypass policy, arbitrary point/label tensors, a supplied mask
+or previous mask logits. `TrackingFeatures` contains cached low-resolution image
+features/positions and projected high-resolution maps. Shared image features can
+be expanded to the object batch without recomputing the visual backbone.
+
+The host selects the direct-mask or memory-conditioned interactive path, follows
+the source multimask policy, optionally encodes new memory, and returns masks,
+object pointers/logits and optional confidence scores. `encode_memory=false`
+supports repeated edits before consolidation. `encode_memory` is also exposed
+separately for encoding masks after all objects have been consolidated. Optional
+CPU offload keeps pointers/object logits on the execution device. History
+trimming retains low-resolution masks, pointers and object logits and preserves
+the source's score/offload-dependent pruning rules, including reverse tracking.
+The caller inserts returned frames into conditioning/tracked history.
+
+```sh
+build/native/sam3_tracking_frame /private/native-weights-v1 cuda fp16 2 3
+```
+
+This probe previews and refines the first frame using previous logits, then
+propagates subsequent synthetic frames while storing outputs/memory on CPU.
+`tracking_frame_parity.py` compares the original `Sam3TrackerBase.track_step`,
+including direct masks, 17-point prompts, deferred/disabled memory encoding,
+overlap constraints, scores, offload and history trimming. Session-level prompt
+accumulation, per-object consolidation and real-video evaluation remain separate.
