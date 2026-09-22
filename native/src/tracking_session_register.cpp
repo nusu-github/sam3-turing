@@ -1,6 +1,7 @@
 // Development-only dispatcher adapter for original-Python session comparisons.
 // The production API and session implementation do not require Python.
 #include "sam3/tracking_session.h"
+#include "sam3/preprocess.h"
 #include "frame_order.h"
 #include <torch/library.h>
 namespace {
@@ -43,6 +44,8 @@ void save_state(Snapshot& out,const std::string& prefix,const sam3::Sam3Tracking
 }
 }
 TORCH_LIBRARY_FRAGMENT(sam3_native,m) {
+  m.def("resize_tracking_rgb(Tensor image, int height, int width) -> Tensor",&sam3::resize_tracking_rgb);
+  m.def("preprocess_tracking_rgb(Tensor image) -> Tensor",&sam3::preprocess_tracking_rgb);
   m.def("tracking_frame_order(int[][] groups, bool dictionary) -> int[]",&sam3::detail::frame_set_order);
   m.def("tracking_postprocess(Tensor masks, int height, int width, bool non_overlap, int area) -> Tensor",&sam3::postprocess_tracking_masks);
   m.def("tracking_session(str directory, Tensor[] images, Tensor[] positions, Tensor[] high0, Tensor[] high1, int[][] operations, Tensor[] payloads, int[] settings, bool[] flags, str mode) -> Dict(str, Tensor)",

@@ -1,0 +1,369 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "frames": [
+    "assets/videos/0001/0.jpg",
+    "assets/videos/0001/1.jpg",
+    "assets/videos/0001/2.jpg"
+  ],
+  "height": 720,
+  "width": 1280,
+  "cases": [
+    {
+      "mode": "fp16",
+      "operation": 0,
+      "output": 0,
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        27375
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "operation": 1,
+      "output": 0,
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        27375,
+        71699
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "operation": 3,
+      "output": 0,
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        27375,
+        71699
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "operation": 3,
+      "output": 1,
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        28452,
+        72725
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "operation": 3,
+      "output": 2,
+      "frame": 2,
+      "objects": 2,
+      "positive_pixels": [
+        29174,
+        73315
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "operation": 4,
+      "output": 0,
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        29347,
+        72725
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "operation": 5,
+      "output": 0,
+      "frame": 2,
+      "objects": 2,
+      "positive_pixels": [
+        30384,
+        73274
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "operation": 5,
+      "output": 1,
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        29347,
+        72725
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "operation": 5,
+      "output": 2,
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        27375,
+        71699
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "operation": 6,
+      "output": 0,
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        27375
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "operation": 0,
+      "output": 0,
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        27309
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "operation": 1,
+      "output": 0,
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        27309,
+        71690
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "operation": 3,
+      "output": 0,
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        27309,
+        71690
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "operation": 3,
+      "output": 1,
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        27722,
+        72748
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "operation": 3,
+      "output": 2,
+      "frame": 2,
+      "objects": 2,
+      "positive_pixels": [
+        28231,
+        73257
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "operation": 4,
+      "output": 0,
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        29193,
+        72748
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "operation": 5,
+      "output": 0,
+      "frame": 2,
+      "objects": 2,
+      "positive_pixels": [
+        29076,
+        72704
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "operation": 5,
+      "output": 1,
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        29193,
+        72748
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "operation": 5,
+      "output": 2,
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        27309,
+        71690
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "operation": 6,
+      "output": 0,
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        27309
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "operation": 0,
+      "output": 0,
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        27380
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "operation": 1,
+      "output": 0,
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        27380,
+        71696
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "operation": 3,
+      "output": 0,
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        27380,
+        71696
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "operation": 3,
+      "output": 1,
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        28434,
+        72731
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "operation": 3,
+      "output": 2,
+      "frame": 2,
+      "objects": 2,
+      "positive_pixels": [
+        29181,
+        73323
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "operation": 4,
+      "output": 0,
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        29334,
+        72731
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "operation": 5,
+      "output": 0,
+      "frame": 2,
+      "objects": 2,
+      "positive_pixels": [
+        30364,
+        73275
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "operation": 5,
+      "output": 1,
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        29334,
+        72731
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "operation": 5,
+      "output": 2,
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        27380,
+        71696
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "operation": 6,
+      "output": 0,
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        27380
+      ],
+      "exact": true
+    }
+  ],
+  "source_adaptations": "FP16/FP32 ordinary MLP replaces hard-coded BF16 fused MLP; FP32 restores compressed temporal memory to float; D2H copies finish before CPU consumption.",
+  "scope": "Real decoded frames through native preprocessing, full visual backbone, interactive SAM3 session and temporal tracking. Byte-identical decoded pixels are passed via PPM; compressed video decoding, high-level text tracking and SAM3.1 sessions are separate."
+}

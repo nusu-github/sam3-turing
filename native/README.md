@@ -570,3 +570,65 @@ of global/per-object/pending state, not just displayed masks. FP32 reference
 comparison explicitly restores compressed memory to float before attention;
 CPU reference redirects CUDA transfers and rotary caches. Real-video evaluation,
 SAM3.1 session rebucketing, text-driven video tracking and the C ABI remain.
+
+### Real-frame tracking input
+
+`Sam3TrackingVision` shares an existing `VisionEncoder` and `Sam3TrackingFrame`.
+`encode_rgb` accepts decoded RGB bytes and follows the original synchronous
+JPEG-sequence preprocessing: byte bicubic resize, division by 255, then
+normalization by mean/std 0.5. It selects the SAM3 tracking neck, discards the
+source's final `scalp=1` level, projects the two high-resolution maps and returns
+`TrackingFeatures` for a session provider. The visual trunk runs once per cache
+miss and is shared across all objects and repeated edits of that frame.
+`encode_preprocessed` accepts normalized F32 `[1,3,1008,1008]` from a caller's
+decoder-specific preprocessing, preserving its layout.
+
+Image-mode `preprocess_rgb` is **not** interchangeable with this video JPEG path.
+The original uses Pillow's default RGB bicubic, whose fixed-point weights,
+byte-rounded intermediate rows and clipping differ from ordinary tensor bicubic.
+`resize_tracking_rgb` implements those rules in portable C++ with CPU row
+parallelism; it does not depend on Pillow or Python. Coefficient arithmetic
+disables FMA contraction for reproducibility; the Pillow permission notice is
+included under `third_party/pillow`. The output is contiguous NCHW, matching
+the source frame buffer. This currently matches synchronous JPEG loading;
+compressed video decode/resizing and asynchronous source-loader precision are
+separate integration work.
+
+```sh
+build/native/sam3_tracking_video /private/native-weights-v1 cuda fp16 frames.txt commands.txt results
+```
+
+This development executable accepts decoded frames as binary P6 PPM files. The
+UTF-8 manifest has one path per line, relative to its own directory or absolute;
+all frames must have the same dimensions. The command file supplies arbitrary
+prompts and operation order. Empty lines and lines starting with `#` are ignored.
+Each active line has one of these forms (booleans are `0` or `1`):
+
+```text
+points FRAME ID CLEAR_OLD NORMALIZED USE_PREVIOUS_MEMORY [X Y LABEL]...
+box FRAME ID NORMALIZED X0 Y0 X1 Y1
+mask FRAME ID PPM_PATH
+preflight ENCODE_MEMORY
+propagate START MAX_STEPS REVERSE ENCODE_MEMORY PREFLIGHT STOP_AFTER USE_CANCEL
+clear FRAME ID
+remove ID
+reset
+```
+
+`START=-1` and `MAX_STEPS=-1` use session defaults; `STOP_AFTER=0` runs the whole
+requested range. Mask prompts use the PPM red channel divided by 255; the C++
+session API also accepts full-precision tensor masks. Paths with spaces in mask
+commands can be quoted using standard C++ quoted-string escaping. Output names
+are `OPERATION-OUTPUT_INDEX`: JSON metadata, packed positive masks, F32 video
+logits, and F32 low logits for propagated frames. Binary F32 files use the host's
+native byte order (little endian on the tested/target x86-64 systems). The probe
+logs visual-backbone calls to make frame-cache reuse observable.
+
+`tracking_video_parity.py` compares actual video frames through preprocessing,
+the full 1008px visual backbone and the session, with points/boxes, forward
+tracking, correction, reverse propagation, removal and reset. Its native child
+has `PATH=/nonexistent`. PPM fixtures carry identical decoded JPEG pixels; this
+does not validate a compressed-video codec. `tracking_preprocess_parity.py`
+separately compares byte resizing/normalization against Pillow and source loader
+rounding. `compare_tracking_modes.py` measures FP16/FP32 agreement with BF16
+artifacts; same-mode port parity is separate from precision-mode quality changes.

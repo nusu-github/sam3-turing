@@ -957,3 +957,66 @@ or a relocatable release. Remaining work includes the visual/video provider,
 SAM3.1 session rebucketing, high-level text-driven tracking, codecs, C ABI,
 multi-GPU and final packaging/optimization. No GitHub Actions were used;
 Windows/Turing runtime verification remains with the user.
+
+## 2026-09-22 — real-frame SAM3 tracking through the visual backbone
+
+Added `Sam3TrackingVision`, which shares the existing visual encoder and tracking
+core. A session provider now accepts decoded RGB frames, runs the full 1008px
+visual trunk and tracking neck, drops the original scalp level, projects the
+high-resolution maps and supplies cached features for all objects. Repeated
+clicks/consolidation reuse the session's most recent frame. No image/video model
+variants or duplicated weight shards are introduced. Preprocessed F32 input is
+also exposed for decoder-specific frame pipelines.
+
+The original synchronous JPEG loader uses Pillow RGB bicubic and F64 byte / 255
+rounded to F32 before normalization. This differs from the image processor's
+bilinear path. Generic ATen byte bicubic differed by up to two levels at 4,594
+pixels on frame 0 and 11,698 pixels on the truck image. Added a portable C++ CPU
+resampler with Pillow-compatible coefficients, 22-bit fixed-point weights,
+byte-rounded/clipped intermediate rows and noncontracted coefficient arithmetic.
+Normalization uses division rather than a rounded F32 reciprocal multiplication.
+The Pillow HPND notice/license is included. There is no Pillow/Python dependency
+in the runtime. CPU row parallelism does not depend on a specific SIMD ISA.
+
+Both CUDA-enabled and custom-CUDA-disabled builds passed 48 exact resize/real-RGB
+cases plus nine normalization/layout cases against Pillow 12.2.0. Cases cover
+single-pixel axes, up/downsampling, unchanged dimensions, odd shapes and real
+720x1280/1200x1800 images. CUDA input staging was checked in the CUDA-enabled
+build. The result matches the synchronous source frame-buffer layout.
+`tracking-preprocess-*-validation.json` records the tests.
+
+`sam3_tracking_video` accepts a manifest of arbitrary P6 RGB frames and an edit
+command file. It supports point/box/mask prompts, consolidation, propagation,
+clear/remove/reset and callback/cancel stopping, and writes packed masks plus
+F32 mask values and metadata. This is a development frame-sequence interface;
+it does not yet decode JPEG or compressed video. Paths and commands are provided
+by the caller rather than fixed in the executable.
+
+`tracking-video-cuda-validation.json` records 30 exact real-frame output
+comparisons: FP16, BF16-reference and FP32 on three 720x1280 frames from the
+repository video sequence. Operations include two prompted objects, forward
+tracking, a correction after propagation, reverse tracking and removal/reset.
+Compared outputs include full-resolution logits, binary masks, low-resolution
+logits and object scores. All native child processes ran with PATH=/nonexistent.
+The workflow made five visual-backbone calls for ten outputs, preserving cache
+reuse for multiple objects, previews and consolidation. Reference FP16/FP32 use
+the previously documented ordinary MLP replacement; FP32 compressed-memory and
+D2H synchronization adaptations remain explicit.
+
+Same-mode port parity does not prove precision-mode equivalence. Relative to the
+original fused BF16 reference on this fixture, the minimum per-object mask IoU
+is 0.9565003 for FP16 and 0.9571946 for FP32. `tracking-video-precision.json` keeps
+all per-output differences, reproducible with `compare_tracking_modes.py`.
+These are precision-agreement measurements, not ground-truth accuracy or a
+representative dataset benchmark. Broader quality evaluation remains required.
+
+CTest passed 9/9 CUDA-enabled and 5/5 custom-CUDA-disabled checks. Python libraries
+are absent from the native executable's linkage; sm_75 cubins remain present.
+Turing/Windows runtime verification stays with the user; no Actions were used.
+Code and reports are pushed to `codex/native-onboarding`. Private development
+binaries/logs are under `native-foundation/tracking-vision-linux-cuda13`; decoded
+fixtures, outputs and reference tensors are under `reference/tracking-video-v1`.
+Remaining work includes codecs (and their decode/resize parity), SAM3.1 sessions
+and rebucketing, high-level text/video association, C ABI, multi-GPU, packaging
+and further accuracy/performance/size optimization. The earlier CPU source
+prompt-encoder issue remains unresolved; this is not a stability claim for it.
