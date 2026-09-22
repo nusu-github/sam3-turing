@@ -20,6 +20,51 @@ def nms_reference(ious, scores, threshold):
     return torch.tensor(result, dtype=torch.int64)
 
 
+def components_reference(values):
+    values = values.cpu().numpy()
+    if values.ndim == 4:
+        values = values[:, 0]
+    labels = np.zeros_like(values, dtype=np.int64)
+    sizes = np.zeros_like(labels)
+    b, h, w = values.shape
+    for batch in range(b):
+        for y in range(h):
+            for x in range(w):
+                if not values[batch, y, x] or labels[batch, y, x]:
+                    continue
+                label = (batch * h + y) * w + x + 1
+                stack = [(y, x)]
+                pixels = []
+                labels[batch, y, x] = label
+                while stack:
+                    yy, xx = stack.pop()
+                    pixels.append((yy, xx))
+                    for dy in [-1, 0, 1]:
+                        for dx in [-1, 0, 1]:
+                            ny, nx = yy + dy, xx + dx
+                            if 0 <= ny < h and 0 <= nx < w and not labels[batch, ny, nx] and values[batch, ny, nx] == values[batch, yy, xx]:
+                                labels[batch, ny, nx] = label
+                                stack.append((ny, nx))
+                for yy, xx in pixels:
+                    sizes[batch, yy, xx] = len(pixels)
+    return torch.from_numpy(labels), torch.from_numpy(sizes)
+
+
+def distance_reference(values):
+    values = values.cpu()
+    b, h, w = values.shape
+    coords = torch.cartesian_prod(torch.arange(h), torch.arange(w)).float()
+    result = torch.empty(b, h, w)
+    for batch in range(b):
+        zeros = coords[values[batch].reshape(-1) == 0]
+        if not len(zeros):
+            result[batch].fill_(1e9)
+        else:
+            # Brute force independent reference for the separable envelope algorithm.
+            result[batch] = torch.cdist(coords, zeros, compute_mode="donot_use_mm_for_euclid_dist").amin(1).reshape(h, w)
+    return result
+
+
 def check(device, ops):
     cases = 0
     for n, h, w in [(0, 1, 1), (1, 1, 1), (3, 3, 3), (2, 17, 31), (5, 4, 128)]:
@@ -65,6 +110,27 @@ def check(device, ops):
     scores = torch.ones(n, device=device)
     torch.testing.assert_close(ops.generic_nms(ious, scores, 0.5), torch.arange(n, device=device))
     cases += 1
+    for shape in [(0, 3, 5), (1, 1, 1), (2, 1, 9), (2, 9, 1), (3, 13, 17), (1, 65, 67)]:
+        for values in [torch.randint(-1, 3, shape), torch.ones(shape, dtype=torch.int64), torch.zeros(shape, dtype=torch.int64)]:
+            values = values.to(device).transpose(-1, -2)
+            expected_labels, expected_sizes = components_reference(values)
+            labels, sizes = ops.connected_components(values)
+            torch.testing.assert_close(labels.cpu(), expected_labels, rtol=0, atol=0)
+            torch.testing.assert_close(sizes.cpu(), expected_sizes, rtol=0, atol=0)
+            labels4, sizes4 = ops.connected_components(values[:, None])
+            torch.testing.assert_close(labels4[:, 0], labels)
+            torch.testing.assert_close(sizes4[:, 0], sizes)
+            expected = distance_reference(values)
+            actual = ops.euclidean_distance_transform(values)
+            torch.testing.assert_close(actual.cpu(), expected, rtol=1e-6, atol=1e-6)
+            cases += 1
+    # A large fully connected region stresses cross-block union synchronization.
+    values = torch.ones(2, 257, 263, dtype=torch.bool, device=device)
+    for _ in range(3):
+        labels, sizes = ops.connected_components(values)
+        assert labels[0].eq(1).all() and labels[1].eq(257 * 263 + 1).all()
+        assert sizes.eq(257 * 263).all()
+        cases += 1
     for call in [
         lambda: ops.pack_masks(torch.zeros(1, 2, 3, device=device)),
         lambda: ops.unpack_masks(torch.zeros(1, 1, dtype=torch.uint8, device=device), 3, 3),

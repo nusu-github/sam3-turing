@@ -2,8 +2,8 @@
 
 This is a Python-independent ATen C++/CUDA library, **not yet a SAM3 inference runtime**.
 It implements little-endian mask packing/unpacking, chunked bilinear resize +
-sigmoid + mask packing, and stable score-ordered generic NMS with no detection
-count cap. CPU and CUDA implementations use the same public C++ API in
+sigmoid + mask packing, stable score-ordered generic NMS with no detection count cap, 8-connected
+component labeling/counts, and Euclidean distance transform. CPU and CUDA implementations use the same public C++ API in
 `include/sam3/ops.h`. Development-only dispatcher registration also permits
 reference tests through `torch.ops.load_library`, without linking Python.
 
@@ -40,3 +40,17 @@ a relocatable runtime package. Generic NMS materializes a boolean N-by-N matrix;
 this is a correctness baseline with optimization still pending. Resize preserves
 ATen's dtype and sigmoid rounding, and bounds temporaries by `chunk_size` without
 limiting output count.
+
+
+Weight sharing inventory (development only, original checkpoints untouched):
+
+```sh
+python native/tools/inventory_weights.py --checkpoint sam3=/path/to/sam3.pt --checkpoint sam3.1=/path/to/sam3.1_multiplex.pt --output /private/path/inventory.json
+```
+
+Tensor identity includes dtype, shape and SHA256 of the contiguous logical bytes.
+This is an inventory, not a deployable weight format. Components use equal-valued
+nonzero pixels, 8-connectivity, root-index labels, and 64-bit labels/counts. EDT
+returns float32 distances and uses upstream's finite `1e9` distance for masks
+without any zero pixel. These operations preserve input shape (EDT: `[B,H,W]`,
+components: `[B,H,W]` or `[B,1,H,W]`). GPU calls honor the current stream.
