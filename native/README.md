@@ -911,3 +911,19 @@ compares resident versus paged append/recondition results, including CPU-staged
 low/high masks, before propagating the updated state. Runtime cache files are
 not model distribution artifacts. Peak process RSS measurements exclude the
 operating system's reclaimable filesystem cache.
+
+### C ABI for native hosts
+
+`sam3/c_api.h` exposes opaque context, image, video and result handles using
+standard C types. Clients can tokenize/encode text, ground images, refine image
+masks and drive the implemented SAM3/SAM3.1 interactive video sessions without
+Torch headers or C++ source. Sessions share lazily loaded modules within a
+context; image/video uses the same visual backbone. The modular weight store
+is unchanged and has no new image/video variants.
+
+See [C API ownership, layouts and callbacks](../docs/native/C_API.md) for ABI
+version checks, lifetime rules, synchronous host-buffer inputs, result views,
+thread-local errors and video callback cancellation. `sam3_c_api_probe` is a
+C11 example and validation client. It runs with Python removed from PATH; the
+shared library still requires matching LibTorch/CUDA/ICU/zlib dependencies.
+This is not yet a relocatable SDK or high-level text-guided video tracker.

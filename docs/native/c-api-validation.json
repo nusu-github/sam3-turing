@@ -1,0 +1,284 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "device": "cuda",
+  "python_free_client": true,
+  "client_path": "/nonexistent",
+  "c_api_exported_symbols": 40,
+  "ctest": {
+    "cuda_enabled": 13,
+    "custom_cuda_disabled": 8
+  },
+  "windows_runtime_validated": false,
+  "turing_runtime_validated": false,
+  "github_actions_used": false,
+  "cpu_stability": "Unresolved intermittent development-runtime failure; CPU CTest passes do not establish full-model stability.",
+  "client": {
+    "cases": [
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "kind": "image",
+        "exact_comparisons": 6,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "kind": "video",
+        "exact_comparisons": 46,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "kind": "ground",
+        "exact_comparisons": 0,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "kind": "image",
+        "exact_comparisons": 6,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "kind": "video",
+        "exact_comparisons": 46,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "kind": "ground",
+        "exact_comparisons": 0,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3",
+        "mode": "fp32",
+        "kind": "image",
+        "exact_comparisons": 6,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3",
+        "mode": "fp32",
+        "kind": "video",
+        "exact_comparisons": 46,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3",
+        "mode": "fp32",
+        "kind": "ground",
+        "exact_comparisons": 0,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "kind": "image",
+        "exact_comparisons": 6,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "kind": "video",
+        "exact_comparisons": 40,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "kind": "ground",
+        "exact_comparisons": 0,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3.1",
+        "mode": "bf16_reference",
+        "kind": "image",
+        "exact_comparisons": 6,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3.1",
+        "mode": "bf16_reference",
+        "kind": "video",
+        "exact_comparisons": 40,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3.1",
+        "mode": "bf16_reference",
+        "kind": "ground",
+        "exact_comparisons": 0,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp32",
+        "kind": "image",
+        "exact_comparisons": 6,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp32",
+        "kind": "video",
+        "exact_comparisons": 40,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp32",
+        "kind": "ground",
+        "exact_comparisons": 0,
+        "child_path": "/nonexistent"
+      }
+    ],
+    "scope": "Pure C11 client linked to the shared library. Image two-stage outputs and video sessions compare prior original-parity fixture outputs; Batch outputs have a separate component-composition comparison; ABI lifetime/callback checks run inside C. Grounding count/raw shape smoke here; separate report covers detailed geometry/text/grounding parity."
+  },
+  "grounding": {
+    "cases": [
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "exact_tensor_comparisons": 54,
+        "uncapped_detections": 200
+      },
+      {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "exact_tensor_comparisons": 54,
+        "uncapped_detections": 200
+      },
+      {
+        "model": "sam3",
+        "mode": "fp32",
+        "exact_tensor_comparisons": 54,
+        "uncapped_detections": 200
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "exact_tensor_comparisons": 54,
+        "uncapped_detections": 200
+      },
+      {
+        "model": "sam3.1",
+        "mode": "bf16_reference",
+        "exact_tensor_comparisons": 54,
+        "uncapped_detections": 200
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp32",
+        "exact_tensor_comparisons": 54,
+        "uncapped_detections": 200
+      }
+    ],
+    "scope": "C11 standalone outputs match the previously original-validated C++ components at zero tolerance: text, embedded-NUL tokenization, full 200 detections, repeated image/reordered text IDs, positive/negative boxes, visual prompts and previous-mask features with text disabled. This validates the ABI composition, not a new independent original neural comparison."
+  },
+  "batch": {
+    "cases": [
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "exact_tensor_comparisons": 6,
+        "batch_position_max_abs_difference": {
+          "iou": 0.0,
+          "low_res_logits": 0.0,
+          "masks": 0.0
+        },
+        "batch_position_differing_values": {
+          "iou": 0,
+          "low_res_logits": 0,
+          "masks": 0
+        }
+      },
+      {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "exact_tensor_comparisons": 6,
+        "batch_position_max_abs_difference": {
+          "iou": 0.0,
+          "low_res_logits": 0.0,
+          "masks": 0.0
+        },
+        "batch_position_differing_values": {
+          "iou": 0,
+          "low_res_logits": 0,
+          "masks": 0
+        }
+      },
+      {
+        "model": "sam3",
+        "mode": "fp32",
+        "exact_tensor_comparisons": 6,
+        "batch_position_max_abs_difference": {
+          "iou": 0.0,
+          "low_res_logits": 3.814697265625e-06,
+          "masks": 0.0
+        },
+        "batch_position_differing_values": {
+          "iou": 0,
+          "low_res_logits": 267290,
+          "masks": 0
+        }
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "exact_tensor_comparisons": 6,
+        "batch_position_max_abs_difference": {
+          "iou": 0.0,
+          "low_res_logits": 0.0,
+          "masks": 0.0
+        },
+        "batch_position_differing_values": {
+          "iou": 0,
+          "low_res_logits": 0,
+          "masks": 0
+        }
+      },
+      {
+        "model": "sam3.1",
+        "mode": "bf16_reference",
+        "exact_tensor_comparisons": 6,
+        "batch_position_max_abs_difference": {
+          "iou": 0.0,
+          "low_res_logits": 0.0,
+          "masks": 0.0
+        },
+        "batch_position_differing_values": {
+          "iou": 0,
+          "low_res_logits": 0,
+          "masks": 0
+        }
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp32",
+        "exact_tensor_comparisons": 6,
+        "batch_position_max_abs_difference": {
+          "iou": 0.0,
+          "low_res_logits": 3.814697265625e-06,
+          "masks": 1.0
+        },
+        "batch_position_differing_values": {
+          "iou": 0,
+          "low_res_logits": 252955,
+          "masks": 1
+        }
+      }
+    ],
+    "scope": "Both batch positions compared independently at zero tolerance to the previously original-validated C++ composition. Identical image values in different batch positions need not produce bit-identical floating point results."
+  },
+  "exact_comparisons": 654
+}

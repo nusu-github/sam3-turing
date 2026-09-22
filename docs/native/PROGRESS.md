@@ -1368,3 +1368,67 @@ are in `reference/multiplex-storage-final-v1`; the earlier 32-frame experiment
 is kept in `reference/multiplex-storage-v1`. These are development builds, not
 a relocatable release. Full high-level text/video association, C ABI, codecs,
 multi-GPU, distribution packaging and further quality/performance work remain.
+
+## C ABI for image and interactive video hosts
+
+Implemented ABI 1 in `sam3/c_api.h`: standard C types, opaque context/image/video/
+result handles, named tensor views, counted UTF-8 text, image batches and prompts,
+grounding and both interactive video backends. There are 40 exported C symbols.
+The header needs no Torch or C++ types. C++ exceptions are contained at status
+boundaries, including CUDA/host out-of-memory translation. Errors are thread-local;
+session reentry/concurrent use returns BUSY, while cancellation remains available
+from callbacks. Results can outlive callbacks/sessions and children can outlive
+caller-owned context handles. ABI layouts are fixed and checked before use.
+
+Contexts load modules lazily, share immutable modules across sessions and release
+unused cache entries on request. Image and video reuse the visual backbone;
+interactive image instances share prototype tensor weights. This does not claim
+that every small image/video module instance shares allocation. The modular
+weight store is unchanged: no full image/video exports or weight variants were
+added. Model inputs, all 200 detector queries and original prompt semantics are
+retained. SAM3.1 history paging is exposed through the same video API.
+
+`c-api-validation.json` records **654 exact comparisons** on local Blackwell:
+36 two-stage image tensors, 258 video tensor/metadata comparisons, 324 grounding/
+text comparisons and 36 image-batch tensors. The pure C11 client runs 18 workflows
+(two models, FP16/BF16-reference/FP32, image/video/grounding) with PATH=/nonexistent.
+Image refinement and real-frame video outputs match saved reference fixtures;
+text/geometry/visual-feature and image-batch composition match the previously
+original-validated C++ components. This is an API composition check, not new
+proof of all high-level original features or unmodified SAM3.1 dynamic semantics.
+
+Coverage includes row-padded RGB, original-resolution results, prior-mask image
+refinement, multiple image/prompt batches, embedded-NUL tokenization, repeated
+image/reordered text IDs, positive/negative boxes, visual features and previous
+mask features with text disabled. The count test retains 200 detections. Video
+checks include forward/reverse propagation, edits, callback cancellation/reentry,
+provider failure, context/result lifetime and paging cleanup. These workflows
+do not exhaust every combination of the exposed options.
+
+An initial test incorrectly required equal images at different batch positions
+to produce bit-identical outputs. The corrected test compares each position
+independently against its corresponding C++ reference, still at zero tolerance.
+Both FP32 models have a maximum low-logit difference of 3.814697265625e-6 between
+positions; SAM3.1 also has one differing thresholded mask pixel. The C API and
+C++ composition match exactly at each position. This records existing numerical
+behavior rather than hiding the difference with a tolerance or mask filter.
+FP16/BF16-reference batch positions are identical for this fixture.
+
+CTest passes 13/13 CUDA-enabled and 8/8 custom-CUDA-disabled checks, including
+pure C ABI/default/error validation and synchronized thread-local error tests.
+The smoke client separately compiles/links with `cc -std=c11 -Wall -Wextra
+-Werror` and no Torch include path. Native linkage excludes libpython and
+libtorch_python; sm_75 cubins remain present. No GitHub Actions were used.
+Windows/Turing execution remains with the user. CPU full-model stability remains
+unresolved as documented in `CPU_RUNTIME_ISSUE.md`; this milestone's full-model
+C ABI comparisons run on CUDA, not CPU.
+
+Private binaries, public headers, logs and manifests are saved in
+`native-foundation/c-api-linux-cuda13`; raw fixtures/results are in
+`reference/c-api-v1`. See `C_API.md` for ownership, callbacks, layouts and build
+instructions. These are development binaries requiring matching LibTorch/CUDA/
+ICU/zlib, not a relocatable SDK. The goal remains active: high-level text-guided
+video detection/association and its state policies, codecs, multi-GPU, portable
+packaging and further quality/performance work remain. The C ABI exposes the
+implemented lower-level backends and does not imply that those remaining
+features are complete.
