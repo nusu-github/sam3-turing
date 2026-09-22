@@ -927,3 +927,17 @@ thread-local errors and video callback cancellation. `sam3_c_api_probe` is a
 C11 example and validation client. It runs with Python removed from PATH; the
 shared library still requires matching LibTorch/CUDA/ICU/zlib dependencies.
 This is not yet a relocatable SDK or high-level text-guided video tracker.
+
+### Detection-to-track association
+
+`sam3/association.h` ports the source SAM3/SAM3.1 association policies, including
+IoU/IoM autocast arithmetic, resize/sign threshold order, ambiguity suppression,
+reconditioning metadata and different empty-input branches. Optional SAM3.1
+zero padding is preserved without imposing an object limit. It also provides
+source-equivalent box-boundary filtering and device placement plans.
+
+`sam3_association_test` runs without Python or weights. The development parity
+script calls the actual Python source methods, including native metadata
+realization comparisons. See [video integration contracts](../docs/native/VIDEO_INTEGRATION.md)
+for the remaining high-level state policies and integration work. This module
+is not yet a complete text-guided video tracker or multi-GPU executor.

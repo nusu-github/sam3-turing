@@ -1432,3 +1432,59 @@ video detection/association and its state policies, codecs, multi-GPU, portable
 packaging and further quality/performance work remain. The C ABI exposes the
 implemented lower-level backends and does not imply that those remaining
 features are complete.
+
+## Native detection-to-track association
+
+Implemented `sam3/association.h` as a reusable high-level video building block.
+It ports both source association wrappers and the shared matching arithmetic:
+smaller-area bilinear resize before sign thresholding, IoU/IoM, threshold ties,
+ambiguity clearing, reconditioning and host metadata realization. Source-specific
+empty branches and optional SAM3.1 zero-mask padding are preserved. Padding is
+not a cap: no detection/track count limit or dropping policy was introduced.
+The module also reproduces normalized boundary filtering and lowest-workload
+GPU placement, with multiplex groups kept together. Placement is a plan, not
+multi-GPU inference execution.
+
+`association-validation.json` records **792 workflows and 9,336 exact tensor/
+metadata comparisons** against the actual repository Python methods across
+CPU/CUDA, both models and FP32/FP16/BF16-reference. Another 72 placement and 32
+boundary comparisons pass. Cases include empty inputs, false keep entries,
+exact threshold boundaries, ambiguous matches, repeated assignments, nonfinite
+logits/scores, noncontiguous views, unequal resolutions/equal-area shape ties,
+257 detections against 513 tracks, dense full masks, and stored full 200-query
+neural masks. The stored detector/tracker tensors come from different fixtures;
+they test real-value arithmetic, not coherent-clip tracking quality.
+
+SAM3 marks every supplied detection new when no tracks exist and only nonempty
+tracks unmatched when no detections exist. SAM3.1 instead applies a score
+threshold without intersecting keep in its no-track branch, and marks all tracks
+unmatched in its no-detection branch. Both are deliberate reproductions of
+source behavior. The original explicitly disables Hungarian matching; this
+module implements its active many-to-one path.
+
+A dense-mask check exposed source FP16 intersection overflow: 82,944 foreground
+pixels in a 288x288 full mask exceed finite half range. IoU may become infinite;
+IoM's float-to-int conversion behaves differently on the local CPU/CUDA paths.
+The CPU FP16 path incorrectly treats two identical full masks as unmatched/new.
+Same-mode parity reproduces this, so it must not be advertised as quality proof.
+The native default is FP32 count arithmetic, independent of neural precision.
+A standalone regression verifies that the default remains FP32 even inside
+outer FP16 autocast. `association-dense-mask.json` preserves observed decisions.
+The future host must retain this separation and validate end-to-end quality.
+
+CTest passes 15/15 CUDA-enabled and 9/9 custom-CUDA-disabled checks. Standalone
+CPU FP32/CUDA FP16 probes also run with PATH=/nonexistent, including the independent
+FP32 count regression. Passing these CPU component checks does not resolve the
+previously recorded intermittent full-model CPU runtime fault. Linkage still
+excludes libpython/libtorch_python; existing sm_75 cubins remain. No GitHub
+Actions were used and no Windows/Turing execution is claimed.
+
+`VIDEO_INTEGRATION.md` records the next state-integration contracts. CPU hotstart
+and SAM3.1 GPU hotstart differ in keep-alive updates, overlap ordering/ties and
+suppression membership; they must be compared separately rather than unified.
+Hotstart, confirmation, occlusion suppression, reconditioning, object insertion/
+removal and propagation/cache coordination remain to be integrated into the
+full text/visual-guided video host. C ABI existence and this association module
+do not finish that host. Code/reports are pushed to `codex/native-onboarding`;
+private binaries/headers/logs are in `native-foundation/association-linux-cuda13`.
+No new weights or full-model distribution variants are needed.
