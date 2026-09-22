@@ -109,3 +109,84 @@ Do not unify these policies merely because some happy-path clips produce the
 same masks. Reference tests must cover each path's persistent metadata and
 forward/reverse ordering before connecting it to the native sessions. Full
 end-to-end comparisons are still required after that connection.
+
+## Native hotstart and confirmation helpers
+
+`sam3/hotstart.h` now implements the state helpers described above. They are
+building blocks for the pending high-level host, not a completed video predictor.
+
+`update_host_hotstart` copies the ID-indexed host state and returns updated state
+plus newly removed IDs. It keeps accumulated unmatched/overlap frame lists,
+first-appearance tie order, keep-alive clamping, per-frame suppressed sets and
+persistent removal sets. Validation failure leaves the caller's state untouched.
+
+`update_device_hotstart` implements the separate SAM3.1 position-indexed policy
+on CPU or CUDA. It preserves the source's unconditional decrement for unmatched
+matrix columns, optional second decrement for empty tracks, cumulative unmatched
+counts, upper-triangle pair counts, strict first-frame ordering and separate
+remove/suppress masks. Suppression is computed before overlap removal, as in the
+source, so those masks are not forcibly made disjoint.
+
+`compact_device_hotstart` returns both filtered state and retained indices, for
+consistent filtering of external IDs/masks. `select_device_hotstart` supports
+explicit order changes and selects both axes of pair counts. `extend_device_hotstart`
+appends first-frame/counter/removal/occlusion values and grows the pair matrix.
+These functions do not modify input tensors; unchanged fields can share storage,
+so callers must treat retained state tensors as immutable.
+
+`update_confirmation` follows source ID remapping across additions/removals/order
+changes. New objects start unconfirmed; matching increments the consecutive count,
+a missed detection resets that count, and an already confirmed object stays
+confirmed. The status values are the source's 1/2 convention. This does not yet
+wire user-action confirmation into a high-level host.
+
+### Exact overlap-count optimization
+
+The source device policy materializes `[Ndet,Nobj,Nobj]` float outer products
+before summing them. For at most 2^24 detections, native FP32 `A.transpose(0,1) @ A`
+produces the same counts without this cubic temporary: inputs/products are binary
+and every partial integer sum is exactly representable in FP32. Neural autocast
+is disabled for this calculation. It neither rounds counts to BF16 nor allows
+FP16 overflow. Beyond that exact-integer range, the original outer-product/sum
+order remains the fallback. That boundary selects an arithmetic implementation;
+it does not drop detections or impose a count limit. Both sides of the boundary
+are checked against the original at 16,777,216/16,777,217 detections on CPU/CUDA.
+
+The persistent pair-count state is still quadratic in object count. This change
+reduces the intermediate tensor, not every memory category or overall model size.
+At 200 detections/512 objects, the source outer product alone is 209,715,200 bytes;
+the native float pair matrix is 1,048,576 bytes, plus other working tensors.
+
+`hotstart-benchmark.json` measures the isolated full state update on local
+Blackwell with identical outputs. Across two measurement orders, median CUDA
+event time is 0.792–0.795 ms for source and 0.377–0.383 ms for native. Peak PyTorch
+allocated memory above the same 10,737,152-byte baseline is 217,432,576 versus
+6,568,448 bytes (about 97% less). Each case has five warmups and 30 samples. These
+are synthetic state-update measurements; they include stream/launch gaps and
+exclude host RSS/total reserved device memory. They are not end-to-end video
+throughput measurements or Turing performance results.
+
+### Validation scope
+
+`hotstart_parity.py` calls the actual CPU methods in both original classes,
+SAM3.1's device method and the original confirmation methods. Compaction/extension
+are inline in the original planning phase, so the test extracts their original
+AST blocks rather than reimplementing their reference algorithms. The report
+records the source-file hash. It checks forward/reverse history, cumulative
+counters, zero thresholds, additions/removals/reordering, empty states, state
+immutability and all persistent metadata fields at zero tolerance. The standalone
+C++ test also distinguishes CPU first-frame ties from GPU strict ordering and
+checks a 301-count update under outer BF16 autocast.
+
+`hotstart-validation.json` contains 8,064 host state-field comparisons, 35,568
+device tensor/scalar comparisons, 960 confirmation comparisons and 36 large-count
+boundary comparisons: 44,628 total. CTest passes 17 CUDA-enabled and 10 custom-CUDA-
+disabled checks. Standalone CPU/CUDA probes run with PATH=/nonexistent. This does
+not resolve the separately recorded intermittent development full-model CPU fault.
+No GitHub Actions or Windows/Turing runtime validation was performed.
+
+Remaining integration includes recent-occlusion suppression, reconditioning,
+coordinated detector/tracker insertion/removal, visual prompt/cache handling,
+user-action state and full high-level propagation/output behavior. The new
+helpers must be connected and compared in real neural video workflows before
+claiming the high-level predictor is complete.

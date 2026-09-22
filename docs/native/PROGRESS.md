@@ -1488,3 +1488,56 @@ full text/visual-guided video host. C ABI existence and this association module
 do not finish that host. Code/reports are pushed to `codex/native-onboarding`;
 private binaries/headers/logs are in `native-foundation/association-linux-cuda13`.
 No new weights or full-model distribution variants are needed.
+
+## Native hotstart, state compaction and confirmation
+
+Implemented the ID-indexed source hotstart state machine and the separate
+SAM3.1 position-indexed device state machine in `sam3/hotstart.h`. These preserve
+accumulated unmatched/overlap histories, keep-alive rules, first-frame ordering,
+removal and suppression timing, including their intentional source differences.
+State selection/compaction updates both pair-matrix axes and returns retained
+indices; extension initializes all new entries. Inputs remain unchanged, while
+unchanged output tensors may share immutable storage. Confirmation remaps IDs,
+counts consecutive detections, resets counts on a miss and retains confirmed
+status. These helpers are not yet connected to a complete high-level video host.
+
+The source device overlap count materializes a float tensor of shape
+`[detections,objects,objects]`. The native path uses FP32 binary matmul, preserving
+exact integer counts for at most 2^24 detections, independently of neural autocast.
+Above that range it retains the original reduction order. No input cap, dropping
+policy, model export or weight variant was added. Persistent pair-count storage
+is still quadratic; this optimizes the temporary, not all tracking memory.
+
+`hotstart-validation.json` records **44,628 exact comparisons**: 8,064 host
+state fields over 1,152 updates against both original classes, 35,568 device
+fields/decisions over 1,440 updates across CPU/CUDA and three outer autocast modes,
+960 confirmation fields, and 36 large-count boundary checks. The tests call
+actual source methods and extract original compaction/extension AST blocks from
+the planning phase, recording the source hash. Both 16,777,216 and 16,777,217
+detection cases match on CPU/CUDA, verifying optimized/fallback boundaries without
+a cap. They cover forward/reverse ordering, zero thresholds, empty states,
+additions/removals/reordering and unchanged prior-state tensors. The native unit
+test additionally checks 301 overlaps under BF16 neural autocast and the distinct
+host/device first-frame-tie behavior.
+
+An isolated Blackwell benchmark uses 200 detections and 512 objects, five warmups
+and 30 samples per method in both execution orders. Source median CUDA-event time
+is 0.792–0.795 ms; native is 0.377–0.383 ms. Peak additional PyTorch GPU allocation
+falls from 217,432,576 to 6,568,448 bytes (about 97%), above the same 10,737,152-byte
+baseline. Full state/decision outputs match before timing. These synthetic helper
+measurements include stream work/launch gaps and exclude host RSS/reserved GPU
+memory; they are not full-model/video speedups or Turing performance claims.
+Raw samples are preserved in `hotstart-benchmark.json`.
+
+CTest passes 17/17 CUDA-enabled and 10/10 custom-CUDA-disabled checks. Standalone
+CPU/CUDA probes run with PATH=/nonexistent. The earlier intermittent full-model
+CPU runtime issue is still open; successful state-component tests do not resolve
+it. Existing sm_75 cubins and Python-free linkage remain. No GitHub Actions or
+Windows/Turing execution was used.
+
+Code and reports are pushed to `codex/native-onboarding`; binaries, headers and
+logs are private in `native-foundation/hotstart-linux-cuda13`. `VIDEO_INTEGRATION.md`
+documents the APIs and remaining work: recent-occlusion suppression,
+reconditioning, coordinated object insertion/removal, visual prompts/caches,
+user actions and full high-level video propagation. Codec, multi-GPU execution,
+portable distribution and overall quality/performance validation also remain.

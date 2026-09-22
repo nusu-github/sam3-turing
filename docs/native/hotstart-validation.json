@@ -1,0 +1,250 @@
+{
+  "host": [
+    {
+      "source": "Sam3VideoBase",
+      "config": 0,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3VideoBase",
+      "config": 0,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3VideoBase",
+      "config": 1,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3VideoBase",
+      "config": 1,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3VideoBase",
+      "config": 2,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3VideoBase",
+      "config": 2,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3VideoBase",
+      "config": 3,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3VideoBase",
+      "config": 3,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3VideoBase",
+      "config": 4,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3VideoBase",
+      "config": 4,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3VideoBase",
+      "config": 5,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3VideoBase",
+      "config": 5,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 0,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 0,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 1,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 1,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 2,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 2,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 3,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 3,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 4,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 4,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 5,
+      "reverse": false,
+      "steps": 48,
+      "state_field_comparisons": 336
+    },
+    {
+      "source": "Sam3MultiplexBase",
+      "config": 5,
+      "reverse": true,
+      "steps": 48,
+      "state_field_comparisons": 336
+    }
+  ],
+  "confirmation_comparisons": 960,
+  "device": [
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "steps": 240,
+      "exact_tensor_and_scalar_comparisons": 5928
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "steps": 240,
+      "exact_tensor_and_scalar_comparisons": 5928
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "steps": 240,
+      "exact_tensor_and_scalar_comparisons": 5928
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "steps": 240,
+      "exact_tensor_and_scalar_comparisons": 5928
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "steps": 240,
+      "exact_tensor_and_scalar_comparisons": 5928
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "steps": 240,
+      "exact_tensor_and_scalar_comparisons": 5928
+    }
+  ],
+  "large": [
+    {
+      "device": "cpu",
+      "detections": 16777216,
+      "objects": 2,
+      "comparisons": 9
+    },
+    {
+      "device": "cpu",
+      "detections": 16777217,
+      "objects": 2,
+      "comparisons": 9
+    },
+    {
+      "device": "cuda",
+      "detections": 16777216,
+      "objects": 2,
+      "comparisons": 9
+    },
+    {
+      "device": "cuda",
+      "detections": 16777217,
+      "objects": 2,
+      "comparisons": 9
+    }
+  ],
+  "source_sha256": "fad8ba0829e1223af919736d5c90b68a784c4941f936f088bccbdc4fb75d2bf8",
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "scope": "Actual CPU hotstart and confirmation methods from both source classes, actual SAM3.1 GPU hotstart, and AST-extracted original compaction/extension blocks. Device policy and host policy are intentionally distinct. Per-frame metadata/decisions and previous-state immutability checked. No full high-level neural video integration claimed.",
+  "total_comparisons": 44628,
+  "ctest": {
+    "cuda_enabled": 17,
+    "custom_cuda_disabled": 10
+  },
+  "standalone_path": "/nonexistent",
+  "windows_runtime_validated": false,
+  "turing_runtime_validated": false,
+  "github_actions_used": false
+}

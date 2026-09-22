@@ -941,3 +941,17 @@ script calls the actual Python source methods, including native metadata
 realization comparisons. See [video integration contracts](../docs/native/VIDEO_INTEGRATION.md)
 for the remaining high-level state policies and integration work. This module
 is not yet a complete text-guided video tracker or multi-GPU executor.
+
+### Hotstart state and masklet confirmation
+
+`sam3/hotstart.h` implements separate source host/device lifecycle policies,
+immutable state updates, removal compaction, dynamic extension, reorder selection
+and confirmation across ID changes. The device path supports CPU/CUDA and avoids
+the source `[detections,objects,objects]` temporary using exact FP32 binary-count
+matmul in its valid integer range. It falls back to the original reduction beyond
+that range without truncating inputs. Persistent pair metadata remains quadratic.
+
+`sam3_hotstart_test` needs no Python or weights. `hotstart_parity.py` compares
+actual source methods and extracted original planning blocks; `hotstart_benchmark.py`
+measures only the isolated state update. See [video integration](../docs/native/VIDEO_INTEGRATION.md)
+for state semantics, numerical bounds, measurements and remaining host integration.
