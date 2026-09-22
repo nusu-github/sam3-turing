@@ -12,9 +12,11 @@
 #include "sam3/video_heads.h"
 #include "sam3/memory_encoder.h"
 #include "sam3/memory_attention.h"
+#include "sam3/temporal_memory.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
 #include <torch/library.h>
+#include <cmath>
 
 namespace {
 c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& out) {
@@ -29,6 +31,32 @@ c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& ou
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("select_conditioning_frames(int current, int[] order, int limit, bool keep_first) -> (int[], int[])",
+      [](int64_t current,const std::vector<int64_t>& order,int64_t limit,bool keep) {
+        auto selected=sam3::select_conditioning_frames(current,order,limit,keep);
+        return std::make_tuple(std::move(selected.first),std::move(selected.second));
+      });
+  m.def("memory_confidence(Tensor logits, Tensor iou) -> Tensor",&sam3::memory_confidence);
+  m.def("sam3_temporal(str directory, Tensor source, Tensor source_position, int height, int width, int[] frame_ids, bool[] conditioning, Tensor[] features, Tensor[] positions, Tensor[] pointers, Tensor[] scores, int frame, int frame_count, bool initial, bool reverse, bool use_previous, int slots, int condition_limit, int pointer_limit, int stride, bool keep_first, bool filter_scores, float score_threshold, str mode) -> (Tensor, Tensor[], int[])",
+      [](const std::string& directory,const at::Tensor& source,const at::Tensor& source_position,int64_t height,int64_t width,
+         const std::vector<int64_t>& ids,const c10::List<bool>& conditioning,const std::vector<at::Tensor>& features,const std::vector<at::Tensor>& positions,
+         const std::vector<at::Tensor>& pointers,const std::vector<at::Tensor>& scores,int64_t frame,int64_t frame_count,bool initial,bool reverse,bool previous,
+         int64_t slots,int64_t condition_limit,int64_t pointer_limit,int64_t stride,bool keep_first,bool filter,double threshold,const std::string& mode) {
+        TORCH_CHECK(ids.size()==conditioning.size() && ids.size()==features.size() && ids.size()==positions.size() && ids.size()==pointers.size() && ids.size()==scores.size(),"inconsistent temporal test frame arrays");
+        sam3::TemporalState state;
+        for (size_t i=0;i<ids.size();++i) {
+          sam3::TemporalFrame entry{ids[i],features[i],positions[i],pointers[i],{}};
+          if (scores[i].numel()) entry.effective_iou=scores[i];
+          (conditioning[i]?state.conditioning:state.tracked).push_back(std::move(entry));
+        }
+        const sam3::WeightStore store(std::filesystem::u8path(directory));
+        const sam3::Sam3MemoryConditioner module(store,source.device());sam3::TemporalAssembly trace;
+        const auto out=module.forward(source,source_position,height,width,frame,frame_count,initial,reverse,previous,state,
+            {slots,condition_limit,pointer_limit,stride,keep_first,filter,threshold},mode,&trace);
+        std::vector<at::Tensor> tensors;
+        if (trace.memory.defined()) tensors={trace.memory,trace.position};
+        return std::make_tuple(out,tensors,std::vector<int64_t>{trace.pointer_tokens});
+      });
   m.def("memory_attention(str directory, str model, Tensor source, Tensor source_position, Tensor memory, Tensor memory_position, int pointers, str mode, Tensor? image, Tensor? memory_image, Tensor? memory_image_position) -> Tensor[]",
       [](const std::string& directory,const std::string& model,const at::Tensor& source,const at::Tensor& source_position,
          const at::Tensor& memory,const at::Tensor& memory_position,int64_t pointers,const std::string& mode,

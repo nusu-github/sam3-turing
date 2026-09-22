@@ -355,5 +355,35 @@ from re-enabling fused backends and verify that only math stays enabled.
 CPU rotary caches are recomputed on CPU as on a CPU-only host. Reports explicitly
 identify adapted reference cases. These are backend compatibility and tensor
 parity checks on available hardware; Turing/Windows execution remains untested
-here, and complete video tracking still needs frame selection/session control
-and multiplex propagation.
+here, and complete video tracking still needs session control and multiplex
+propagation.
+
+`Sam3MemoryConditioner` in `temporal_memory.h` connects SAM3 frame selection,
+temporal positions, pointer assembly and memory attention. `TemporalState`
+retains separate ordered conditioning/tracked frame collections; insertion order
+is significant for equal-distance ties. Options preserve the original
+conditioning limit/keep-first policy, temporal stride, forward/reverse direction,
+score-based memory selection and pointer history. Defaults match the source
+configuration, with no additional history or object cap. `assemble` exposes the
+selected plan and tensors; `forward` also handles initial/no-memory branches.
+
+Spatial features and positions may reside on CPU; pointers stay on the execution
+device as in the source. Effective-IoU scores retain their tensor dtype because
+converting them to double before threshold comparison can change half-precision
+decisions. `memory_confidence` preserves source operations and broadcasting,
+including vector-IoU input behavior. The shared `select_conditioning_frames`
+helper preserves ordered ties and keep-first/limit-two slicing behavior.
+
+```sh
+build/native/sam3_temporal /private/native-weights-v1 cuda fp16 3
+```
+
+This development probe chains synthetic full-grid frames through memory
+conditioning → video heads → memory encoding, offloads spatial memory to CPU,
+and reuses it on later frames. The frame count is configurable. It runs without
+Python, but it is not a real-video predictor or an accuracy benchmark.
+`temporal_memory_parity.py` compares selection, assembled memory and positions,
+pointer counts and conditioned features against the original SAM3 host. CPU
+comparisons redirect only hard-coded `.cuda()` transfers and recreate rotary
+caches on CPU. SAM3.1's temporal host still needs its multiplex state/control
+port before this orchestration can be connected there.

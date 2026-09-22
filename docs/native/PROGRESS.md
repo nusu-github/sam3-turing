@@ -665,3 +665,55 @@ reused without new model variants. Next are frame-memory selection and temporal
 position assembly, tracking sessions and SAM3.1 multiplex propagation/control.
 Codecs, stable C ABI and final distribution packaging remain. No GitHub Actions
 were used; Windows/Turing runtime checks remain with the user.
+
+## 2026-09-22 — SAM3 frame-memory selection and conditioning
+
+Added `Sam3MemoryConditioner`, `TemporalState`/`TemporalPlan`, the shared
+`select_conditioning_frames` helper, and `memory_confidence`. State preserves
+Python dict insertion order. Selection retains closest-before/after handling,
+stable equal-distance ties, keep-first behavior, temporal stride, reverse
+tracking, score-filtered memory and source pointer-history rules. The
+keep-first/limit-two edge case retains Python's negative slice behavior;
+no extra cap is imposed. Python floor division for negative boundary indices
+is reproduced explicitly in C++.
+
+Assembly loads spatial memory/positions from CPU when needed, adds learned
+temporal positions, projects sine-encoded pointer times, and splits each SAM3
+256-channel pointer into four 64-channel tokens. It returns assembled tensors
+and a selection plan for diagnostics. The connected forward runs native attention
+and restores BCHW features. Initial frames, explicit previous-memory bypass and
+disabled memory retain their distinct source behaviors.
+
+Effective-IoU scores remain scalar tensors, including when offloaded. Converting
+scores to host doubles can change half-precision threshold comparisons. Missing
+scores, NaN scores and threshold ties are covered. Confidence calculation retains
+the source's broadcasting with both matrix and vector IoUs.
+
+`temporal-memory-cuda-validation.json`: 600 randomized conditioning-selection
+comparisons and 42 exact tensor cases across FP32/FP16/BF16-reference.
+`temporal-memory-cpu-validation.json`: the same 600 selection cases and 14 exact
+FP32 cases. Tests compare assembled memory, positions, pointer-token count and
+the final conditioned features. Coverage includes forward/reverse/strided
+tracking, score selection in both directions, start/end boundaries, unbounded
+conditioning selection, initial/bypass/disabled memory, CPU-offloaded spatial
+state and full 72×72 features. CPU reference adapts only hard-coded spatial
+`.cuda()` transfers and rotary-cache construction to its execution device.
+The earlier intermittent development CPU runtime issue remains unresolved.
+
+`sam3_temporal` chains memory conditioning, video heads and memory encoding over
+three synthetic full-grid frames with spatial state stored on CPU between frames.
+CUDA FP16 and CPU FP32 passed with Python absent from PATH. Frame zero uses no
+previous memory, frame one uses one spatial frame/four pointer tokens, and frame
+two uses two spatial frames/eight pointer tokens. This is an integrated module
+chain check, not real-video tracking validation. Frame count is a runtime argument;
+the module API also supports variable batches and selection settings.
+
+SAM3.1's temporal host remains to be connected after multiplex state/controller
+and propagation decoding are ported; the shared selector is ready for it.
+Full sessions, real-video parity, codecs, C ABI and final packaging remain.
+No model-weight variants or copies were added. Code/reports are pushed to
+`codex/native-onboarding`; development binaries/logs are saved privately under
+`native-foundation/temporal-memory-linux-cuda13`. No GitHub Actions were used;
+Windows/Turing runtime validation remains with the user.
+CTest passed 7/7 CUDA-enabled and 4/4 custom-CUDA-disabled checks. The standalone
+probe links no Python library; custom CUDA objects still include sm_75.
