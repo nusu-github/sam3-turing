@@ -14,7 +14,7 @@ Implemented a shared C++/CUDA library, no Python link dependency:
   no detection count cap. Current CUDA baseline uses one cooperative block for
   greedy suppression and an ATen boolean matrix, leaving optimization scope.
 - Development dispatcher registration and standalone C++ CPU/CUDA executables.
-- Windows/Linux standalone CPU LibTorch CI (results pending first pushed run).
+- Initially added Windows/Linux CPU CI; subsequently removed per user instruction.
 
 Validation: 4 local CTest cases and 46 CPU + 46 CUDA parity scenarios passed.
 Coverage includes empty input, tail bits, noncontiguous layouts, float16/32/64,
@@ -29,3 +29,12 @@ Next work: finish connected components / EDT, capture model reference fixtures,
 measure shared checkpoint tensors, implement the common weight store and native
 model components. No complete SAM3 native inference, C ABI, Windows CUDA proof,
 or model-level numerical comparison exists yet.
+
+## Validation ownership update
+
+User requested no GitHub Actions for now and will handle Turing/Windows testing.
+The native workflow run was canceled, the workflow disabled and removed. Linux
+CPU CI had completed successfully before cancellation; Windows results are not
+a gate or a claimed validation. Future checks run locally; no Actions polling
+or new CI runs should be introduced. Provide user-facing reproduction commands
+for Windows/Turing without blocking development on those platforms.

@@ -98,3 +98,5 @@ CPU のみなら `SAM3_TEST_CUDA=OFF`。Windows は Release LibTorch と MSVC �
 ## 自律開発開始後の追記
 
 ユーザーより Turing 実機を調達できない旨の指示を受領。実機調達をブロッカーにせず、sm_75 を含む事前コンパイルと Blackwell 上の検証で進める。Turing の実行・性能保証はしない。機能完成後も停止指示まで最適化を継続する。進捗は `PROGRESS.md` に保存する。
+
+最新のユーザー指示: GitHub Actions は当面使用しない。追加した native workflow はキャンセル・無効化・削除する。Turing / Windows の実行検証はユーザーが担当する。自律開発の検証ループはローカルで完結させ、ユーザー用ビルド・検証手順を維持する。
