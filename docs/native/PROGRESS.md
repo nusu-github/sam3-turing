@@ -1288,3 +1288,83 @@ not complete. Compressed codecs, long-video retention, high-level text/video
 association, C ABI, multi-GPU and broader quality/performance evaluation remain.
 No GitHub Actions were used. Windows/Turing runtime validation remains with the
 user.
+
+## Lossless SAM3.1 history paging
+
+SAM3.1 sessions now accept an optional `history_directory`. Frame payloads are
+written to immutable temporary archives; existing temporal selection reads only
+the needed spatial/image and pointer streams, while preview/output reads only
+mask/score fields. Arbitrary edits, reverse propagation and later object growth
+retain their original inputs. Dynamic dense-memory remapping loads/rebuilds and
+archives one old frame at a time, committing all replacements together. No
+object, prompt, frame or detection limit was introduced; no model export or
+weight variant was added. The resident policy remains the default.
+
+The generic `TensorArchive` preserves values, dtypes and strides, including
+expanded and channels-last views. It verifies per-tensor CRCs and rejects
+missing/truncated/corrupted files. Exclusive temporary subdirectories and shared
+ownership keep state copies valid; reset/replacement reclaims files only when
+no frame references them. It uses C++ filesystem/streams and existing zlib, with
+no platform-specific runtime API. Metadata stays in process, so these caches
+are not serialized/resumable session checkpoints. A killed process may leave
+cache files; the application owns cleanup of its parent cache directory.
+
+Paging is integrated into the frame core as well as the session. Standalone
+frame mask updates materialize archived fields and restore the execution
+device. Clear/removal now also roll back their edits when archive reads fail.
+The session probe temporarily hides a later archive during insertion, clear
+and removal: prior IDs/history/dirty state survive, and failed staged archives
+are reclaimed. The archive unit test checks that a missing unselected frame is
+never read, but a missing selected frame fails.
+
+`multiplex-storage-cuda-validation.json` records six resident-vs-paged workflows
+(FP16, BF16-reference and FP32, each with score selection off/on), 16 operations
+and 463 exact tensor comparisons per workflow: **2,778 exact comparisons**.
+They cover new buckets, same-bucket brush insertion, repeated point edits,
+reverse tracking, cancel/resume, removal, clearing, reset and simultaneous
+brushes. Retained frame payload tensors are absent from the paged state;
+selection metadata remains resident. These are native-policy equivalence tests,
+not a new claim of upstream dynamic-layout equivalence.
+
+`multiplex-storage-video-validation.json` records 144 byte-identical files for
+the previously validated real-frame point/refinement/reverse and batched-brush
+workflows across all three precisions. A longer retention test repeats the
+three decoded images for 128 frames, comparing **516 files** between resident
+and paged FP16 execution. Retained payloads total 2,262,434,048 bytes. Sampled
+peak process host RSS falls from 3,829,436,416 to 1,747,148,800 bytes (about 54%).
+Observed process durations are 22.55s and 22.14s. These single runs include model
+loading, allocations and file I/O, use the local filesystem cache, and are not a
+controlled inference-speed benchmark. RSS excludes reclaimable OS file cache;
+this is not a claim of total system memory usage or ground-truth accuracy on
+128 distinct frames. Native child processes use PATH=/nonexistent.
+
+This reduces RAM used by retained frame payloads, not every memory category.
+The active temporal working set, model, latest features, allocator caches,
+annotation masks and per-frame metadata still consume memory. Disk usage grows
+with history; layout changes temporarily retain both old and new archives.
+Shared position storage, annotation paging, bounded I/O caching, SAM3 non-mux
+session adoption and durable session serialization remain separate work.
+
+The final CPU FP32 comparison completed under GDB with **926 exact tensors**
+across the two selection policies. One preceding non-GDB rerun exited 139 with
+a UCX null-address SIGSEGV; the GDB rerun exited normally and provided no failing
+stack. `CPU_RUNTIME_ISSUE.md` records this native-only failure separately from
+the earlier original-only reproduction. Passing CPU results establish numerical
+parity for those runs, not CPU stability; the cause remains unresolved.
+
+The standalone paged-session probes passed on CUDA FP16 and CPU FP32, including
+archive-read rollback on add/clear/removal. Paged mask-update probes compared
+12 output tensors exactly for append/reconditioning and then propagated:
+CUDA 3-to-20 objects and CPU 3-to-5 objects. All completed probe caches were
+empty afterward. CTest passed 11/11 CUDA-enabled and 6/6 custom-CUDA-disabled
+checks, including the expanded archive tests. Native linkage still excludes
+libpython/libtorch_python, and sm_75 cubins remain present. No GitHub Actions
+were used; Turing/Windows runtime validation remains with the user.
+
+Code/reports are pushed to `codex/native-onboarding`. Private binaries, successful
+logs and the failed CPU log/GDB rerun are saved in
+`native-foundation/multiplex-storage-linux-cuda13`. Real-video comparison data
+are in `reference/multiplex-storage-final-v1`; the earlier 32-frame experiment
+is kept in `reference/multiplex-storage-v1`. These are development builds, not
+a relocatable release. Full high-level text/video association, C ABI, codecs,
+multi-GPU, distribution packaging and further quality/performance work remain.

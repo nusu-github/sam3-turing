@@ -1,4 +1,5 @@
 #include "sam3/multiplex_history.h"
+#include "sam3/multiplex_storage.h"
 #include "sam3/autocast.h"
 #include "detector_layers.h"
 #include <c10/core/InferenceMode.h>
@@ -7,7 +8,7 @@
 #include <set>
 namespace sam3 {
 void remap_multiplex_history(MultiplexFrameHistory& history,const MultiplexState& source,const MultiplexState& destination,
-    const MultiplexHistoryRebuilder& rebuild,const std::string& mode) {
+    const MultiplexHistoryRebuilder& rebuild,const std::string& mode,const std::function<void(MultiplexFrame&)>& retain) {
   c10::InferenceMode inference;detail::check_mode(mode);
   TORCH_CHECK(source.valid() && destination.valid() && source.width()==16 && destination.width()==16,"valid 16-slot states are required");
   TORCH_CHECK(source.object_ids() && destination.object_ids(),"history remapping requires global object IDs");
@@ -38,6 +39,7 @@ void remap_multiplex_history(MultiplexFrameHistory& history,const MultiplexState
     result.index_copy_(0,fresh,value.index_select(0,old));return result;
   };
   for(auto* group:{&next.conditioning,&next.tracked})for(auto& frame:*group) {
+    frame=load_multiplex_frame(frame);frame.archive.reset();
     const auto old_memory=frame.memory,old_position=frame.memory_position;
     frame.masks.low_res_mask=rows(frame.masks.low_res_mask,-1024,true);frame.masks.high_res_mask=rows(frame.masks.high_res_mask,-1024);
     frame.masks.object_logits=rows(frame.masks.object_logits,-1024,true);frame.input_masks=rows(frame.input_masks,0);
@@ -77,6 +79,7 @@ void remap_multiplex_history(MultiplexFrameHistory& history,const MultiplexState
       return result;
     };
     frame.memory=spatial(old_memory,encoded.first);frame.memory_position=spatial(old_position,encoded.second);
+    if(retain)retain(frame);
   }
   history=std::move(next);
 }

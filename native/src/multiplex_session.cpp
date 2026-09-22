@@ -1,4 +1,5 @@
 #include "sam3/multiplex_session.h"
+#include "sam3/multiplex_storage.h"
 #include "sam3/autocast.h"
 #include "detector_layers.h"
 #include <c10/core/InferenceMode.h>
@@ -12,7 +13,7 @@ at::Tensor non_overlap(const at::Tensor& masks){if(masks.size(0)<2)return masks;
 Sam31TrackingSession::Sam31TrackingSession(std::shared_ptr<const Sam31TrackingFrame> core,FeatureProvider provider,int64_t frames,int64_t h,int64_t w,at::Device device,const std::string& mode,const MultiplexSessionOptions& options)
     :core_(std::move(core)),provider_(std::move(provider)),frames_(frames),height_(h),width_(w),device_(device),storage_(device),mode_(mode),options_(options),frame_options_(options.frame) {
   detail::check_mode(mode);TORCH_CHECK(core_ && provider_ && frames>0 && h>0 && w>0,"invalid multiplex session");
-  device_=at::empty({0},at::TensorOptions().device(device)).device();storage_=options.offload_state?at::Device(at::kCPU):device_;
+  device_=at::empty({0},at::TensorOptions().device(device)).device();storage_=(options.offload_state || !options.history_directory.empty())?at::Device(at::kCPU):device_;
   // Session retention is responsible for storage: core trimming would discard
   // the full masks/images required to reconstruct joint memory after edits.
   frame_options_.offload_output=false;frame_options_.trim_history=false;frame_options_.save_image=true;
@@ -28,9 +29,10 @@ void Sam31TrackingSession::store(MultiplexFrame& frame,bool compress){
   if(frame.memory.defined())frame.memory=(compress?frame.memory.to(at::kBFloat16):frame.memory).to(storage_);
   for(auto* value:{&frame.memory_position,&frame.image,&frame.image_position,&frame.masks.low_res_mask,&frame.masks.high_res_mask})if(value->defined())*value=value->to(storage_);
   frame.masks.low_res_multimasks=at::Tensor();frame.masks.high_res_multimasks=at::Tensor();frame.masks.iou=at::Tensor();frame.masks.object_pointer=at::Tensor();
+  if(!options_.history_directory.empty()){if(frame.confidence.defined())frame.confidence=frame.confidence.cpu();archive_multiplex_frame(frame,options_.history_directory);}
 }
 void Sam31TrackingSession::remap(const MultiplexState& next){
-  remap_multiplex_history(state_.history,*state_.buckets,next,[&](const auto& frame,const auto& layout){const auto encoded=core_->encode_history(frame,layout,frame_options_,mode_);return std::make_pair(encoded.features,encoded.position);},mode_);
+  remap_multiplex_history(state_.history,*state_.buckets,next,[&](const auto& frame,const auto& layout){const auto encoded=core_->encode_history(frame,layout,frame_options_,mode_);return std::make_pair(encoded.features,encoded.position);},mode_,[&](auto& frame){store(frame,false);});
   state_.buckets=next;
 }
 size_t Sam31TrackingSession::ensure_object(int64_t id,bool prefer_new){
@@ -47,7 +49,7 @@ MultiplexFrame Sam31TrackingSession::blank(int64_t index){
   const auto value=features(index);frame.image=value.propagation.image.flatten(2).permute({2,0,1});frame.image_position=value.propagation.position.flatten(2).permute({2,0,1});return frame;
 }
 void Sam31TrackingSession::merge_edit(int64_t index,size_t object,const MultiplexFrame& edit,const at::Tensor& video){
-  const auto existing=find(index);auto frame=existing?*existing:blank(index);
+  const auto existing=find(index);auto frame=existing?load_multiplex_frame(*existing):blank(index);
   frame.masks.low_res_mask=frame.masks.low_res_mask.to(device_).clone();frame.masks.low_res_mask.slice(0,object,object+1).copy_(resize(edit.masks.low_res_mask,288,288,true));
   frame.masks.high_res_mask=frame.masks.high_res_mask.to(device_).clone();frame.masks.high_res_mask.slice(0,object,object+1).copy_(resize(edit.masks.high_res_mask,1008,1008));
   const auto score_type=existing?c10::promoteTypes(frame.masks.object_logits.scalar_type(),edit.masks.object_logits.scalar_type()):edit.masks.object_logits.scalar_type();
@@ -59,7 +61,8 @@ void Sam31TrackingSession::merge_edit(int64_t index,size_t object,const Multiple
   frame.memory=at::Tensor();frame.memory_position=at::Tensor();store(frame);put(std::move(frame),!state_.tracked_direction.count(index) || options_.all_edits_conditioning);
   state_.objects[object].video_edits[index]=video.to(storage_);state_.dirty.insert(index);state_.annotated.insert(index);
 }
-TrackingSessionOutput Sam31TrackingSession::output(const MultiplexFrame& frame,bool preview)const{
+TrackingSessionOutput Sam31TrackingSession::output(const MultiplexFrame& stored,bool preview)const{
+  const auto frame=load_multiplex_frame(stored,history_output);
   auto masks=resize(frame.masks.low_res_mask.to(device_),height_,width_);
   if(preview){masks=masks.clone();for(size_t i=0;i<state_.objects.size();++i)if(state_.objects[i].video_edits.count(frame.index))masks.slice(0,i,i+1).copy_(state_.objects[i].video_edits.at(frame.index).to(device_));}
   return {frame.index,object_ids(),frame.masks.low_res_mask.to(device_),postprocess_tracking_masks(masks,height_,width_,options_.non_overlap_output,options_.fill_hole_area),frame.masks.object_logits};
@@ -74,7 +77,7 @@ TrackingSessionOutput Sam31TrackingSession::add_points(int64_t index,int64_t id,
   auto previous=state_;try {
     const auto object=ensure_object(id,true);auto& item=state_.objects[object];if(!clear && item.points.count(index)){coords=at::cat({item.points.at(index).points,coords},1);labels=at::cat({item.points.at(index).labels,labels},1);}
     MultiplexFrameRequest request;request.index=index;request.frame_count=frames_;request.initial=true;request.encode_memory=false;request.points=coords;request.labels=labels;
-    if((item.refined.count(index) || use_previous) && find(index)){request.previous_logits=find(index)->masks.low_res_mask.slice(0,object,object+1).to(device_).clamp(-32.,32.);request.objects_to_interact=std::vector<int64_t>{0};}
+    if((item.refined.count(index) || use_previous) && find(index)){request.previous_logits=load_multiplex_frame(*find(index),history_output).masks.low_res_mask.slice(0,object,object+1).to(device_).clamp(-32.,32.);request.objects_to_interact=std::vector<int64_t>{0};}
     const auto value=features(index);const auto singleton=MultiplexController().get_state(1,device_,at::kFloat,false,std::vector<int64_t>{id});MultiplexFrameHistory empty;
     const auto edit=core_->forward(value.interactive,value.propagation,request,empty,singleton,frame_options_,mode_);
     item.points[index]={coords,labels,{},false};item.masks.erase(index);if(state_.tracked_direction.count(index))item.refined.insert(index);
@@ -115,7 +118,7 @@ TrackingSessionOutput Sam31TrackingSession::add_masks(int64_t index,const std::v
 }
 void Sam31TrackingSession::preflight(bool encode){
   c10::InferenceMode inference;AutocastGuard autocast(device_.type(),mode_!="fp32",mode_=="fp16"?at::kHalf:at::kBFloat16);auto previous=state_;try {
-    for(auto index:state_.dirty){auto* original=find(index);if(!original)continue;auto frame=*original;frame.masks.low_res_mask=frame.masks.low_res_mask.to(device_).clone();
+    for(auto index:state_.dirty){auto* original=find(index);if(!original)continue;auto frame=load_multiplex_frame(*original);frame.masks.low_res_mask=frame.masks.low_res_mask.to(device_).clone();
       for(size_t i=0;i<state_.objects.size();++i)if(state_.objects[i].video_edits.count(index))frame.masks.low_res_mask.slice(0,i,i+1).copy_(resize(state_.objects[i].video_edits.at(index).to(device_),288,288,true));
       frame.masks.high_res_mask=non_overlap(resize(frame.masks.low_res_mask,1008,1008));
       if(encode && frame_options_.temporal.memory_slots>0){const auto memory=core_->encode_history(frame,*state_.buckets,frame_options_,mode_);frame.memory=memory.features;frame.memory_position=memory.position;}
@@ -132,7 +135,8 @@ void Sam31TrackingSession::propagate(const TrackingPropagation& request,const Ou
   for(auto index=start;;index+=request.reverse?-1:1){
     if(!state_.annotated.count(index)){
       const auto value=features(index);MultiplexFrameRequest step;step.index=index;step.frame_count=frames_;step.reverse=request.reverse;step.encode_memory=request.encode_memory;
-      auto frame=core_->forward(value.interactive,value.propagation,step,state_.history,*state_.buckets,frame_options_,mode_);store(frame);put(std::move(frame),false);
+      auto working=state_.history;
+      auto frame=core_->forward(value.interactive,value.propagation,step,working,*state_.buckets,frame_options_,mode_);store(frame);put(std::move(frame),false);
     }
     state_.tracked_direction[index]=request.reverse;const auto result=output(*find(index));if(!callback(result) || cancelled_.load() || index==end)break;
   }
@@ -150,13 +154,17 @@ void Sam31TrackingSession::classify_inputs(){
 }
 TrackingSessionOutput Sam31TrackingSession::clear_input(int64_t index,int64_t id){
   c10::InferenceMode inference;check_frame(index);auto found=std::find_if(state_.objects.begin(),state_.objects.end(),[&](const auto& object){return object.id==id;});TORCH_CHECK(found!=state_.objects.end(),"unknown object ID");const auto object=found-state_.objects.begin();
+  auto previous=state_;try {
   found->points.erase(index);found->masks.erase(index);found->video_edits.erase(index);found->refined.erase(index);
   if(auto* frame=find(index)){auto& conditions=frame->conditioning_objects;conditions.erase(std::remove(conditions.begin(),conditions.end(),object),conditions.end());state_.dirty.insert(index);}
   classify_inputs();const auto frame=find(index)?*find(index):blank(index);return output(frame,true);
+  }catch(...){state_=std::move(previous);throw;}
 }
 void Sam31TrackingSession::remove_object(int64_t id,bool strict){
   c10::InferenceMode inference;auto found=std::find_if(state_.objects.begin(),state_.objects.end(),[&](const auto& object){return object.id==id;});if(found==state_.objects.end()){TORCH_CHECK(!strict,"unknown object ID");return;}if(state_.objects.size()==1){reset();return;}
+  auto previous=state_;try {
   const auto index=found-state_.objects.begin();auto next=*state_.buckets;next.remove_objects({index});remap(next);state_.objects.erase(state_.objects.begin()+index);classify_inputs();
+  }catch(...){state_=std::move(previous);throw;}
 }
 void Sam31TrackingSession::reset(){state_=MultiplexSessionState{};cancelled_.store(false);}
 }

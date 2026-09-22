@@ -2,12 +2,16 @@
 #include "sam3/tracking_frame.h"
 #include "sam3/multiplex_temporal.h"
 #include "sam3/multiplex_decoder.h"
+#include "sam3/tensor_archive.h"
 namespace sam3 {
 struct MultiplexFrame {
   int64_t index=0;
   VideoMaskOutput masks;
   at::Tensor memory,memory_position,pointer,iou,confidence,image,image_position,input_masks;
   std::vector<int64_t> conditioning_objects;
+  // Missing payload tensors may live in this immutable temporary archive.
+  // Use load_multiplex_frame for inspection; confidence remains resident.
+  std::shared_ptr<const TensorArchive> archive;
 };
 struct MultiplexFrameHistory {std::vector<MultiplexFrame> conditioning,tracked;};
 struct MultiplexFrameRequest {

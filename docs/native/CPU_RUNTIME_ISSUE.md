@@ -31,3 +31,24 @@ this failure. These observations establish output parity for the completed runs,
 not CPU stability. No speculative runtime workaround has been added. Root-cause
 investigation and validation against a redistributable LibTorch build remain
 open; Windows/Turing validation is separately owned by the user.
+
+During lossless history-paging validation, a CPU FP32 native-only session
+comparison also terminated with SIGSEGV (exit 139). The test had printed
+`START fp32 score False`; it had not yet printed a completed comparison. UCX
+again reported a null-address access, without a useful native stack. This
+runner loads `libsam3_native` but does not invoke the original Python model.
+Its first comparison executes the resident policy before the paged policy;
+the failure log alone does not localize which operation failed or establish
+whether paging had begun. No shared-library relinking occurred during the run
+(only the independent standalone update executable was compiled afterward).
+This broadens the observed CPU instability; it does not prove the new archive
+code caused the failure or that it is the same root cause as the earlier
+original-only crash. The failure log is retained with the history-paging
+artifacts. CPU stability remains unverified even when individual comparisons
+and standalone probes pass.
+
+A GDB rerun of the complete native-only history comparison subsequently exited
+normally: two 16-operation CPU FP32 workflows produced 926 exact resident-vs-paged
+tensor comparisons. It did not capture a failing native backtrace or resolve
+the intermittent crash. Standalone CPU session and direct mask-update probes
+also completed, including archive-read rollback and cleanup checks.

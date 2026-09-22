@@ -30,7 +30,11 @@ void save(const std::filesystem::path& root,int64_t operation,int64_t number,con
 }
 int main(int argc,char** argv) {
   try {
+#ifdef SAM3_MULTIPLEX_VIDEO
+    TORCH_CHECK(argc==7 || argc==8,"usage: sam3_multiplex_video STORE DEVICE MODE FRAMES COMMANDS OUTPUT [HISTORY_DIRECTORY]");
+#else
     TORCH_CHECK(argc==7,"usage: tracking video executable STORE cpu|cuda fp32|fp16|bf16_reference FRAMES.txt COMMANDS.txt OUTPUT_DIRECTORY");
+#endif
     at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
     const sam3::WeightStore store(std::filesystem::u8path(argv[1]));const at::Device device(argv[2]);const std::string mode=argv[3];
     const auto manifest=std::filesystem::u8path(argv[4]),commands=std::filesystem::u8path(argv[5]),root=std::filesystem::u8path(argv[6]);
@@ -42,7 +46,7 @@ int main(int argc,char** argv) {
     const auto core=std::make_shared<sam3::Sam31TrackingFrame>(store,device);
     const auto vision=std::make_shared<sam3::VisionEncoder>(store,"sam3.1",device);
     const sam3::Sam31TrackingVision encoder(vision,core,device);int64_t encodes=0,outputs=0;
-    sam3::MultiplexSessionOptions options;options.offload_state=true;
+    sam3::MultiplexSessionOptions options;options.offload_state=true;if(argc==8)options.history_directory=std::filesystem::u8path(argv[7]);
     sam3::Sam31TrackingSession session(core,[&](int64_t index){
 #else
     const auto core=std::make_shared<sam3::Sam3TrackingFrame>(store,device);
@@ -96,7 +100,16 @@ int main(int argc,char** argv) {
 #endif
       }else if(command=="reset")session.reset();
       else TORCH_CHECK(false,"unknown command: ",command);
-      std::cout<<"operation="<<operation++<<" command="<<command<<" outputs="<<number<<" backbone_calls="<<encodes<<'\n';
+      std::cout<<"operation="<<operation++<<" command="<<command<<" outputs="<<number<<" backbone_calls="<<encodes;
+#ifdef SAM3_MULTIPLEX_VIDEO
+      uint64_t resident=0,archived=0;
+      for(const auto* group:{&session.state().history.conditioning,&session.state().history.tracked})for(const auto& frame:*group){
+        for(const auto& value:{frame.memory,frame.memory_position,frame.image,frame.image_position,frame.pointer,frame.masks.low_res_mask,frame.masks.high_res_mask,frame.masks.object_logits,frame.iou})if(value.defined())resident+=value.nbytes();
+        if(frame.archive)archived+=frame.archive->bytes();
+      }
+      std::cout<<" resident_history_bytes="<<resident<<" archived_history_bytes="<<archived;
+#endif
+      std::cout<<'\n';
     }
     std::cout<<"completed frames="<<frames.size()<<" outputs="<<outputs<<" backbone_calls="<<encodes<<" Python=none\n";return 0;
   }catch(const std::exception& error){std::cerr<<error.what()<<'\n';return 1;}

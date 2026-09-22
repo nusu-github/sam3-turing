@@ -1,0 +1,78 @@
+{
+  "cases": [
+    {
+      "mode": "fp16",
+      "case": "points",
+      "exact_files": 32,
+      "seconds": 7.297401733696461,
+      "sampled_peak_host_rss": 1646129152,
+      "max_retained_history_logical_bytes": 0,
+      "max_retained_history_disk_bytes": 53025798
+    },
+    {
+      "mode": "fp16",
+      "case": "masks",
+      "exact_files": 16,
+      "seconds": 7.002732265740633,
+      "sampled_peak_host_rss": 1740320768,
+      "max_retained_history_logical_bytes": 0,
+      "max_retained_history_disk_bytes": 66213904
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "points",
+      "exact_files": 32,
+      "seconds": 7.078423224389553,
+      "sampled_peak_host_rss": 1606569984,
+      "max_retained_history_logical_bytes": 0,
+      "max_retained_history_disk_bytes": 53025798
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "masks",
+      "exact_files": 16,
+      "seconds": 6.917030457407236,
+      "sampled_peak_host_rss": 1639804928,
+      "max_retained_history_logical_bytes": 0,
+      "max_retained_history_disk_bytes": 66213904
+    },
+    {
+      "mode": "fp32",
+      "case": "points",
+      "exact_files": 32,
+      "seconds": 8.253238711506128,
+      "sampled_peak_host_rss": 1548464128,
+      "max_retained_history_logical_bytes": 0,
+      "max_retained_history_disk_bytes": 68975628
+    },
+    {
+      "mode": "fp32",
+      "case": "masks",
+      "exact_files": 16,
+      "seconds": 7.678789284080267,
+      "sampled_peak_host_rss": 1550905344,
+      "max_retained_history_logical_bytes": 0,
+      "max_retained_history_disk_bytes": 82163736
+    },
+    {
+      "mode": "fp16",
+      "case": "long-resident",
+      "frames": 128,
+      "seconds": 22.54781385138631,
+      "sampled_peak_host_rss": 3829436416,
+      "max_retained_history_logical_bytes": 2262434048,
+      "max_retained_history_disk_bytes": 0
+    },
+    {
+      "mode": "fp16",
+      "case": "long-paged",
+      "frames": 128,
+      "seconds": 22.138877077028155,
+      "sampled_peak_host_rss": 1747148800,
+      "max_retained_history_logical_bytes": 0,
+      "max_retained_history_disk_bytes": 2262434048,
+      "exact_files": 516
+    }
+  ],
+  "scope": "Same decoded PPM pixels, native child PATH=/nonexistent. Short outputs compare prior same-mode original-parity fixtures; retention stress repeats three images. Exact byte equality includes masks, logits and metadata. Host RSS sampled via psutil every 20ms; single-run end-to-end timings include loading, disk I/O and allocator effects, not an inference benchmark. History bytes exclude model, active working set, annotation inputs and small selection metadata."
+}

@@ -1,15 +1,16 @@
 #include "sam3/multiplex_session.h"
+#include "sam3/multiplex_storage.h"
 #include <ATen/Context.h>
 #include <ATen/Parallel.h>
 #include <iostream>
 int main(int argc,char** argv){
   try{
-    TORCH_CHECK(argc==4,"usage: sam3_multiplex_session STORE cpu|cuda fp32|fp16|bf16_reference");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
+    TORCH_CHECK(argc==4 || argc==5,"usage: sam3_multiplex_session STORE cpu|cuda fp32|fp16|bf16_reference [HISTORY_DIRECTORY]");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
     const at::Device device(argv[2]);const std::string mode=argv[3];const auto opts=at::TensorOptions().device(device).dtype(at::kFloat);
     const auto core=std::make_shared<sam3::Sam31TrackingFrame>(sam3::WeightStore(std::filesystem::u8path(argv[1])),device);
     int64_t loads=0;bool fail=false;
     const auto provider=[&](int64_t index){TORCH_CHECK(!fail || index!=4,"injected provider failure");++loads;const auto neck=[&]{return sam3::TrackingFeatures{at::randn({1,256,72,72},opts),at::randn({1,256,72,72},opts),{at::randn({1,32,288,288},opts),at::randn({1,64,144,144},opts)}};};return sam3::MultiplexTrackingFeatures{neck(),neck()};};
-    sam3::MultiplexSessionOptions options;options.offload_state=true;options.frame.temporal.memory_slots=3;options.frame.temporal.max_pointer_frames=4;options.frame.temporal.select_by_score=true;
+    sam3::MultiplexSessionOptions options;options.offload_state=true;if(argc==5)options.history_directory=std::filesystem::u8path(argv[4]);options.frame.temporal.memory_slots=3;options.frame.temporal.max_pointer_frames=4;options.frame.temporal.select_by_score=true;
     sam3::Sam31TrackingSession session(core,provider,5,37,53,device,mode,options);
     sam3::TrackingPoints points{at::rand({17,2},opts),at::ones({17},opts.dtype(at::kInt)),{},true};
     auto first=session.add_points(0,101,points);TORCH_CHECK(first.object_ids==std::vector<int64_t>{101},"initial object ID incorrect");
@@ -18,6 +19,20 @@ int main(int argc,char** argv){
     int64_t callbacks=0;const auto emit=[&](const sam3::TrackingSessionOutput& out){++callbacks;TORCH_CHECK(out.masks.sizes()==at::IntArrayRef({int64_t(out.object_ids.size()),1,37,53}) && at::isfinite(out.masks).all().item<bool>(),"invalid session output");return true;};
     sam3::TrackingPropagation request;request.start=0;request.max_steps=2;session.propagate(request,emit);
     sam3::TrackingPoints one{at::tensor({.4f,.6f},opts).reshape({1,2}),at::ones({1},opts.dtype(at::kInt)),{},true};
+    if(!options.history_directory.empty()){
+      const auto snapshot=session.state();const auto source=snapshot.history.tracked.back().archive;TORCH_CHECK(source,"paged history missing archive");
+      const auto path=source->path();auto held=path;held+=".held";std::filesystem::rename(path,held);
+      bool rejected=false;try{session.add_points(4,999,one);}catch(const std::exception&){rejected=true;}
+      bool clear_rejected=false,remove_rejected=false;
+      try{session.clear_input(snapshot.history.tracked.back().index,101);}catch(const std::exception&){clear_rejected=true;}
+      try{session.remove_object(202,true);}catch(const std::exception&){remove_rejected=true;}
+      std::filesystem::rename(held,path);
+      TORCH_CHECK(clear_rejected && remove_rejected && session.state().dirty==snapshot.dirty,"failed clear/removal changed edit state");
+      TORCH_CHECK(rejected && session.object_ids()==std::vector<int64_t>({101,202}) && session.state().history.tracked.back().archive==source,"failed history read committed partial edit");
+      for(size_t i=0;i<snapshot.history.conditioning.size();++i)TORCH_CHECK(session.state().history.conditioning[i].archive==snapshot.history.conditioning[i].archive,"rollback replaced earlier archive");
+      size_t directories=0;for(const auto& entry:std::filesystem::directory_iterator(options.history_directory))if(entry.is_directory())++directories;
+      TORCH_CHECK(directories==snapshot.history.conditioning.size()+snapshot.history.tracked.size(),"failed transaction leaked temporary archives");
+    }
     session.add_points(2,303,one);TORCH_CHECK(session.object_ids()==std::vector<int64_t>({101,202,303}) && session.state().buckets->bucket_count()==2,"midstream insertion failed");
     session.add_points(1,101,one);session.add_points(1,101,points,false);TORCH_CHECK(session.state().objects[0].points.at(1).points.size(1)==18,"refinement dropped points");
     request.start=3;request.max_steps=3;request.reverse=true;session.propagate(request,emit);

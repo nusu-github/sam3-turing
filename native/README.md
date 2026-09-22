@@ -860,3 +860,54 @@ original forced-BF16 fused MLP. The native child runs with `PATH=/nonexistent`.
 This does not yet provide JPEG/MP4 decoding, high-level text tracking or a
 relocatable runtime package. Broad accuracy evaluation and long-video storage
 optimization remain separate work.
+
+### Lossless SAM3.1 history paging
+
+Set `MultiplexSessionOptions::history_directory` to a caller-owned directory to
+page frame payloads to disk. The default empty path keeps the resident policy.
+The standalone video/session probes accept this optional path as their final
+argument. Disk paging does not change precision, object limits, prompts or
+memory selection. It keeps low/high masks, image features, encoded memory,
+positions, pointers and scores available for future edits and reverse tracking.
+
+The tracking core reads only the spatial and pointer streams selected by the
+existing temporal planner. It reads output masks separately. A bucket-layout
+change processes one old frame at a time and writes replacement archives before
+committing the new history. If reading, reconstruction or writing fails, the
+session preserves its prior edit state; completed propagation frames stay
+available. Archives retain tensor dtype and strides, including channels-last
+and expanded tensors, and check each payload's CRC before use.
+
+`sam3/multiplex_storage.h` provides `load_multiplex_frame` for inspection of
+paged state and `load_selected_multiplex_history` for temporal consumers.
+Undefined payload fields in a frame with an archive are **not** evidence that
+its history was discarded. Small selection metadata stays resident. A state
+copy shares immutable archive ownership; replacement/reset deletes old files
+only after the last reference releases them. `TensorArchive` reserves unique
+subdirectories and uses standard C++ filesystem/streams with existing zlib;
+there is no mmap or platform-specific runtime dependency.
+
+These are temporary process-owned caches, not resumable session checkpoints.
+Normal teardown reclaims them; a killed process can leave its cache files for
+the application to clean up. The caller owns the parent directory. Disk usage
+still grows with retained history, and a layout-changing edit temporarily needs
+both old and replacement archives. This trades memory for disk traffic rather
+than compressing the model or dropping inference features.
+
+Paging bounds retained **frame payloads** in RAM; it is not a bound on total
+process memory. The active temporal working set, model, frame cache, allocator
+caches, annotation input masks and small per-frame metadata remain separate.
+SAM3's non-multiplex session does not yet use this backend. Further position
+sharing, annotation paging, bounded I/O caching and performance work remain.
+
+`multiplex_storage_parity.py` compares resident/paged dynamic sessions at zero
+tolerance. `multiplex_storage_video.py` compares real-frame standalone outputs
+and stresses retention by repeating decoded frames. The archive CTest covers
+stride/dtype conservation, independent ownership, CRC/truncation/missing-file
+failures, and loading selected frames while an unselected file is unavailable.
+
+The mask-update probe also accepts a final history directory. In that mode it
+compares resident versus paged append/recondition results, including CPU-staged
+low/high masks, before propagating the updated state. Runtime cache files are
+not model distribution artifacts. Peak process RSS measurements exclude the
+operating system's reclaimable filesystem cache.

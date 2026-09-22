@@ -25,6 +25,9 @@ struct MultiplexSessionOptions {
   bool offload_state=false,non_overlap_output=true,all_edits_conditioning=true;
   bool always_start_at_first_annotation=false;
   int64_t fill_hole_area=0;
+  // Optional lossless disk paging; caller owns the parent directory.
+  // Archives are temporary and live as long as the referencing frame/state.
+  std::filesystem::path history_directory;
 };
 // Dynamic SAM3.1 sessions keep reconstruction inputs for future layout changes.
 // One core and one visual provider can be shared; session state owns no weights.

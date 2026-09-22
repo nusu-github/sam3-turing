@@ -1,4 +1,5 @@
 #include "sam3/multiplex_frame.h"
+#include "sam3/multiplex_storage.h"
 #include "sam3/autocast.h"
 #include "detector_layers.h"
 #include <ATen/TensorIndexing.h>
@@ -16,10 +17,11 @@ MultiplexTemporalState temporal_state(const MultiplexFrameHistory& history) {
 void restore_spatial(MultiplexFrameHistory& history,const MultiplexTemporalState& state) {
   for(const bool cond:{true,false}) {
     auto& frames=cond?history.conditioning:history.tracked;const auto& stored=cond?state.conditioning:state.tracked;
-    for(size_t i=0;i<frames.size();++i) {frames[i].memory=stored[i].features;frames[i].memory_position=stored[i].position;}
+    for(size_t i=0;i<frames.size();++i) if(!frames[i].archive){frames[i].memory=stored[i].features;frames[i].memory_position=stored[i].position;}
   }
 }
 void drop_auxiliary(MultiplexFrame& frame,bool past) {
+  if(frame.archive)frame=load_multiplex_frame(frame);
   frame.masks.low_res_multimasks=at::Tensor();frame.masks.high_res_multimasks=at::Tensor();frame.masks.iou=at::Tensor();frame.masks.object_pointer=at::Tensor();
   frame.iou=at::Tensor();frame.confidence=at::Tensor();
   if(past) {frame.masks.high_res_mask=at::Tensor();frame.memory=at::Tensor();frame.memory_position=at::Tensor();frame.image=at::Tensor();frame.image_position=at::Tensor();}
@@ -57,7 +59,7 @@ MultiplexFrame Sam31TrackingFrame::forward(const TrackingFeatures& interactive,c
   }else {
     if(propagate) {
       TORCH_CHECK(multimask(0),"the shipped SAM3.1 propagation decoder requires multimask output");
-      auto state=temporal_state(history);
+      auto state=temporal_state(load_selected_multiplex_history(history,request.index,request.frame_count,request.reverse,options.temporal));
       const auto image=temporal_.forward(propagation.image.flatten(2).permute({2,0,1}),propagation.position.flatten(2).permute({2,0,1}),72,72,
           request.index,request.frame_count,request.initial,request.reverse,true,state,buckets,options.temporal,mode);
       restore_spatial(history,state);
@@ -116,15 +118,17 @@ std::vector<int64_t> Sam31TrackingFrame::update_masks(const TrackingFeatures& in
     MultiplexFrame& frame,MultiplexState& buckets,const MultiplexMaskUpdate& request,const MultiplexFrameOptions& options,const std::string& mode) const {
   c10::InferenceMode inference;detail::check_mode(mode);
   const auto device=no_memory_.device();AutocastGuard autocast(device.type(),mode!="fp32",mode=="fp16"?at::kHalf:at::kBFloat16);
+  auto updated=load_multiplex_frame(frame);
+  for(auto* value:{&updated.masks.low_res_mask,&updated.masks.high_res_mask,&updated.masks.object_logits,&updated.iou,&updated.input_masks})if(value->defined())*value=value->to(device);
   TORCH_CHECK(buckets.valid() && buckets.width()==16,"SAM3.1 requires valid 16-slot buckets");
   TORCH_CHECK(masks.dim()==4 && masks.size(1)==1 && masks.size(0)==int64_t(indices.size()) && !indices.empty(),"masks must be [objects,1,H,W] with one index per mask");
   TORCH_CHECK(!object_ids || object_ids->size()==indices.size(),"one global ID per mask is required");
-  TORCH_CHECK(frame.masks.low_res_mask.defined() && frame.masks.object_logits.defined(),"current frame masks and object logits are required");
+  TORCH_CHECK(updated.masks.low_res_mask.defined() && updated.masks.object_logits.defined(),"current frame masks and object logits are required");
   TORCH_CHECK(interactive.image.sizes()==at::IntArrayRef({1,256,72,72}) && interactive.image.device()==device && interactive.high.size()==2,"shared interactive image features are required");
-  if(request.encode_memory)TORCH_CHECK(frame.masks.high_res_mask.defined() && propagation.image.defined() && (!options.save_image || (frame.image.defined() && frame.image_position.defined())),"memory update requires high masks and saved image features");
+  if(request.encode_memory)TORCH_CHECK(updated.masks.high_res_mask.defined() && propagation.image.defined() && (!options.save_image || (updated.image.defined() && updated.image_position.defined())),"memory update requires high masks and saved image features");
   // Stage changes so a failed capacity/shape/encoding check leaves caller state intact.
-  auto updated=frame;auto state=buckets;auto affected=indices;
-  at::Tensor pointers;if(options.temporal.use_pointers)pointers=buckets.demux(frame.pointer);
+  auto state=buckets;auto affected=indices;
+  at::Tensor pointers;if(options.temporal.use_pointers)pointers=buckets.demux(updated.pointer);
   if(request.append){affected=state.next_indices(indices.size(),request.allow_new_buckets,request.prefer_new_buckets);state.add_objects(affected,object_ids,request.allow_new_buckets,request.prefer_new_buckets);}
   else for(auto index:indices)TORCH_CHECK(index>=0 && index<state.object_count(),"reconditioning object index out of range");
   const auto sequence=interactive.image.flatten(2).permute({2,0,1})+no_memory_;
@@ -154,9 +158,10 @@ std::vector<int64_t> Sam31TrackingFrame::update_masks(const TrackingFeatures& in
   }
   frame=std::move(updated);buckets=std::move(state);return affected;
 }
-MaskMemoryOutput Sam31TrackingFrame::encode_history(const MultiplexFrame& frame,const MultiplexState& buckets,
+MaskMemoryOutput Sam31TrackingFrame::encode_history(const MultiplexFrame& stored,const MultiplexState& buckets,
     const MultiplexFrameOptions& options,const std::string& mode) const {
   c10::InferenceMode inference;detail::check_mode(mode);const auto device=no_memory_.device();
+  const auto frame=load_multiplex_frame(stored,history_masks|history_spatial);
   TORCH_CHECK(frame.image.defined() && frame.image.sizes()==at::IntArrayRef({5184,1,256}) && frame.masks.high_res_mask.defined(),"history rebuild requires retained shared image features and full-resolution masks");
   TORCH_CHECK(frame.masks.high_res_mask.size(0)==buckets.object_count(),"history masks must match the destination objects");
   const auto pixels=frame.image.to(device).permute({1,2,0}).view({1,256,72,72});
