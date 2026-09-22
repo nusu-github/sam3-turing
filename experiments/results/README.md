@@ -1,5 +1,9 @@
 # All image candidates
 
+These are historical RTX 3090 development measurements. For the separately
+validated Windows / RTX 2060 Max-Q 6 GB environment, see the
+[local validation report](local_rtx2060/README.md).
+
 Latency is truck.jpg + truck; output differences cover the listed number of cases.
 
 | Candidate | ms | CUDA allocated GiB | NVML GiB | Cases | Masks | Mean mask IoU vs stock | Changed pixels |

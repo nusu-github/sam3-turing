@@ -1,132 +1,35 @@
-# SAM3-Turing 画像パッチ
+# SAM3-Turing image patch
 
-通常の画像推論には `apply_turing_patch(processor, compile=True)` を使う。
-起動の軽さを優先する場合は `compile=False`、追加のカーネル探索には
-`compile="max-autotune"` も選べる。元のモデルファイルを編集せず、実行時に適用する。
+Runtime optimizations for single-image SAM 3 inference on CUDA GPUs with limited
+VRAM. Start with `apply_turing_patch(processor, compile=False)` for a short startup.
+Use `compile=True` for repeated inference, or `compile="max-autotune"` to explore
+additional kernel choices. The patch leaves the checkpoint and upstream model
+files unchanged, but modifies the loaded model and processor in place.
 
-## RTX 3090での結果
+## Validated hardware and scope
 
-![採用構成の比較](images/accepted_image_benchmarks.png)
+Developed on an RTX 3090 and subsequently tested on an **RTX 2060 Max-Q with
+6 GB VRAM**, on Windows using a uv virtual environment. The
+[RTX 2060 report](../experiments/results/local_rtx2060/README.md) includes setup,
+FP16 and INT8 results, compilation costs, and the observed FP16-reference OOM.
+Eager FP16 reduced peak inference allocation from 4.992 to 1.997 GiB and median
+latency from 3.752 to 1.585 seconds in that test.
 
-このRunPodコンテナの既存Python / NVIDIA PyTorch 2.10.0a0 / CUDA 13.0で測定した。
-専用の仮想環境は使用していない。Turing 6GB実機は未検証。
-6GBでもRTX 2060とGTX 1660系は構成が異なり、GTX 16系にはTensor Coreがない。
-[NVIDIA公式比較表](https://www.nvidia.com/en-eu/geforce/graphics-cards/compare/)を参照。
-FP16・INT8・コンパイルの効果は各GPUで個別に比較する。
+Do not extrapolate these results to every 6 GB GPU. Benchmark FP16, INT8, and
+compilation on the target hardware. INT4, packed-mask stress tests, and video
+results below were measured on the RTX 3090, not the local RTX 2060.
 
-| 構成 | 1画像 ms | PyTorch allocated GiB | GPU全体 NVML GiB | マスク平均IoU（素の状態比） |
-|---|---:|---:|---:|---:|
-| 素の状態・BF16 | 210.81 | 4.994 | 6.017 | 1.0 |
-| 採用FP16・コンパイルなし（Round 10） | 169.77 | 1.997 | 3.144 | 0.99917 |
-| 採用FP16・コンパイルあり | **114.31** | **1.862** | **3.095** | **0.99921** |
-| FP16・新規語句を毎回処理 | 116.32 | 1.862 | 3.095 | 0.99920 |
-| 重みのみINT8・MLP＋Attention射影 | 117.29 | 1.456 | 2.862 | 0.99876 |
-| 4bit Gaussian group 32＋CPUテキスト・画像追加パッチ | 116.36 | 0.590 | 2.403 | 0.99329 |
-| 4bit 非対称 group 16＋CPUテキスト・画像追加パッチ | 116.75 | 0.668 | 2.229 | 0.99448 |
-| 画像MLPのINT8＋コンパイル | **92.26** | **1.625** | **3.099** | **0.99740** |
-| INT8＋Attention射影＋GELU融合 | **85.46** | **1.455** | **2.872** | **0.99742** |
-| 非対称INT8・MLP＋GELU融合 | **89.47** | **1.628** | **3.190** | **0.99848** |
-| 非対称INT8＋Attention射影＋GELU融合 | 85.01 | 1.456 | 2.851 | 0.99805 |
-| 同＋重みスケール調整 | 86.91 | 1.456 | 2.851 | 0.99807 |
-| 同＋重み調整＋CPUテキスト・cacheあり | **86.30** | **0.793** | **2.368** | **0.99806** |
-| 同＋CPUテキストMLPもINT8・cacheあり | 84.79 | 0.793 | 2.368 | 0.99779 |
-| 同＋CPUテキストMLPもINT8・新規語句を毎回処理 | **100.80** | **0.793** | **2.345** | **0.99779** |
-| 画像追加パッチ＋CPU FP32・padding省略・新規語句 | **85.37** | **0.782** | **2.573** | **0.99800** |
-| 同・CPUテキストMLPもINT8 | **84.38** | **0.782** | **2.321** | **0.99774** |
-| CPUテキスト＋FP16・語句cacheあり | 113.39 | 1.202 | 2.370 | 0.99919 |
-| CPUテキスト＋INT8・射影・GELU融合・cacheあり | **84.94** | **0.793** | **2.333** | **0.99742** |
-| CPUテキスト＋INT8・新規語句を毎回処理 | 187.33 | 0.793 | 2.333 | 0.99742 |
-| 固定語句＋FP16 | 114.52 | 1.256 | 2.411 | 0.99921 |
-| 固定語句＋INT8・射影・GELU融合 | **84.18** | **0.850** | **2.401** | **0.99742** |
-| 画像・テキストINT8＋融合・新規語句を毎回処理 | 87.64 | 1.265 | 2.849 | 0.99745 |
+The image patch supports batch size 1, inference only, text and geometric box
+prompts, confidence-threshold changes, and empty outputs. Training, SAM 1-style
+instance interaction, and SAM 3.1 video are outside its scope. Apply it once per
+model/processor pair; rebuild the model to undo it. Moving a patched model to
+another device is unsupported.
 
-FP16コンパイル版は、素の状態から時間を約46%、GPU全体の使用量を約49%削減した。
-初回の採用版153.53ms、前回121.30msから、検出処理の一括コンパイルでさらに短縮した。
-同じ語句ではテキスト特徴を再利用する。INT8＋射影＋GELU融合の時間削減は約59%。
-INT8は追加学習なしの任意パッチで、速度・メモリと出力差の交換条件を選べる。
+## Basic usage
 
-表の通常FP16・MLPのINT8・素の状態はRound 14、GELU融合・語句の追加比較はRound 18。
-非対称INT8の2行はRound 32、重みのみINT8はRound 34、CPUテキストはRound 42の公開API測定。
-重みスケール調整とCPU併用の2行はRound 44。
-4bitの2行はRound 67の公開API測定で、CPUテキストpadding省略・画像追加パッチを併用した。
-コンパイルなしは変更のない経路のRound 10値。
-GPUで新規語句を毎回処理する行は `text_cache_size=0, compile_text=True`。
-CPUテキストは `compile_text=False`、AMD EPYC 7763を4スレッドで使った。
-CPU uncachedは試作146.64ms・公開版187.33msと変動した。公開版9回は147〜211ms。
-CPU時間を含むため、語句が毎回変わる用途ではこの待ち時間も選択基準になる。
-GELU融合なしでAttention射影だけを追加した公開版は90.19ms・NVML 2.854GiBだった。
-
-速度は `truck.jpg` + `truck` の `set_image` + `set_text_prompt` 全体。
-前処理とGPU転送を含み、画像ファイルの読込み・モデル構築は含めない。
-2回ウォームアップ後、9回の中央値。TF32は全構成でOFF。
-NVMLは5ms間隔のGPU全体の標本最大値。メモリはパッチ適用後の推論時の最大値で、
-モデル構築時は各JSONの `build_allocated_bytes` に別途記録した。
-
-結果差は3画像・5条件（truck、paper bag、child、wheel、空のelephant）で比較した。
-検出数は素の状態・採用FP16・INT8とも **1 / 4 / 6 / 4 / 0**。
-FP16のマスク差は **285 / 18,038,400画素（0.00158%）**、
-score最大差 **0.00391**、box最大差 **0.49画素**。
-INT8は **836画素（0.00463%）**、score最大差 **0.01367**、box最大差 **0.66画素**。
-GELU融合＋Attention射影のINT8では **916画素（0.00508%）**、score最大差 **0.00781**、
-box最大差 **0.49画素**。検出数は同じ。
-非対称INT8のMLP版は **544画素（0.00302%）**、score最大差 **0.00586**、box最大差 **0.47画素**。
-Attention射影もINT8にする非対称版は **735画素（0.00407%）**、score最大差 **0.01172**、
-box最大差 **1.44画素**だった。マスク差が減る一方、box差は構成によって増える。
-重みのみINT8・射影込みは **389画素（0.00216%）**、score最大差 **0.00537**、
-box最大差 **0.51画素**だった。これらも検出数は同じ。
-CPUテキストのFP16画像版は289画素、INT8画像版は915画素変化し、検出数は同じだった。
-後者のscore最大差0.00830、box最大差0.51画素。
-非対称INT8＋重み調整は697画素・score最大差0.00391・box最大差0.57画素。
-CPUテキストも組み合わせると698画素となり、検出数は両方とも同じだった。
-CPUのテキストMLPもINT8にした場合は922画素・score最大差0.02051・box最大差0.52画素。
-キャッシュあり・なしとも全5条件の比較値は同じで、検出数も一致した。
-boxの対応付け後にマスクを比較した。正解ラベルに対する精度評価ではない。
-
-コンパイルの初回推論は、今回のキャッシュ状態でFP16が約20.5秒、MLPのINT8が約22.3秒だった。
-Round 13で新しい検出Graphをコンパイルした際は約48秒かかった。キャッシュ状況で変わる。
-新しいINT8＋GELU融合Graphは約55〜57秒、同系統のキャッシュを使った固定語句版は約21秒だった。
-非対称INT8の公開版はMLPのみ約63秒、Attention射影込み約37秒だった。
-重みのみINT8の公開版は、今回のキャッシュ状態で約23秒だった。
-CPUテキスト版も約21〜23秒だった。重み調整の公開版は約24秒だった。
-
-FlashAttentionを使わずefficient Attentionに固定した3090上の更新版は、
-FP16が118.83ms・NVML 3.081GiB、INT8＋射影＋GELU融合が90.93ms・2.892GiBだった。
-検出数は同じで、後者の平均mask IoUは0.997066。
-これはAttention経路の確認であり、Turing実機の速度測定ではない。
-画像追加パッチ＋CPUテキストpadding省略を併用した更新比較では、INT8画像＋CPU FP32が
-90.60ms・allocated 0.783GiB・NVML 2.549GiB・IoU 0.998116だった。
-CPUテキストもINT8にすると90.01ms・allocated 0.782GiB・NVML 2.351GiB・IoU 0.997886。
-検出数は両方1/4/6/4/0。新規語句を毎回処理し、CPU側のAttention backendは変更していない。
-[追加パッチのefficient比較](../experiments/round58.json)
-
-公開モジュール内の7種類のTriton kernelは、Triton 3.5.0でsm75向けのオフラインcompileに通過した。
-実験用の独自INT8 GEMMはsm75のloweringで失敗したため、公開パッチには採用していない。
-公開INT8の行列積は引き続き`torch._int_mm`を使用する。この確認もTuring実機の動作・速度の確認ではない。
-[compile結果](../experiments/results/sm75_compile_check.json)
-
-[全候補の表](../experiments/results/README.md) / [CSV](../experiments/results/summary.csv) /
-[採用FP16 JSON](../experiments/results/r14_fp16_control.json) /
-[採用INT8 JSON](../experiments/results/r14_int8_control.json) /
-[INT8・射影・GELU融合JSON](../experiments/results/accepted_fused_attention.json) /
-[固定語句INT8 JSON](../experiments/results/compact_fixed_all_int8.json) /
-[非対称INT8・MLP JSON](../experiments/results/accepted_asymmetric_mlp.json) /
-[非対称INT8・射影 JSON](../experiments/results/accepted_asymmetric_attention.json) /
-[重みのみINT8 JSON](../experiments/results/accepted_weight_only_attention.json) /
-[CPUテキスト＋FP16 JSON](../experiments/results/accepted_cpu_text_fp16.json) /
-[CPUテキスト＋INT8 JSON](../experiments/results/accepted_cpu_text_int8.json) /
-[CPUテキストuncached JSON](../experiments/results/accepted_cpu_text_int8_uncached.json) /
-[重み調整＋非対称INT8 JSON](../experiments/results/accepted_optimized_asymmetric.json) /
-[同＋CPUテキスト JSON](../experiments/results/accepted_optimized_asymmetric_cpu.json) /
-[CPU動的INT8・cacheあり JSON](../experiments/results/accepted_cpu_dynamic_text.json) /
-[CPU動的INT8・cacheなし JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json)
-
-今回の探索は2026-09-21に終了。完了済みラウンドの比較は376候補・384試行
-（再測定と失敗を含む）で、有効な画像測定373件を表に保存した。
-最後のRound 43ではINT8重みのbias補正を比較したが、採用済みの非対称INT8＋重み調整では
-変化画素が697→769と増えたため、公開パッチへの追加は見送った。
-候補と不採用の理由は [探索メモ](../experiments/NOTES.md) に残した。未実行の候補設定は測定結果に含めない。
-
-## 使い方
+Install dependencies and obtain access to the official SAM 3 checkpoint first.
+See the [tested Windows uv setup](../experiments/results/local_rtx2060/README.md#reproduce)
+or the upstream installation instructions in the repository README.
 
 ```python
 import torch
@@ -135,94 +38,266 @@ from sam3.model_builder import build_sam3_image_model
 from sam3.model.sam3_image_processor import Sam3Processor
 from sam3.turing import apply_turing_patch
 
-# このNGCコンテナではCPU初期化を1スレッドにすると安定する。
+# One initialization thread avoided CPU initialization crashes in the NGC tests.
 torch.set_num_threads(1)
-model = build_sam3_image_model()  # checkpoint_path=... も指定可能
+model = build_sam3_image_model()  # Or provide checkpoint_path="path/to/sam3.pt".
 torch.set_num_threads(4)
-processor = apply_turing_patch(Sam3Processor(model), compile=True)
+processor = apply_turing_patch(Sam3Processor(model), compile=False)
 
 state = processor.set_image(Image.open("assets/images/truck.jpg").convert("RGB"))
 result = processor.set_text_prompt(prompt="truck", state=state)
 masks, boxes, scores = result["masks"], result["boxes"], result["scores"]
 ```
 
-画像・batch 1・推論専用。テキストと幾何box prompt、しきい値変更、空出力に対応する。
-SAM 1形式のインスタンス操作・学習・SAM 3.1動画への適用は対象外。
-パッチはモデル/processorの組に1回適用する。解除する場合はモデルを作り直す。
+The LRU cache holds up to 16 text prompts by default. Set `text_cache_size=0` to
+disable it. For changing GPU prompts, `compile_text=True` also compiles the text
+Transformer, excluding string processing; this increases startup cost.
 
-語句キャッシュは最大16件。`text_cache_size=0` で無効化できる。
-毎回新しい語句を処理する場合は `compile_text=True` を追加すると、文字列処理を除いた
-テキストTransformerもコンパイルする。初回のコンパイル時間は増える。
-固定語句だけを使う用途では、次を追加してテキストエンコーダの重みを解放できる。
-この用途では `compile_text` を省き、最初の画像推論の前に固定語句を登録する。
+### CPU text encoding
 
-```python
-from sam3.turing import freeze_text_prompts
-freeze_text_prompts(processor, ["truck", "wheel", "person", "visual"])
-```
-
-その後は未登録の語句がエラーになる。幾何boxだけの指定には `visual` を含める。
-
-自由な語句を使いながらVRAMを減らす場合は、最初の画像推論の前にテキストエンコーダーを
-CPUへ移せる。`compile_text=False`（既定）で作成し、次を追加する。
+For lower VRAM use with arbitrary prompts, keep `compile_text=False` (the default)
+and offload before the first image inference:
 
 ```python
 from sam3.turing import offload_text_encoder
 
-offload_text_encoder(processor)
-```
-
-語句はCPUのFP32で処理し、特徴だけGPUへ戻す。同じ語句は既存のLRUキャッシュから再利用する。
-新規語句を処理するときの時間は増える。画像側のINT8やpacked masksと組み合わせられるが、
-テキスト側のINT8（`text=True`）と`compile_text=True`には併用しない。
-固定語句への制限はなく、幾何box用の`visual`も必要になった時点で処理する。
-CPU側には約1.32GiBのテキスト重みを保持する。画像状態の再利用・box・packed出力・
-固定語句への切替も[API確認](../experiments/results/api_smoke_cpu_text.json)で通過した。
-
-CPUテキストで短い語句を使う場合は、EOS以降のpadding計算を省ける。
-GPUへ渡す前に元のtoken数へ戻すため、後段のTensor形状は維持する。
-
-```python
 offload_text_encoder(processor, trim_padding=True)
 ```
 
-因果Attentionのある標準テキストエンコーダーが対象。CPU演算の形状が変わるため、
-小さい丸め差は発生する。語句が長くpaddingが少ない場合は短縮も小さくなる。
+Text runs in CPU FP32 and only its features move to the GPU. Repeated prompts
+reuse the LRU cache; new prompts incur CPU latency. The geometric prompt token
+`visual` is encoded when needed. CPU text is compatible with image INT8 and
+packed masks, but not GPU text INT8 (`text=True`) or `compile_text=True`.
+FP32 text weights occupy approximately 1.32 GiB on the CPU.
 
-公開版の新規語句測定はFP32で87.48ms・698画素変化、INT8併用で87.64ms・904画素変化。
-どちらも5条件の検出数は1/4/6/4/0で、試作版と比較指標が一致した。
-[FP32測定](../experiments/results/accepted_cpu_trimmed_text_fp32.json) /
-[INT8測定](../experiments/results/accepted_cpu_trimmed_text_int8.json)
+`trim_padding=True` skips tokens after EOS in the standard causal text encoder,
+then restores the original token count before passing features downstream.
+Changed CPU operation shapes can introduce small rounding differences. Longer
+prompts with less padding offer less opportunity to save work.
 
-新規語句の待ち時間とCPUの重み容量を減らす場合は、CPUテキストMLPも動的INT8にできる。
-既定のCPU FP32と出力が変わるため、明示的な追加設定にしている。
+For optional CPU weight and latency savings, dynamically quantize the text MLPs:
 
 ```python
-offload_text_encoder(processor, int8_mlp=True)
+# Use this instead of the preceding offload call, not in addition to it.
+offload_text_encoder(processor, int8_mlp=True, trim_padding=True)
 ```
 
-48個のテキストMLP LinearだけをCPUのper-tensor動的INT8へ変換する。
-Attention・単語埋め込み・resizerはCPU FP32。`apply_int8_patch(..., text=True)`による
-GPUテキストINT8とは別の設定で、両者は併用しない。語句cacheと固定語句への切替は維持する。
-速度はCPUとスレッド数にも依存する。このコンテナではAMD EPYC 7763・4スレッド・
-PyTorchのx86量子化backendを使用した。
-別比較では、padding省略なしのCPU INT8が4スレッド105.17ms、8スレッド87.90msだった。
-初期化後の`torch.set_num_threads(8)`もこのCPUでは選択肢になる。
-パッチ自体はCPUスレッド数を変更しない。[スレッド数比較](../experiments/round50.json)
+Only the 48 text MLP Linear layers use per-tensor dynamic INT8. Attention,
+embeddings, and the resizer stay CPU FP32. This differs from GPU text quantization
+with `apply_int8_patch(..., text=True)`. Caching and later prompt freezing remain
+supported. CPU thread count affects latency; set it after model initialization.
+The patch does not change thread counts.
 
-公開版は語句cacheあり84.79ms、cacheなし100.80ms。直前の同じ画像側構成の
-CPU FP32・cacheなし155.84msから約35%短縮した。CPUの通常parameterと量子化重み/biasの
-合計は約1.32GiB→0.76GiBになった。プロセスRSSを表す値ではない。
-検出数は1/4/6/4/0、平均mask IoU 0.997790、922画素が変化した。
-[公開版JSON](../experiments/results/accepted_cpu_dynamic_text_uncached.json) /
-[FP32との比較](../experiments/round48.json) /
-[画像状態・box・固定語句・packed maskの確認](../experiments/results/api_smoke_cpu_dynamic_text.json)
+On the RTX 3090 / EPYC 7763 system, public CPU INT8 measured 84.79 ms with cached
+text and 100.80 ms without caching. The preceding FP32 uncached control took
+155.84 ms. CPU parameter plus quantized weight/bias storage fell from about
+1.32 to 0.76 GiB; these are not process RSS measurements. Counts stayed 1/4/6/4/0,
+with mean mask IoU 0.997790 and 922 changed pixels versus stock.
+[CPU INT8 results](../experiments/results/accepted_cpu_dynamic_text_uncached.json) /
+[FP32 comparison](../experiments/round48.json).
 
-速度優先で解像度を下げる場合は、最初のprocessor作成時に指定する。パッチがRoPEも調整する。
-標準値は1008を維持し、縮小はマスク形状との交換条件として選ぶ。
-Round 30で同じINT8＋Attention射影＋GELU融合を比べた結果は次の通り。
+The EPYC tests used four threads and PyTorch's x86 quantization backend. A
+separate untrimmed INT8 comparison took 105.17 ms at four threads and 87.90 ms at
+eight. [Thread comparison](../experiments/round50.json).
+Trimmed uncached CPU text measured 87.48 ms / 698 changed pixels with FP32 and
+87.64 ms / 904 changed pixels with INT8; counts matched.
+[FP32](../experiments/results/accepted_cpu_trimmed_text_fp32.json) /
+[INT8](../experiments/results/accepted_cpu_trimmed_text_int8.json).
 
-| 入力解像度 | ms | GPU全体 NVML GiB | 平均mask IoU | 最小mask IoU | box最大差 px |
+### Fixed prompt vocabulary
+
+If all prompts are known, precompute their features and release the text encoder.
+Omit `compile_text` and register prompts before inference:
+
+```python
+from sam3.turing import freeze_text_prompts
+
+freeze_text_prompts(processor, ["truck", "wheel", "person", "visual"])
+```
+
+Unregistered prompts then raise an error. Include `visual` for geometric-only
+box prompts. CPU offload, unlike freezing, retains arbitrary prompts.
+
+## Optional INT8
+
+Apply after the base patch and before inference. No retraining is required.
+INT8 introduces additional output differences, so it is an explicit option.
+
+```python
+from sam3.turing_int8 import apply_int8_patch
+
+apply_int8_patch(processor, attention_projections=True, fused_mlp=True)
+```
+
+- `vision=True` (default) quantizes ViT MLPs. `attention_projections=True` also
+  quantizes QKV and output projections. Attention itself receives FP16 Q/K/V.
+- Weights use per-output-channel scales; activations use per-token scales.
+  `torch._int_mm` performs integer matrix multiplication with INT32 accumulation
+  and the layer returns FP16. Original floating-point weights are released.
+- `fused_mlp=True` combines dequantization, ordinary GELU, and requantization in
+  an eight-warp Triton kernel, preserving FP16 intermediate rounding. The default
+  `False` runs these operations separately.
+- `text=True` also targets GPU text MLPs. `vision=False, text=True` selects only
+  text MLPs. GPU text INT8 cannot be combined with CPU text offload.
+- `asymmetric_gelu=True` requires `fused_mlp=True`. It uses a per-token zero point
+  after GELU and corrects the INT32 product using weight row sums. Its four-warp
+  kernel offers a different numerical tradeoff.
+
+The RTX 2060 test used image INT8, attention projections, fused MLP, and CPU FP32
+text with padding trimmed. It did not quantize CPU text. Against FP16 with the
+same CPU-text option, latency fell from 1.589 to 1.365 s and allocation from
+1.336 to 0.926 GiB. This measures INT8 and fusion together, not their individual
+contributions.
+
+`optimize_weight_scales=True` searches scales once during initialization to reduce
+weight reconstruction squared error. It adds no inference operations and needs
+no image calibration, but downstream agreement can improve or worsen. For
+asymmetric GELU plus projections on the RTX 3090, changed pixels fell from 735
+to 697, score error from 0.01172 to 0.00391, and box error from 1.44 to 0.57 px.
+The adjacent latency comparison was 85.67 versus 86.91 ms. Improvements were not
+consistent for symmetric or weight-only variants; the default is off.
+
+```python
+apply_int8_patch(
+    processor,
+    attention_projections=True,
+    fused_mlp=True,
+    asymmetric_gelu=True,
+    optimize_weight_scales=True,
+)
+# Optional VRAM saving with arbitrary prompts; compile_text must be False.
+offload_text_encoder(processor)
+```
+
+This CPU-offloaded RTX 3090 configuration measured 86.30 ms, 0.793 GiB allocated,
+2.368 GiB NVML, and mean IoU 0.998065. Repeated prompts hit the text cache.
+
+### INT8 storage with FP16 computation
+
+`weight_only=True` reconstructs INT8 weights as FP16 for each layer and uses a
+normal FP16 linear operation. It does not quantize activations and cannot be
+combined with `fused_mlp` or `asymmetric_gelu`.
+
+```python
+apply_int8_patch(processor, attention_projections=True, weight_only=True)
+```
+
+On the RTX 3090 this took 117.29 ms, 1.456 GiB allocated, 2.862 GiB NVML, and mean
+mask IoU 0.998763. MLP-only storage took 115.57 ms, 1.574 GiB allocated,
+3.030 GiB NVML, mean IoU 0.999030, and 343 changed pixels. This saves weight memory
+at roughly FP16 speed. `apply_int8_mlp_patch` remains a compatibility entry point.
+Rebuild the model to undo quantization; do not quantize the same layers twice.
+
+## RTX 3090 measurements
+
+![Accepted image configurations](images/accepted_image_benchmarks.png)
+
+These results used an existing RunPod container with NVIDIA PyTorch 2.10.0a0 and
+CUDA 13.0, without a separate virtual environment. They are distinct from the
+Windows RTX 2060 results linked above.
+
+| Configuration | ms/image | PyTorch allocated GiB | Whole-device NVML GiB | Mean mask IoU vs stock |
+|---|---:|---:|---:|---:|
+| Stock BF16 | 210.81 | 4.994 | 6.017 | 1.0 |
+| Patched FP16, eager (Round 10) | 169.77 | 1.997 | 3.144 | 0.99917 |
+| Patched FP16, compiled | **114.31** | **1.862** | **3.095** | **0.99921** |
+| FP16, uncached text | 116.32 | 1.862 | 3.095 | 0.99920 |
+| Weight-only INT8, MLP + attention projections | 117.29 | 1.456 | 2.862 | 0.99876 |
+| INT4 Gaussian group 32 + CPU text + image refinements | 116.36 | 0.590 | 2.403 | 0.99329 |
+| INT4 asymmetric group 16 + CPU text + image refinements | 116.75 | 0.668 | 2.229 | 0.99448 |
+| Vision MLP INT8 + compilation | **92.26** | **1.625** | **3.099** | **0.99740** |
+| INT8 + projections + fused GELU | **85.46** | **1.455** | **2.872** | **0.99742** |
+| Asymmetric INT8 MLP + fused GELU | **89.47** | **1.628** | **3.190** | **0.99848** |
+| Asymmetric INT8 + projections + fused GELU | 85.01 | 1.456 | 2.851 | 0.99805 |
+| Same + weight-scale tuning | 86.91 | 1.456 | 2.851 | 0.99807 |
+| Same + tuned weights + CPU text, cached | **86.30** | **0.793** | **2.368** | **0.99806** |
+| Same + CPU text MLP INT8, cached | 84.79 | 0.793 | 2.368 | 0.99779 |
+| Same + CPU text MLP INT8, uncached | **100.80** | **0.793** | **2.345** | **0.99779** |
+| Image refinements + CPU FP32, trimmed padding, uncached | **85.37** | **0.782** | **2.573** | **0.99800** |
+| Same + CPU text MLP INT8 | **84.38** | **0.782** | **2.321** | **0.99774** |
+| CPU text + FP16, cached | 113.39 | 1.202 | 2.370 | 0.99919 |
+| CPU text + INT8 + projections + fused GELU, cached | **84.94** | **0.793** | **2.333** | **0.99742** |
+| CPU text + INT8, uncached | 187.33 | 0.793 | 2.333 | 0.99742 |
+| Fixed prompts + FP16 | 114.52 | 1.256 | 2.411 | 0.99921 |
+| Fixed prompts + INT8 + projections + fused GELU | **84.18** | **0.850** | **2.401** | **0.99742** |
+| Vision + text INT8, fused, uncached | 87.64 | 1.265 | 2.849 | 0.99745 |
+
+Compiled FP16 reduced latency by about 46% and whole-device memory by about 49%
+versus stock. Compiling grounding as a unit improved earlier timings of 153.53
+and 121.30 ms. INT8 with projections and fused GELU reduced latency by about 59%.
+
+### Method and provenance
+
+Latency covers `set_image` + `set_text_prompt` on `truck.jpg` / `truck`, including
+preprocessing and transfer but excluding file reads and model construction.
+The table uses two warmups and the median of nine repetitions, with TF32 off.
+NVML samples whole-device usage every 5 ms. Memory peaks cover inference after
+patching; `build_allocated_bytes` separately records model construction.
+
+Stock, FP16, and MLP INT8 are from Round 14; fusion and prompt variants from
+Round 18; asymmetric INT8 from Round 32; weight-only INT8 from Round 34; public
+CPU-text APIs from Round 42; tuned weights and CPU text from Round 44; and public
+INT4 with trimmed CPU text and refinements from Round 67. Eager FP16 uses the
+unchanged Round 10 measurement.
+
+GPU uncached-text rows use `text_cache_size=0, compile_text=True`. CPU text uses
+`compile_text=False` on an AMD EPYC 7763 with four threads. The untrimmed CPU
+uncached prototype measured 146.64 ms, versus 187.33 ms for the public version;
+the nine public repetitions ranged from 147 to 211 ms. Prompt workload and CPU
+latency therefore matter. Projections without GELU fusion took 90.19 ms and
+2.854 GiB NVML.
+
+Output comparisons cover three images and five conditions: truck, paper bag,
+child, wheel, and an empty elephant query. Accepted configurations preserved
+counts **1 / 4 / 6 / 4 / 0**. Masks are compared after box matching; this measures
+agreement with stock, not ground-truth accuracy.
+
+| Configuration | Changed pixels / 18,038,400 | Maximum score difference | Maximum box difference, px |
+|---|---:|---:|---:|
+| Compiled FP16 | 285 | 0.00391 | 0.49 |
+| MLP INT8 | 836 | 0.01367 | 0.66 |
+| INT8 + projections + fused GELU | 916 | 0.00781 | 0.49 |
+| Asymmetric MLP INT8 | 544 | 0.00586 | 0.47 |
+| Asymmetric INT8 + projections | 735 | 0.01172 | 1.44 |
+| Weight-only INT8 + projections | 389 | 0.00537 | 0.51 |
+| CPU text + image INT8 | 915 | 0.00830 | 0.51 |
+| Asymmetric INT8 + tuned weights | 697 | 0.00391 | 0.57 |
+| Same + CPU text MLP INT8 | 922 | 0.02051 | 0.52 |
+
+CPU text with FP16 images changed 289 pixels; tuned asymmetric INT8 with CPU
+text changed 698. Cached and uncached CPU INT8 had the same five-case comparison
+values. Fewer mask differences do not necessarily imply smaller box differences.
+
+First-call compilation depends on cache state: about 20.5 s for FP16 and 22.3 s
+for MLP INT8 in the reported run; a new grounding graph took about 48 s in
+Round 13. New fused INT8 graphs took 55–57 s, while related cached fixed-prompt
+graphs took about 21 s. Asymmetric INT8 took about 63 s for MLP only and 37 s
+with projections; weight-only INT8 took 23 s, CPU text 21–23 s, and tuned weights
+24 s. The RTX 2060's 138 s first compiled inference is a separate measurement.
+
+### Efficient attention and SM75 checks
+
+Forcing efficient CUDA attention on the RTX 3090 without FlashAttention gave
+118.83 ms / 3.081 GiB NVML for FP16 and 90.93 ms / 2.892 GiB for fused INT8 with
+projections. Counts matched; the latter had mean IoU 0.997066. With refinements
+and trimmed uncached CPU text, image INT8 + CPU FP32 measured 90.60 ms,
+0.783 GiB allocated, 2.549 GiB NVML, and IoU 0.998116. CPU text INT8 measured
+90.01 ms, 0.782 GiB, 2.351 GiB, and IoU 0.997886. CPU attention was unchanged.
+[Comparison](../experiments/round58.json).
+
+Seven public Triton kernels passed offline SM75 compilation with Triton 3.5.0.
+An experimental custom INT8 GEMM failed lowering and was not adopted; the public
+patch uses `torch._int_mm`. Offline compilation alone is not runtime validation;
+the later RTX 2060 report provides actual device measurements for its tested
+configurations. [Compile results](../experiments/results/sm75_compile_check.json).
+
+## Lower input resolutions
+
+Set resolution when creating the processor; the patch also adjusts RoPE. Keep
+the default 1008 for closer agreement. Round 30 compared the same INT8 +
+projections + fused GELU configuration:
+
+| Input resolution | ms | Whole-device NVML GiB | Mean mask IoU | Minimum mask IoU | Maximum box difference, px |
 |---|---:|---:|---:|---:|---:|
 | 1008 | 86.78 | 3.026 | 0.99742 | 0.99319 | 0.49 |
 | 896 | 76.04 | 2.712 | 0.97389 | 0.89985 | 4.32 |
@@ -231,25 +306,23 @@ Round 30で同じINT8＋Attention射影＋GELU融合を比べた結果は次の�
 | 672 | 40.68 | 2.854 | 0.95396 | 0.78244 | 17.62 |
 | 560 | 35.23 | 2.577 | 0.93205 | 0.61447 | 26.19 |
 
-全設定で5条件の検出数は1/4/6/4/0。allocatedは1.298〜1.455GiBだった。
-IoUとbox差は元の1008・BF16出力との一致度。小さい物体などでは平均より差が大きい。
-縮小版の初回は、この時点のキャッシュ状態で約84〜95秒だった。
-[解像度比較の設定](../experiments/round30.json) / [672の測定JSON](../experiments/results/compact_int8_resolution672.json)
-
-上のモデル作成例で、processor作成と追加パッチを次の形にする。
+Counts remained 1/4/6/4/0, with allocation from 1.298 to 1.455 GiB. Agreement is
+against stock 1008-resolution BF16 output; small objects can differ more than the
+mean suggests. First inference took about 84–95 s with that cache state.
+[Settings](../experiments/round30.json) /
+[672 results](../experiments/results/compact_int8_resolution672.json).
 
 ```python
-from sam3.turing_int8 import apply_int8_patch
-
 processor = apply_turing_patch(Sam3Processor(model, resolution=784), compile=True)
 apply_int8_patch(processor, attention_projections=True, fused_mlp=True)
 ```
 
-## 任意の画像追加パッチ
+## Optional image refinements
 
-ViTブロックの出力とdecoder FFNをFP16へ揃え、mask headの最後の射影を前計算する
-3つの変更をまとめた。`compile=True`で作り、最初の推論より前に1回適用する。
-通常パッチや画像INT8を設定した後に呼ぶ。
+`apply_image_refinements` combines FP16 ViT block outputs, FP16 decoder FFNs,
+and precomputation of the mask head's final projection. Create the base patch
+with `compile=True`, then apply refinements once after any image quantization
+and before inference. These options change rounding and remain opt-in.
 
 ```python
 from sam3.turing_refinements import apply_image_refinements
@@ -257,59 +330,47 @@ from sam3.turing_refinements import apply_image_refinements
 apply_image_refinements(processor)
 ```
 
-公開版のINT8画像＋CPUテキストは83.08ms・allocated 0.837GiB・NVML 2.382GiBだった。
-5条件の検出数は1/4/6/4/0で、673画素変化、平均mask IoU 0.997999、
-score最大差0.01074、box最大差0.556画素。丸め方が変わるため、通常パッチの任意追加にしている。
-同じ画像側でテキストをGPUに残す版は83.08ms・NVML 2.813GiB・675画素変化。
-画像INT8を使わないFP16画像＋CPUテキストでは112.09ms・293画素変化だった。
-[CPUテキスト版](../experiments/results/accepted_refined_int8_cpu.json) /
-[GPUテキスト版](../experiments/results/accepted_refined_int8_gpu.json) /
-[FP16画像版](../experiments/results/refined_fp16_cpu.json)
+Public image INT8 + CPU text measured 83.08 ms, 0.837 GiB allocated,
+2.382 GiB NVML, mean IoU 0.997999, 673 changed pixels, score error 0.01074, and
+box error 0.556 px. GPU text with the same image side took 83.08 ms / 2.813 GiB
+NVML with 675 changed pixels. FP16 images with CPU text took 112.09 ms with
+293 changed pixels. Counts stayed 1/4/6/4/0.
+[CPU text](../experiments/results/accepted_refined_int8_cpu.json) /
+[GPU text](../experiments/results/accepted_refined_int8_gpu.json) /
+[FP16 images](../experiments/results/refined_fp16_cpu.json).
 
-入力前処理は通常のままで、追加の独自CUDA kernelも使わない。
-neck compileと正規化も加えた5変更の候補は83.78msだったため、今回はこちらの3変更を選んだ。
-GPU割当の試作値0.782GiBと公開値0.837GiBには差があり、公開値を記載している。
+Preprocessing is unchanged and no additional custom CUDA kernel is used. A
+five-change candidate also compiling the neck and normalizing outputs took
+83.78 ms, so the three-change variant was selected. Public allocation was
+0.837 GiB versus the prototype's 0.782 GiB; the public value is reported above.
 
-CPUのpadding省略も組み合わせる場合は、次の順で適用する。
-画像INT8は上の例と同じ非対称GELU＋重みスケール調整を使う。
+For trimmed CPU text, offload before refinements. The following comparison used
+asymmetric image INT8 and tuned weight scales:
 
 ```python
-from sam3.turing import offload_text_encoder
-from sam3.turing_refinements import apply_image_refinements
-
 offload_text_encoder(processor, trim_padding=True)
 apply_image_refinements(processor)
 ```
 
-CPU FP32では新規語句を毎回処理して85.37ms・allocated 0.782GiB・NVML 2.573GiB。
-674画素変化・平均IoU 0.997997・score最大差0.01074・box最大差0.571画素だった。
-CPU側の重み容量も減らす場合は`int8_mlp=True`を加える。この版は84.38ms・
-allocated 0.782GiB・NVML 2.321GiB、822画素変化・IoU 0.997737・score最大差0.02783・
-box最大差0.552画素。どちらも検出数1/4/6/4/0は一致した。速度差は小さく、
-この短い語句ではCPU FP32を出力差の小さい選択肢にできる。
-[併用FP32測定](../experiments/results/accepted_refined_trimmed_fp32.json) /
-[併用INT8測定](../experiments/results/accepted_refined_trimmed_int8.json)
+Uncached CPU FP32 measured 85.37 ms, 0.782 GiB allocated, 2.573 GiB NVML,
+674 changed pixels, IoU 0.997997, score error 0.01074, and box error 0.571 px.
+Adding `int8_mlp=True` to offload gave 84.38 ms, 0.782 GiB, 2.321 GiB,
+822 pixels, IoU 0.997737, score error 0.02783, and box error 0.552 px. Counts
+matched. The speed difference was small for these short prompts; CPU FP32
+offered closer agreement.
+[FP32](../experiments/results/accepted_refined_trimmed_fp32.json) /
+[INT8](../experiments/results/accepted_refined_trimmed_int8.json).
 
-全機能を併用した[API確認](../experiments/results/api_smoke_refined_cpu_trimmed.json)でも、
-画像状態の再利用・box・しきい値変更・空出力・固定語句への切替・packed maskを通過した。
+### Skip projections of padded window rows
 
-## 小さい入力で余白の射影を省略する
-
-784などwindowに余白が生じる入力では、`unpadded_projections=True`を選べる。
-QKVのLinearをwindow分割より前に、出力のLinearを余白除去より後に移す。
-Attentionに入るpadding tokenとそのbiasは維持し、実画素のない行の射影だけを省く。
-1008など余白のない入力ではこのオプションは処理を変更しない。既定はFalse。
-
-今回のEPYCでは、画像を小さくするとCPUテキスト処理が全体時間を制限していた。
-CPUを16スレッドにした条件で、余白の射影省略の速度効果が現れた。
-スレッド数はCPUやprompt長に応じて選び、モデル初期化後に設定する。
+For sizes such as 784, `unpadded_projections=True` moves QKV projection before
+window partitioning and output projection after unpadding. Attention retains
+padding tokens and their biases; only projections of rows without real pixels
+are skipped. Default: `False`. At sizes without padding, such as 1008, it is a
+no-op. On EPYC, more CPU threads exposed its benefit at smaller image sizes:
 
 ```python
-from sam3.turing import apply_turing_patch, offload_text_encoder
-from sam3.turing_int8 import apply_int8_patch
-from sam3.turing_refinements import apply_image_refinements
-
-# 新しい画像modelを用意してから設定する。このEPYCで測った例。
+# Apply to a fresh image model; this thread count was tested on EPYC.
 torch.set_num_threads(16)
 processor = apply_turing_patch(
     Sam3Processor(model, resolution=784), compile=True, text_cache_size=0
@@ -322,183 +383,83 @@ offload_text_encoder(processor, trim_padding=True)
 apply_image_refinements(processor, unpadded_projections=True)
 ```
 
-解像度低下によるマスク差は残る。1008入力を既定とし、この構成は速度を優先する場合に選ぶ。
+Resolution-related mask differences remain. Public 784 results preserved counts
+1/4/6/4/0 and matched the prototype comparison metrics:
 
-公開版の784入力の測定は以下。検出数は両方1/4/6/4/0で、比較値は試作と一致した。
-
-| CPUテキスト | ms | allocated GiB | NVML GiB | IoU vs stock | 最小IoU | 変化画素 |
+| CPU text | ms | Allocated GiB | NVML GiB | IoU vs stock | Minimum IoU | Changed pixels |
 |---|---:|---:|---:|---:|---:|---:|
-| [FP32・16スレッド](../experiments/results/accepted_unpadded784_cpu_fp32_threads16.json) | 61.58 | 0.692 | 2.173 | 0.971324 | 0.889583 | 9352 |
-| [INT8 MLP・8スレッド](../experiments/results/accepted_unpadded784_cpu_int8_threads8.json) | 58.51 | 0.725 | 2.169 | 0.971532 | 0.892061 | 9374 |
+| [FP32, 16 threads](../experiments/results/accepted_unpadded784_cpu_fp32_threads16.json) | 61.58 | 0.692 | 2.173 | 0.971324 | 0.889583 | 9352 |
+| [INT8 MLP, 8 threads](../experiments/results/accepted_unpadded784_cpu_int8_threads8.json) | 58.51 | 0.725 | 2.169 | 0.971532 | 0.892061 | 9374 |
 
-CPU INT8の例を使う場合は、上の例のスレッド数を8に、offloadの呼出しを
-`offload_text_encoder(processor, int8_mlp=True, trim_padding=True)`に変更する。
-1008で同じオプションを有効にした確認では、既存構成と全5条件の比較値が一致した。
+For the INT8 row, use eight threads and
+`offload_text_encoder(processor, int8_mlp=True, trim_padding=True)`. At 1008 the
+option preserved all five comparison results. The
+[API check](../experiments/results/api_smoke_unpadded784.json) covers all 28 window
+blocks at 784, CPU INT8, packed masks, state reuse, boxes, and empty output.
 
-784の28 windowブロックへの適用と、CPU INT8・packed mask・画像state再利用・
-幾何prompt・空出力の併用も[API確認](../experiments/results/api_smoke_unpadded784.json)を通過した。
+## Compact 4-bit weight storage
 
-## 取り込んだ変更
-
-- BF16を強制するViT MLPを、FP16 autocastに従うLinear＋GELUへ置換。
-- Linear / Conv / Attentionの射影重みと単語埋め込みをFP16化。decoderのFP32専用FFNは維持。
-- autocastの重みキャッシュを無効化し、FPNのclone、使わない段・位置キャッシュを削減。
-- テキスト特徴をLRUキャッシュし、補間後のsigmoidをin-place化。
-- 既知の特徴サイズを使い、box位置バイアスのGPUスカラー読み取りを省く。
-- 任意で画像エンコーダと、テキストpromptからの検出・マスク生成をまとめてコンパイル。
-  processorが使う4配列をCUDA Graphの外でcloneし、次の推論による上書きを防ぐ。
-  box promptや早期query選別には段ごとのコンパイル経路を使う。
-  直接modelを呼ぶ場合は元の出力辞書を返す。
-- 任意でテキストTransformerをコンパイル。自由な語句を残す省VRAM用途ではCPUへ移動。
-
-融合MLP、GELU近似、channels-last、PixelDecoderのin-place化、早期query選別を
-個別・組み合わせで試したが、最終構成への追加効果は小さかった。
-早期選別は `early_filter=True` として試せるが、既定では無効。
-ヘッド射影の再結合、Attention固定、MLP分割、arena再利用、非コンパイルの実数RoPEは
-今回の3090では標準採用に至らなかった。候補コードと測定値は実験ディレクトリに残した。
-
-## 任意のINT8
-
-速度・メモリをさらに優先する場合は、画像MLPやAttention射影をINT8にする追加パッチを使える。
-追加学習は不要。FP16版より出力差が増えるので、通常パッチとは別の明示的な選択にした。
-通常パッチを適用した直後、最初の推論の前に追加する。
+`apply_int4_patch` stores ViT MLP and attention projection weights in four bits,
+then reconstructs FP16 weights before each Linear operation. Activations and
+matrix multiplication remain FP16. It prioritizes memory and was slower than
+dynamic INT8, with larger output differences. No dedicated INT4 computation
+kernel or retraining is used.
 
 ```python
-from sam3.turing_int8 import apply_int8_patch
-
-apply_int8_patch(processor, attention_projections=True, fused_mlp=True)
-```
-
-`attention_projections=False`（既定）なら画像MLPだけをINT8化する。
-`True`ではViTのQKV射影・出力射影も対象にする。Attention本体にはFP16のQ/K/Vを渡す。
-`fused_mlp=True`はMLPの逆量子化・通常GELU・再量子化を融合する。Tritonの8 warps設定を使い、
-FP16の中間丸めを残す。`False`（既定）では各演算を個別に呼ぶ。
-`text=True` はテキストMLPも対象にする。`vision=False, text=True` ならテキストだけ。
-今回の `text=True, attention_projections=True, fused_mlp=True` と
-`compile_text=True, text_cache_size=0` の組合せは、新規語句を毎回処理して87.64msだった。
-text compileを省く場合の起動時間・速度は別の交換条件になる。
-`asymmetric_gelu=True` を指定すると、GELU後だけをtokenごとの非対称INT8にする。
-`fused_mlp=True` と組み合わせて使う。重みの行和とzero pointでINT32の積を補正し、
-通常のINT8とは異なる出力差の選択肢になる。4 warpsの融合kernelを使う。
-今回のMLPのみの公開版は89.47ms・平均mask IoU 0.998477・544画素変化だった。
-`attention_projections=True` も加えると85.01ms・735画素変化だが、box最大差は1.44画素になる。
-
-```python
-apply_int8_patch(processor, fused_mlp=True, asymmetric_gelu=True)
-```
-
-`optimize_weight_scales=True`は、初期化時にINT8重みの刻み幅を探索して二乗誤差を減らす。
-推論の演算は増えず、画像による較正も不要。出力差が小さくなるかは構成による。
-今回の非対称GELU＋射影では、調整なしの735画素変化から697画素へ減り、
-score最大差0.01172→0.00391、box最大差1.44→0.57画素となった。
-直近の比較で時間は85.67→86.91ms。通常の対称GELUや重みのみ版では改善が一定せず、既定は無効。
-
-```python
-from sam3.turing import offload_text_encoder
-
-apply_int8_patch(
-    processor,
-    attention_projections=True,
-    fused_mlp=True,
-    asymmetric_gelu=True,
-    optimize_weight_scales=True,
-)
-# 自由な語句のままVRAMも減らす場合。compile_text=Falseで作成する。
-offload_text_encoder(processor)
-```
-
-このCPU併用構成は86.30ms・allocated 0.793GiB・NVML 2.368GiB、平均IoU 0.998065だった。
-語句を繰り返す測定であり、CPUで新しい語句を処理する場合の待ち時間は前述の通り増える。
-
-`weight_only=True` は重みをINT8で保存し、各層の計算時にFP16へ展開して通常の
-`linear` に渡す。入力をINT8に量子化せず、選択した層はFP16で行列計算する。
-`fused_mlp` / `asymmetric_gelu` とは併用しない。
-
-```python
-apply_int8_patch(processor, attention_projections=True, weight_only=True)
-```
-
-この構成は117.29ms・allocated 1.456GiB・NVML 2.862GiB、平均mask IoU 0.998763だった。
-MLPだけなら115.57ms・1.574GiB・3.030GiB、平均IoU 0.999030・343画素変化。
-通常FP16に近い速度で、重みのメモリを減らす選択肢として使える。
-
-従来の `apply_int8_mlp_patch` もMLPだけの入口として利用できる。
-解除する場合はモデルを作り直す。
-
-## 重みを4bitで保持する
-
-メモリを優先する場合は、任意の `apply_int4_patch` を使う。画像ViTのMLPとAttention射影を
-4bitで保存し、各Linearの直前にFP16へ復元する。入力と行列積はFP16で、動的INT8より遅く、
-出力差も増える。追加のINT4演算カーネルや学習は使用しない。
-
-```python
-from sam3.turing import apply_turing_patch, offload_text_encoder
 from sam3.turing_int4 import apply_int4_patch
-from sam3.turing_refinements import apply_image_refinements
 
-# 新しい画像modelに、推論前に適用する。
+# Apply once to a fresh model, before inference.
 processor = apply_turing_patch(Sam3Processor(model), compile=True)
 apply_int4_patch(processor, group_size=32)
 offload_text_encoder(processor, trim_padding=True)
 apply_image_refinements(processor)
 ```
 
-既定はGaussian分位点から作る対称15段階とFP16 scaleを使う。NF4の実装ではない。
-`group_size=16` または `32` を選べる。`asymmetric=True` は16段階の等間隔量子化と
-FP16 offsetを使う。今回の比較では、group 32のGaussianがメモリを抑え、
-group 16の非対称版はマスク差が少ない選択肢だった。
+The default uses 15 symmetric levels derived from Gaussian quantiles and FP16
+scales; it is not NF4. Group sizes are 16 or 32. `asymmetric=True` uses 16 uniform
+levels and an FP16 offset. Gaussian group 32 saved the most allocated memory in
+this comparison; asymmetric group 16 gave smaller mask differences:
 
 ```python
+# Alternative to the previous INT4 call, not an additional conversion.
 apply_int4_patch(processor, group_size=16, asymmetric=True)
 ```
 
-上の2つは選択肢。量子化済みの同じ層へ重ねて適用するとエラーになる。
-`attention_projections=False` ならMLPだけを対象にする。CPUテキスト処理、画像追加パッチ、
-`packed_masks=True` と組み合わせられる。Turing実機の速度は未測定。
+Reapplying to quantized layers raises an error. `attention_projections=False`
+selects MLPs only. CPU text, image refinements, and packed masks are compatible.
+INT4 on the RTX 2060 remains unmeasured.
 
-公開APIの測定値は以下。CPUテキストはFP32・4スレッド・padding省略で、毎回テキストを処理する。
-検出数は全構成1/4/6/4/0。表は通常のマスク配列を返す画像推論全体。
+These public API results use CPU FP32 text, four threads, trimmed padding, and
+uncached prompts. Counts remain 1/4/6/4/0. Timing covers whole-image inference
+returning dense masks:
 
-| 4bit方式 | ms | allocated GiB | NVML GiB | IoU vs stock | 変化画素 |
+| 4-bit method | ms | Allocated GiB | NVML GiB | IoU vs stock | Changed pixels |
 |---|---:|---:|---:|---:|---:|
 | [Gaussian 16](../experiments/results/accepted_int4_gaussian16_cpu.json) | 116.94 | 0.616 | 2.220 | 0.993886 | 1946 |
 | [Gaussian 32](../experiments/results/accepted_int4_gaussian32_cpu.json) | 116.36 | 0.590 | 2.403 | 0.993292 | 1995 |
-| [Gaussian 32・efficient Attention](../experiments/results/accepted_int4_gaussian32_cpu_efficient.json) | 121.37 | 0.589 | 2.173 | 0.993303 | 1993 |
-| [非対称 16](../experiments/results/accepted_int4_asymmetric16_cpu.json) | 116.75 | 0.668 | 2.229 | 0.994485 | 1744 |
+| [Gaussian 32, efficient attention](../experiments/results/accepted_int4_gaussian32_cpu_efficient.json) | 121.37 | 0.589 | 2.173 | 0.993303 | 1993 |
+| [Asymmetric 16](../experiments/results/accepted_int4_asymmetric16_cpu.json) | 116.75 | 0.668 | 2.229 | 0.994485 | 1744 |
 
-同じCPUテキスト・画像追加パッチのFP16基準は113.50ms・allocated 1.244GiB・NVML 2.392GiB。
-4bitでallocatedは減るが、コンパイルを含むNVML最大値の減少は同じ割合ではない。
-重み展開などの一時メモリもあり、両方の値を掲載している。初期モデル構築のallocatedは約3.330GiB。
+The matching FP16 control took 113.50 ms, 1.244 GiB allocated, and 2.392 GiB NVML.
+Whole-device peaks include compilation and temporary weight reconstruction, so
+they do not fall proportionally with allocation. Initial model construction
+allocated about 3.330 GiB. The
+[INT4 API check](../experiments/results/api_smoke_int4_cpu_trimmed.json) verifies
+128 converted layers, CPU text MLP INT8, trimming, refinements, packing, state
+reuse, boxes, empty results, and fixed prompts.
 
-Gaussian group 32＋CPUテキストMLP INT8＋padding省略＋画像追加パッチのAPI確認では、
-128層の4bit化、packed mask、旧画像state再利用、幾何prompt、空出力、固定語句への切替を確認した。
-[API確認JSON](../experiments/results/api_smoke_int4_cpu_trimmed.json)
+Earlier prototypes remain in [Round 38](../experiments/round38.json) and
+[Round 62](../experiments/round62.json). They ran at about 114–118 ms, close to
+FP16, with roughly 2,000–3,000 changed pixels and unchanged counts. Round 62's
+Gaussian group 32 measured 116.81 ms / 1.267 GiB / IoU 0.993293 / 1995 pixels;
+asymmetric group 16 measured 116.65 ms / 1.453 GiB / IoU 0.994461 / 1748 pixels.
+The later public API is described above.
 
-## 多数の二値マスクを小さく返す
+## Compact binary mask outputs
 
-`packed_masks=True` は、確率配列を保持せず、二値マスクを1画素1bitで返す追加オプション。
-Tritonを使用する。通常の `masks` / `masks_logits` の代わりに
-`masks_packed` と `mask_shape` を返す。
-
-200 queryの実モデルlogitを4Kへ拡大する出力部品の比較では、dense二値出力が
-24.10ms・6.243GiBに対し、8枚ずつ生成してbitpackすると **28.64ms・0.505GiB**。
-出力は約198MiB。抽出した8マスク・66,355,200画素の比較では差0だった。
-これは画像全体の速度ではなく、4K出力部品のストレス試験。
-さらに一時メモリを減らす `mask_chunk_size=1` は46.06ms・0.288GiBだった。
-従来経路のchunk既定値は8。[測定JSON](../experiments/results/packed_masks.json)
-
-継続最適化では、この4段階を1つのTriton kernelに融合した。同じ4K出力部品の
-比較で、従来のchunk 8は28.72ms・0.505GiB、新方式は **8.18ms・0.257GiB**。
-200マスク全体の **1,658,880,000画素中1画素** が閾値付近の丸めで異なった。
-奇数サイズ、縮小、閾値付近の値、1×1入力の追加比較は差0。
-FP16/FP32ではこの方式を既定にした。`mask_chunk_size`は他のdtypeでの従来経路に使う。
-直接 `resize_and_pack_masks(logits, size, fused=False)` を呼べば従来経路も選べる。
-[追加測定JSON](../experiments/results/fused_masks.json)
-
-続いてブロックサイズを調整し、FP16ではsigmoidの丸めに対応するcutoffを直接比較すると
-**6.18ms**まで短縮できた。現在の既定はこの方式。全65,536通りのFP16ビットパターンで
-PyTorchのsigmoid→閾値処理と一致し、200枚の4Kマスクも先の融合版から変化0だった。
-FP32はsigmoidを使う。[カーネル調整の測定JSON](../experiments/results/mask_pack_tuning.json)
+`packed_masks=True` uses Triton to return one bit per pixel without retaining
+dense probability maps. It returns `masks_packed` and `mask_shape` instead of
+`masks` and `masks_logits`.
 
 ```python
 from sam3.turing_masks import unpack_masks
@@ -509,28 +470,87 @@ h, w = state["mask_shape"][-2:]
 first_mask = unpack_masks(state["masks_packed"][:1], (h, w))
 ```
 
-## パッチと実験を再利用する
+The RTX 3090 tests below resize 200 real model-query logits to 4K. They are
+**output-component stress tests, not whole-image inference timings**:
 
-単独の適用ファイルは [patches/turing-image.patch](../patches/turing-image.patch)。
-SAM3-Turingのこの変更を含まない上流チェックアウトで `git apply` し、上記APIを呼ぶ。
-既にこのブランチを使っている場合は適用不要。
+- Dense binary output: 24.10 ms / 6.243 GiB. Chunking eight masks and bit-packing:
+  28.64 ms / 0.505 GiB, with about 198 MiB of output. Eight sampled masks
+  (66,355,200 pixels) matched exactly. Chunk size 1 took 46.06 ms / 0.288 GiB.
+  [Original comparison](../experiments/results/packed_masks.json).
+- Fusing all four output stages: 8.18 ms / 0.257 GiB, versus 28.72 ms / 0.505 GiB
+  for the adjacent chunk-8 control. One of 1,658,880,000 pixels differed near the
+  threshold due to rounding. Odd sizes, downsampling, near-threshold values,
+  and 1x1 inputs matched exactly. [Fused results](../experiments/results/fused_masks.json).
+- Block-size tuning and direct FP16 cutoff comparison reduced latency to
+  **6.18 ms**. The cutoff matched PyTorch sigmoid-then-threshold for all 65,536
+  FP16 bit patterns, and all 200 masks matched the preceding fused version.
+  [Kernel tuning](../experiments/results/mask_pack_tuning.json).
 
-比較ループは [experiments/README.md](../experiments/README.md) を参照。
-既存のPython環境で不足していた `timm`、`ftfy`、`iopath`、`portalocker` だけを追加した。
-PyTorchやCUDAは入れ替えていない。
+The tuned fused path is the default for FP16/FP32; FP32 still uses sigmoid.
+`mask_chunk_size` controls the older path for other dtypes. Explicitly select it
+with `resize_and_pack_masks(logits, size, fused=False)`; default chunk size: eight.
 
-基準ソース: `2345a4ad109ac29c569da749c91d84f10dc08c40`。
-重み: `facebook/sam3`、revision `3c879f39826c281e95690f02c7821c4de09afae7`。
-入力資料は添付のFP16 / 20USD / GPU validationの3アーカイブ。
+## What the base patch changes
 
-4bit重みの試作ではFP16へ復元して計算するため、速度は約114〜118msでFP16並みだった。
-全5条件で検出数を維持したが、マスク変化は約2千〜3千画素へ増えた。
-射影も4bit・group 128はallocated 1.263GiB、group 16は1.473GiB。
-まだ公開APIには採用せず、scaleの保存量を減らす候補も比較している。
-[4bit比較](../experiments/round38.json)
+- Replaces the BF16-only ViT MLP with Linear + GELU following FP16 autocast.
+- Converts Linear, Conv, attention projection weights, and token embeddings to
+  FP16, preserving decoder FFNs that explicitly require FP32.
+- Disables autocast's weight cache and reduces FPN clones, unused feature levels,
+  and position caches.
+- Caches text features and applies post-interpolation sigmoid in place.
+- Uses known feature sizes to avoid GPU scalar reads in box position bias.
+- Optionally compiles the vision encoder and text-prompt grounding as a unit.
+  The processor's four output tensors are cloned outside CUDA Graphs to prevent
+  overwrites by later inference. Boxes and early query filtering use separately
+  compiled stages. Direct model calls retain their original output dictionary.
+- Optionally compiles the text Transformer or offloads it to CPU.
 
-4bitのscaleをFP16保存にして不要なoffsetを省く追加比較では、Gaussian group 32が
-116.81ms・allocated 1.267GiB・IoU 0.993293・1995画素変化だった。
-非対称group 16は116.65ms・1.453GiB・IoU 0.994461・1748画素変化。
-すべて検出数を維持したが、画像側の公開INT8より速くはないため、引き続き任意の試作として保存する。
-[compact 4bit比較](../experiments/round62.json)
+Fused floating-point MLPs, GELU approximations, channels-last, in-place
+PixelDecoder operations, and early query filtering offered little additional
+benefit to the selected base configuration. `early_filter=True` remains optional
+and defaults to off. Head reassociation, fixed attention backends, MLP splitting,
+arena reuse, and eager real-valued RoPE were not selected as defaults based on
+the RTX 3090 comparisons. Candidate code and measurements remain available.
+
+## Reusing the patch and experiments
+
+Apply the [standalone patch](../patches/turing-image.patch) with `git apply` to a
+compatible upstream checkout without these modules. Do not apply it again when
+using this repository. The source baseline was
+`2345a4ad109ac29c569da749c91d84f10dc08c40`; image experiments pin `facebook/sam3`
+to revision `3c879f39826c281e95690f02c7821c4de09afae7`.
+
+The original reproduction inputs were the supplied FP16, 20USD, and GPU-validation
+archives. RunPod experiments reused the container's Python/CUDA installation,
+adding missing helper packages. Windows validation instead used a uv environment.
+
+See the [experiment instructions](../experiments/README.md),
+[all-candidate table](../experiments/results/README.md),
+[CSV](../experiments/results/summary.csv), and the
+[historical experiment notebook (Japanese)](../experiments/NOTES.md).
+The development sweep concluded on 2026-09-21: 376 candidates, 384 attempts
+including repeats and failures, and 373 valid image measurements. The final
+bias-correction comparison increased changed pixels from 697 to 769 for the
+selected asymmetric INT8 + tuned-weight configuration, so it was not adopted.
+Unexecuted settings are not counted as measured results.
+
+## Additional measurement and API references
+
+The following raw artifacts preserve the detailed comparisons behind this guide.
+
+- [r14 fp16 control](../experiments/results/r14_fp16_control.json)
+- [r14 int8 control](../experiments/results/r14_int8_control.json)
+- [accepted fused attention](../experiments/results/accepted_fused_attention.json)
+- [compact fixed all int8](../experiments/results/compact_fixed_all_int8.json)
+- [accepted asymmetric mlp](../experiments/results/accepted_asymmetric_mlp.json)
+- [accepted asymmetric attention](../experiments/results/accepted_asymmetric_attention.json)
+- [accepted weight only attention](../experiments/results/accepted_weight_only_attention.json)
+- [accepted cpu text fp16](../experiments/results/accepted_cpu_text_fp16.json)
+- [accepted cpu text int8](../experiments/results/accepted_cpu_text_int8.json)
+- [accepted cpu text int8 uncached](../experiments/results/accepted_cpu_text_int8_uncached.json)
+- [accepted optimized asymmetric](../experiments/results/accepted_optimized_asymmetric.json)
+- [accepted optimized asymmetric cpu](../experiments/results/accepted_optimized_asymmetric_cpu.json)
+- [accepted cpu dynamic text](../experiments/results/accepted_cpu_dynamic_text.json)
+- [api smoke cpu text](../experiments/results/api_smoke_cpu_text.json)
+- [api smoke cpu dynamic text](../experiments/results/api_smoke_cpu_dynamic_text.json)
+- [api smoke refined cpu trimmed](../experiments/results/api_smoke_refined_cpu_trimmed.json)

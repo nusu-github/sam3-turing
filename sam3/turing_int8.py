@@ -1,9 +1,9 @@
 """Optional INT8 weight storage and projections for image inference."""
 
 import torch
-from torch import nn
 import triton
 import triton.language as tl
+from torch import nn
 from triton.language.extra.cuda import libdevice
 
 

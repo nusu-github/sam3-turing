@@ -1,15 +1,83 @@
 # SAM3-Turing
 
-6GB級GPU向けのSAM 3画像推論パッチを開発しています。
-FP16化・メモリ削減・テキストキャッシュ・任意のコンパイルを、実行時に適用します。
-任意のINT8（MLP・Attention射影）、メモリ優先の4bit重み、4Kマスクの補間・bitpackを融合するパッチも含みます。
+Runtime patches for SAM 3 image inference on GPUs with limited VRAM, validated
+on an **RTX 2060 Max-Q with 6 GB VRAM** and an RTX 3090. Apply selective FP16
+conversion, memory optimizations, text caching, and optional compilation without
+modifying the checkpoint or editing upstream model files.
 
-- [使い方とRTX 3090での比較結果](docs/TURING_IMAGE_PATCH.md)
-- [全候補の測定結果](experiments/results/README.md)
-- [SAM 3.1動画の試作・比較結果](docs/TURING_VIDEO_EXPERIMENTS.md)
-- [単独で適用できるパッチ](patches/turing-image.patch)
+Optional extensions provide selective INT8 matrix multiplication, compact 4-bit
+weight storage, CPU text encoding, and fused resizing and bit-packing of masks.
+This is a community fork; the original SAM 3 project and credits are below.
 
-以下は上流SAM 3 / SAM 3.1の説明です。
+## Results on a 6 GB RTX 2060 Max-Q
+
+Windows 11, Python 3.12, PyTorch 2.10.0 + CUDA 12.8; input resolution 1008,
+batch size 1. Median of five timed `set_image` + `set_text_prompt` calls after
+warmup, using `truck.jpg` / `truck`. Patched runs reuse cached text features.
+
+| Configuration | Time per image | Peak PyTorch allocation | Peak whole-GPU memory |
+|---|---:|---:|---:|
+| Unpatched, upstream BF16 MLP retained | 3.752 s | 4.992 GiB | 5.867 GiB |
+| FP16 reference without the Turing patch | OOM | — | — |
+| FP16 patch, no compilation | 1.585 s | 1.997 GiB | 2.678 GiB |
+| FP16 patch, compiled | 1.447 s | 1.802 GiB | 2.542 GiB |
+| FP16 patch + CPU text encoding | 1.589 s | 1.336 GiB | 1.974 GiB |
+| INT8 patch + CPU text encoding | **1.365 s** | **0.926 GiB** | **1.935 GiB** |
+
+The eager FP16 patch reduced inference allocation by about **60%** and latency
+by about **58%**. All successful configurations preserved detection counts across
+five test cases. Against the unpatched output, eager FP16 changed 102 of
+18,038,400 compared mask pixels; INT8 changed 941. These are output-agreement
+checks, not a ground-truth accuracy benchmark.
+
+Memory figures cover inference after patching; model construction peaked at
+about **3.33 GiB**. The compiled configuration took **138 s on its first inference**.
+The unpatched run completed, while the FP16 reference ran out of memory; do not
+assume every unpatched configuration will OOM. See the
+[full local report and reproduction steps](experiments/results/local_rtx2060/README.md)
+for baseline definitions, raw results, and Windows memory-accounting limitations.
+
+## Quick start
+
+Install SAM 3 and its runtime dependencies using the
+[tested uv environment instructions](experiments/results/local_rtx2060/README.md#reproduce)
+or the upstream installation instructions below. Access to the official SAM 3
+checkpoint is required, or provide a local `checkpoint_path`.
+
+```python
+import torch
+from PIL import Image
+from sam3.model_builder import build_sam3_image_model
+from sam3.model.sam3_image_processor import Sam3Processor
+from sam3.turing import apply_turing_patch, offload_text_encoder
+
+torch.set_num_threads(1)
+model = build_sam3_image_model()  # Or pass checkpoint_path="path/to/sam3.pt".
+torch.set_num_threads(4)
+
+processor = apply_turing_patch(Sam3Processor(model), compile=False)
+offload_text_encoder(processor, trim_padding=True)  # Optional VRAM saving.
+
+image = Image.open("assets/images/truck.jpg").convert("RGB")
+state = processor.set_image(image)
+result = processor.set_text_prompt(prompt="truck", state=state)
+masks, boxes, scores = result["masks"], result["boxes"], result["scores"]
+```
+
+Start with `compile=False` for a short startup. Compilation and quantization are
+optional tradeoffs; benchmark them on your own GPU and prompts. The image patch
+supports single-image inference, text and box prompts, and standard dense masks.
+Training, SAM 1-style interactive prediction, and video are outside its scope.
+Video experiments use a separate experimental patch and have not been validated
+on the 6 GB Turing device.
+
+- [Image patch guide, optional features, and RTX 3090 results](docs/TURING_IMAGE_PATCH.md)
+- [RTX 2060 validation and uv setup](experiments/results/local_rtx2060/README.md)
+- [All image candidate measurements](experiments/results/README.md)
+- [Experimental SAM 3.1 video results](docs/TURING_VIDEO_EXPERIMENTS.md)
+- [Standalone patch for an upstream checkout](patches/turing-image.patch)
+
+The upstream SAM 3 / SAM 3.1 documentation follows.
 
 # SAM 3: Segment Anything with Concepts
 

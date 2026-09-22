@@ -1,0 +1,141 @@
+{
+  "name": "patched_eager",
+  "config": {
+    "patch": true
+  },
+  "status": "ok",
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "NVIDIA GeForce RTX 2060 with Max-Q Design",
+    "capability": [
+      7,
+      5
+    ],
+    "physical_vram_bytes": 6442123264,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "cublas_workspace_config": ":4096:8",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "checkpoint": "C:\\Users\\nusu-\\.cache\\huggingface\\hub\\models--facebook--sam3\\snapshots\\3c879f39826c281e95690f02c7821c4de09afae7\\sam3.pt",
+  "resolution": 1008,
+  "confidence_threshold": 0.5,
+  "baseline_note": "fp16_reference uses the existing reproduction FP16 MLP adapter; stock keeps the upstream BF16-only fused MLP. Windows WDDM may spill allocations into shared RAM; absence of OOM does not prove VRAM residency.",
+  "stage": "complete",
+  "build_seconds": 10.542242900002748,
+  "build_peak_allocated_bytes": 3575265280,
+  "metrics": {
+    "cold_seconds": 2.027547499979846,
+    "warmups": 2,
+    "repetitions": 5,
+    "wall_seconds": [
+      1.583233699988341,
+      1.5870072999969125,
+      1.583332900016103,
+      1.5939580999838654,
+      1.584632199985208
+    ],
+    "gpu_seconds": [
+      1.5831632080078124,
+      1.5869732666015626,
+      1.5832779541015625,
+      1.5939256591796875,
+      1.5846031494140624
+    ],
+    "median_wall_seconds": 1.584632199985208,
+    "median_gpu_seconds": 1.5846031494140624,
+    "peak_allocated_bytes": 2144435712,
+    "peak_reserved_bytes": 2510290944,
+    "allocated_before_bytes": 1728215040,
+    "reserved_before_bytes": 2025848832,
+    "end_device_used_bytes": 3618308096,
+    "physical_vram_bytes": 6442123264,
+    "nvml": {
+      "sampled_device_used_peak_bytes": 2875105280,
+      "sampled_device_used_min_bytes": 2376310784,
+      "samples": 845,
+      "requested_interval_ms": 5,
+      "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+    }
+  },
+  "checks": {
+    "truck": {
+      "count": 1,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 1,
+        "count": 1,
+        "matched": 1,
+        "mean_mask_iou": 0.9999481360407367,
+        "min_mask_iou": 0.9999481360407367,
+        "changed_pixels": 33,
+        "compared_pixels": 2160000,
+        "probability_mae": 0.00010817224008065683,
+        "score_max_abs": 0.00048828125,
+        "box_max_abs_px": 0.04468536376953125
+      }
+    },
+    "bag": {
+      "count": 4,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 4,
+        "count": 4,
+        "matched": 4,
+        "mean_mask_iou": 0.9998922733683299,
+        "min_mask_iou": 0.9997651203758074,
+        "changed_pixels": 4,
+        "compared_pixels": 1708800,
+        "probability_mae": 5.619131614652912e-06,
+        "score_max_abs": 0.00048828125,
+        "box_max_abs_px": 0.012054443359375
+      }
+    },
+    "child": {
+      "count": 6,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 6,
+        "count": 6,
+        "matched": 6,
+        "mean_mask_iou": 0.9996229390357046,
+        "min_mask_iou": 0.9989552498694062,
+        "changed_pixels": 41,
+        "compared_pixels": 5529600,
+        "probability_mae": 9.22756657625238e-06,
+        "score_max_abs": 0.0009765625,
+        "box_max_abs_px": 0.041015625
+      }
+    },
+    "wheel": {
+      "count": 4,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 4,
+        "count": 4,
+        "matched": 4,
+        "mean_mask_iou": 0.9996223968429623,
+        "min_mask_iou": 0.9992634060106069,
+        "changed_pixels": 24,
+        "compared_pixels": 8640000,
+        "probability_mae": 4.222860656402729e-06,
+        "score_max_abs": 0.00048828125,
+        "box_max_abs_px": 0.06719970703125
+      }
+    },
+    "empty": {
+      "count": 0,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 0,
+        "count": 0,
+        "matched": 0
+      }
+    }
+  }
+}

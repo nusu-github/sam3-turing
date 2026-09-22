@@ -1,0 +1,37 @@
+{
+  "name": "fp16_reference",
+  "config": {
+    "fp16_adapter": true
+  },
+  "status": "oom",
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "NVIDIA GeForce RTX 2060 with Max-Q Design",
+    "capability": [
+      7,
+      5
+    ],
+    "physical_vram_bytes": 6442123264,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "cublas_workspace_config": ":4096:8",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "checkpoint": "C:\\Users\\nusu-\\.cache\\huggingface\\hub\\models--facebook--sam3\\snapshots\\3c879f39826c281e95690f02c7821c4de09afae7\\sam3.pt",
+  "resolution": 1008,
+  "confidence_threshold": 0.5,
+  "baseline_note": "fp16_reference uses the existing reproduction FP16 MLP adapter; stock keeps the upstream BF16-only fused MLP. Windows WDDM may spill allocations into shared RAM; absence of OOM does not prove VRAM residency.",
+  "stage": "inference",
+  "build_seconds": 10.92713699999149,
+  "build_peak_allocated_bytes": 3575265280,
+  "error_type": "OutOfMemoryError",
+  "error": "CUDA out of memory. Tried to allocate 82.00 MiB. GPU 0 has a total capacity of 6.00 GiB of which 0 bytes is free. Of the allocated memory 5.12 GiB is allocated by PyTorch, and 110.39 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+  "traceback": "Traceback (most recent call last):\n  File \"D:\\PycharmProjects\\sam3-turing\\experiments\\local_turing_bench.py\", line 110, in worker\n    del state\n              \n  File \"D:\\PycharmProjects\\sam3-turing\\experiments\\archive_reference\\sam3_fp16_lab\\gpu_common.py\", line 66, in measure\n    output=invoke()\n           ^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\experiments\\local_turing_bench.py\", line 110, in <lambda>\n    del state\n              \n  File \"D:\\PycharmProjects\\sam3-turing\\experiments\\local_turing_bench.py\", line 105, in infer\n    gc.collect()\n                 \n  File \"D:\\PycharmProjects\\sam3-turing\\.venv\\Lib\\site-packages\\torch\\utils\\_contextlib.py\", line 124, in decorate_context\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\sam3\\model\\sam3_image_processor.py\", line 126, in set_text_prompt\n    return self._forward_grounding(state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\.venv\\Lib\\site-packages\\torch\\utils\\_contextlib.py\", line 124, in decorate_context\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\sam3\\model\\sam3_image_processor.py\", line 185, in _forward_grounding\n    outputs = self.model.forward_grounding(\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\sam3\\model\\sam3_image.py\", line 484, in forward_grounding\n    self._run_segmentation_heads(\n  File \"D:\\PycharmProjects\\sam3-turing\\sam3\\model\\sam3_image.py\", line 403, in _run_segmentation_heads\n    seg_head_outputs = activation_ckpt_wrapper(self.segmentation_head)(\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\sam3\\model\\act_ckpt_utils.py\", line 88, in act_ckpt_wrapper\n    ret = module(*args, **kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1776, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1787, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\sam3\\model\\maskformer_segmentation.py\", line 321, in forward\n    pixel_embed = self._embed_pixels(\n                  ^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\sam3\\model\\maskformer_segmentation.py\", line 143, in _embed_pixels\n    pixel_embed = checkpoint.checkpoint(\n                  ^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\.venv\\Lib\\site-packages\\torch\\_compile.py\", line 54, in inner\n    return disable_fn(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\.venv\\Lib\\site-packages\\torch\\_dynamo\\eval_frame.py\", line 1181, in _fn\n    return fn(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\.venv\\Lib\\site-packages\\torch\\utils\\checkpoint.py\", line 512, in checkpoint\n    ret = function(*args, **kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1776, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\.venv\\Lib\\site-packages\\torch\\nn\\modules\\module.py\", line 1787, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\PycharmProjects\\sam3-turing\\sam3\\model\\maskformer_segmentation.py\", line 224, in forward\n    prev_fpn = curr_fpn + F.interpolate(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^\ntorch.OutOfMemoryError: CUDA out of memory. Tried to allocate 82.00 MiB. GPU 0 has a total capacity of 6.00 GiB of which 0 bytes is free. Of the allocated memory 5.12 GiB is allocated by PyTorch, and 110.39 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n",
+  "failure_peak_allocated_bytes": 5494131712,
+  "exit_code": 1
+}

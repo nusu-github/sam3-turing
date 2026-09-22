@@ -2,10 +2,10 @@
 
 import torch
 import torch.nn.functional as F
-from torch import nn
 
 from sam3.model.decoder import TransformerDecoderLayer
 from sam3.model.vitdet import window_partition, window_unpartition
+from torch import nn
 
 
 def _unpadded_window_block(block, side):

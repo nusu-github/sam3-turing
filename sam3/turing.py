@@ -10,12 +10,12 @@ from functools import wraps
 
 import torch
 import torch.nn.functional as F
-from torch import nn
 
 from sam3.model import box_ops
 from sam3.model.data_misc import interpolate, NestedTensor
 from sam3.model.decoder import TransformerDecoderLayer
 from sam3.model.model_misc import MultiheadAttention
+from torch import nn
 
 
 def _compile_with_owned_output(fn, mode):

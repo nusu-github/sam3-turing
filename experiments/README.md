@@ -1,5 +1,13 @@
 # Image patch experiments
 
+For the local Windows / RTX 2060 6 GB validation, use
+[`local_turing_bench.py`](local_turing_bench.py) and the
+[uv setup and results](results/local_rtx2060/README.md). It runs each configuration
+in a fresh process and records OOMs, timings, memory, and output comparisons.
+
+The historical RTX 3090 container sweeps below use a different runner and
+environment; do not mix their numbers with the local RTX 2060 measurements.
+
 Use the container's existing Python/PyTorch installation. The sweep does not
 create an environment, replace PyTorch, provision machines, or control RunPod.
 
@@ -43,6 +51,8 @@ are recorded separately in `results/packed_masks.json`.
 `SAM3_FP16_reproduction.zip`. That archive also bundled helpers from the earlier
 GPU/20USD experiments. We kept only inference/measurement helpers; the RunPod
 controllers, setup scripts and credentials are not part of this checkout.
+`NOTES.md` is the original development notebook in Japanese; public usage and
+benchmark guides are in English.
 The runtime patch in `sam3/turing.py` is self-contained and does not import these
 experiment helpers.
 

@@ -1,0 +1,198 @@
+{
+  "name": "patched_int8",
+  "config": {
+    "patch": true,
+    "int8": true,
+    "cpu_text": true
+  },
+  "status": "ok",
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "NVIDIA GeForce RTX 2060 with Max-Q Design",
+    "capability": [
+      7,
+      5
+    ],
+    "physical_vram_bytes": 6442123264,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "cublas_workspace_config": ":4096:8",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "checkpoint": "C:\\Users\\nusu-\\.cache\\huggingface\\hub\\models--facebook--sam3\\snapshots\\3c879f39826c281e95690f02c7821c4de09afae7\\sam3.pt",
+  "resolution": 1008,
+  "confidence_threshold": 0.5,
+  "outer_autocast": "fp16",
+  "timing_scope": "set_image + set_text_prompt, including image preprocessing and transfer; excluding disk reads and model construction; repeated truck prompt hits the text cache in patched configurations",
+  "baseline_note": "fp16_reference uses the existing reproduction FP16 MLP adapter; stock keeps the upstream BF16-only fused MLP. Windows WDDM may spill allocations into shared RAM; absence of OOM does not prove VRAM residency.",
+  "stage": "complete",
+  "build_seconds": 10.38932729998487,
+  "build_peak_allocated_bytes": 3575265280,
+  "metrics": {
+    "cold_seconds": 4.940510500018718,
+    "warmups": 2,
+    "repetitions": 5,
+    "wall_seconds": [
+      1.3646727000013925,
+      1.3667249999998603,
+      1.3643927000230178,
+      1.3630827000015415,
+      1.3649326000013389
+    ],
+    "gpu_seconds": [
+      1.364599853515625,
+      1.366687744140625,
+      1.3643568115234375,
+      1.363042236328125,
+      1.364907958984375
+    ],
+    "median_wall_seconds": 1.3646727000013925,
+    "median_gpu_seconds": 1.364599853515625,
+    "peak_allocated_bytes": 994641920,
+    "peak_reserved_bytes": 1711276032,
+    "allocated_before_bytes": 575505920,
+    "reserved_before_bytes": 1275068416,
+    "end_device_used_bytes": 2819293184,
+    "physical_vram_bytes": 6442123264,
+    "nvml": {
+      "sampled_device_used_peak_bytes": 2077204480,
+      "sampled_device_used_min_bytes": 1624088576,
+      "samples": 897,
+      "requested_interval_ms": 5,
+      "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+    }
+  },
+  "checks": {
+    "truck": {
+      "count": 1,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 1,
+        "count": 1,
+        "matched": 1,
+        "mean_mask_iou": 0.9996118750520512,
+        "min_mask_iou": 0.9996118750520512,
+        "changed_pixels": 247,
+        "compared_pixels": 2160000,
+        "probability_mae": 0.0009133586742259838,
+        "score_max_abs": 0.005859375,
+        "box_max_abs_px": 0.2591552734375
+      },
+      "vs_patched_eager": {
+        "reference_count": 1,
+        "count": 1,
+        "matched": 1,
+        "mean_mask_iou": 0.9995945875871519,
+        "min_mask_iou": 0.9995945875871519,
+        "changed_pixels": 258,
+        "compared_pixels": 2160000,
+        "probability_mae": 0.0008521231757269965,
+        "score_max_abs": 0.00634765625,
+        "box_max_abs_px": 0.26055908203125
+      }
+    },
+    "bag": {
+      "count": 4,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 4,
+        "count": 4,
+        "matched": 4,
+        "mean_mask_iou": 0.9987643856496426,
+        "min_mask_iou": 0.9983267098933277,
+        "changed_pixels": 47,
+        "compared_pixels": 1708800,
+        "probability_mae": 3.385331690981147e-05,
+        "score_max_abs": 0.00146484375,
+        "box_max_abs_px": 0.127105712890625
+      },
+      "vs_patched_eager": {
+        "reference_count": 4,
+        "count": 4,
+        "matched": 4,
+        "mean_mask_iou": 0.9986568215288905,
+        "min_mask_iou": 0.9982223151730628,
+        "changed_pixels": 51,
+        "compared_pixels": 1708800,
+        "probability_mae": 3.412017215057259e-05,
+        "score_max_abs": 0.0009765625,
+        "box_max_abs_px": 0.128875732421875
+      }
+    },
+    "child": {
+      "count": 6,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 6,
+        "count": 6,
+        "matched": 6,
+        "mean_mask_iou": 0.9973214698432226,
+        "min_mask_iou": 0.9961184172411796,
+        "changed_pixels": 288,
+        "compared_pixels": 5529600,
+        "probability_mae": 5.641968989813769e-05,
+        "score_max_abs": 0.00537109375,
+        "box_max_abs_px": 0.6331787109375
+      },
+      "vs_patched_eager": {
+        "reference_count": 6,
+        "count": 6,
+        "matched": 6,
+        "mean_mask_iou": 0.9974015411526458,
+        "min_mask_iou": 0.9961233961233962,
+        "changed_pixels": 281,
+        "compared_pixels": 5529600,
+        "probability_mae": 5.754509871756589e-05,
+        "score_max_abs": 0.005859375,
+        "box_max_abs_px": 0.6072998046875
+      }
+    },
+    "wheel": {
+      "count": 4,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 4,
+        "count": 4,
+        "matched": 4,
+        "mean_mask_iou": 0.9951541638469096,
+        "min_mask_iou": 0.993519882179676,
+        "changed_pixels": 359,
+        "compared_pixels": 8640000,
+        "probability_mae": 4.663198943491335e-05,
+        "score_max_abs": 0.001953125,
+        "box_max_abs_px": 0.26336669921875
+      },
+      "vs_patched_eager": {
+        "reference_count": 4,
+        "count": 4,
+        "matched": 4,
+        "mean_mask_iou": 0.9949635211094658,
+        "min_mask_iou": 0.9930811129103488,
+        "changed_pixels": 363,
+        "compared_pixels": 8640000,
+        "probability_mae": 4.718485739496019e-05,
+        "score_max_abs": 0.001953125,
+        "box_max_abs_px": 0.29510498046875
+      }
+    },
+    "empty": {
+      "count": 0,
+      "finite": true,
+      "vs_stock": {
+        "reference_count": 0,
+        "count": 0,
+        "matched": 0
+      },
+      "vs_patched_eager": {
+        "reference_count": 0,
+        "count": 0,
+        "matched": 0
+      }
+    }
+  }
+}

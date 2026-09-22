@@ -1,6 +1,6 @@
 diff --git a/sam3/turing.py b/sam3/turing.py
 new file mode 100644
-index 0000000..01707ca
+index 0000000..c10d7c8
 --- /dev/null
 +++ b/sam3/turing.py
 @@ -0,0 +1,467 @@
@@ -16,12 +16,12 @@ index 0000000..01707ca
 +
 +import torch
 +import torch.nn.functional as F
-+from torch import nn
 +
 +from sam3.model import box_ops
 +from sam3.model.data_misc import interpolate, NestedTensor
 +from sam3.model.decoder import TransformerDecoderLayer
 +from sam3.model.model_misc import MultiheadAttention
++from torch import nn
 +
 +
 +def _compile_with_owned_output(fn, mode):
@@ -570,16 +570,16 @@ index 0000000..77c8945
 +    return processor
 diff --git a/sam3/turing_int8.py b/sam3/turing_int8.py
 new file mode 100644
-index 0000000..d649029
+index 0000000..b121e93
 --- /dev/null
 +++ b/sam3/turing_int8.py
 @@ -0,0 +1,304 @@
 +"""Optional INT8 weight storage and projections for image inference."""
 +
 +import torch
-+from torch import nn
 +import triton
 +import triton.language as tl
++from torch import nn
 +from triton.language.extra.cuda import libdevice
 +
 +
@@ -1035,7 +1035,7 @@ index 0000000..a54ec97
 +    return out
 diff --git a/sam3/turing_refinements.py b/sam3/turing_refinements.py
 new file mode 100644
-index 0000000..cd7d92b
+index 0000000..8b6bd01
 --- /dev/null
 +++ b/sam3/turing_refinements.py
 @@ -0,0 +1,137 @@
@@ -1043,10 +1043,10 @@ index 0000000..cd7d92b
 +
 +import torch
 +import torch.nn.functional as F
-+from torch import nn
 +
 +from sam3.model.decoder import TransformerDecoderLayer
 +from sam3.model.vitdet import window_partition, window_unpartition
++from torch import nn
 +
 +
 +def _unpadded_window_block(block, side):

@@ -1,0 +1,86 @@
+{
+  "name": "stock",
+  "config": {},
+  "status": "ok",
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8",
+    "cudnn": 91002,
+    "gpu": "NVIDIA GeForce RTX 2060 with Max-Q Design",
+    "capability": [
+      7,
+      5
+    ],
+    "physical_vram_bytes": 6442123264,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "cublas_workspace_config": ":4096:8",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "checkpoint": "C:\\Users\\nusu-\\.cache\\huggingface\\hub\\models--facebook--sam3\\snapshots\\3c879f39826c281e95690f02c7821c4de09afae7\\sam3.pt",
+  "resolution": 1008,
+  "confidence_threshold": 0.5,
+  "baseline_note": "fp16_reference uses the existing reproduction FP16 MLP adapter; stock keeps the upstream BF16-only fused MLP. Windows WDDM may spill allocations into shared RAM; absence of OOM does not prove VRAM residency.",
+  "stage": "complete",
+  "build_seconds": 11.51608679999481,
+  "build_peak_allocated_bytes": 3575265280,
+  "metrics": {
+    "cold_seconds": 4.475007900007768,
+    "warmups": 2,
+    "repetitions": 5,
+    "wall_seconds": [
+      3.752077699988149,
+      3.7662511999951676,
+      3.7388642999867443,
+      3.7563190999790095,
+      3.7470395999844186
+    ],
+    "gpu_seconds": [
+      3.75198681640625,
+      3.766237548828125,
+      3.738848876953125,
+      3.756298828125,
+      3.746864990234375
+    ],
+    "median_wall_seconds": 3.752077699988149,
+    "median_gpu_seconds": 3.75198681640625,
+    "peak_allocated_bytes": 5359770112,
+    "peak_reserved_bytes": 5626658816,
+    "allocated_before_bytes": 3575266304,
+    "reserved_before_bytes": 3682598912,
+    "end_device_used_bytes": 6442123264,
+    "physical_vram_bytes": 6442123264,
+    "nvml": {
+      "sampled_device_used_peak_bytes": 6299148288,
+      "sampled_device_used_min_bytes": 4616298496,
+      "samples": 1966,
+      "requested_interval_ms": 5,
+      "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+    }
+  },
+  "checks": {
+    "truck": {
+      "count": 1,
+      "finite": true
+    },
+    "bag": {
+      "count": 4,
+      "finite": true
+    },
+    "child": {
+      "count": 6,
+      "finite": true
+    },
+    "wheel": {
+      "count": 4,
+      "finite": true
+    },
+    "empty": {
+      "count": 0,
+      "finite": true
+    }
+  }
+}
