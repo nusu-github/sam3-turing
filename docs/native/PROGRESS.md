@@ -1170,3 +1170,74 @@ They require compatible LibTorch/ICU/zlib and are not a relocatable release.
 Full SAM3.1 sessions/retention policy, codecs, high-level tracking, C ABI,
 multi-GPU, packaging and further quality/performance/size work remain. No GitHub
 Actions were used; Turing/Windows hardware validation remains with the user.
+
+## 2026-09-22 — SAM3.1 dynamic interactive session API
+
+Added `Sam31TrackingSession` with shared core weights and a cached provider for
+both projected tracking necks. It connects point/box prompts, individual and
+simultaneous masks, fresh/incremental refinement, midstream object insertion,
+preflight, forward/reverse propagation, clear/remove/reset, callback stopping
+and cancellation. All points are retained; object counts are not capped.
+Simultaneous masks use one batched decoder invocation and mutual brush
+suppression; repeated individual brushes give the latest brush precedence.
+Original-size binary brush previews and 288px consolidation feed full 1008px
+memory. Failed edits/preflight roll back state. Remaining annotations stay
+usable when the last original conditioning input is cleared.
+
+The native session deliberately keeps existing IDs/slots stable on refinement,
+using singleton interactive heads and replacing selected results. It uses the
+explicit dense-history reconstruction helper for layout changes instead of
+copying the original demo's legacy singleton history extraction/merge. New point
+objects prefer new buckets; masks use available slots. Spatial memory is stored
+as BF16, with optional CPU retention. Full masks and shared images are retained
+for reconstruction; core output trimming is overridden. This currently uses
+substantial RAM for long videos. Disk-backed retention, position-cache sharing
+and further storage optimization remain necessary. No model variants or extra
+weight shards are introduced.
+
+`multiplex-session-*-validation.json` records 12 CUDA workflows (four each FP16,
+FP32 and BF16-reference) and four CPU FP32 workflows: 80 operations and 404 exact
+output/ID/frame/count tensor comparisons. Workflows include point accumulation
+(18 points), boxes, one/two-object brushes, forward tracking, first refinement,
+reverse propagation and reset. These compare projected synthetic full-grid
+features against the adapted original demo, not a complete real-video system.
+The reference adaptations are explicit in the test/report:
+
+- Original singleton merge multiplies a device-resident mux matrix by offloaded
+  CPU history and fails. Reference mux/demux stage to the matrix device and
+  restore F32 outside AMP; compressed-memory projection also restores F32.
+- Removing the sole object during extraction clears consolidated annotation
+  indices. Merge restores inputs/history but omits those indices, so the next
+  preflight fails its equality assertion. Reference indices are restored from
+  the actual merged inputs and frame stores.
+- The original nested singleton constructor hard-codes CUDA even in a CPU test.
+  This mixed GPU and CPU interpolation, producing up to 0.00003052 output error.
+  Redirecting every nested constructor to CPU restored exact equality; no
+  tolerance was introduced. CUDA FP32 Flash-only context removal and D2H
+  synchronization remain as in earlier comparisons.
+
+`multiplex-session-invariants-*.json` adds CUDA FP16, CUDA BF16-reference and CPU
+FP32 checks. Each verifies 44 exact comparisons between interrupted/resumed and
+uninterrupted outputs/history, plus an 11-operation dynamic edit sequence with
+midstream growth, unchanged old-bucket memory/pointers, historical absence for
+new objects, 18 accumulated points, reverse propagation, removal/clear/reset and
+remaining-annotation promotion. This validates the explicit native policies;
+it does not establish full upstream multi-object editing equivalence or quality
+for the stable-slot policy. Broader real-video evaluation remains required.
+
+The standalone `sam3_multiplex_session` passed with PATH=/nonexistent on CUDA
+FP16 and CPU FP32, each producing 12 callbacks and exercising masks, boxes,
+midstream insertion, repeated refinement, reverse, clear/removal, cancel/resume,
+provider-failure rollback, reset and simultaneous overlapping brushes. The
+latest-frame cache reused both necks across prompts; each run made nine provider
+calls. CTest passed 9/9 CUDA-enabled and 5/5 custom-CUDA-disabled checks. Native
+linkage has no libpython/libtorch_python dependency and sm_75 cubins are present.
+The separate intermittent original CPU prompt-encoder issue remains unresolved.
+
+Code/reports are pushed to `codex/native-onboarding`. Private development builds,
+passing logs and reference-failure diagnostics are saved under
+`native-foundation/multiplex-session-linux-cuda13`. They still require matching
+LibTorch/ICU/zlib and are not a relocatable release. SAM3.1 visual integration,
+long-video retention, high-level text/video association, codecs, C ABI,
+multi-GPU, packaging and further quality/performance/size work remain. No GitHub
+Actions were used; Turing/Windows runtime verification remains with the user.

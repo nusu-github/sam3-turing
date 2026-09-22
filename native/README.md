@@ -761,3 +761,68 @@ history reconstruction with the original memory host. These checks do not
 establish full upstream demo-session parity for singleton extraction/merging;
 the native dense-memory rebuild policy is explicit rather than inferred from
 legacy object-axis handling in those methods.
+
+### SAM3.1 dynamic interactive sessions
+
+`sam3/multiplex_session.h` exposes `Sam31TrackingSession`. It shares a
+`Sam31TrackingFrame` core and accepts a frame-feature provider returning both
+interactive and propagation necks for one image. The latest frame is cached
+across edits and consolidation. The provider may later use a shared visual
+backbone; this session API currently operates on projected features.
+
+The session supports arbitrary point sequences, boxes (labels 2/3), individual
+and simultaneous mask prompts, fresh and incremental refinement, midstream
+object insertion, forward/reverse propagation, clear/remove/reset, callback
+stopping, and atomic cancellation between completed frames. It does not truncate
+point sequences or cap object counts. `add_masks` accepts `[objects,H,W]` and a
+matching vector of unique IDs, decodes the batch together and applies the
+source's mutual brush suppression. Repeated individual brush calls instead give
+later brushes precedence, as in the source. Coordinates can be normalized or
+expressed in model pixels. UI brush previews preserve thresholded original-size
+masks; preflight consolidates them at 288px and encodes full 1008px memory.
+
+`preflight` finalizes edited masks and memory. `propagate` takes the same
+`TrackingPropagation` controls as the SAM3 session, including an inclusive end
+frame (`max_steps=0` yields one frame), optional preflight and deferred encoding.
+`cancel()` is the thread-safe stop signal; other session operations must be
+serialized by the caller. Outputs include full object IDs, low-resolution masks,
+original-size logits and object scores. The native API returns the whole scene
+for previews; the original point UI may return only the edited object. Object
+IDs and existing slot assignments stay stable across refinement. New point
+objects prefer new buckets, while mask objects fill available slots.
+
+The session uses the explicit dense-history reconstruction policy above rather
+than the source demo's legacy singleton history extraction/merge. It retains
+full masks and shared image features, compresses spatial memory to BF16, and can
+store retained data on CPU with `offload_state=true`. It deliberately overrides
+the frame core's output trimming/offload flags to retain reconstruction inputs.
+This currently costs substantial history RAM on long videos; disk-backed storage
+and further retention optimization are still needed. Weights are shared and no
+new model variants or weight copies are introduced. Failed edits/preflight
+restore the previous session state. If clearing an input leaves only later
+non-conditioning annotations, the earliest remaining annotation becomes a
+conditioning frame so it remains usable. Removing the last object resets state.
+Reset retains the frame-feature cache and shared core.
+
+```sh
+build/native/sam3_multiplex_session /private/native-weights-v1 cuda fp16
+build/native-cpu/sam3_multiplex_session /private/native-weights-v1 cpu fp32
+```
+
+The standalone synthetic-feature probe covers 18 accumulated points, masks,
+boxes, midstream insertion, repeated refinement, reverse propagation,
+clear/removal, cancel/resume, failed-edit rollback, reset and simultaneous brushes.
+It checks cache reuse and unchanged IDs. `multiplex_session_invariants.py`
+compares interrupted/resumed execution with uninterrupted outputs and history,
+and checks dynamic layout conservation and retained annotations.
+
+`multiplex_session_parity.py` compares original point/box/refinement and one/two
+object brush workflows, with explicit reference repairs: staging offloaded
+mux/demux tensors to the matrix device, restoring F32 outside AMP, and rebuilding
+annotation index sets lost during singleton extraction/merge. CPU reference
+session constructors, including nested singleton states, are redirected to CPU;
+otherwise their hard-coded CUDA device changes interpolation results. The
+neural equations remain unchanged. These comparisons do not establish full
+upstream multi-object editing equivalence or real-video quality for the native
+stable-slot policy. SAM3.1 visual integration, full text-driven tracking, codecs,
+release packaging and long-video storage optimization remain separate work.
