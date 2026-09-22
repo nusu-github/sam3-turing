@@ -289,5 +289,39 @@ compares all seven outputs against the original tracker methods: 57 CUDA cases
 and 19 completed CPU FP32 cases match exactly. Direct-mask output dimensions
 retain the upstream formulas: SAM3 uses `input_size // 14 * 4`, while SAM3.1
 uses `input_size // 4`. Supplied mask sizes and model-image sizes are separate.
-Temporal memory, frame selection, tracking sessions and multiplex propagation
+Temporal attention, frame selection, tracking sessions and multiplex propagation
 remain to be implemented; these head tests are not full video tracking tests.
+
+`MaskMemoryEncoder` in `memory_encoder.h` implements the memory downsampler,
+two ConvNeXt fusion blocks, output projection and cached positional encoding.
+SAM3 produces 64-channel spatial memory per object. SAM3.1 produces 256-channel
+memory per multiplex group, with 16 mask and 16 conditioning input channels.
+Groups can grow with object count; this is not a 16-object limit. A single image
+feature may be shared across all objects/groups and may be staged on CPU before
+the module transfers it to its execution device. No image-feature copies or
+model-weight variants are required for this sharing.
+
+`forward` exposes the neural module with optional sigmoid skipping.
+`encode_frame` adds the shipped trackers' mask transformations, optional
+non-overlap constraint, SAM3 point-mask binarization and absent-object spatial
+embeddings. For SAM3.1, supply the original-layout selection matrix
+`[groups*16, objects]` and optional conditioning object indices. Its selection
+uses matmul to preserve the source's autocast rounding; the object management
+controller that constructs/updates these matrices remains to be ported.
+SAM3.1 ignores point-mask binarization as in its source configuration. The host
+also preserves its object-score padding/truncation and unused-slot embeddings.
+
+```sh
+build/native/sam3_memory /private/native-weights-v1 sam3.1 cuda fp16 37
+```
+
+This synthetic-feature probe encodes 37 objects in three groups while sharing
+one image feature. It exercises predicted and point-mask paths and reuses the
+loaded module and positional grid. `memory_encoder_parity.py` compares neural
+and frame-host outputs against original modules/methods, including shared
+images, CPU staging, non-square masks, layouts, overlap, empty/partial conditions,
+scores of differing lengths and object counts exceeding one group's capacity.
+CUDA comparisons use the original builder's precomputed positional cache and
+check its output layout as well as values. CPU reference positions are generated
+on CPU because the original constructor hard-codes CUDA for precomputation.
+These tests do not yet cover temporal attention or complete video tracking.

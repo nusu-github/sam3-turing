@@ -565,3 +565,54 @@ library, and native CUDA objects retain sm_75 builds. Code/reports are pushed
 to `codex/native-onboarding`; binaries/logs are saved privately under
 `native-foundation/video-heads-linux-cuda13`. Windows/Turing runtime checks
 remain with the user. No GitHub Actions were used.
+
+## 2026-09-22 — mask-memory encoding and frame-memory host
+
+Added `MaskMemoryEncoder` for both models, using the existing modular weights.
+The neural path includes the 1152×1152 mask resize, four downsampling stages,
+per-pixel LayerNorm2d, image projection, two ConvNeXt fusion blocks and output
+projection. A float32 72×72 positional grid is retained per loaded module,
+then repeated/cast with the same layout as the original CUDA builder's cache.
+SAM3 outputs 64-channel spatial memory; SAM3.1 outputs 256-channel memory.
+
+`encode_frame` reproduces the shipped tracker host behavior: mask sigmoid and
+scale/bias, SAM3 binarization for point-origin masks, optional non-overlap
+suppression, and absent-object spatial embeddings. SAM3.1 additionally packs
+mask and conditioning channels using the caller's selection matrix. Matmul is
+retained because autocast rounding is observable before mask downsampling.
+Its missing/excess object-score handling and contribution from unused slots
+are preserved. SAM3.1 does not binarize point-origin masks in this configuration.
+The assignment controller and temporal-memory scheduling are still separate
+outstanding work; accepting its matrix does not implement that controller.
+
+One image feature may broadcast across all objects or multiplex groups, and CPU
+staging of image features is supported. This preserves the original shared-image
+path without requiring object-count-dependent feature copies. SAM3.1's 16 slots
+per group are a model architecture dimension, not a total object cap: additional
+groups handle more objects without new weight files or model variants.
+
+`memory-encoder-cuda-validation.json`: 49 exactly matching cases for both models
+and FP32/FP16/BF16-reference. `memory-encoder-cpu-validation.json`: 15 exactly
+matching FP32 cases. Comparisons call the original neural modules and tracker
+methods. Coverage includes shared/batched images, CPU-to-GPU staging, contiguous
+and channels-last tensors, arbitrary/non-square/full-size masks, overlap,
+point-origin masks, absent/present objects, empty/partial conditioning lists,
+short/long score arrays, permuted assignments with padding, and 37 objects in
+three groups. CUDA positional output strides also match the original cached
+positions. CPU reference positions are generated on CPU because the upstream
+precomputation constructor hard-codes CUDA; this is explicit in the report.
+The earlier intermittent CPU runtime issue remains unresolved and is not claimed
+fixed by these successful comparisons.
+
+The `sam3_memory` standalone probe passed with Python absent from PATH for
+SAM3.1 CUDA FP16 (37 objects / three groups) and SAM3 CPU FP32 (two objects).
+Both use one shared image feature and reuse the loaded encoder for predicted and
+point-origin masks. CTest passed 7/7 CUDA-enabled and 4/4 custom-CUDA-disabled
+checks. Linked dependencies contain no Python library; custom CUDA objects
+include sm_75. Windows/Turing runtime validation remains with the user.
+
+Code/reports are pushed to `codex/native-onboarding`; development binaries/logs
+are saved privately under `native-foundation/memory-encoder-linux-cuda13`.
+No GitHub Actions were used. Next: temporal attention and frame-memory selection,
+followed by tracking sessions and SAM3.1 multiplex propagation/control. Codecs,
+stable C ABI and standalone release packaging also remain outstanding.

@@ -10,6 +10,7 @@
 #include "sam3/interactive_decoder.h"
 #include "sam3/interactive_image.h"
 #include "sam3/video_heads.h"
+#include "sam3/memory_encoder.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
 #include <torch/library.h>
@@ -27,6 +28,20 @@ c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& ou
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("memory_encode(str directory, str model, Tensor image, Tensor masks, bool skip_sigmoid, str mode) -> (Tensor, Tensor)",
+      [](const std::string& directory,const std::string& model,const at::Tensor& image,const at::Tensor& masks,bool skip,const std::string& mode) {
+        const sam3::WeightStore store(std::filesystem::u8path(directory));
+        const auto out=sam3::MaskMemoryEncoder(store,model,masks.device()).forward(image,masks,skip,mode);
+        return std::make_tuple(out.features,out.position);
+      });
+  m.def("memory_frame(str directory, str model, Tensor image, Tensor masks, Tensor scores, bool from_points, bool non_overlap, float threshold, Tensor? mux_matrix, Tensor? conditioning_objects, str mode) -> (Tensor, Tensor)",
+      [](const std::string& directory,const std::string& model,const at::Tensor& image,const at::Tensor& masks,const at::Tensor& scores,
+         bool points,bool non_overlap,double threshold,const std::optional<at::Tensor>& matrix,const std::optional<at::Tensor>& conditions,const std::string& mode) {
+        const sam3::WeightStore store(std::filesystem::u8path(directory));
+        const auto out=sam3::MaskMemoryEncoder(store,model,masks.device()).encode_frame(image,masks,scores,{points,non_overlap,threshold},
+            matrix.value_or(at::Tensor()),conditions.value_or(at::Tensor()),mode);
+        return std::make_tuple(out.features,out.position);
+      });
   m.def("video_interactive_heads(str directory, str model, Tensor image, Tensor[] high, Tensor? points, Tensor? labels, Tensor? masks, bool multimask, bool direct_mask, str mode, float object_threshold=0.) -> Tensor[]",
       [](const std::string& directory,const std::string& model,const at::Tensor& image,const std::vector<at::Tensor>& high,
          const std::optional<at::Tensor>& points,const std::optional<at::Tensor>& labels,const std::optional<at::Tensor>& masks,
