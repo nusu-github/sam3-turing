@@ -385,5 +385,34 @@ Python, but it is not a real-video predictor or an accuracy benchmark.
 `temporal_memory_parity.py` compares selection, assembled memory and positions,
 pointer counts and conditioned features against the original SAM3 host. CPU
 comparisons redirect only hard-coded `.cuda()` transfers and recreate rotary
-caches on CPU. SAM3.1's temporal host still needs its multiplex state/control
-port before this orchestration can be connected there.
+caches on CPU. SAM3.1's temporal host still needs propagation decoding and
+orchestration with the multiplex state/controller described below.
+
+`MultiplexState` and `MultiplexController` in `multiplex.h` implement SAM3.1's
+inference object allocation and tensor mux/demux. Physical width defaults to 16;
+the number of buckets grows with the object count. Optional external IDs remain
+stable while dense internal indices are renumbered after removals. Removed slots
+stay occupied until their whole bucket is discarded. `remove_objects` returns
+the old bucket indices to retain, for updating associated memory tensors.
+Allocation supports reduced per-bucket capacity, CPU-RNG shuffling and explicit
+preference for new buckets. Mux/demux retain the source matrix multiplications
+and caller autocast behavior, including input rounding.
+
+Invalid additions/removals leave the state unchanged. Removing all objects
+invalidates it, clears active counts and releases matrices; create a fresh state
+before adding new objects. These error/invalid-state guarantees deliberately do
+not reproduce the source's partial failed mutations or stale inactive metadata.
+Matrix construction uses CPU 0/1 buffers with one transfer per matrix; both
+layouts match separate contiguous source allocations, including singleton shapes.
+
+```sh
+build/native/sam3_native_multiplex_test cuda fp16
+build/native-cpu/sam3_native_multiplex_test cpu fp32
+```
+
+The standalone C++ test covers transactional errors, bucket retention, external
+IDs, invalidation, noncontiguous/empty-feature tensors and up to 257 objects.
+`multiplex_parity.py` compares allocation, RNG output and repeated additions /
+removals against the original inference controller. This is the state/controller
+component; SAM3.1 propagation decoding, temporal orchestration and full video
+sessions remain to be connected.

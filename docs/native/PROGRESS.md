@@ -717,3 +717,42 @@ No model-weight variants or copies were added. Code/reports are pushed to
 Windows/Turing runtime validation remains with the user.
 CTest passed 7/7 CUDA-enabled and 4/4 custom-CUDA-disabled checks. The standalone
 probe links no Python library; custom CUDA objects still include sm_75.
+
+## 2026-09-22 — SAM3.1 multiplex state and controller
+
+Added native `MultiplexState` and `MultiplexController` for inference. They
+preserve dense internal object indices, optional stable external IDs, CPU RNG
+permutations, capacity/padding, removed-slot occupancy, retained-bucket indices,
+and allocation into existing or explicitly new buckets. The default physical
+width is 16 and bucket count grows without an added object cap. Mux/demux retain
+the original matrix multiplications and autocast rounding. Matrices are assembled
+on CPU with one transfer each, retaining the original contiguous strides even
+for singleton dimensions. Unindexed `cuda` resolves to the allocated GPU.
+
+Mutation errors leave native state intact, unlike partially applied failures in
+the source. Removing every object explicitly invalidates the state, zeroes active
+counts and releases matrices instead of retaining source stale metadata. These
+deliberate invalid-state differences are documented; valid inference transitions
+are compared directly against the source.
+
+`multiplex-cuda-validation.json` contains 156 exact cases across FP32, FP16 and
+BF16-reference. `multiplex-cpu-validation.json` contains 52 exact FP32 cases.
+Coverage includes widths 1/4/16, reduced capacity, full/object-only shuffling,
+deterministic ordering, external IDs, 14-step add/remove sequences, all-object
+removal, noncontiguous input and scalar/empty feature shapes. RNG seeds and matrix
+strides match the reference. Each mutation case compares every intermediate state
+and its mux/demux outputs. The standalone C++ safety/round-trip test additionally
+covers rejected mutations, copied states, tombstones and up to 257 objects.
+Exact FP32 round-trip tests disable TF32; the library preserves caller policy.
+
+CTest passed 9/9 CUDA-enabled and 5/5 custom-CUDA-disabled checks. The C++ test
+passed with Python absent from PATH on CUDA FP32/FP16/BF16-reference and CPU FP32.
+The executable links no Python library; custom CUDA objects retain sm_75 builds.
+The earlier intermittent development CPU prompt-encoder issue remains unresolved.
+
+Code/reports are pushed to `codex/native-onboarding`; development binaries and
+logs are saved privately under `native-foundation/multiplex-linux-cuda13`.
+No model weights or variants were added. SAM3.1 propagation decoding and temporal
+orchestration, complete tracking sessions, real-video comparisons, codecs, C ABI
+and final distribution packaging remain. No GitHub Actions were used;
+Windows/Turing runtime validation remains with the user.

@@ -13,12 +13,29 @@
 #include "sam3/memory_encoder.h"
 #include "sam3/memory_attention.h"
 #include "sam3/temporal_memory.h"
+#include "sam3/multiplex.h"
+#include "sam3/autocast.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
 #include <torch/library.h>
 #include <cmath>
 
 namespace {
+void multiplex_snapshot(c10::Dict<std::string,at::Tensor>& out,const std::string& prefix,
+    const sam3::MultiplexState& state,const at::Tensor& probe) {
+  const auto cpu=at::TensorOptions().dtype(at::kLong).device(at::kCPU);
+  out.insert(prefix+"counts",at::tensor({int64_t(state.valid()),state.bucket_count(),state.width(),state.capacity(),state.object_count(),state.occupied_count(),state.valid()?state.available_slots():0},cpu));
+  std::vector<int64_t> flat;for (const auto& bucket:state.assignments()) flat.insert(flat.end(),bucket.begin(),bucket.end());
+  out.insert(prefix+"assignments",at::tensor(flat,cpu).reshape({state.bucket_count(),state.width()}));
+  if (state.object_ids()) out.insert(prefix+"ids",at::tensor(*state.object_ids(),cpu));
+  if (!state.valid()) return;
+  out.insert(prefix+"mux_matrix",state.mux_matrix());out.insert(prefix+"demux_matrix",state.demux_matrix());out.insert(prefix+"valid_mask",state.valid_object_mask());
+  if (state.object_count()>0) {
+    TORCH_CHECK(probe.size(0)>=state.object_count(),"multiplex probe is too short");
+    const auto muxed=state.mux(probe.slice(0,0,state.object_count()));
+    out.insert(prefix+"mux",muxed);out.insert(prefix+"demux",state.demux(muxed));
+  }
+}
 c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& out) {
   c10::Dict<std::string,at::Tensor> result;
   result.insert("pred_logits",out.logits);result.insert("pred_boxes",out.boxes);result.insert("pred_boxes_xyxy",out.boxes_xyxy);
@@ -31,6 +48,32 @@ c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& ou
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("multiplex_controller(Tensor probe, int objects, int width, int capacity, bool full_shuffle, bool random, int[]? ids, str mode) -> Dict(str, Tensor)",
+      [](const at::Tensor& probe,int64_t objects,int64_t width,int64_t capacity,bool full,bool random,const std::optional<std::vector<int64_t>>& ids,const std::string& mode) {
+        const auto dtype=mode=="fp16"?at::kHalf:mode=="bf16_reference"?at::kBFloat16:at::kFloat;
+        sam3::AutocastGuard autocast(probe.device().type(),mode!="fp32",dtype);
+        const auto state=sam3::MultiplexController(width,full,capacity).get_state(objects,probe.device(),dtype,random,ids);
+        c10::Dict<std::string,at::Tensor> out;multiplex_snapshot(out,"",state,probe);return out;
+      });
+  m.def("multiplex_state(Tensor probe, int[][] assignments, int capacity, int[]? ids, str[] operations, int[][] indices, int[][] added_ids, bool[] allow_new, bool[] prefer_new, bool[] strict, str mode) -> Dict(str, Tensor)",
+      [](const at::Tensor& probe,const std::vector<std::vector<int64_t>>& assignments,int64_t capacity,const std::optional<std::vector<int64_t>>& ids,
+         const std::vector<std::string>& operations,const std::vector<std::vector<int64_t>>& indices,const std::vector<std::vector<int64_t>>& added_ids,
+         const c10::List<bool>& allow,const c10::List<bool>& prefer,const c10::List<bool>& strict,const std::string& mode) {
+        TORCH_CHECK(operations.size()==indices.size() && operations.size()==added_ids.size() && operations.size()==allow.size() && operations.size()==prefer.size() && operations.size()==strict.size(),"inconsistent multiplex operations");
+        const auto dtype=mode=="fp16"?at::kHalf:mode=="bf16_reference"?at::kBFloat16:at::kFloat;
+        sam3::AutocastGuard autocast(probe.device().type(),mode!="fp32",dtype);
+        sam3::MultiplexState state(assignments,probe.device(),dtype,capacity,ids);c10::Dict<std::string,at::Tensor> out;
+        multiplex_snapshot(out,"0.",state,probe);
+        for (size_t i=0;i<operations.size();++i) {
+          const auto prefix=std::to_string(i+1)+".";
+          if (operations[i]=="add") state.add_objects(indices[i],ids?std::optional<std::vector<int64_t>>(added_ids[i]):std::nullopt,allow[i],prefer[i]);
+          else if (operations[i]=="remove") out.insert(prefix+"kept",at::tensor(state.remove_objects(indices[i],strict[i]),at::kLong));
+          else if (operations[i]=="next") {TORCH_CHECK(indices[i].size()==1,"next needs a count");out.insert(prefix+"next",at::tensor(state.next_indices(indices[i][0],allow[i],prefer[i]),at::kLong));}
+          else TORCH_CHECK(false,"unknown multiplex operation");
+          multiplex_snapshot(out,prefix,state,probe);
+        }
+        return out;
+      });
   m.def("select_conditioning_frames(int current, int[] order, int limit, bool keep_first) -> (int[], int[])",
       [](int64_t current,const std::vector<int64_t>& order,int64_t limit,bool keep) {
         auto selected=sam3::select_conditioning_frames(current,order,limit,keep);
