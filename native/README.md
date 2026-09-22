@@ -506,3 +506,67 @@ propagates subsequent synthetic frames while storing outputs/memory on CPU.
 including direct masks, 17-point prompts, deferred/disabled memory encoding,
 overlap constraints, scores, offload and history trimming. Session-level prompt
 accumulation, per-object consolidation and real-video evaluation remain separate.
+
+### SAM3 interactive tracking session
+
+`Sam3TrackingSession` in `tracking_session.h` implements the low-level interactive
+tracker's state machine. It shares a `Sam3TrackingFrame` instance (and its weights)
+between sessions and accepts a frame feature provider. The provider supplies one
+image's projected maps; the session caches the most recent frame and expands its
+features across objects. A visual backbone/video decoder can be attached through
+this provider without creating image/video copies of the model weights.
+
+The API supports arbitrary accumulated points, boxes, supplied masks, preview
+edits using previous logits, memory consolidation, forward/reverse propagation,
+clearing annotations, object removal/remapping and reset. Normalized coordinates
+are multiplied by 1008; `normalized=false` expects model-image coordinates.
+The default point cap is disabled. Optional positive `max_points` reproduces the
+source's first/last-click policy, but is not an optimization used by this port.
+There is no cap on object count. This is the original **low-level** predictor:
+new IDs must be introduced before propagation starts. Dynamic object discovery
+and text/video association belong to the remaining higher-level tracker.
+
+Pending edits are kept per object. Preflight consolidates their low masks and
+pointers, supplies empty-mask pointers for missing objects, applies source
+overlap constraints and encodes memory only after consolidation. Supplied brush
+masks stay at original video resolution for preview; overlapping later brush
+strokes suppress earlier masks. Stored memory uses BF16, including FP16/FP32
+execution, and can be offloaded to CPU. Positions are cached once; pointers and
+object scores remain on the execution device. BF16 here is a storage format;
+FP16 execution casts projection inputs through autocast. FP32 explicitly expands
+the compressed values before memory attention; the source's permanent CUDA BF16
+context otherwise hides a dtype error in its FP32 path.
+CPU offload waits for device-to-host copies before returning: CPU consolidation
+can immediately resize/copy the stored masks. Keeping those copies asynchronous
+caused intermittent preview corruption despite correct final stored tensors.
+
+Frame dictionaries retain insertion order, and temporary integer-set traversal
+matches 64-bit CPython 3.12, including its different preallocation for dictionary
+versus key-view updates. This preserves ordered conditioning attention for
+sparse/nonmonotonic annotations without linking Python. The compatibility helper
+is covered against the original Python containers, including collisions, large
+growth and 64-bit keys. Other Python implementations/versions are not a claimed
+container-order reference.
+
+`propagate` emits completed frames through a callback. Return false, or call the
+thread-safe `cancel()`, to stop after a consistent completed frame. Resuming is
+another `propagate` call with the desired start index. Other session methods must
+not be called concurrently. Propagation endpoints are inclusive, matching the
+source: `max_steps=0` emits the start frame. Clear/reset retains cached visual
+features and constant positions; removing the last object resets the session.
+Optional output overlap suppression and two-pass connected-component cleanup
+run after resizing to the original frame dimensions.
+
+```sh
+build/native/sam3_tracking_session /private/native-weights-v1 cuda fp16
+build/native-cpu/sam3_tracking_session /private/native-weights-v1 cpu fp32
+```
+
+This standalone probe exercises 17-point input, two objects, brush input,
+consolidation, cancellation/resume, reverse correction, removal and reset using
+synthetic full-grid features. It does not decode a video or measure accuracy.
+`tracking_session_parity.py` compares original predictor operations and snapshots
+of global/per-object/pending state, not just displayed masks. FP32 reference
+comparison explicitly restores compressed memory to float before attention;
+CPU reference redirects CUDA transfers and rotary caches. Real-video evaluation,
+SAM3.1 session rebucketing, text-driven video tracking and the C ABI remain.

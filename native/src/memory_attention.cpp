@@ -60,7 +60,10 @@ at::Tensor MemoryAttention::forward(const at::Tensor& source,const at::Tensor& s
   TORCH_CHECK(side*side==source.size(0),"memory attention requires a square spatial query grid");
   const auto frequencies=side==72?frequencies_:axial_frequencies(side,multiplex_?32:256,device_);
   auto output=(source+.1*source_position).transpose(0,1);
-  const auto mem=memory.transpose(0,1),pos=memory_position.transpose(0,1);
+  // Session storage is BF16 even with FP32 execution. The original predictor
+  // assumes a permanent autocast context; a native FP32 caller must restore the
+  // compressed values to the projection weights' dtype before linear layers.
+  const auto mem=(mode=="fp32"?memory.to(at::kFloat):memory).transpose(0,1),pos=memory_position.transpose(0,1);
   at::Tensor image_batch,memory_image_batch,memory_image_pos_batch;
   if (multiplex_) {
     TORCH_CHECK(image.dim()==3 && image.size(0)==source.size(0) && (image.size(1)==1 || image.size(1)==source.size(1)) && image.size(2)==256 && image.device()==device_,"invalid SAM3.1 image stream");

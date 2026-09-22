@@ -898,3 +898,62 @@ accumulation, per-object consolidation, edits/deletions and propagation state.
 Real-video parity, SAM3.1 session rebucketing, text-driven tracking, codecs,
 C ABI and final packaging remain. No GitHub Actions were used; Windows/Turing
 runtime verification remains with the user.
+
+## 2026-09-22 — SAM3 interactive tracking session and edit lifecycle
+
+Added `Sam3TrackingSession` with a shared frame core and an image-feature provider.
+Sessions cache one projected feature pyramid, expand it across object batches,
+and reuse the existing weight shards. The API manages point/box accumulation,
+brush masks, previous-logit refinement, per-object pending edits, consolidation,
+forward/reverse propagation, cancellation/resume, clearing annotations, object
+removal/remapping and reset. All supplied points are retained by default; the
+comparison includes an accumulated 18-point prompt. This is the original
+low-level interactive predictor, whose object IDs are registered before tracking;
+higher-level dynamic discovery/text video association remains to be implemented.
+
+Consolidation preserves missing-object pointers, overlapping brush strokes,
+mandatory non-overlap before memory encoding, BF16 memory storage, optional CPU
+offload, constant position caching and original output postprocessing. Storage
+and inference dtypes are separate. A source FP32 failure was reproduced because
+BF16 stored memory reached FP32 linear weights without autocast. Native memory
+attention now restores compressed values to FP32 in FP32 mode. The reference
+suite makes that explicit input conversion; FP16/BF16 math is unchanged.
+
+Two integration defects were found and fixed rather than hidden by tolerances:
+
+- Sparse, nonmonotonic annotations change ordered conditioning history when
+  Python set iteration is replaced by sorted C++ maps. Annotation dictionaries
+  now retain insertion order. A small native compatibility helper preserves
+  64-bit CPython 3.12 integer-set traversal, including dictionary versus key-view
+  update growth. No interpreter dependency is introduced; the existing PSF
+  notice/license is extended for the algorithm.
+- Asynchronous GPU-to-CPU mask copies were read by CPU consolidation before
+  completion. Preview masks could differ while later stored tensors matched.
+  CPU offload now guarantees completed copies before CPU resize/copy or external
+  state inspection. The reference waits before CPU consolidation/snapshots too,
+  preventing timing from becoming part of the numerical comparison.
+
+`tracking-session-cuda-validation.json` records 9 exact operation sequences
+(FP32, FP16, BF16-reference), totaling 87 operations and 4,185 compared tensors.
+`tracking-session-cpu-validation.json` records 3 exact FP32 sequences, 29 operations
+and 1,395 tensors. Comparisons include displayed/low masks, pointers/logits,
+compressed memory/positions, scores, input metadata, per-object and global
+history, pending edits, insertion order, consolidated sets and tracking direction.
+Both runs also passed 608 frame-order cases and 16 independent output cleanup
+cases. The CPU cleanup reference uses the original skimage component path.
+Reference CPU transfers/rotary caches are adapted as in preceding milestones.
+
+`sam3_tracking_session` passed with Python absent from PATH on CUDA FP16 and CPU
+FP32: two objects, 17-point input, brush input, memory consolidation, eight output
+callbacks across cancellation/resume/reverse correction, object removal and
+reset. CTest passed 9/9 CUDA-enabled and 5/5 custom-CUDA-disabled checks. The
+shared library still contains sm_75 cubins and has no Python library dependency.
+The earlier intermittent CPU prompt-encoder issue remains unresolved.
+
+Code/reports are pushed to `codex/native-onboarding`; development binaries/logs
+are saved privately under `native-foundation/tracking-session-linux-cuda13`.
+This is a synthetic-feature session milestone, not a real-video accuracy result
+or a relocatable release. Remaining work includes the visual/video provider,
+SAM3.1 session rebucketing, high-level text-driven tracking, codecs, C ABI,
+multi-GPU and final packaging/optimization. No GitHub Actions were used;
+Windows/Turing runtime verification remains with the user.
