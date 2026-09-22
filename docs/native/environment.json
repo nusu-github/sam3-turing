@@ -1,0 +1,25 @@
+{
+  "date_utc": "2026-09-22",
+  "os": "Linux-6.8.0-124-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "torch_cuda": "13.0",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "compute_capability": [
+    12,
+    0
+  ],
+  "torch_arches": [
+    "sm_75",
+    "sm_80",
+    "sm_86",
+    "sm_90",
+    "sm_100",
+    "sm_120",
+    "compute_120"
+  ],
+  "native_cpu_test": "passed",
+  "native_cuda_test": "passed on Blackwell only",
+  "windows_test": "not run",
+  "turing_test": "not run"
+}

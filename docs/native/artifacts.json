@@ -1,0 +1,72 @@
+[
+  {
+    "path": "reference-docs/ao.zip",
+    "bytes": 497347,
+    "sha256": "93e5d32f21de6a8b2de0d1d90a1add6afcd7522a8068f11627244e9be4833b03"
+  },
+  {
+    "path": "reference-docs/cppdocs.zip",
+    "bytes": 319585,
+    "sha256": "e975abb5f6f90b5d25f5297c7e6a598374f5876264900d424d3cc242958c8886"
+  },
+  {
+    "path": "reference-docs/executorch.zip",
+    "bytes": 883441,
+    "sha256": "24677ae195e45e3f301e70261759363aecb4d81e4639cfcd56a62bc749e22890"
+  },
+  {
+    "path": "reference-docs/pytorch.zip",
+    "bytes": 8724032,
+    "sha256": "2c80ffadbd64fcdf446fea93dde9530462fa1473ed9d0d7f16e122f6f57b6a96"
+  },
+  {
+    "path": "reference-docs/torchcodec.zip",
+    "bytes": 117158,
+    "sha256": "8eb793dc91adfcadcc4981685e0ff72a7dee833ef5e9e4aec045ca64f6a8e503"
+  },
+  {
+    "path": "reference-docs/torchvision.zip",
+    "bytes": 1647444,
+    "sha256": "473ff81bd3d6cac25597797b47e8b675b8c9942f2997dcc4635d68f5c8a03326"
+  },
+  {
+    "path": "setup/native-build.log",
+    "bytes": 123,
+    "sha256": "16de137fa609a9a680a04978d9b92d37091ffe6ab5422232d5881d2616766a59"
+  },
+  {
+    "path": "setup/native-configure.log",
+    "bytes": 3135,
+    "sha256": "c53c1f18a2b03b2bc71eaa441c3fdd1586451a3eba1e88b48d94e237750bccd4"
+  },
+  {
+    "path": "setup/native-ldd.txt",
+    "bytes": 3438,
+    "sha256": "85a0888763dd6ac53701dcf0313e5f5b9053344abbf6fe698fce160b09f90c82"
+  },
+  {
+    "path": "setup/python-environment.txt",
+    "bytes": 6755,
+    "sha256": "5e74d56b63bae8b6cc1840de69e7fd452998445ba1f95d3c641e588853ae6d9e"
+  },
+  {
+    "path": "weights/sam3/config.json",
+    "bytes": 25843,
+    "sha256": "4616385e4b21f2e5e22c875b65679185cbccfa95de42542b9166f7dc3d57160f"
+  },
+  {
+    "path": "weights/sam3/sam3.pt",
+    "bytes": 3450062241,
+    "sha256": "9999e2341ceef5e136daa386eecb55cb414446a00ac2b55eb2dfd2f7c3cf8c9e"
+  },
+  {
+    "path": "weights/sam3.1/config.json",
+    "bytes": 25843,
+    "sha256": "4616385e4b21f2e5e22c875b65679185cbccfa95de42542b9166f7dc3d57160f"
+  },
+  {
+    "path": "weights/sam3.1/sam3.1_multiplex.pt",
+    "bytes": 3502755717,
+    "sha256": "0567debeec80ba4ac6369540c6c248025283cb3ff2b92827509e57e2b3541cb6"
+  }
+]

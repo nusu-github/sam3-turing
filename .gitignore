@@ -151,3 +151,10 @@ Thumbs.db
 # BPE vocabulary files
 *.bpe
 *.vocab
+
+# Native deployment artifacts can embed restricted model weights
+*.pt2
+*.pte
+*.ptd
+artifacts/
+reference-docs/

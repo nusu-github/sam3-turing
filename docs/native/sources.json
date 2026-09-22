@@ -1,0 +1,40 @@
+{
+  "base_commit": "080bec0b3a2f103787b6985c21bc51c9bb99aaa3",
+  "documents": [
+    {
+      "file": "ao.zip",
+      "bytes": 497347,
+      "sha256": "93e5d32f21de6a8b2de0d1d90a1add6afcd7522a8068f11627244e9be4833b03"
+    },
+    {
+      "file": "cppdocs.zip",
+      "bytes": 319585,
+      "sha256": "e975abb5f6f90b5d25f5297c7e6a598374f5876264900d424d3cc242958c8886"
+    },
+    {
+      "file": "executorch.zip",
+      "bytes": 883441,
+      "sha256": "24677ae195e45e3f301e70261759363aecb4d81e4639cfcd56a62bc749e22890"
+    },
+    {
+      "file": "pytorch.zip",
+      "bytes": 8724032,
+      "sha256": "2c80ffadbd64fcdf446fea93dde9530462fa1473ed9d0d7f16e122f6f57b6a96"
+    },
+    {
+      "file": "torchcodec.zip",
+      "bytes": 117158,
+      "sha256": "8eb793dc91adfcadcc4981685e0ff72a7dee833ef5e9e4aec045ca64f6a8e503"
+    },
+    {
+      "file": "torchvision.zip",
+      "bytes": 1647444,
+      "sha256": "473ff81bd3d6cac25597797b47e8b675b8c9942f2997dcc4635d68f5c8a03326"
+    }
+  ],
+  "models": {
+    "facebook/sam3": "3c879f39826c281e95690f02c7821c4de09afae7",
+    "facebook/sam3.1": "daa63191845a41281374e725f4c9e51c7a824460"
+  },
+  "private_bucket": "hf://buckets/RamRom/sam3-turing-native-20260922"
+}
