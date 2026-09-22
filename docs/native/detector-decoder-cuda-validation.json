@@ -1,0 +1,312 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cuda",
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "full",
+      "hidden_shape": [
+        6,
+        200,
+        1,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "batch_padding",
+      "hidden_shape": [
+        6,
+        200,
+        3,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "geometry_only",
+      "hidden_shape": [
+        6,
+        200,
+        2,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "full",
+      "hidden_shape": [
+        6,
+        200,
+        1,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "batch_padding",
+      "hidden_shape": [
+        6,
+        200,
+        3,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "geometry_only",
+      "hidden_shape": [
+        6,
+        200,
+        2,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "full",
+      "hidden_shape": [
+        6,
+        200,
+        1,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "batch_padding",
+      "hidden_shape": [
+        6,
+        200,
+        3,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "geometry_only",
+      "hidden_shape": [
+        6,
+        200,
+        2,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "full",
+      "hidden_shape": [
+        6,
+        200,
+        1,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "batch_padding",
+      "hidden_shape": [
+        6,
+        200,
+        3,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "geometry_only",
+      "hidden_shape": [
+        6,
+        200,
+        2,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "full",
+      "hidden_shape": [
+        6,
+        200,
+        1,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "batch_padding",
+      "hidden_shape": [
+        6,
+        200,
+        3,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "geometry_only",
+      "hidden_shape": [
+        6,
+        200,
+        2,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "full",
+      "hidden_shape": [
+        6,
+        200,
+        1,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "batch_padding",
+      "hidden_shape": [
+        6,
+        200,
+        3,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "geometry_only",
+      "hidden_shape": [
+        6,
+        200,
+        2,
+        256
+      ],
+      "max_errors": {
+        "hidden": 0.0,
+        "references": 0.0,
+        "presence_logits": 0.0,
+        "presence_features": 0.0
+      }
+    }
+  ]
+}

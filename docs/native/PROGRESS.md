@@ -227,3 +227,63 @@ validation remain with the user as requested.
 Next: image/text/geometry fusion encoder, detector decoder and segmentation
 heads. String tokenization, interactive/video/multiplex sessions and a stable
 C ABI/full standalone distribution also remain outstanding.
+
+## 2026-09-22 — image/prompt fusion and detection transformer
+
+Added native `DetectorEncoder` and `DetectorDecoder` using the existing modular
+weight archive, with no new weight copies. Fusion executes all six layers and
+retains prompt padding, image padding and valid-ratio metadata. Decoder executes
+all six layers, all 200 learned detection queries, presence token, sine box
+positions, learned logarithmic relative-position bias and iterative refinement.
+It exposes normalized layer outputs, pre-refinement anchors, presence logits
+and presence features for the final score/mask heads.
+
+Attention follows the source's packed/separate projection choices and its
+mixture of explicit bmm/softmax and ATen SDPA. The decoder FFN preserves the
+source's explicit CUDA FP32 region within mixed precision. The source's
+unassigned presence-logit `clamp()` has no effect; native preserves the actual
+unclamped decoder output rather than silently changing model behavior.
+
+A parity failure identified a source precision detail: the constructor's
+standard 72×72 coordinate cache is built with integer scalars, while other
+sizes are built from device tensor scalars. CUDA division uses different
+rounding in these two paths. Native now follows both paths. The test retains
+the original standard cache (moving it to CPU for CPU comparison), rather than
+clearing it and inadvertently changing reference behavior. Tolerances were
+not increased to accommodate the failure.
+
+Validation reports:
+
+- `detector-encoder-cuda-validation.json`: 21 cases across both models and
+  FP32/FP16/BF16-reference, including full 72×72 image features, varying prompt
+  lengths, three-image padded batches, and saved real SAM3 vision/text features.
+  Every compared tensor was exactly equal.
+- `detector-decoder-cuda-validation.json`: 18 cases across both models and all
+  three modes, comparing every layer's 200 query features, anchors, presence
+  logits and final presence features. Every compared tensor was exactly equal.
+- `detector-encoder-cpu-validation.json`: 7 FP32 cases, exactly equal.
+- `detector-decoder-cpu-validation.json`: 6 FP32 cases passed, maximum absolute
+  feature error 1.205e-5; maximum anchor error 3.577e-7. The standard source
+  coordinate cache is generated on CUDA then moved to CPU; native CPU generates
+  coordinates locally. These CPU results are within the original test tolerance,
+  not bitwise-identical for the standard grid.
+
+Diagnostic comparisons also exposed that normal PyTorch Parameters versus
+inference tensors can select different noncontiguous linear kernels through
+`requires_grad` metadata, even during inference. Keep construction context
+explicit when extending comparisons; current module reports construct the
+reference under inference mode, as did the earlier image reference capture.
+End-to-end image/application equivalence remains to be demonstrated.
+
+The new `sam3_detector_transformer` C++ probe chains geometry→fusion→decoder.
+Scoring, final box/mask heads, string tokenization, interactive/video/multiplex
+sessions and standalone packaging remain outstanding. No GitHub Actions were
+used; Windows/Turing runtime validation remains assigned to the user.
+
+The linked geometry→fusion→decoder probes passed on CUDA FP16 (SAM3.1) and CPU
+FP32 (SAM3) with `PATH=/nonexistent`, retaining `[6,200,1,256]` query features
+and `[6,200,1,4]` anchors. Dynamic dependency inspection found no libpython or
+libtorch_python. CUDA-enabled CTest passed 6/6; custom-CUDA-disabled CTest passed
+3/3. Binary/log snapshots are stored privately at
+`native-foundation/detector-transformer-linux-cuda13`; matching development
+LibTorch libraries are still required, and these are not release packages.

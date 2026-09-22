@@ -108,3 +108,20 @@ The native ROIAlign kernel supports CPU/CUDA float32/float64/float16 and follows
 torchvision's autocast policy. Its sampling implementation is adapted under
 the [torchvision BSD license](third_party/torchvision/LICENSE); neither the
 Python torchvision package nor its compiled library is required at runtime.
+
+The image detector's six-layer fusion encoder and six-layer query decoder are
+available as `DetectorEncoder` / `DetectorDecoder` in `detector.h`. The decoder
+retains all 200 learned queries and the presence token, relative box-position
+bias, iterative box refinement, and outputs from all six layers. Fusion accepts
+variable prompt embeddings/masks and per-image spatial padding. It returns the
+spatial metadata needed by the decoder without modifying caller tensors.
+
+```sh
+build/native/sam3_detector_transformer /private/native-weights-v1 sam3.1 cuda fp16
+```
+
+This standalone probe chains geometry, fusion and decoding on synthetic image
+features. Scoring, final mask heads and host image/text session orchestration
+remain to be connected; this is not yet a full image detector application.
+An optional decoder trace records layer intermediates for diagnostics; leave
+it null in normal inference to avoid retaining large attention-bias tensors.

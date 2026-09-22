@@ -1,0 +1,141 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cpu",
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "full",
+      "memory_shape": [
+        5184,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_errors": {
+        "memory": 0.0,
+        "pos_embed": 0.0,
+        "memory_text": 0.0,
+        "level_start_index": 0.0,
+        "spatial_shapes": 0.0,
+        "valid_ratios": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "batch_padding",
+      "memory_shape": [
+        315,
+        3,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_errors": {
+        "memory": 0.0,
+        "padding_mask": 0.0,
+        "pos_embed": 0.0,
+        "memory_text": 0.0,
+        "level_start_index": 0.0,
+        "spatial_shapes": 0.0,
+        "valid_ratios": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "geometry_only",
+      "memory_shape": [
+        247,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_errors": {
+        "memory": 0.0,
+        "pos_embed": 0.0,
+        "memory_text": 0.0,
+        "level_start_index": 0.0,
+        "spatial_shapes": 0.0,
+        "valid_ratios": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "actual_vision",
+      "memory_shape": [
+        5184,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_errors": {
+        "memory": 0.0,
+        "pos_embed": 0.0,
+        "memory_text": 0.0,
+        "level_start_index": 0.0,
+        "spatial_shapes": 0.0,
+        "valid_ratios": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "full",
+      "memory_shape": [
+        5184,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_errors": {
+        "memory": 0.0,
+        "pos_embed": 0.0,
+        "memory_text": 0.0,
+        "level_start_index": 0.0,
+        "spatial_shapes": 0.0,
+        "valid_ratios": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "batch_padding",
+      "memory_shape": [
+        315,
+        3,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_errors": {
+        "memory": 0.0,
+        "padding_mask": 0.0,
+        "pos_embed": 0.0,
+        "memory_text": 0.0,
+        "level_start_index": 0.0,
+        "spatial_shapes": 0.0,
+        "valid_ratios": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "geometry_only",
+      "memory_shape": [
+        247,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_errors": {
+        "memory": 0.0,
+        "pos_embed": 0.0,
+        "memory_text": 0.0,
+        "level_start_index": 0.0,
+        "spatial_shapes": 0.0,
+        "valid_ratios": 0.0
+      }
+    }
+  ]
+}
