@@ -6,7 +6,7 @@ namespace sam3 {
 struct MultiplexFrame {
   int64_t index=0;
   VideoMaskOutput masks;
-  at::Tensor memory,memory_position,pointer,iou,confidence,image,image_position;
+  at::Tensor memory,memory_position,pointer,iou,confidence,image,image_position,input_masks;
   std::vector<int64_t> conditioning_objects;
 };
 struct MultiplexFrameHistory {std::vector<MultiplexFrame> conditioning,tracked;};
@@ -23,8 +23,12 @@ struct MultiplexFrameOptions {
   int64_t multimask_min_points=0,multimask_max_points=1;
   double object_threshold=0.;
 };
-// SAM3.1 inference frame host, before dynamic object insertion/reconditioning
-// and session-level singleton extraction/reintegration.
+struct MultiplexMaskUpdate {
+  bool append=false,encode_memory=true,masks_from_points=false;
+  bool allow_new_buckets=false,prefer_new_buckets=false;
+};
+// SAM3.1 inference frame host with current-frame mask insertion/reconditioning.
+// Session-level history remapping and singleton reintegration are separate.
 class SAM3_NATIVE_EXPORT Sam31TrackingFrame {
  public:
   Sam31TrackingFrame(const WeightStore&,at::Device device=at::kCPU);
@@ -33,6 +37,13 @@ class SAM3_NATIVE_EXPORT Sam31TrackingFrame {
   MultiplexFrame forward(const TrackingFeatures& interactive,const TrackingFeatures& propagation,
       const MultiplexFrameRequest&,MultiplexFrameHistory&,const MultiplexState&,
       const MultiplexFrameOptions& options={},const std::string& mode="fp32") const;
+  // Update a current frame after propagation. Previous history is not remapped.
+  // Appends allocate consecutive indices, as in the source; supplied indices
+  // identify rows only for reconditioning. Returns the actual affected indices.
+  std::vector<int64_t> update_masks(const TrackingFeatures& interactive,const TrackingFeatures& propagation,
+      const at::Tensor& masks,const std::vector<int64_t>& indices,
+      const std::optional<std::vector<int64_t>>& object_ids,MultiplexFrame&,MultiplexState&,
+      const MultiplexMaskUpdate&,const MultiplexFrameOptions& options={},const std::string& mode="fp32") const;
  private:
   VideoInteractiveHeads interactive_;
   MultiplexPropagationHeads propagation_;

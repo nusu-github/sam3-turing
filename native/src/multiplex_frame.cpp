@@ -3,6 +3,7 @@
 #include "detector_layers.h"
 #include <ATen/TensorIndexing.h>
 #include <c10/core/InferenceMode.h>
+#include <algorithm>
 #include <numeric>
 namespace sam3 {
 namespace {
@@ -109,5 +110,48 @@ MultiplexFrame Sam31TrackingFrame::forward(const TrackingFeatures& interactive,c
     }
   }
   return out;
+}
+std::vector<int64_t> Sam31TrackingFrame::update_masks(const TrackingFeatures& interactive,const TrackingFeatures& propagation,
+    const at::Tensor& masks,const std::vector<int64_t>& indices,const std::optional<std::vector<int64_t>>& object_ids,
+    MultiplexFrame& frame,MultiplexState& buckets,const MultiplexMaskUpdate& request,const MultiplexFrameOptions& options,const std::string& mode) const {
+  c10::InferenceMode inference;detail::check_mode(mode);
+  const auto device=no_memory_.device();AutocastGuard autocast(device.type(),mode!="fp32",mode=="fp16"?at::kHalf:at::kBFloat16);
+  TORCH_CHECK(buckets.valid() && buckets.width()==16,"SAM3.1 requires valid 16-slot buckets");
+  TORCH_CHECK(masks.dim()==4 && masks.size(1)==1 && masks.size(0)==int64_t(indices.size()) && !indices.empty(),"masks must be [objects,1,H,W] with one index per mask");
+  TORCH_CHECK(!object_ids || object_ids->size()==indices.size(),"one global ID per mask is required");
+  TORCH_CHECK(frame.masks.low_res_mask.defined() && frame.masks.object_logits.defined(),"current frame masks and object logits are required");
+  TORCH_CHECK(interactive.image.sizes()==at::IntArrayRef({1,256,72,72}) && interactive.image.device()==device && interactive.high.size()==2,"shared interactive image features are required");
+  if(request.encode_memory)TORCH_CHECK(frame.masks.high_res_mask.defined() && propagation.image.defined() && (!options.save_image || (frame.image.defined() && frame.image_position.defined())),"memory update requires high masks and saved image features");
+  // Stage changes so a failed capacity/shape/encoding check leaves caller state intact.
+  auto updated=frame;auto state=buckets;auto affected=indices;
+  at::Tensor pointers;if(options.temporal.use_pointers)pointers=buckets.demux(frame.pointer);
+  if(request.append){affected=state.next_indices(indices.size(),request.allow_new_buckets,request.prefer_new_buckets);state.add_objects(affected,object_ids,request.allow_new_buckets,request.prefer_new_buckets);}
+  else for(auto index:indices)TORCH_CHECK(index>=0 && index<state.object_count(),"reconditioning object index out of range");
+  const auto sequence=interactive.image.flatten(2).permute({2,0,1})+no_memory_;
+  auto output=interactive_.use_mask_as_output(sequence.permute({1,2,0}).view({1,256,72,72}),interactive.high,masks,mode,options.object_threshold);
+  if(request.append && updated.masks.high_res_mask.defined() && updated.masks.high_res_mask.size(-1)!=output.high_res_mask.size(-1))
+    updated.masks.high_res_mask=at::upsample_bilinear2d(updated.masks.high_res_mask,{output.high_res_mask.size(-1),output.high_res_mask.size(-1)},false);
+  output.low_res_mask=at::_upsample_bilinear2d_aa(output.low_res_mask,{updated.masks.low_res_mask.size(-2),updated.masks.low_res_mask.size(-1)},false);
+  const auto selected=at::tensor(affected,at::TensorOptions().device(device).dtype(at::kLong));
+  const auto merge=[&](at::Tensor& target,const at::Tensor& value) {
+    if(request.append)target=at::cat({target,value},0);
+    else {auto replacement=target.clone();replacement.index_put_({selected},value.to(target.scalar_type()));target=std::move(replacement);}
+  };
+  merge(updated.masks.low_res_mask,output.low_res_mask);
+  if(updated.masks.high_res_mask.defined())merge(updated.masks.high_res_mask,output.high_res_mask);
+  merge(updated.masks.object_logits,output.object_logits);
+  if(options.temporal.select_by_score)merge(updated.iou,output.iou.squeeze(-1));
+  if(updated.input_masks.defined())merge(updated.input_masks,masks);
+  if(options.temporal.use_pointers){merge(pointers,output.object_pointer.to(pointers.scalar_type()));updated.pointer=state.mux(pointers);}
+  for(auto index:affected)if(std::find(updated.conditioning_objects.begin(),updated.conditioning_objects.end(),index)==updated.conditioning_objects.end())updated.conditioning_objects.push_back(index);
+  if(request.encode_memory) {
+    TORCH_CHECK(updated.masks.high_res_mask.size(0)==state.object_count(),"updated masks must match the multiplex state");
+    const auto pixels=propagation.image.flatten(2).permute({2,0,1}).permute({1,2,0}).view({1,256,72,72});
+    const auto conditions=at::tensor(updated.conditioning_objects,at::TensorOptions().device(device).dtype(at::kLong));
+    const auto encoded=memory_.encode_frame(pixels,updated.masks.high_res_mask,updated.masks.object_logits,
+        {request.append && request.masks_from_points,options.non_overlap_memory,options.object_threshold},state.mux_matrix(),conditions,mode);
+    updated.memory=encoded.features;updated.memory_position=encoded.position;
+  }
+  frame=std::move(updated);buckets=std::move(state);return affected;
 }
 }

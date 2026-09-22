@@ -1070,3 +1070,48 @@ The larger goal remains active: SAM3.1 sessions/rebucketing, codecs, high-level
 text/video association, C ABI, multi-GPU, packaging and quality/performance/size
 optimization are unfinished. No GitHub Actions were used; Turing/Windows runtime
 verification remains with the user.
+
+## 2026-09-22 — SAM3.1 dynamic current-frame mask updates
+
+Added `Sam31TrackingFrame::update_masks` for the original dynamic model's mask
+insertion and reconditioning methods. Appends allocate consecutive internal
+indices with optional global object IDs, honor capacity/removed-slot policies,
+and optionally grow or prefer new buckets. Reconditioning overwrites selected
+objects in caller order. The implementation preserves the source's low-mask
+antialiased resize, high-mask resolution adjustment on append, absent-object
+pointer transformation, demux/merge/remux order, conditioning flags and memory
+re-encoding. It retains optional input-mask storage and saved image features.
+Changes are staged so an exception does not partially mutate caller state.
+
+`multiplex-update-*-validation.json` records 45 CUDA cases (15 each FP16, FP32
+and BF16-reference) and 15 CPU FP32 cases. All 796 compared tensor outputs match
+the original dynamic methods exactly. Cases cover growth from 15 to 18 objects,
+new-bucket preference, removed slots, constrained bucket capacity, resolution
+changes, empty masks, ordered partial replacement, optional IDs/input masks,
+score fields, overlap policy and deferred memory. The reference uses full-grid
+synthetic features; this is not a real-video quality result.
+
+The source updates primary masks/logits, selected IoUs, multiplexed pointers
+and optional memory, while leaving existing candidate tensors and effective
+confidence untouched. The native method preserves this behavior, including
+potentially older auxiliary shapes after append. A surrounding session must
+refresh the derived fields it uses. Mask reconditioning always re-encodes with
+mask provenance, matching the source. Storage offload belongs after the update.
+
+The standalone `sam3_multiplex_update` ran with PATH=/nonexistent on CUDA FP16
+(three to 20 objects across three buckets) and CPU FP32 (three to five objects
+across two buckets). Both initialized, appended, selectively reconditioned and
+propagated from the updated conditioning frame. They also verified capacity
+failure leaves caller state intact and reconditioning preserves an unrelated
+object's mask. These chains intentionally have a single updated conditioning
+frame; they do not prove older-history remapping after bucket growth.
+
+CTest passed 9/9 CUDA-enabled and 5/5 custom-CUDA-disabled checks. The new native
+probe has no libpython/libtorch_python linkage and sm_75 cubins remain present.
+The existing intermittent source CPU prompt-encoder issue remains unresolved.
+Code/reports are pushed to `codex/native-onboarding`; development binaries and
+logs are saved under `native-foundation/multiplex-update-linux-cuda13` in the
+private bucket. They require compatible LibTorch/ICU/zlib and are not a portable
+release. No Actions were used; Windows/Turing runtime checks remain with the
+user. Full session history remapping/singleton reintegration, codecs, high-level
+tracking, C ABI, multi-GPU, packaging and optimization remain unfinished.

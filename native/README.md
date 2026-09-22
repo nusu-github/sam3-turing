@@ -656,8 +656,7 @@ Optional IoU stability attenuation is supported by both heads.
 History passed to this layer must already have compatible bucket assignments.
 The caller inserts the returned frame into conditioning/tracked history. An
 interaction-only request with a strict subset needs a matching extracted local
-state; demo-session singleton extraction/reintegration and dynamic object
-insertion/reconditioning are subsequent layers, not provided by this frame API.
+state; demo-session singleton extraction/reintegration is a subsequent layer.
 The original ground-truth-driven training correction loop is not an inference
 operation and is not implemented here. Offloading follows the source frame
 policy, which drops candidate masks and IoU/confidence after producing memory.
@@ -676,3 +675,38 @@ SDPA math for fallback testing. `multiplex_frame_parity.py` compares the origina
 corrections, temporal direction, memory deferral, scoring, offload and trimming.
 These synthetic-feature checks are separate from real-video quality evaluation
 and user-owned Turing/Windows hardware verification.
+
+`Sam31TrackingFrame::update_masks` implements the original dynamic model's
+current-frame mask insertion and reconditioning methods. `MultiplexMaskUpdate`
+selects append versus replacement, immediate versus deferred memory encoding,
+and bucket-growth policy. Append allocates consecutive internal indices and
+preserves optional caller object IDs. Reconditioning overwrites the requested
+indices in caller order. Returned indices identify the affected objects. Mask
+resolution adjustments, absent-object pointers, conditioning flags, mux/demux
+precision and memory re-encoding follow the source. Existing image features
+and optional input-mask storage are retained. Failed updates leave caller state
+unchanged; successful updates replace the frame/state arguments.
+
+This operation updates the current frame only. History remapping after bucket
+growth and session singleton extraction/reintegration remain separate work.
+Use a frame with compatible devices and high-resolution masks when re-encoding
+memory; apply storage offload after updates, as the source session does. The
+source update methods leave existing auxiliary candidate tensors and effective
+confidence unchanged, even when appending changes the object count; this API
+does the same. The surrounding session is responsible for refreshing any
+derived fields it subsequently uses. Reconditioning uses masks rather than
+point provenance when re-encoding, matching the original method.
+
+```sh
+build/native/sam3_multiplex_update /private/native-weights-v1 cuda fp16 17
+build/native-cpu/sam3_multiplex_update /private/native-weights-v1 cpu fp32 2
+```
+
+This standalone probe initializes three objects, appends the requested number
+into new buckets, reconditions selected objects and propagates from that updated
+conditioning frame. It also checks that capacity failure leaves state intact
+and that an unrelated object's mask survives reconditioning. It does not test
+remapping an older history after growth. `multiplex_update_parity.py` compares
+the source dynamic methods across capacity/removed-slot policies, new buckets,
+resolution changes, optional IDs/input masks, overlap, scores and deferred
+encoding. Synthetic full-grid feature parity is separate from real-video quality.

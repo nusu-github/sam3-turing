@@ -1,0 +1,367 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cuda",
+  "cases": [
+    {
+      "mode": "fp16",
+      "case": "append",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "append_grow",
+      "objects": 18,
+      "buckets": 2,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "append_prefer_new",
+      "objects": 5,
+      "buckets": 2,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "append_removed_slot",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "append_capacity",
+      "objects": 4,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "append_resize",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "append_low_resize",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "append_deferred",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 12,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "append_ids_input_masks",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 15,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "append_score_overlap",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 14,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "recondition",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "recondition_low_resize",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "recondition_deferred",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 12,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "recondition_ids_input_masks",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 15,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "recondition_score_overlap",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 14,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "append",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "append_grow",
+      "objects": 18,
+      "buckets": 2,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "append_prefer_new",
+      "objects": 5,
+      "buckets": 2,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "append_removed_slot",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "append_capacity",
+      "objects": 4,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "append_resize",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "append_low_resize",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "append_deferred",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 12,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "append_ids_input_masks",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 15,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "append_score_overlap",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 14,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "recondition",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "recondition_low_resize",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "recondition_deferred",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 12,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "recondition_ids_input_masks",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 15,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "recondition_score_overlap",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 14,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "append",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "append_grow",
+      "objects": 18,
+      "buckets": 2,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "append_prefer_new",
+      "objects": 5,
+      "buckets": 2,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "append_removed_slot",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "append_capacity",
+      "objects": 4,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "append_resize",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "append_low_resize",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "append_deferred",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 12,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "append_ids_input_masks",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 15,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "append_score_overlap",
+      "objects": 5,
+      "buckets": 1,
+      "outputs": 14,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "recondition",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "recondition_low_resize",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "recondition_deferred",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 12,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "recondition_ids_input_masks",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 15,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "recondition_score_overlap",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 14,
+      "exact": true
+    }
+  ],
+  "scope": "Original dynamic mask add/recondition methods with full-grid synthetic shared image features. Current frame only; old history remapping and full demo session remain separate."
+}
