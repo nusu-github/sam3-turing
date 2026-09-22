@@ -1,5 +1,6 @@
 #include "sam3/vision_encoder.h"
 #include "sam3/text_encoder.h"
+#include "sam3/tokenizer.h"
 #include "sam3/grounding.h"
 #include "sam3/preprocess.h"
 #include "sam3/image_results.h"
@@ -63,7 +64,7 @@ void write_result(const std::filesystem::path& prefix,const sam3::ImageResult& r
 }
 int main(int argc,char** argv) {
   try {
-    TORCH_CHECK(argc>=9,"usage: sam3_image_probe STORE sam3|sam3.1 cpu|cuda fp32|fp16|bf16_reference IMAGE.ppm OUTPUT_PREFIX THRESHOLD TOKEN_ID...");
+    TORCH_CHECK(argc>=9,"usage: sam3_image_probe STORE sam3|sam3.1 cpu|cuda fp32|fp16|bf16_reference IMAGE.ppm OUTPUT_PREFIX THRESHOLD TOKEN_ID... | --text-file BPE.gz PROMPT.txt");
     at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
     const std::string model=argv[2],mode=argv[4];
     TORCH_CHECK(model=="sam3" || model=="sam3.1","unknown model");
@@ -80,8 +81,18 @@ int main(int argc,char** argv) {
       positions=features.positions[pyramid.size()-1];
     }
     auto tokens=at::zeros({1,32},at::TensorOptions().dtype(at::kLong));
-    TORCH_CHECK(argc-8<=32,"token sequence exceeds upstream context length");
-    for (int i=8;i<argc;++i) tokens[0][i-8]=std::stoll(argv[i]);
+    if (std::string(argv[8])=="--text-file") {
+      TORCH_CHECK(argc==11,"--text-file requires vocabulary and UTF-8 prompt file");
+      std::ifstream input(std::filesystem::u8path(argv[10]),std::ios::binary);
+      TORCH_CHECK(input,"cannot read prompt file");
+      const std::string text((std::istreambuf_iterator<char>(input)),{});
+      const sam3::Tokenizer tokenizer(std::filesystem::u8path(argv[9]));
+      const auto ids=tokenizer.tokenize({text})[0];
+      tokens=at::tensor(ids,at::TensorOptions().dtype(at::kLong)).unsqueeze(0);
+    } else {
+      TORCH_CHECK(argc-8<=32,"token sequence exceeds upstream context length");
+      for (int i=8;i<argc;++i) tokens[0][i-8]=std::stoll(argv[i]);
+    }
     at::Tensor text,text_padding;
     {
       const sam3::TextEncoder encoder(store,model,device);

@@ -13,6 +13,14 @@ See [the onboarding report](../docs/native/ONBOARDING.md) and
 
 Provide LibTorch (or compatible development PyTorch exposing TorchConfig.cmake):
 
+The text frontend also needs ICU 72–74 (74.2 recommended) and zlib development
+libraries. ICU 74.2 is the tested Unicode 15.x profile; newer Unicode lowercasing
+and normalization data must be revalidated before changing that range. On this
+Ubuntu environment the packages are `libicu-dev` and `zlib1g-dev`. On Windows,
+provide matching MSVC ICU/zlib packages through `CMAKE_PREFIX_PATH`; place their
+DLLs beside the executable or on PATH along with the LibTorch DLLs. ICU supports
+both platforms ([official build instructions](https://unicode-org.github.io/icu/userguide/icu4c/build.html)).
+
 ```sh
 cmake -S native -B build/native -DCMAKE_PREFIX_PATH=/absolute/path/to/libtorch -DCMAKE_BUILD_TYPE=Release -DSAM3_WITH_CUDA=ON -DSAM3_TEST_CUDA=ON "-DCMAKE_CUDA_ARCHITECTURES=75;120"
 cmake --build build/native --config Release --parallel 2
@@ -67,8 +75,8 @@ build/native/sam3_text /private/native-weights-v1 sam3 cuda 49406 4629 49407
 `sam3::TextEncoder` retains its loaded language module across calls and accepts
 batched token tensors with variable sequence length up to the upstream context
 of 32. It executes all 24 layers and returns padding mask, resized language
-memory and input embeddings. Native Unicode/BPE tokenization is still pending;
-this CLI is a token-level development probe, not a complete text-prompt product.
+memory and input embeddings. This CLI is a token-level development probe;
+`sam3::Tokenizer` below supplies IDs from arbitrary UTF-8 strings.
 The Python `text_encode` test operator reloads weights per call; production C++
 callers should retain the `TextEncoder` object for the needed lifetime.
 
@@ -152,8 +160,8 @@ postprocessing, and writes `result.json` plus `result.masks.bin`. JSON records
 the dimensions, mask row byte count, query IDs, scores and pixel-space boxes.
 Masks use one row per detection, row-major pixels packed least-significant-bit
 first. The example uses FP16 for the intended Turing path; `bf16_reference` is
-only for reference comparisons on supporting hardware. Native Unicode/BPE
-tokenization, image codecs, interactive/video/multiplex session orchestration,
+only for reference comparisons on supporting hardware. Image codecs,
+interactive/video/multiplex session orchestration,
 a stable C ABI and a relocatable LibTorch distribution remain outstanding.
 Windows/Turing execution is left to the user; no GitHub Actions are used.
 
@@ -163,3 +171,33 @@ prompts) and `image_probe_parity.py` (a separate C++ process with Python absent
 from PATH, checked against saved upstream results). The SAM3.1 tensor test uses
 its tri-neck/weights and joint scoring with common detector math; it does not
 validate the unported multiplex video scheduler.
+
+`Tokenizer` in `tokenizer.h` accepts arbitrary UTF-8 strings, performs the
+source ftfy 6.1.1 cleaning (including mojibake repair), double HTML unescaping,
+whitespace/lowercase normalization and VE byte-level BPE. `encode` returns
+unframed IDs; `tokenize` accepts a batch, defaults to context 32, and preserves
+the original start/end, padding and truncation rules. The same vocabulary is
+used by both models; no model weights or shape/precision variants are added.
+
+```sh
+# UTF-8 prompt text may contain whitespace/newlines; it is read as one prompt.
+build/native/sam3_image_probe /private/native-weights-v1 sam3 cuda fp16 image.ppm result .5 --text-file sam3/assets/bpe_simple_vocab_16e6.txt.gz prompt.txt
+# Standalone tokenizer, one UTF-8 prompt per input line:
+build/native/sam3_tokenize sam3/assets/bpe_simple_vocab_16e6.txt.gz < prompts.txt
+```
+
+The runtime reads the existing gzip vocabulary using zlib; it neither imports
+Python nor invokes a vocabulary conversion script. Frozen source character
+tables are checked in at `src/tokenizer_tables.h`. Regenerate only during
+development using `tools/generate_tokenizer_tables.py` with CPython Unicode
+15.0.0, ftfy 6.1.1 and regex 2025.11.3. The positive and negative regex property
+branches are frozen separately because case-insensitive Unicode properties are
+not simple complements in the source engine. Licensing notices are under
+`third_party/ftfy`, `third_party/python` and `third_party/icu`.
+
+`tests/tokenizer_parity.py` compares cleaned text and complete 32-token output
+against the original implementation, including Unicode decompositions/case
+mappings, combining marks, entities, broken encodings and long input segments.
+The native CTest also covers variable context, empty batches, error handling
+and reuse. `image_probe_parity.py` now supplies actual text files to the child
+process; Python is used only to prepare/check the saved image fixtures.

@@ -357,3 +357,66 @@ normalization/tokenization, interactive point/mask sessions, video tracking and
 SAM3.1 multiplex orchestration, stable C ABI and standalone packaging remain.
 No GitHub Actions were used. Windows/Turing runtime verification remains with
 the user; these measurements do not establish Turing runtime or performance.
+
+
+## 2026-09-22 — native Unicode cleaning and text-prompt inference
+
+Added `sam3::Tokenizer` and `sam3_tokenize`. The native frontend implements the
+configured VE tokenizer: default ftfy 6.1.1 text repair, including repeated
+mojibake correction through nine candidate single-byte codecs, lossy UTF-8 and
+CESU-8/Java-null recovery, inconsistent embedded encoding repair, HTML handling,
+C1 controls, ligatures, widths, quotes, line breaks, surrogate repair, terminal
+escapes/control removal and NFC; then double HTML unescape, whitespace/lowercase
+cleaning and byte-level BPE. Variable batches/context retain upstream framing,
+padding and truncation. Runtime takes UTF-8; malformed byte strings fail clearly.
+The optional alternate ftfy/VE cleaning configurations are not model features
+and are not exposed; this ports the configuration actually used by both models.
+
+The existing gzip vocabulary is read directly with zlib and shared by SAM3 and
+SAM3.1. No conversion script runs at build or inference time, and no model weight
+copies were added. Frozen character/entity/codec tables occupy about 254 KB of
+source. Their reproducible development generator pins ftfy 6.1.1, CPython's
+Unicode 15.0.0 and regex 2025.11.3. Notices/licenses for ftfy, CPython and ICU are
+included. ICU supplies native regex, NFC and lowercasing; tested ICU 74.2/zlib
+1.3. CMake accepts ICU 72–74 (Unicode 15.x), requiring parity revalidation before
+upgrading to a newer Unicode data profile. This avoids silently changing prompt
+semantics when a system ICU is upgraded. Windows/Linux builds are supported by
+[ICU's official instructions](https://unicode-org.github.io/icu/userguide/icu4c/build.html);
+Windows builds still require their matching ICU/zlib DLLs. The selected model
+runtime remains the LibTorch C++ path supported by the attached C++ docs.
+
+A broader combining-mark comparison found a real source-engine peculiarity:
+with IGNORECASE, U+0345 matches neither the positive letter branch nor the
+negative non-letter/number branch. Taking the complement of the letter class,
+or applying ICU's case-fold closure to it, changes tokenization. The exporter
+now freezes each regex branch separately. The failing case was retained, and
+no tolerance or input restriction was introduced to bypass it.
+
+`tokenizer-validation.json`: 21,697 cleaned-text and complete token-array
+comparisons passed exactly. This includes all 1,433 changed lowercase mappings,
+all 5,857 code points with Unicode decompositions, all 2,450 combining-mark
+contexts around Greek sigma, 7,214 direct/nested named entities, numeric entities,
+character fixes, multilingual text, random Unicode, multi-layer/lossy/mixed
+mojibake, special tokens, long prompts and the million-codepoint segment boundary.
+The C++ child ran with `PATH=/nonexistent`; Python only supplied reference data.
+CTest also covers empty batches, contexts 1/2/7/77, end-token truncation, malformed
+UTF-8, invalid context and reuse of a moved tokenizer.
+
+`sam3_image_probe ... --text-file BPE.gz PROMPT.txt` now reads arbitrary UTF-8
+text directly. `image-text-probe-validation.json` verifies complete native
+text-file→image-grounding execution for the three saved reference prompts.
+Counts remain 1/4/0; boxes/scores and every mask pixel match exactly. Python is
+not on the child process PATH and is not linked into the executable. Existing
+token-ID input is retained for low-level callers. The model still runs all
+200 queries; original confidence filtering is the only result selection.
+
+CUDA-enabled CTest passed 7/7 and custom-CUDA-disabled CTest passed 4/4. Code and
+reports are pushed to `codex/native-onboarding`; binaries/logs are saved privately
+under `native-foundation/tokenizer-linux-cuda13`, with native text/image outputs
+under `reference/image-text-native-v1`. These are development snapshots requiring
+compatible LibTorch/ICU/zlib, not complete relocatable release packages.
+
+Next: interactive point/mask prompt modules and image session orchestration,
+then video tracking and SAM3.1 multiplex control. Image/video codecs, stable
+C ABI and standalone packaging remain. No GitHub Actions were used; Windows
+and Turing runtime verification remains with the user.

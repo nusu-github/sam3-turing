@@ -1,0 +1,29 @@
+{
+  "cases": 21697,
+  "kinds": {
+    "text": 25,
+    "entity": 3607,
+    "entity_nested": 3607,
+    "numeric_entity": 263,
+    "character_fix": 504,
+    "mojibake": 90,
+    "mixed_mojibake": 90,
+    "nested_mojibake": 90,
+    "lossy": 90,
+    "altered_space": 90,
+    "random_mixed": 2500,
+    "unicode": 1000,
+    "unicode_lower": 1433,
+    "unicode_decomposition": 5857,
+    "combining_sigma": 2450,
+    "segment_boundary": 1
+  },
+  "failed": 0,
+  "examples": [],
+  "ftfy": "6.1.1",
+  "unicode": "15.0.0",
+  "regex": "2025.11.3",
+  "vocabulary_sha256": "924691ac288e54409236115652ad4aa250f48203de50a9e4722a6ecd48d6804a",
+  "elapsed_seconds": 7.519230384379625,
+  "child_path": "/nonexistent"
+}

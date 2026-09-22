@@ -1,7 +1,7 @@
 """Validate a standalone native process against saved upstream image results.
 
 Python prepares and checks fixtures; the child runs with no Python on PATH.
-This verifies the token-ID probe, not yet a native string-tokenizer interface.
+The child reads arbitrary UTF-8 text and runs its own normalization and BPE.
 """
 import argparse
 import json
@@ -13,7 +13,6 @@ from pathlib import Path
 import numpy as np
 import torch
 from PIL import Image
-from sam3.model.tokenizer_ve import SimpleTokenizer
 
 
 def main():
@@ -23,22 +22,23 @@ def main():
     p.add_argument('--reference', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--report', type=Path, required=True)
+    p.add_argument('--vocabulary', type=Path, default=Path('sam3/assets/bpe_simple_vocab_16e6.txt.gz'))
     a = p.parse_args()
     a.output.mkdir(parents=True, exist_ok=True)
     image = Image.open(a.reference / 'input.png').convert('RGB')
     image_path = a.output / 'input.ppm'
     image.save(image_path)
-    tokenizer = SimpleTokenizer(bpe_path='sam3/assets/bpe_simple_vocab_16e6.txt.gz')
     metadata = json.loads((a.reference / 'metadata.json').read_text())
     results = []
     for case in metadata['cases']:
         if 'text' not in case['inputs']:
             continue
         prefix = a.output / case['name']
-        tokens = tokenizer([case['inputs']['text']], context_length=32)[0].tolist()
+        prompt_path = prefix.with_suffix('.prompt.txt')
+        prompt_path.write_text(case['inputs']['text'], encoding='utf8')
         command = [str(a.executable.resolve()), str(a.store.resolve()), 'sam3', 'cuda',
                    'bf16_reference', str(image_path.resolve()), str(prefix.resolve()), '.5',
-                   *map(str, tokens)]
+                   '--text-file', str(a.vocabulary.resolve()), str(prompt_path.resolve())]
         started = time.perf_counter()
         child = subprocess.run(command, env={**os.environ, 'PATH': '/nonexistent'},
                                text=True, capture_output=True, check=True)
@@ -69,7 +69,7 @@ def main():
         results.append(result)
         print(json.dumps(result), flush=True)
     a.report.write_text(json.dumps(dict(cases=results, gpu=torch.cuda.get_device_name(),
-        scope='Python prepares/checks fixtures only. Native child uses arbitrary token IDs; Unicode/BPE and standalone LibTorch packaging remain pending.'), indent=2) + '\n')
+        scope='Python prepares/checks fixtures only. Native child normalizes/tokenizes UTF-8 text and runs image grounding; standalone LibTorch packaging and other model functions remain pending.'), indent=2) + '\n')
 
 
 if __name__ == '__main__':
