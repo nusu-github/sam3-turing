@@ -1,0 +1,1022 @@
+{
+  "exact_cases": 110,
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "cases": [
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cpu",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cpu",
+      "case": "channels-last-strides"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1,
+        1
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        37,
+        19
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        997,
+        1601
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        3,
+        1008,
+        1008
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        2,
+        3,
+        19,
+        37
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.uint8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.float16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.float64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.int8"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.int16"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.int32"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.int64"
+    },
+    {
+      "device": "cuda",
+      "shape": [
+        0,
+        3,
+        11,
+        7
+      ],
+      "dtype": "torch.uint16"
+    },
+    {
+      "device": "cuda",
+      "case": "channels-last-strides"
+    }
+  ]
+}

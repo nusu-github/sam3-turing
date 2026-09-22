@@ -1,4 +1,4 @@
-"""Capture unmodified SAM3 eager reference tensors for native model migration."""
+"""Capture unmodified SAM3 eager mixed-precision reference tensors for native model migration."""
 import argparse
 import hashlib
 import json
@@ -79,7 +79,10 @@ def main():
     save_case("box-threshold", {"boxes": [positive, negative], "labels": [True, False], "threshold": 0.25})
     metadata = {
         "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
-        "torch": torch.__version__, "gpu": torch.cuda.get_device_name(), "dtype": "float32", "tf32": False,
+        "torch": torch.__version__, "gpu": torch.cuda.get_device_name(), "parameter_dtype": str(next(model.parameters()).dtype), "tf32": False,
+        "cuda_autocast_enabled": torch.is_autocast_enabled("cuda"),
+        "cuda_autocast_dtype": str(torch.get_autocast_dtype("cuda")),
+        "observed_output_dtypes": {key: str(value.dtype) for key, value in raw.items()},
         "resolution": processor.resolution, "num_queries": model.transformer.decoder.num_queries,
         "image": str(args.image), "image_sha256": hashlib.sha256(args.image.read_bytes()).hexdigest(),
         "cases": cases, "elapsed_seconds": time.perf_counter() - start,

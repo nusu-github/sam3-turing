@@ -70,3 +70,21 @@ memory and input embeddings. Native Unicode/BPE tokenization is still pending;
 this CLI is a token-level development probe, not a complete text-prompt product.
 The Python `text_encode` test operator reloads weights per call; production C++
 callers should retain the `TextEncoder` object for the needed lifetime.
+
+Visual modules and RGB tensor preprocessing are available in `vision_encoder.h`
+and `preprocess.h`. `VisionEncoder` returns the 32-layer trunk and all requested
+SAM3 dual / SAM3.1 tri-neck features. Inputs are normalized `[B,3,1008,1008]`;
+`preprocess_rgb` converts arbitrary-size RGB tensors using the upstream resize
+and normalization. Move raw pixels to the execution device before preprocessing
+to match that device's torchvision rounding.
+
+```sh
+build/native/sam3_vision /private/native-weights-v1 sam3.1 cuda fp16
+```
+
+This command uses synthetic pixels and prints feature shapes. It is a native
+module probe, not complete segmentation. `fp32` and `fp16` use the unfused MLP
+path; `bf16_reference` reproduces the original BF16-forcing MLP for comparison
+on capable hardware and is not intended for Turing deployment. Vision calls
+restore the caller's autocast state. The original model weights are not copied
+into separate image/video variants or separate precision variants.

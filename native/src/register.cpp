@@ -1,11 +1,26 @@
 #include "sam3/ops.h"
 #include "sam3/weights.h"
 #include "sam3/text_encoder.h"
+#include "sam3/vision_encoder.h"
+#include "sam3/preprocess.h"
 #include <torch/library.h>
 
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("preprocess_rgb(Tensor pixels) -> Tensor", &sam3::preprocess_rgb);
+  m.def("vision_encode(str directory, str model, Tensor image, str mode, str[] heads) -> Dict(str, Tensor)",
+        [](const std::string& directory, const std::string& model, const at::Tensor& image,
+           const std::string& mode, const std::vector<std::string>& heads) {
+          const sam3::WeightStore store(std::filesystem::u8path(directory));
+          const auto result = sam3::VisionEncoder(store, model, image.device()).forward(image,mode,heads);
+          c10::Dict<std::string,at::Tensor> tensors;
+          tensors.insert("trunk",result.trunk);
+          for (const auto& [name,pyramid] : result.pyramid)
+            for (size_t i = 0; i < pyramid.size(); ++i) tensors.insert(name + "." + std::to_string(i),pyramid[i]);
+          for (size_t i = 0; i < result.positions.size(); ++i) tensors.insert("position." + std::to_string(i),result.positions[i]);
+          return tensors;
+        });
   m.def("text_encode(str directory, str model, Tensor tokens) -> (Tensor, Tensor, Tensor)",
         [](const std::string& directory, const std::string& model, const at::Tensor& tokens) {
           const sam3::WeightStore store(std::filesystem::u8path(directory));

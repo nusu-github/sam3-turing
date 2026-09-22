@@ -99,7 +99,7 @@ GPU FP32/TF32-off comparisons against both checkpoint versions passed on
 multi-prompt, variable-length and single-token cases; maximum absolute error
 was zero in all six cases. See `text-cuda-validation.json`.
 
-Captured unmodified SAM3 image eager FP32 reference tensors using the truck
+Captured unmodified SAM3 image eager reference tensors (precision corrected below) using the truck
 asset: three independent text prompts, a positive box, positive+negative boxes,
 and a changed confidence threshold. All 200 architectural queries and the
 original 1008 input resolution were retained. The private reference directory
@@ -118,3 +118,66 @@ private module store and executed on CUDA with Python removed from PATH. The
 custom-CUDA-disabled build passed its 3 CTest cases; CUDA-enabled build passed
 6. This proves the module/loader path for those inputs, not tokenizer or whole
 model parity. Model modules and session lifetime control remain incomplete.
+
+
+## 2026-09-22 — reference precision correction
+
+Inspecting the visual MLP exposed an inherited CUDA autocast context from the
+tracker constructor (`sam3_tracking_predictor.py`). The earlier image capture
+had float32 parameters but BF16 autocast, not pure FP32 execution. Actual stored
+outputs confirm BF16 vision features/predicted logits/masks and FP32 boxes.
+The historical private directory `reference/image-sam3-fp32-v1` is retained to
+avoid breaking references; its metadata and the public summary now explicitly
+correct the precision description. Capture tooling now records actual autocast
+state, parameter dtype and output dtypes. No tensor data was changed.
+
+This does not affect the prior text encoder parity results, whose reference
+construction does not instantiate the tracker and was FP32. Visual validation
+will distinguish unchanged upstream BF16 fused-MLP reference from FP32/FP16
+Linear/GELU/Linear paths (the latter matches the existing Turing MLP replacement).
+
+## 2026-09-22 — native visual trunk, dual/tri neck and RGB preprocessing
+
+Implemented `sam3::VisionEncoder` with all 32 ViT layers, 16-head local/global
+attention, checkpoint complex RoPE, tiled absolute positions and complete necks:
+SAM3 `convs`/`sam2_convs` (four scales each), SAM3.1 detection/interactive/
+propagation (three scales each). Native returns the full neck output; the
+higher-level caller will apply each original backbone wrapper's `scalp` policy.
+A single trunk is reused for all requested heads. Selecting a head skips only
+unrequested output branches, and never reduces detection queries or input
+resolution. Model input remains 1008×1008 after normal preprocessing.
+
+Precision modes are explicit and scoped: `fp32`, `fp16`, and `bf16_reference`.
+The BF16 mode reproduces the original fused MLP for reference comparisons;
+FP32/FP16 use Linear/GELU/Linear, following the MLP replacement already used by
+the Turing patch. BF16 reference execution is not the Turing deployment path.
+A native RAII guard restores caller autocast state instead of leaking settings.
+
+GPU comparisons passed for both models in all three modes, plus a two-image
+FP16 batch (8 cases in total). All compared trunk, neck and position tensors
+were exactly equal in this environment; `vision-cuda-validation.json` contains
+per-output shapes/dtypes/errors. Head selection and restoration of an outer
+BF16 context are checked separately in `vision-selection-validation.json`.
+
+Added RGB tensor preprocessing matching torchvision v2's dtype scaling,
+antialiased bilinear resize, integer rounding and normalization. All 110 CPU/
+CUDA cases matched exactly, covering nine dtypes, multiple source sizes,
+empty batches, noncontiguous input and channels-last strides. Source CPU and
+CUDA resize rounding can differ; process pixels on the target device as the
+original processor does. C++ output always has normalized NCHW layout and
+1008×1008 spatial dimensions. File decoding remains a separate host concern.
+
+A standalone `sam3_vision` CLI successfully ran preprocessing and all SAM3.1
+necks on CUDA with Python removed from PATH. It uses synthetic RGB pixels as a
+module probe, not a full image segmentation app. The CUDA-enabled build passed
+6 CTests; the custom-CUDA-disabled build passed 3. GitHub Actions were not used.
+
+Outstanding model work still includes native string tokenization, geometry
+encoding, image encoder/decoder fusion, mask heads, interactive segmentation,
+video tracking/multiplex and full host session/C ABI/package integration.
+
+The complete SAM3 visual trunk/dual-neck FP32 comparison also passed on CPU
+with zero maximum error (`vision-cpu-validation.json`). Error-path testing
+confirmed that rejecting an unknown neck head restores outer autocast state.
+The comparisons use the original full input resolution and all 32 blocks;
+no model-size or detection-count reduction was introduced.

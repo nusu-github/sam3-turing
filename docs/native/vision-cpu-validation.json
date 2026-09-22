@@ -1,0 +1,164 @@
+{
+  "device": "cpu",
+  "gpu": null,
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "tf32": false,
+  "resolution": 1008,
+  "depth": 32,
+  "rtol": 2e-05,
+  "atol": 2e-05,
+  "reference_policy": "bf16_reference is unchanged upstream fused MLP; fp32/fp16 replace only the hard-coded BF16 MLP with ordinary Linear/GELU/Linear as in the existing Turing patch.",
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "batch": 1,
+      "max_abs": 0.0,
+      "outputs": {
+        "convs.0": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            288,
+            288
+          ]
+        },
+        "convs.1": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            144,
+            144
+          ]
+        },
+        "convs.2": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            72,
+            72
+          ]
+        },
+        "convs.3": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            36,
+            36
+          ]
+        },
+        "sam2_convs.0": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            288,
+            288
+          ]
+        },
+        "sam2_convs.1": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            144,
+            144
+          ]
+        },
+        "sam2_convs.2": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            72,
+            72
+          ]
+        },
+        "sam2_convs.3": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            36,
+            36
+          ]
+        },
+        "position.0": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            288,
+            288
+          ]
+        },
+        "position.1": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            144,
+            144
+          ]
+        },
+        "position.2": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            72,
+            72
+          ]
+        },
+        "position.3": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            256,
+            36,
+            36
+          ]
+        },
+        "trunk": {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "dtype": "torch.float32",
+          "shape": [
+            1,
+            1024,
+            72,
+            72
+          ]
+        }
+      }
+    }
+  ]
+}
