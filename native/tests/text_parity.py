@@ -14,6 +14,7 @@ def main():
     parser.add_argument("store", type=Path)
     parser.add_argument("--checkpoint", action="append", required=True, help="sam3=/path/model.pt")
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cuda")
+    parser.add_argument("--modes", nargs="+", default=["fp32"])
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
     torch.ops.load_library(str(args.library.resolve()))
@@ -37,21 +38,27 @@ def main():
             ("dynamic-length", torch.randint(0, 49408, (2, 7))),
             ("single-token", torch.tensor([[49406]])),
         ]
-        for case, tokens in cases:
-            tokens = tokens.to(args.device)
-            inputs_embeds = reference.encoder.token_embedding(tokens)
-            _, memory = reference.encoder(tokens)
-            expected = (tokens.eq(0), reference.resizer(memory.transpose(0, 1)), inputs_embeds.transpose(0, 1))
-            actual = torch.ops.sam3_native.text_encode(str(args.store), label, tokens)
-            torch.testing.assert_close(actual[0], expected[0], rtol=0, atol=0)
-            torch.testing.assert_close(actual[2], expected[2], rtol=0, atol=0)
-            diff = (actual[1] - expected[1]).abs()
-            result = {"model": label, "case": case, "tokens": list(tokens.shape), "max_abs_error": diff.max().item(), "mean_abs_error": diff.mean().item()}
-            print(json.dumps(result), flush=True)
-            torch.testing.assert_close(actual[1], expected[1], rtol=2e-5, atol=2e-5)
-            results.append(result)
+        for mode in args.modes:
+            dtype={"fp32":torch.float32,"fp16":torch.float16,"bf16_reference":torch.bfloat16}[mode]
+            for case, tokens in cases:
+                tokens = tokens.to(args.device)
+                with torch.autocast(args.device,enabled=mode!="fp32",dtype=dtype if mode!="fp32" else torch.bfloat16):
+                    inputs_embeds = reference.encoder.token_embedding(tokens)
+                    _, memory = reference.encoder(tokens)
+                    expected = (tokens.eq(0), reference.resizer(memory.transpose(0, 1)), inputs_embeds.transpose(0, 1))
+                with torch.autocast(args.device,dtype=torch.bfloat16):
+                    actual = torch.ops.sam3_native.text_encode(str(args.store), label, tokens,mode)
+                    assert torch.is_autocast_enabled(args.device) and torch.get_autocast_dtype(args.device)==torch.bfloat16
+                torch.testing.assert_close(actual[0], expected[0], rtol=0, atol=0)
+                torch.testing.assert_close(actual[2], expected[2], rtol=0, atol=0)
+                diff = (actual[1] - expected[1]).abs()
+                tolerance={"fp32":2e-5,"fp16":.005,"bf16_reference":.03}[mode]
+                result = {"model": label, "mode":mode,"case": case, "tokens": list(tokens.shape), "max_abs_error": diff.max().item(), "mean_abs_error": diff.mean().item(),"rtol":tolerance,"atol":tolerance}
+                print(json.dumps(result), flush=True)
+                torch.testing.assert_close(actual[1], expected[1], rtol=tolerance, atol=tolerance)
+                results.append(result)
         del reference, state
-    report = {"device": args.device, "gpu": torch.cuda.get_device_name() if args.device == "cuda" else None, "torch": torch.__version__, "tf32": False, "dtype": "float32", "rtol": 2e-5, "atol": 2e-5, "cases": results, "scope": "Token IDs to VE outputs; native Unicode/BPE tokenization remains unimplemented."}
+    report = {"device": args.device, "gpu": torch.cuda.get_device_name() if args.device == "cuda" else None, "torch": torch.__version__, "tf32": False, "modes": args.modes, "cases": results, "scope": "Token IDs to VE outputs; native Unicode/BPE tokenization remains unimplemented."}
     args.report.write_text(json.dumps(report, indent=2) + "\n")
 
 

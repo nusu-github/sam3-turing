@@ -40,7 +40,10 @@ def main():
                 results.append({"device":device,"shape":list(image.shape),"dtype":str(dtype)})
         # Typical HWC-to-CHW input has channels-last strides after batch insertion.
         image = torch.randint(0,256,(41,53,3),device=device,dtype=torch.uint8).permute(2,0,1)
-        torch.testing.assert_close(torch.ops.sam3_native.preprocess_rgb(image),transform(image)[None],rtol=0,atol=0)
+        actual = torch.ops.sam3_native.preprocess_rgb(image)
+        expected = transform(image)[None]
+        torch.testing.assert_close(actual,expected,rtol=0,atol=0)
+        assert actual.stride() == expected.stride(), (actual.stride(),expected.stride())
         results.append({"device":device,"case":"channels-last-strides"})
     report = {"exact_cases":len(results),"torch":torch.__version__,"cases":results}
     print(json.dumps({"exact_cases":len(results)}))

@@ -287,3 +287,73 @@ libtorch_python. CUDA-enabled CTest passed 6/6; custom-CUDA-disabled CTest passe
 3/3. Binary/log snapshots are stored privately at
 `native-foundation/detector-transformer-linux-cuda13`; matching development
 LibTorch libraries are still required, and these are not release packages.
+
+
+## 2026-09-22 — connected image grounding and native executable
+
+Added `DetectionHeads`, `GroundingDetector` and `postprocess_image`. The native
+chain now runs RGB preprocessing, all vision/text layers, geometry prompts,
+fusion, all six decoder layers and 200 queries, score/box heads, pixel decoding,
+instance/semantic masks, confidence selection and original-size restoration.
+Text, geometry and optional visual prompt sequences remain variable; batched
+image/text indexing, padding and previous-mask features are retained. No full
+weight variants or precision-specific weight files were added. Vision and text
+objects can be released independently of the retained grounding modules.
+
+Image and video detector scoring differ upstream. The image path multiplies
+presence at postprocessing; the joint-score path combines it inside the detector.
+Both paths are exposed, so the same probability is not multiplied twice. Mask
+resize is chunked without limiting detections. The probability output preserves
+the upstream dtype, including CUDA autocast promotion during interpolation.
+CPU sigmoid is applied once after assembling chunks: per-chunk SIMD tails can
+otherwise introduce an ULP difference from the source processor.
+
+The real-image integration test caught a subtle preprocessing issue missed by
+value-only tests. For unbatched interleaved RGB, torchvision inserts the batch
+dimension after transforming the 3D tensor. The resulting singleton stride is 3,
+not the full image size. Identical values with those different strides selected
+numerically different convolution behavior on this GPU. Native preprocessing
+now restores the source singleton stride and explicitly tests it. Tolerances
+were not raised to hide the discrepancy.
+
+Validation on RTX PRO 4500 Blackwell / installed development LibTorch:
+
+- `detection-heads-cuda-validation.json`: 36 cases, both models and all three
+  precision modes, full grid, repeated/remapped image batches, both scoring
+  modes; every compared tensor exactly equal.
+- `detection-heads-cpu-validation.json`: 12 FP32 cases, exactly equal.
+- `text-mixed-cuda-validation.json`: 18 cases including caller autocast
+  restoration, exactly equal.
+- `grounding-fixture-validation.json`: three saved real-image/text feature
+  chains, raw scores, boxes and all 200 masks exactly equal.
+- `image-end-to-end-validation.json`: 14 real-image tensor pipeline cases,
+  both models, FP32/FP16/BF16-reference, text/geometry and a three-item batch
+  with padded visual/geometry prompts and previous-mask features. Every
+  compared tensor exactly equal. SAM3.1 uses its tri-neck/weights and joint
+  scoring with common detector math, not the unported multiplex scheduler.
+- `image-results-validation.json`: 42 saved/synthetic comparisons, original-size
+  masks, ragged image sizes, empty results and all 200 detections retained at a
+  permissive threshold, different resize chunk sizes; exactly equal.
+- `preprocess-validation.json`: 110 CPU/CUDA preprocessing cases passed,
+  including the newly asserted singleton stride.
+- `image-probe-validation.json`: standalone C++ child with `PATH=/nonexistent`,
+  real RGB pixels, arbitrary token IDs for "truck", "wheel" and "a yellow
+  butterfly". Counts 1/4/0; boxes, scores and every output mask pixel exactly
+  equal to saved upstream results. About 11 seconds per fresh process includes
+  loading all modules; this is not a warmed performance benchmark.
+
+`sam3_image_probe` accepts P6 PPM and token IDs, writes JSON plus packed masks,
+and needs no Python interpreter. It is a development probe: Unicode/BPE string
+processing, image codecs and session APIs remain pending. The SAM3.1 FP16
+native process also runs all 200 queries on this GPU. Dynamic dependencies
+contain no libpython/libtorch_python. CTest passed 6/6 CUDA-enabled and 3/3
+custom-CUDA-disabled tests. Current binaries still depend on the installed
+NVIDIA development LibTorch; they are not relocatable release packages.
+
+Code and reports are pushed to `codex/native-onboarding`. Binary/log snapshots
+are saved privately under `native-foundation/image-grounding-linux-cuda13`,
+with real native results under `reference/image-native-v1`. Native text
+normalization/tokenization, interactive point/mask sessions, video tracking and
+SAM3.1 multiplex orchestration, stable C ABI and standalone packaging remain.
+No GitHub Actions were used. Windows/Turing runtime verification remains with
+the user; these measurements do not establish Turing runtime or performance.

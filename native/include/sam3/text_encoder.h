@@ -9,7 +9,7 @@ class SAM3_NATIVE_EXPORT TextEncoder {
  public:
   TextEncoder(const WeightStore& store, const std::string& model, at::Device device = at::kCPU);
   // padding mask [B,L], resized memory [L,B,256], input embeds [L,B,1024].
-  std::tuple<at::Tensor, at::Tensor, at::Tensor> forward(const at::Tensor& tokens) const;
+  std::tuple<at::Tensor, at::Tensor, at::Tensor> forward(const at::Tensor& tokens,const std::string& mode="fp32") const;
  private:
   const at::Tensor& weight(const std::string& name) const;
   at::Tensor norm(const at::Tensor& x, const std::string& name) const;

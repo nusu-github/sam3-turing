@@ -41,6 +41,10 @@ at::Tensor preprocess_rgb(const at::Tensor& pixels) {
     image = native_byte ? resized : resized.round_().to(at::kByte);
   }
   // Preserve the source operation order; do not replace it with a fused scale.
-  return image.to(at::kFloat).mul_(1.0/255).sub_(0.5).div_(0.5);
+  auto result = image.to(at::kFloat).mul_(1.0/255).sub_(0.5).div_(0.5);
+  // torchvision transforms an unbatched image before the processor inserts N.
+  // Restore that singleton stride too: convolution dispatch can observe it even
+  // though changing it does not change any pixel values.
+  return pixels.dim() == 3 ? result.squeeze(0).unsqueeze(0) : result;
 }
 }

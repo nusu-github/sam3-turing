@@ -1,6 +1,7 @@
 # Native SAM3 building blocks
 
-This is a Python-independent ATen C++/CUDA library, **not yet a SAM3 inference runtime**.
+This is a Python-independent ATen C++/CUDA library with a connected image
+grounding pipeline, **not yet the full SAM3/SAM3.1 runtime**.
 It implements little-endian mask packing/unpacking, chunked bilinear resize +
 sigmoid + mask packing, stable score-ordered generic NMS with no detection count cap, 8-connected
 component labeling/counts, and Euclidean distance transform. CPU and CUDA implementations use the same public C++ API in
@@ -121,7 +122,44 @@ build/native/sam3_detector_transformer /private/native-weights-v1 sam3.1 cuda fp
 ```
 
 This standalone probe chains geometry, fusion and decoding on synthetic image
-features. Scoring, final mask heads and host image/text session orchestration
-remain to be connected; this is not yet a full image detector application.
+features. The separate image probe below also connects scoring and mask heads.
 An optional decoder trace records layer intermediates for diagnostics; leave
 it null in normal inference to avoid retaining large attention-bias tensors.
+
+`GroundingDetector` in `grounding.h` connects geometry, image/prompt fusion,
+query decoding, dot-product scoring, box refinement, pixel decoding, instance
+masks and semantic masks. It retains all 200 queries and accepts varying text,
+point/box and visual prompt sequences, padding, image/text mappings and optional
+previous-mask features. Vision and text modules remain separate so callers can
+release or reuse them without distributing duplicate model weights.
+
+`postprocess_image` in `image_results.h` applies the original confidence rule
+and restores boxes and masks to each image's original dimensions. It returns
+probability masks, boolean masks and original query indices with no count cap.
+Resize chunking bounds temporary memory; the full requested result is retained.
+For original SAM3 image behavior, use `joint_scores=false` in grounding and
+`combine_presence=true` in postprocessing. The video/SAM3.1 detector's joint
+score path uses the opposite pair, avoiding double presence multiplication.
+
+```sh
+# Arbitrary token IDs including start/end, padded by the probe to context 32.
+# This example is "truck"; the executable does not hard-code that prompt.
+build/native/sam3_image_probe /private/native-weights-v1 sam3 cuda fp16 image.ppm result .5 49406 4629 49407
+```
+
+The C++ probe reads 8-bit RGB P6 PPM, runs preprocessing→vision→text→grounding→
+postprocessing, and writes `result.json` plus `result.masks.bin`. JSON records
+the dimensions, mask row byte count, query IDs, scores and pixel-space boxes.
+Masks use one row per detection, row-major pixels packed least-significant-bit
+first. The example uses FP16 for the intended Turing path; `bf16_reference` is
+only for reference comparisons on supporting hardware. Native Unicode/BPE
+tokenization, image codecs, interactive/video/multiplex session orchestration,
+a stable C ABI and a relocatable LibTorch distribution remain outstanding.
+Windows/Turing execution is left to the user; no GitHub Actions are used.
+
+Development comparisons include `image_end_to_end_parity.py` (both models and
+all three precision modes, including batched visual/geometry/previous-mask
+prompts) and `image_probe_parity.py` (a separate C++ process with Python absent
+from PATH, checked against saved upstream results). The SAM3.1 tensor test uses
+its tri-neck/weights and joint scoring with common detector math; it does not
+validate the unported multiplex video scheduler.

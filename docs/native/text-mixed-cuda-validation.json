@@ -1,0 +1,248 @@
+{
+  "device": "cuda",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "tf32": false,
+  "modes": [
+    "fp32",
+    "fp16",
+    "bf16_reference"
+  ],
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "prompts",
+      "tokens": [
+        4,
+        32
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 2e-05,
+      "atol": 2e-05
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "dynamic-length",
+      "tokens": [
+        2,
+        7
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 2e-05,
+      "atol": 2e-05
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "single-token",
+      "tokens": [
+        1,
+        1
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 2e-05,
+      "atol": 2e-05
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "prompts",
+      "tokens": [
+        4,
+        32
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.005,
+      "atol": 0.005
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "dynamic-length",
+      "tokens": [
+        2,
+        7
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.005,
+      "atol": 0.005
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "single-token",
+      "tokens": [
+        1,
+        1
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.005,
+      "atol": 0.005
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "prompts",
+      "tokens": [
+        4,
+        32
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.03,
+      "atol": 0.03
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "dynamic-length",
+      "tokens": [
+        2,
+        7
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.03,
+      "atol": 0.03
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "single-token",
+      "tokens": [
+        1,
+        1
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.03,
+      "atol": 0.03
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "prompts",
+      "tokens": [
+        4,
+        32
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 2e-05,
+      "atol": 2e-05
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "dynamic-length",
+      "tokens": [
+        2,
+        7
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 2e-05,
+      "atol": 2e-05
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "single-token",
+      "tokens": [
+        1,
+        1
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 2e-05,
+      "atol": 2e-05
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "prompts",
+      "tokens": [
+        4,
+        32
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.005,
+      "atol": 0.005
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "dynamic-length",
+      "tokens": [
+        2,
+        7
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.005,
+      "atol": 0.005
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "single-token",
+      "tokens": [
+        1,
+        1
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.005,
+      "atol": 0.005
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "prompts",
+      "tokens": [
+        4,
+        32
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.03,
+      "atol": 0.03
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "dynamic-length",
+      "tokens": [
+        2,
+        7
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.03,
+      "atol": 0.03
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "single-token",
+      "tokens": [
+        1,
+        1
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0,
+      "rtol": 0.03,
+      "atol": 0.03
+    }
+  ],
+  "scope": "Token IDs to VE outputs; native Unicode/BPE tokenization remains unimplemented."
+}

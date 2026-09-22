@@ -1,4 +1,5 @@
 #include "sam3/text_encoder.h"
+#include "sam3/autocast.h"
 #include <c10/core/InferenceMode.h>
 #include <limits>
 
@@ -25,8 +26,10 @@ at::Tensor TextEncoder::norm(const at::Tensor& x, const std::string& name) const
 at::Tensor TextEncoder::linear(const at::Tensor& x, const std::string& name) const {
   return at::linear(x, weight(name + ".weight"), weight(name + ".bias"));
 }
-std::tuple<at::Tensor, at::Tensor, at::Tensor> TextEncoder::forward(const at::Tensor& tokens) const {
+std::tuple<at::Tensor, at::Tensor, at::Tensor> TextEncoder::forward(const at::Tensor& tokens,const std::string& mode) const {
   c10::InferenceMode guard;
+  TORCH_CHECK(mode=="fp32" || mode=="fp16" || mode=="bf16_reference","unknown text precision mode");
+  AutocastGuard autocast(device_.type(),mode!="fp32",mode=="fp16"?at::kHalf:at::kBFloat16);
   TORCH_CHECK(tokens.dim() == 2 && (tokens.scalar_type() == at::kLong || tokens.scalar_type() == at::kInt),
               "text tokens must be int32 or int64 [B,L]");
   TORCH_CHECK(tokens.size(1) > 0 && tokens.size(1) <= context_, "token length exceeds model context");

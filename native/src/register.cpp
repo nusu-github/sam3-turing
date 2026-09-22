@@ -3,13 +3,61 @@
 #include "sam3/text_encoder.h"
 #include "sam3/geometry_encoder.h"
 #include "sam3/detector.h"
+#include "sam3/detection_heads.h"
+#include "sam3/grounding.h"
+#include "sam3/image_results.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
 #include <torch/library.h>
 
+namespace {
+c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& out) {
+  c10::Dict<std::string,at::Tensor> result;
+  result.insert("pred_logits",out.logits);result.insert("pred_boxes",out.boxes);result.insert("pred_boxes_xyxy",out.boxes_xyxy);
+  result.insert("pred_masks",out.masks);result.insert("semantic_seg",out.semantic);result.insert("queries",out.queries);
+  result.insert("presence_logit_dec",out.presence_logits);result.insert("presence_feats",out.presence);
+  return result;
+}
+}
+
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("postprocess_image(Tensor boxes, Tensor logits, Tensor masks, Tensor presence, int[] heights, int[] widths, float threshold, bool combine_presence, int chunk_size, str mode=\"fp32\") -> (Tensor[], Tensor[], Tensor[], Tensor[], Tensor[])",
+      [](const at::Tensor& boxes,const at::Tensor& logits,const at::Tensor& masks,const at::Tensor& presence,
+         const std::vector<int64_t>& heights,const std::vector<int64_t>& widths,double threshold,bool combine_presence,int64_t chunk_size,const std::string& mode) {
+        sam3::DetectionOutput input;input.boxes=boxes;input.logits=logits;input.masks=masks;input.presence_logits=presence;
+        const auto results=sam3::postprocess_image(input,heights,widths,threshold,combine_presence,chunk_size,mode);
+        std::vector<at::Tensor> out_boxes,out_scores,out_probabilities,out_masks,out_indices;
+        for (const auto& result:results) {
+          out_boxes.push_back(result.boxes);out_scores.push_back(result.scores);out_probabilities.push_back(result.mask_probabilities);
+          out_masks.push_back(result.masks);out_indices.push_back(result.query_indices);
+        }
+        return std::make_tuple(out_boxes,out_scores,out_probabilities,out_masks,out_indices);
+      });
+  m.def("grounding(str directory, str model, Tensor[] pyramid, Tensor positions, Tensor image_ids, Tensor text_ids, Tensor text_features, Tensor text_padding, Tensor points, Tensor point_labels, Tensor point_padding, Tensor boxes, Tensor box_labels, Tensor box_padding, Tensor? visual_features, Tensor? visual_padding, Tensor? previous_mask, bool use_text, bool joint_scores, str mode) -> Dict(str, Tensor)",
+      [](const std::string& directory,const std::string& model,const std::vector<at::Tensor>& pyramid,const at::Tensor& positions,
+         const at::Tensor& image_ids,const at::Tensor& text_ids,const at::Tensor& text_features,const at::Tensor& text_padding,
+         const at::Tensor& points,const at::Tensor& point_labels,const at::Tensor& point_padding,const at::Tensor& boxes,
+         const at::Tensor& box_labels,const at::Tensor& box_padding,const std::optional<at::Tensor>& visual_features,
+         const std::optional<at::Tensor>& visual_padding,const std::optional<at::Tensor>& previous_mask,bool use_text,bool joint_scores,const std::string& mode) {
+        const sam3::WeightStore store(std::filesystem::u8path(directory));
+        sam3::GroundingPrompt prompt{image_ids,text_ids,text_features,text_padding,{points,point_labels,point_padding,boxes,box_labels,box_padding},
+            visual_features.value_or(at::Tensor()),visual_padding.value_or(at::Tensor()),previous_mask.value_or(at::Tensor()),use_text};
+        const auto out=sam3::GroundingDetector(store,model,positions.device()).forward(pyramid,positions,prompt,joint_scores,mode);
+        auto result=detection_dict(out.detection);result.insert("encoder_hidden_states",out.encoded.memory);
+        return result;
+      });
+  m.def("detection_heads(str directory, str model, Tensor[] pyramid, Tensor image_ids, Tensor memory, Tensor prompt, Tensor prompt_padding, Tensor hidden, Tensor references, Tensor presence_logits, Tensor presence, bool joint_scores, str mode) -> Dict(str, Tensor)",
+      [](const std::string& directory,const std::string& model,const std::vector<at::Tensor>& pyramid,const at::Tensor& image_ids,
+         const at::Tensor& memory,const at::Tensor& prompt,const at::Tensor& prompt_padding,const at::Tensor& hidden,
+         const at::Tensor& references,const at::Tensor& presence_logits,const at::Tensor& presence,bool joint_scores,const std::string& mode) {
+        const sam3::WeightStore store(std::filesystem::u8path(directory));
+        sam3::FusionFeatures encoded;encoded.memory=memory;encoded.prompt=prompt;
+        const auto out=sam3::DetectionHeads(store,model,memory.device()).forward(pyramid,image_ids,encoded,prompt_padding,
+            {hidden,references,presence_logits,presence},joint_scores,mode);
+        return detection_dict(out);
+      });
   m.def("detector_decode_trace(str directory, str model, Tensor memory, Tensor positions, Tensor prompt, Tensor prompt_padding, Tensor spatial_shapes, Tensor valid_ratios, str mode) -> Dict(str, Tensor)",
       [](const std::string& directory,const std::string& model,const at::Tensor& memory,const at::Tensor& positions,
          const at::Tensor& prompt,const at::Tensor& prompt_padding,const at::Tensor& spatial_shapes,const at::Tensor& valid_ratios,const std::string& mode) {
@@ -63,10 +111,10 @@ TORCH_LIBRARY(sam3_native, m) {
           for (size_t i = 0; i < result.positions.size(); ++i) tensors.insert("position." + std::to_string(i),result.positions[i]);
           return tensors;
         });
-  m.def("text_encode(str directory, str model, Tensor tokens) -> (Tensor, Tensor, Tensor)",
-        [](const std::string& directory, const std::string& model, const at::Tensor& tokens) {
+  m.def("text_encode(str directory, str model, Tensor tokens, str mode=\"fp32\") -> (Tensor, Tensor, Tensor)",
+        [](const std::string& directory, const std::string& model, const at::Tensor& tokens,const std::string& mode) {
           const sam3::WeightStore store(std::filesystem::u8path(directory));
-          return sam3::TextEncoder(store, model, tokens.device()).forward(tokens);
+          return sam3::TextEncoder(store, model, tokens.device()).forward(tokens,mode);
         });
   m.def("read_weight(str directory, str name, str device=\"cpu\") -> Tensor",
         [](const std::string& directory, const std::string& name, const std::string& device) {
