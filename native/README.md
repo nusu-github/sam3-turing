@@ -88,3 +88,23 @@ path; `bf16_reference` reproduces the original BF16-forcing MLP for comparison
 on capable hardware and is not intended for Turing deployment. Vision calls
 restore the caller's autocast state. The original model weights are not copied
 into separate image/video variants or separate precision variants.
+
+`GeometryEncoder` in `geometry_encoder.h` implements the detector's configured
+point/box prompt encoder, including image pooling, label/position embeddings,
+right-padded sequence concatenation, CLS and all three transformer layers.
+Its input tensors preserve arbitrary prompt counts, positive/negative labels,
+per-image padding and empty prompt sequences. This is distinct from the tracker
+and interactive mask-prompt path, which remain to be ported.
+
+```sh
+build/native/sam3_geometry /private/native-weights-v1 sam3.1 cuda fp16
+python native/tests/roi_align_parity.py build/native/libsam3_native.so --report /tmp/roi.json
+python native/tests/geometry_parity.py build/native/libsam3_native.so /private/native-weights-v1 --checkpoint sam3=/private/sam3.pt --report /tmp/geometry.json
+```
+
+The geometry executable is an empty/mixed-prompt module probe using synthetic
+features; applications supply their own feature/prompt tensors through C++.
+The native ROIAlign kernel supports CPU/CUDA float32/float64/float16 and follows
+torchvision's autocast policy. Its sampling implementation is adapted under
+the [torchvision BSD license](third_party/torchvision/LICENSE); neither the
+Python torchvision package nor its compiled library is required at runtime.

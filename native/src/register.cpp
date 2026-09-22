@@ -1,6 +1,7 @@
 #include "sam3/ops.h"
 #include "sam3/weights.h"
 #include "sam3/text_encoder.h"
+#include "sam3/geometry_encoder.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
 #include <torch/library.h>
@@ -8,6 +9,15 @@
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("geometry_encode(str directory, str model, Tensor image, Tensor positions, Tensor points, Tensor point_labels, Tensor point_padding, Tensor boxes, Tensor box_labels, Tensor box_padding, str mode) -> (Tensor, Tensor)",
+        [](const std::string& directory,const std::string& model,const at::Tensor& image,const at::Tensor& positions,
+           const at::Tensor& points,const at::Tensor& point_labels,const at::Tensor& point_padding,
+           const at::Tensor& boxes,const at::Tensor& box_labels,const at::Tensor& box_padding,const std::string& mode) {
+          const sam3::WeightStore store(std::filesystem::u8path(directory));
+          return sam3::GeometryEncoder(store,model,image.device()).forward(image,positions,
+              {points,point_labels,point_padding,boxes,box_labels,box_padding},mode);
+        });
+  m.def("roi_align(Tensor input, Tensor rois, float spatial_scale=1., int pooled_height=7, int pooled_width=7, int sampling_ratio=-1, bool aligned=False) -> Tensor", &sam3::roi_align);
   m.def("preprocess_rgb(Tensor pixels) -> Tensor", &sam3::preprocess_rgb);
   m.def("vision_encode(str directory, str model, Tensor image, str mode, str[] heads) -> Dict(str, Tensor)",
         [](const std::string& directory, const std::string& model, const at::Tensor& image,

@@ -36,5 +36,15 @@
     "facebook/sam3": "3c879f39826c281e95690f02c7821c4de09afae7",
     "facebook/sam3.1": "daa63191845a41281374e725f4c9e51c7a824460"
   },
-  "private_bucket": "hf://buckets/RamRom/sam3-turing-native-20260922"
+  "private_bucket": "hf://buckets/RamRom/sam3-turing-native-20260922",
+  "native_roi_align_reference": {
+    "repository": "https://github.com/pytorch/vision",
+    "revision": "7a13ad0f",
+    "paths": [
+      "torchvision/csrc/ops/cuda/roi_align_kernel.cu",
+      "torchvision/csrc/ops/cpu/roi_align_kernel.cpp",
+      "torchvision/csrc/ops/autocast/roi_align_kernel.cpp"
+    ],
+    "license": "native/third_party/torchvision/LICENSE"
+  }
 }

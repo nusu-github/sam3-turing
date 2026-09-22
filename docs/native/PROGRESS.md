@@ -181,3 +181,49 @@ with zero maximum error (`vision-cpu-validation.json`). Error-path testing
 confirmed that rejecting an unknown neck head restores outer autocast state.
 The comparisons use the original full input resolution and all 32 blocks;
 no model-size or detection-count reduction was introduced.
+
+## 2026-09-22 — detector geometry encoder and native ROIAlign
+
+Implemented the full configured `SequenceGeometryEncoder` for both SAM3 and
+SAM3.1 as `sam3::GeometryEncoder`, reading only the existing geometry module
+from the private store. Includes direct coordinate projections, sampled image
+features, sine positions, positive/negative labels, variable-length right-padded
+concatenation, CLS, post projection and all three self/cross-attention layers.
+Points use normalized xy and boxes normalized cxcywh; no prompt count cap or
+fixed prompt was introduced. Empty point/box sequences retain the CLS path.
+The model's detector geometry configuration has no mask encoder; interactive
+mask prompts remain part of the outstanding tracker/interactive implementation.
+
+Added precompiled C++/CUDA inference ROIAlign, including adaptive/fixed sampling,
+aligned/unaligned coordinates and torchvision-compatible autocast behavior.
+Sampling is adapted from torchvision commit `7a13ad0f`; its BSD license is
+retained under `native/third_party/torchvision`. This adds no torchvision native
+or Python runtime dependency. Kernels honor the CUDA device/current stream and
+include sm_75 code. The CPU version is a correctness baseline that repeats
+sampling weights across channels; further performance work remains possible.
+
+Validation on the development environment:
+
+- ROIAlign: 88 CPU/CUDA comparisons, including half/float/double, autocast BF16
+  and FP16, noncontiguous input, boundaries, empty ROIs, adaptive/fixed sampling,
+  and aligned/unaligned behavior. Maximum absolute error was zero in all cases.
+- Geometry: 39 CUDA cases across both checkpoints and FP32/FP16/BF16-reference,
+  and 13 CPU FP32 cases. All embeddings and padding masks exactly matched the
+  Python source. Covers empty, points, boxes, mixed padding, all padded entries,
+  37 points plus 29 boxes, and saved real SAM3 visual features.
+- Invalid ROI indices/NaNs, invalid geometry labels/padding/modes were rejected.
+  Geometry normal and exception paths restored an outer BF16 autocast context.
+- Standalone C++ geometry probes executed on CPU and CUDA with Python absent
+  from PATH. Dynamic dependencies contain no libpython or libtorch_python;
+  the current development LibTorch installation still supplies ATen libraries.
+- CUDA-enabled CTest: 6 passed. Custom-CUDA-disabled CTest: 3 passed. No Actions.
+
+Reports are `roi-align-validation.json`, `geometry-cuda-validation.json` and
+`geometry-cpu-validation.json`. Native probes/build logs are saved privately
+under `native-foundation/geometry-linux-cuda13`. These are development binaries,
+not yet relocatable Windows/Linux release packages. Turing and Windows runtime
+validation remain with the user as requested.
+
+Next: image/text/geometry fusion encoder, detector decoder and segmentation
+heads. String tokenization, interactive/video/multiplex sessions and a stable
+C ABI/full standalone distribution also remain outstanding.

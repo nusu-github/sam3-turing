@@ -28,7 +28,12 @@ int main(int argc, char** argv) {
     const auto components = sam3::connected_components(regions);
     TORCH_CHECK(at::equal(std::get<0>(components).cpu(), at::tensor({1,0,3, 0,1,3, 7,0,0},at::kLong).reshape({1,3,3})), "CC labels mismatch");
     TORCH_CHECK(at::equal(std::get<1>(components).cpu(), at::tensor({2,0,2, 0,2,2, 1,0,0},at::kLong).reshape({1,3,3})), "CC sizes mismatch");
-    std::cout << "PASS: native masks and stable NMS on " << argv[1] << '\n';
+    const auto plane = at::arange(16,at::TensorOptions().dtype(at::kFloat).device(device)).view({1,1,4,4});
+    const auto roi = at::tensor({0.f,0.f,0.f,2.f,2.f}).view({1,5}).to(device);
+    const auto pooled = sam3::roi_align(plane,roi,1.,2,2,1,false);
+    TORCH_CHECK(at::equal(pooled.cpu(),at::tensor({2.5f,3.5f,6.5f,7.5f}).view({1,1,2,2})), "ROIAlign bilinear plane mismatch");
+    TORCH_CHECK(sam3::roi_align(plane,roi.slice(0,0,0)).sizes() == at::IntArrayRef({0,1,7,7}), "ROIAlign empty mismatch");
+    std::cout << "PASS: native masks, NMS, regions, EDT and ROIAlign on " << argv[1] << '\n';
     return 0;
   } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';

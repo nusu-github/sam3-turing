@@ -3,6 +3,10 @@
 #include "sam3_native_export.h"
 
 namespace sam3 {
+// Precompiled inference ROIAlign. ROIs [K,5] contain batch index and xyxy.
+SAM3_NATIVE_EXPORT at::Tensor roi_align(const at::Tensor& input, const at::Tensor& rois,
+    double spatial_scale = 1., int64_t pooled_height = 7, int64_t pooled_width = 7,
+    int64_t sampling_ratio = -1, bool aligned = false);
 // One independently padded, little-endian bit row per [H,W] boolean mask.
 SAM3_NATIVE_EXPORT at::Tensor pack_masks(const at::Tensor& masks);
 SAM3_NATIVE_EXPORT at::Tensor unpack_masks(const at::Tensor& packed, int64_t height, int64_t width);
