@@ -1,0 +1,15 @@
+{
+  "device": "cpu",
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "cases": [
+    {
+      "mode": "fp32",
+      "case": "mask_batch",
+      "operations": 4,
+      "outputs": 19,
+      "exact": true
+    }
+  ],
+  "scope": "Adapted original demo outputs for single-object points/boxes/refinement and one/two-object brush workflows, forward/reverse propagation. Dynamic mixed-object layout policy is tested separately.",
+  "adaptations": "Synthetic projected features; source CPU CUDA transfers and every nested session constructor redirected to CPU, CUDA FP32 Flash-only context removed, FP32 compressed memory restored before projection, D2H synchronized. Source mux/demux explicitly stage offloaded tensors to the matrix device and restore F32 when outside AMP; unadapted CUDA refinement failed on CPU-vs-CUDA matmul. Source consolidated annotation indices are restored from the merged inputs/history after singleton refinement; without this, next preflight fails its equality assertion. These adaptations preserve neural equations."
+}

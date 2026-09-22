@@ -826,3 +826,37 @@ neural equations remain unchanged. These comparisons do not establish full
 upstream multi-object editing equivalence or real-video quality for the native
 stable-slot policy. SAM3.1 visual integration, full text-driven tracking, codecs,
 release packaging and long-video storage optimization remain separate work.
+
+### SAM3.1 real-frame tracking
+
+`sam3/multiplex_vision.h` provides `Sam31TrackingVision` for a
+`Sam31TrackingSession` feature provider. `encode_rgb` applies the same portable
+video bicubic/byte-rounding preprocessing as SAM3; `encode_preprocessed` accepts
+normalized F32 `[1,3,1008,1008]`. A single shared `VisionEncoder` evaluates the
+full trunk once and produces the interactive and propagation necks. Their own
+tracking decoders project the high-resolution maps. The session caches both
+necks together for repeated edits. The model store stays unchanged; this adds
+no weight copies or shape-specific model exports.
+
+```sh
+build/native/sam3_multiplex_video /private/native-weights-v1 cuda fp16 frames.txt commands.txt results
+```
+
+The standalone development probe shares the SAM3 PPM manifest, command parser
+and output format described above. It additionally accepts simultaneous brush
+prompts with `masks FRAME [ID PPM_PATH]...`; all masks in that operation must have
+the same dimensions. IDs, prompts and operation counts remain caller supplied.
+`remove ID` changes SAM3.1 session state without emitting previews; subsequent
+propagation emits the remaining objects. These small probes share one native
+library and the existing modular weight store; they are not separate complete
+model distributions.
+
+`multiplex_video_parity.py` compares real decoded JPEG pixels through the full
+visual backbone and session against the adapted original demo. It covers point
+prompts, correction, forward/reverse propagation and two simultaneous brush
+prompts. The original staging and annotation-index repairs are documented in
+`multiplex_session_parity.py`; FP16/FP32 use an ordinary MLP instead of the
+original forced-BF16 fused MLP. The native child runs with `PATH=/nonexistent`.
+This does not yet provide JPEG/MP4 decoding, high-level text tracking or a
+relocatable runtime package. Broad accuracy evaluation and long-video storage
+optimization remain separate work.

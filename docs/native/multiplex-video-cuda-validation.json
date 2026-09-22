@@ -1,0 +1,455 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "frames": [
+    "assets/videos/0001/0.jpg",
+    "assets/videos/0001/1.jpg",
+    "assets/videos/0001/2.jpg"
+  ],
+  "height": 720,
+  "width": 1280,
+  "cases": [
+    {
+      "mode": "fp16",
+      "case": "points",
+      "output": "0-0",
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        93968
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "points",
+      "output": "2-0",
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        93648
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "points",
+      "output": "2-1",
+      "frame": 1,
+      "objects": 1,
+      "positive_pixels": [
+        91558
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "points",
+      "output": "2-2",
+      "frame": 2,
+      "objects": 1,
+      "positive_pixels": [
+        89780
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "points",
+      "output": "3-0",
+      "frame": 1,
+      "objects": 1,
+      "positive_pixels": [
+        91310
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "points",
+      "output": "5-0",
+      "frame": 2,
+      "objects": 1,
+      "positive_pixels": [
+        89724
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "points",
+      "output": "5-1",
+      "frame": 1,
+      "objects": 1,
+      "positive_pixels": [
+        91171
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "points",
+      "output": "5-2",
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        93648
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "masks",
+      "output": "0-0",
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        89614,
+        149248
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "masks",
+      "output": "2-0",
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        89603,
+        149236
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "masks",
+      "output": "2-1",
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        107159,
+        154095
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "masks",
+      "output": "2-2",
+      "frame": 2,
+      "objects": 2,
+      "positive_pixels": [
+        95189,
+        113851
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "points",
+      "output": "0-0",
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        93950
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "points",
+      "output": "2-0",
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        93633
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "points",
+      "output": "2-1",
+      "frame": 1,
+      "objects": 1,
+      "positive_pixels": [
+        91553
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "points",
+      "output": "2-2",
+      "frame": 2,
+      "objects": 1,
+      "positive_pixels": [
+        89772
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "points",
+      "output": "3-0",
+      "frame": 1,
+      "objects": 1,
+      "positive_pixels": [
+        91333
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "points",
+      "output": "5-0",
+      "frame": 2,
+      "objects": 1,
+      "positive_pixels": [
+        89699
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "points",
+      "output": "5-1",
+      "frame": 1,
+      "objects": 1,
+      "positive_pixels": [
+        91186
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "points",
+      "output": "5-2",
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        93633
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "masks",
+      "output": "0-0",
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        89614,
+        149248
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "masks",
+      "output": "2-0",
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        89603,
+        149236
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "masks",
+      "output": "2-1",
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        107042,
+        154171
+      ],
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "masks",
+      "output": "2-2",
+      "frame": 2,
+      "objects": 2,
+      "positive_pixels": [
+        95283,
+        114570
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "points",
+      "output": "0-0",
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        93973
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "points",
+      "output": "2-0",
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        93650
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "points",
+      "output": "2-1",
+      "frame": 1,
+      "objects": 1,
+      "positive_pixels": [
+        91561
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "points",
+      "output": "2-2",
+      "frame": 2,
+      "objects": 1,
+      "positive_pixels": [
+        89779
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "points",
+      "output": "3-0",
+      "frame": 1,
+      "objects": 1,
+      "positive_pixels": [
+        91304
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "points",
+      "output": "5-0",
+      "frame": 2,
+      "objects": 1,
+      "positive_pixels": [
+        89726
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "points",
+      "output": "5-1",
+      "frame": 1,
+      "objects": 1,
+      "positive_pixels": [
+        91169
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "points",
+      "output": "5-2",
+      "frame": 0,
+      "objects": 1,
+      "positive_pixels": [
+        93650
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "masks",
+      "output": "0-0",
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        89614,
+        149248
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "masks",
+      "output": "2-0",
+      "frame": 0,
+      "objects": 2,
+      "positive_pixels": [
+        89603,
+        149236
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "masks",
+      "output": "2-1",
+      "frame": 1,
+      "objects": 2,
+      "positive_pixels": [
+        107099,
+        154016
+      ],
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "masks",
+      "output": "2-2",
+      "frame": 2,
+      "objects": 2,
+      "positive_pixels": [
+        95109,
+        113846
+      ],
+      "exact": true
+    }
+  ],
+  "timings": [
+    {
+      "mode": "fp16",
+      "case": "points",
+      "process_seconds": 6.940529711544514
+    },
+    {
+      "mode": "fp16",
+      "case": "masks",
+      "process_seconds": 7.099556127563119
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "points",
+      "process_seconds": 7.072372350841761
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "masks",
+      "process_seconds": 7.0386134926229715
+    },
+    {
+      "mode": "fp32",
+      "case": "points",
+      "process_seconds": 8.346988163888454
+    },
+    {
+      "mode": "fp32",
+      "case": "masks",
+      "process_seconds": 7.477250004187226
+    }
+  ],
+  "source_adaptations": "FP16/FP32 ordinary MLP instead of forced BF16 fused MLP. FP32 memory restored to float and Flash-only restriction removed. D2H completion, offloaded mux staging, and post-refinement annotation indices repaired as documented in multiplex_session_parity.",
+  "scope": "Exact same-mode real decoded RGB through full native shared ViT, both projected necks, session edits, memory and forward/reverse propagation. PATH=/nonexistent for native executable. PPM bypasses compressed codecs; no Turing/Windows runtime or ground-truth accuracy claim."
+}

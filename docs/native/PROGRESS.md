@@ -1241,3 +1241,50 @@ LibTorch/ICU/zlib and are not a relocatable release. SAM3.1 visual integration,
 long-video retention, high-level text/video association, codecs, C ABI,
 multi-GPU, packaging and further quality/performance/size work remain. No GitHub
 Actions were used; Turing/Windows runtime verification remains with the user.
+
+## SAM3.1 real-frame visual integration
+
+`Sam31TrackingVision` now connects decoded RGB to the dynamic tracking session.
+It applies portable source-compatible video preprocessing, runs one full
+1008px visual trunk, computes both tracking necks and projects their high-level
+maps with the corresponding decoders. A single cached provider result serves
+all objects and repeated prompts. `sam3_multiplex_video` shares the existing
+SAM3 command parser/output format and adds batched brush input; it uses the
+same modular weight store without additional exported weight variants.
+
+`multiplex-video-cuda-validation.json` records 36 exact output comparisons on
+three 720x1280 frames from `assets/videos/0001`: FP16, BF16-reference and FP32,
+with a point/refinement/forward/reverse workflow and a two-object simultaneous
+brush workflow. Video logits, available low logits, packed positive masks,
+IDs and frame indices match the adapted original at zero tolerance. The point
+workflow produces eight outputs with five backbone calls; the brush workflow
+produces four outputs with three calls. Prompts are fixtures; the executable
+accepts arbitrary coordinates, IDs, masks and command sequences. Each native
+child ran with PATH=/nonexistent. Reference staging/annotation repairs remain
+explicit, and the non-BF16 reference replaces the forced-BF16 fused MLP. This
+is numerical parity for the tested workflows, not complete dynamic-edit or
+high-level video parity.
+
+`multiplex-video-*-precision.json` measures precision-mode agreement separately.
+Minimum FP16-vs-BF16 mask IoU is 0.9993323 for points and 0.9926113 for brushes;
+FP32-vs-BF16 is 0.9992885 and 0.9925850, respectively. These are a short fixture's
+mode differences, not ground-truth segmentation accuracy or Turing results.
+
+`multiplex-video-regression.json` records 36 byte-identical files from the
+existing SAM3 FP16 real-video workflow after sharing the CLI source. The new
+SAM3.1 custom-CUDA-disabled executable also completed a CPU FP32 full-backbone
+single-frame smoke with PATH=/nonexistent, yielding two finite nonempty masks;
+this is not an original CPU numerical comparison. The refactored reference
+factory passed its CPU batched-mask comparison (19 exact tensors). CTest passed
+9/9 CUDA-enabled and 5/5 custom-CUDA-disabled tests. Linkage has no libpython or
+libtorch_python dependency, and sm_75 cubins remain present. The intermittent
+original CPU prompt-encoder issue remains unresolved.
+
+Code and reports are pushed to `codex/native-onboarding`. Private development
+binaries/logs are saved under `native-foundation/multiplex-vision-linux-cuda13`,
+and decoded fixtures/reference outputs under `reference/multiplex-video-v1`.
+These builds depend on the current LibTorch/ICU/zlib environment; packaging is
+not complete. Compressed codecs, long-video retention, high-level text/video
+association, C ABI, multi-GPU and broader quality/performance evaluation remain.
+No GitHub Actions were used. Windows/Turing runtime validation remains with the
+user.

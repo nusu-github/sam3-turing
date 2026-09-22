@@ -1,5 +1,8 @@
 #include "sam3/tracking_session.h"
 #include "sam3/tracking_vision.h"
+#ifdef SAM3_MULTIPLEX_VIDEO
+#include "sam3/multiplex_vision.h"
+#endif
 #include "sam3/ops.h"
 #include "ppm.h"
 #include <ATen/Context.h>
@@ -27,7 +30,7 @@ void save(const std::filesystem::path& root,int64_t operation,int64_t number,con
 }
 int main(int argc,char** argv) {
   try {
-    TORCH_CHECK(argc==7,"usage: sam3_tracking_video STORE cpu|cuda fp32|fp16|bf16_reference FRAMES.txt COMMANDS.txt OUTPUT_DIRECTORY");
+    TORCH_CHECK(argc==7,"usage: tracking video executable STORE cpu|cuda fp32|fp16|bf16_reference FRAMES.txt COMMANDS.txt OUTPUT_DIRECTORY");
     at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
     const sam3::WeightStore store(std::filesystem::u8path(argv[1]));const at::Device device(argv[2]);const std::string mode=argv[3];
     const auto manifest=std::filesystem::u8path(argv[4]),commands=std::filesystem::u8path(argv[5]),root=std::filesystem::u8path(argv[6]);
@@ -35,11 +38,19 @@ int main(int argc,char** argv) {
     while(std::getline(input,line)){if(!line.empty() && line.back()=='\r')line.pop_back();if(line.empty() || line[0]=='#')continue;auto path=std::filesystem::u8path(line);frames.push_back(path.is_absolute()?path:manifest.parent_path()/path);}
     TORCH_CHECK(!frames.empty(),"frame manifest is empty");
     const auto first=sam3::cli::read_ppm(frames.front());const auto height=first.size(1),width=first.size(2);
+#ifdef SAM3_MULTIPLEX_VIDEO
+    const auto core=std::make_shared<sam3::Sam31TrackingFrame>(store,device);
+    const auto vision=std::make_shared<sam3::VisionEncoder>(store,"sam3.1",device);
+    const sam3::Sam31TrackingVision encoder(vision,core,device);int64_t encodes=0,outputs=0;
+    sam3::MultiplexSessionOptions options;options.offload_state=true;
+    sam3::Sam31TrackingSession session(core,[&](int64_t index){
+#else
     const auto core=std::make_shared<sam3::Sam3TrackingFrame>(store,device);
     const auto vision=std::make_shared<sam3::VisionEncoder>(store,"sam3",device);
     const sam3::Sam3TrackingVision encoder(vision,core,device);int64_t encodes=0,outputs=0;
     sam3::TrackingSessionOptions options;options.offload_state=true;
     sam3::Sam3TrackingSession session(core,[&](int64_t index){
+#endif
       auto pixels=sam3::cli::read_ppm(frames.at(index));TORCH_CHECK(pixels.size(1)==height && pixels.size(2)==width,"video frame dimensions changed");
       ++encodes;return encoder.encode_rgb(pixels,mode);
     },frames.size(),height,width,device,mode,options);
@@ -60,6 +71,14 @@ int main(int argc,char** argv) {
         int64_t frame,id;std::string filename;TORCH_CHECK(bool(parser>>frame>>id>>std::quoted(filename)),"mask requires FRAME ID PPM_PATH");
         auto path=std::filesystem::u8path(filename);if(path.is_relative())path=commands.parent_path()/path;
         emit(session.add_mask(frame,id,sam3::cli::read_ppm(path)[0].to(at::kFloat)/255.));
+#ifdef SAM3_MULTIPLEX_VIDEO
+      }else if(command=="masks") {
+        int64_t frame,id;TORCH_CHECK(bool(parser>>frame),"masks requires FRAME [ID PPM_PATH]...");
+        std::vector<int64_t> ids;std::vector<at::Tensor> masks;std::string filename;
+        while(parser>>id){TORCH_CHECK(bool(parser>>std::quoted(filename)),"mask path required");auto path=std::filesystem::u8path(filename);if(path.is_relative())path=commands.parent_path()/path;
+          ids.push_back(id);masks.push_back(sam3::cli::read_ppm(path)[0].to(at::kFloat)/255.);}
+        TORCH_CHECK(!ids.empty(),"at least one mask required");emit(session.add_masks(frame,ids,at::stack(masks)));
+#endif
       }else if(command=="preflight") {
         int64_t encode;TORCH_CHECK(bool(parser>>encode),"preflight requires ENCODE_MEMORY");session.preflight(encode);
       }else if(command=="propagate") {
@@ -69,7 +88,12 @@ int main(int argc,char** argv) {
       }else if(command=="clear") {
         int64_t frame,id;TORCH_CHECK(bool(parser>>frame>>id),"clear requires FRAME ID");emit(session.clear_input(frame,id));
       }else if(command=="remove") {
-        int64_t id;TORCH_CHECK(bool(parser>>id),"remove requires ID");for(const auto& out:session.remove_object(id,true))emit(out);
+        int64_t id;TORCH_CHECK(bool(parser>>id),"remove requires ID");
+#ifdef SAM3_MULTIPLEX_VIDEO
+        session.remove_object(id,true);
+#else
+        for(const auto& out:session.remove_object(id,true))emit(out);
+#endif
       }else if(command=="reset")session.reset();
       else TORCH_CHECK(false,"unknown command: ",command);
       std::cout<<"operation="<<operation++<<" command="<<command<<" outputs="<<number<<" backbone_calls="<<encodes<<'\n';

@@ -43,18 +43,15 @@ def restore_annotation_indices(state):
         assert index in state['output_dict'][key]
         state['consolidated_frame_inds'][key].add(index)
 
-@torch.inference_mode()
-def main():
-    p=argparse.ArgumentParser();p.add_argument('library',type=Path);p.add_argument('store',type=Path);p.add_argument('checkpoint',type=Path);p.add_argument('--device',default='cuda');p.add_argument('--modes',nargs='+',default=['fp16','fp32','bf16_reference']);p.add_argument('--cases',nargs='+');p.add_argument('--report',type=Path,required=True);a=p.parse_args()
-    torch.ops.load_library(str(a.library.resolve()));torch.set_num_threads(4);torch.manual_seed(2918);torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
-    weights=torch.load(a.checkpoint,map_location='cpu',mmap=True,weights_only=True);host=reference(weights.get('model',weights),a.device)
+def session_reference(weights,device):
+    host=reference(weights,device)
     for name in VideoTrackingMultiplexDemo.__dict__:
         if name!='__init__' and callable(getattr(VideoTrackingMultiplexDemo,name)):setattr(host,name,MethodType(getattr(VideoTrackingMultiplexDemo,name),host))
-    host.init_state=MethodType(Sam3VideoTrackingMultiplexDemo.init_state,host);host.device=torch.device(a.device);host.image_size=1008;host.input_mask_size=1152;host.low_res_mask_size=288;host.is_dynamic_model=True
+    host.init_state=MethodType(Sam3VideoTrackingMultiplexDemo.init_state,host);host.device=torch.device(device);host.image_size=1008;host.input_mask_size=1152;host.low_res_mask_size=288;host.is_dynamic_model=True
     original_init=host.init_state
     def init_state(*args,**kwargs):
         state=original_init(*args,**kwargs)
-        if a.device=='cpu':state['device']=torch.device('cpu');state['storage_device']=torch.device('cpu')
+        if device=='cpu':state['device']=torch.device('cpu');state['storage_device']=torch.device('cpu')
         return state
     host.init_state=init_state
     host.multiplex_controller=MultiplexController(16).eval();host.clear_non_cond_mem_around_input=False;host.clear_non_cond_mem_for_multi_obj=False;host.add_all_frames_to_correct_as_cond=True;host.always_start_from_first_ann_frame=False;host.fill_hole_area=0
@@ -64,10 +61,17 @@ def main():
     def ready(function):
         def invoke(*args,**kwargs):
             result=function(*args,**kwargs)
-            if a.device=='cuda':torch.cuda.synchronize()
+            if device=='cuda':torch.cuda.synchronize()
             return result
         return invoke
     host._run_single_frame_inference=ready(original_run);host._run_memory_encoder=ready(original_memory)
+    return host
+
+@torch.inference_mode()
+def main():
+    p=argparse.ArgumentParser();p.add_argument('library',type=Path);p.add_argument('store',type=Path);p.add_argument('checkpoint',type=Path);p.add_argument('--device',default='cuda');p.add_argument('--modes',nargs='+',default=['fp16','fp32','bf16_reference']);p.add_argument('--cases',nargs='+');p.add_argument('--report',type=Path,required=True);a=p.parse_args()
+    torch.ops.load_library(str(a.library.resolve()));torch.set_num_threads(4);torch.manual_seed(2918);torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
+    weights=torch.load(a.checkpoint,map_location='cpu',mmap=True,weights_only=True);host=session_reference(weights.get('model',weights),a.device)
     encoder=host.transformer.encoder;original_encoder=encoder.forward
     rows=[]
     point=torch.tensor([[.4,.6,1.]]);many=torch.cat([torch.rand(17,2),torch.ones(17,1)],1);box=torch.tensor([.15,.2,.75,.8]);mask=torch.zeros(37,53);mask[5:31,9:44]=1;empty=torch.empty(0)
