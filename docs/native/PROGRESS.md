@@ -756,3 +756,47 @@ No model weights or variants were added. SAM3.1 propagation decoding and tempora
 orchestration, complete tracking sessions, real-video comparisons, codecs, C ABI
 and final distribution packaging remain. No GitHub Actions were used;
 Windows/Turing runtime validation remains with the user.
+
+## 2026-09-22 — SAM3.1 multiplex propagation decoder and heads
+
+Added `MultiplexMaskDecoder` and `MultiplexPropagationHeads`. They use the shipped
+SAM3.1 weights: 16 object slots per bucket, three mask tokens per slot, separate
+IoU/object tokens, a two-layer two-way transformer and shared high-resolution
+image features. The host supplies live/invalid-slot suppression embeddings,
+demuxes results into object order, gates absent masks, resizes all candidates to
+1008px, selects by IoU and projects the chosen token into an object pointer.
+The linear absent-pointer transform and optional stability attenuation are
+preserved. Bucket count remains dynamic; no new object cap or weight copies
+were introduced. These propagation weights have three candidates only; the
+separate interactive heads retain their original single/multimask behavior.
+
+`multiplex-decoder-cuda-validation.json`: 33 exact comparisons across FP32,
+FP16 and BF16-reference. `multiplex-decoder-cpu-validation.json`: 11 exact FP32
+comparisons. Coverage includes full 72x72 features and rectangular diagnostic
+grids, contiguous/channels-last inputs, shared/per-bucket high-resolution maps,
+optional per-object embeddings, one/17/20 live objects across up to three
+buckets, removal/addition, forced presence/absence, projected high-resolution
+features, dense positions and stability-based candidate selection. Every
+candidate mask, IoU, token/object score and host output is compared directly.
+
+`multiplex-decoder-math-validation.json` adds 11 exact CUDA FP16 comparisons with
+only math SDPA enabled. For these fallback comparisons, the original
+`Attention.forward` is prevented from re-enabling Flash/memory-efficient SDPA;
+its tensor operations remain unchanged. The native library never overrides
+the caller's backend policy. The test checks that only math remains enabled.
+
+`sam3_multiplex_propagation` connects native allocation, propagation heads and
+mask-memory encoding using synthetic full-grid features. With Python absent
+from PATH, CUDA FP16 passed with 17 objects before/after a removal/addition
+(two then three buckets), including a math-only run. CPU FP32 passed with two
+objects before/after mutation (one then two buckets). This is an integrated
+module probe, not a real-video accuracy test or a temporal-memory scheduler.
+CTest passed 9/9 CUDA-enabled and 5/5 custom-CUDA-disabled checks. No Python
+libraries are linked and custom CUDA kernels retain sm_75 builds. The earlier
+intermittent CPU prompt-encoder runtime issue remains unresolved.
+
+Code/reports are pushed to `codex/native-onboarding`; development binaries/logs
+are saved privately under `native-foundation/multiplex-decoder-linux-cuda13`.
+Next is SAM3.1 temporal assembly/conditioning, followed by complete sessions
+and real-video parity. Codecs, C ABI and final packaging remain. No GitHub
+Actions were used; Windows/Turing runtime validation remains with the user.

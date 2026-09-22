@@ -14,6 +14,7 @@
 #include "sam3/memory_attention.h"
 #include "sam3/temporal_memory.h"
 #include "sam3/multiplex.h"
+#include "sam3/multiplex_decoder.h"
 #include "sam3/autocast.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
@@ -48,6 +49,22 @@ c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& ou
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("multiplex_decode(str directory, Tensor image, Tensor position, Tensor[] high, Tensor? extra, str mode) -> Tensor[]",
+      [](const std::string& directory,const at::Tensor& image,const at::Tensor& position,const std::vector<at::Tensor>& high,
+         const std::optional<at::Tensor>& extra,const std::string& mode) {
+        const sam3::MultiplexMaskDecoder decoder(sam3::WeightStore(std::filesystem::u8path(directory)),image.device());
+        const auto out=decoder.forward(image,position,high,extra.value_or(at::Tensor()),mode);
+        return std::vector<at::Tensor>{out.masks,out.iou,out.tokens,out.object_logits};
+      });
+  m.def("multiplex_propagation(str directory, Tensor image, Tensor[] high, int[][] assignments, str mode, float threshold, bool attenuate, bool project) -> Tensor[]",
+      [](const std::string& directory,const at::Tensor& image,const std::vector<at::Tensor>& high,
+         const std::vector<std::vector<int64_t>>& assignments,const std::string& mode,double threshold,bool attenuate,bool project) {
+        const sam3::MultiplexPropagationHeads heads(sam3::WeightStore(std::filesystem::u8path(directory)),image.device());
+        const sam3::MultiplexState state(assignments,image.device(),at::kFloat,16);
+        const auto projected=project?heads.project_pyramid(high,mode):high;
+        const auto out=heads.forward(state,image,projected,mode,threshold,attenuate);
+        return std::vector<at::Tensor>{out.low_res_multimasks,out.high_res_multimasks,out.iou,out.low_res_mask,out.high_res_mask,out.object_pointer,out.object_logits,heads.dense_position(mode),projected[0],projected[1]};
+      });
   m.def("multiplex_controller(Tensor probe, int objects, int width, int capacity, bool full_shuffle, bool random, int[]? ids, str mode) -> Dict(str, Tensor)",
       [](const at::Tensor& probe,int64_t objects,int64_t width,int64_t capacity,bool full,bool random,const std::optional<std::vector<int64_t>>& ids,const std::string& mode) {
         const auto dtype=mode=="fp16"?at::kHalf:mode=="bf16_reference"?at::kBFloat16:at::kFloat;

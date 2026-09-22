@@ -414,5 +414,37 @@ The standalone C++ test covers transactional errors, bucket retention, external
 IDs, invalidation, noncontiguous/empty-feature tensors and up to 257 objects.
 `multiplex_parity.py` compares allocation, RNG output and repeated additions /
 removals against the original inference controller. This is the state/controller
-component; SAM3.1 propagation decoding, temporal orchestration and full video
-sessions remain to be connected.
+component; temporal orchestration and full video sessions remain to be connected.
+
+`MultiplexMaskDecoder` and `MultiplexPropagationHeads` in `multiplex_decoder.h`
+implement the shipped SAM3.1 propagation path. The trained decoder has 16 slots
+per bucket, three distinct mask tokens per slot and separate IoU/object tokens.
+It produces all three candidates; the propagation host demuxes them into valid
+object order, gates absent-object masks, resizes to 1008px, selects the best IoU
+candidate and projects its pointer. The source's optional IoU attenuation by
+mask stability is available. Suppression embeddings distinguish live slots from
+padding and removed objects. Dense positional encoding, high-resolution feature
+projection and the linear absent-pointer transform use the existing weight store.
+The number of buckets is determined by `MultiplexState`, with no added object cap.
+
+The low-level decoder supports diagnostic rectangular grids and shared or
+per-bucket high-resolution maps. The propagation host uses the original full
+72x72 features/288x288 candidate masks and shares high-resolution image features
+across buckets. The shipped weights are configured for three candidates only;
+they have no extra single-mask token. Interactive image/video heads remain the
+separate original interactive decoder.
+
+```sh
+build/native/sam3_multiplex_propagation /private/native-weights-v1 cuda fp16 17
+# Exercise standard precompiled SDPA math attention:
+build/native/sam3_multiplex_propagation /private/native-weights-v1 cuda fp16 17 math
+```
+
+This C++ probe uses synthetic conditioned features, decodes all objects, encodes
+the selected masks as new multiplex memory, removes/adds an object and repeats.
+It does not yet select temporal memories or process a real video.
+`multiplex_decoder_parity.py` compares the original decoder and tracker host,
+including per-slot outputs, suppression, demux, positions, resized masks and
+pointers. `--math` prevents the original attention method from re-enabling
+Flash/memory-efficient SDPA to compare the ordinary math fallback. Model tensor
+operations remain the same; the native library preserves caller backend settings.
