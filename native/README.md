@@ -687,8 +687,9 @@ precision and memory re-encoding follow the source. Existing image features
 and optional input-mask storage are retained. Failed updates leave caller state
 unchanged; successful updates replace the frame/state arguments.
 
-This operation updates the current frame only. History remapping after bucket
-growth and session singleton extraction/reintegration remain separate work.
+This operation updates the current frame only. Use the history remapping helper
+below after layout changes; full session singleton extraction/reintegration
+remains separate work.
 Use a frame with compatible devices and high-resolution masks when re-encoding
 memory; apply storage offload after updates, as the source session does. The
 source update methods leave existing auxiliary candidate tensors and effective
@@ -710,3 +711,53 @@ remapping an older history after growth. `multiplex_update_parity.py` compares
 the source dynamic methods across capacity/removed-slot policies, new buckets,
 resolution changes, optional IDs/input masks, overlap, scores and deferred
 encoding. Synthetic full-grid feature parity is separate from real-video quality.
+
+### SAM3.1 history layout changes
+
+`sam3/multiplex_history.h` provides `remap_multiplex_history` for histories whose
+frames share a known source layout. Pass source and destination states with
+unique global object IDs. Object rows and conditioning indices follow those
+IDs; new historical objects receive absent masks/logits, zero pointers/IoUs and
+no conditioning flag. Shared image features retain their storage. Obsolete
+auxiliary tensors with incompatible row counts are cleared. Effective confidence
+is recomputed from the remapped logits and retained IoUs when available.
+
+Pointers are copied by slot without extra floating-point arithmetic. Unchanged
+physical buckets retain their entire historical pointers and spatial memory,
+including removed slots, matching the original removal policy. A permutation of
+internal object indices alone therefore does not require neural re-encoding.
+Stored memory keeps its device and dtype, including BF16 CPU storage.
+
+Dense `[buckets,256,72,72]` memory jointly encodes 16 objects; it cannot be demuxed
+as though its channel axis were an object axis. Changed bucket membership or
+slot placement requires a `MultiplexHistoryRebuilder` callback. The callback
+must not mutate its input tensors. It receives the remapped frame and can call
+`Sam31TrackingFrame::encode_history`, which uses retained full-resolution masks,
+object logits, conditioning indices and shared image features. The helper uses
+rebuilt values for changed buckets and preserves unaffected buckets exactly.
+It rejects a missing rebuilder rather than silently slicing or dropping joint
+memory. Trimmed frames without spatial memory need no rebuild. An error in any
+frame leaves the whole input history unchanged.
+
+This requires retaining full-resolution masks and image features for histories
+that may later need re-encoding. The source's usual aggressive trimming/offload
+policy can remove those inputs; a session must retain them, reload them, or
+explicitly recompute them before requesting a layout change. The helper does
+not implement that storage policy or a full interactive session. It handles
+valid nonempty destination states; removing every object is a session reset.
+
+```sh
+build/native/sam3_multiplex_history /private/native-weights-v1 cuda fp16 17
+build/native-cpu/sam3_multiplex_history /private/native-weights-v1 cpu fp32 2
+```
+
+The probe preserves two prior frames, adds objects in new buckets, re-encodes
+history, propagates with it and reconditions the new objects. It checks rollback
+after failure on the second frame, unchanged bucket contents, and BF16 CPU
+storage. `multiplex_history_parity.py` compares removal tensors against the
+original demo and separately checks ID/pointer/memory conservation on growth,
+reordering and extraction. `multiplex_history_encode_parity.py` compares neural
+history reconstruction with the original memory host. These checks do not
+establish full upstream demo-session parity for singleton extraction/merging;
+the native dense-memory rebuild policy is explicit rather than inferred from
+legacy object-axis handling in those methods.

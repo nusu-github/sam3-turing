@@ -154,4 +154,14 @@ std::vector<int64_t> Sam31TrackingFrame::update_masks(const TrackingFeatures& in
   }
   frame=std::move(updated);buckets=std::move(state);return affected;
 }
+MaskMemoryOutput Sam31TrackingFrame::encode_history(const MultiplexFrame& frame,const MultiplexState& buckets,
+    const MultiplexFrameOptions& options,const std::string& mode) const {
+  c10::InferenceMode inference;detail::check_mode(mode);const auto device=no_memory_.device();
+  TORCH_CHECK(frame.image.defined() && frame.image.sizes()==at::IntArrayRef({5184,1,256}) && frame.masks.high_res_mask.defined(),"history rebuild requires retained shared image features and full-resolution masks");
+  TORCH_CHECK(frame.masks.high_res_mask.size(0)==buckets.object_count(),"history masks must match the destination objects");
+  const auto pixels=frame.image.to(device).permute({1,2,0}).view({1,256,72,72});
+  const auto conditions=at::tensor(frame.conditioning_objects,at::TensorOptions().device(device).dtype(at::kLong));
+  return memory_.encode_frame(pixels,frame.masks.high_res_mask.to(device),frame.masks.object_logits.to(device),
+      {false,options.non_overlap_memory,options.object_threshold},buckets.mux_matrix(),conditions,mode);
+}
 }

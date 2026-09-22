@@ -1115,3 +1115,58 @@ private bucket. They require compatible LibTorch/ICU/zlib and are not a portable
 release. No Actions were used; Windows/Turing runtime checks remain with the
 user. Full session history remapping/singleton reintegration, codecs, high-level
 tracking, C ABI, multi-GPU, packaging and optimization remain unfinished.
+
+## 2026-09-22 — SAM3.1 dense-history remapping and reconstruction
+
+Added `remap_multiplex_history` and `Sam31TrackingFrame::encode_history` to carry
+older frames across object/bucket layout changes. States carry unique global
+IDs; masks, logits, IoUs and conditioning indices follow those IDs. New objects
+are absent in older frames, with zero historical pointers/IoUs. Pointer slots
+are copied without extra arithmetic. Unchanged physical buckets retain their
+full pointer and spatial-memory contents, including historical removed slots,
+as in original object removal. Internal index renumbering alone needs no neural
+reconstruction. Image features stay shared and memory retains its storage device
+and dtype, including BF16 CPU storage.
+
+The shipped dense memory is [buckets,256,72,72], jointly encoding 16 slots. It
+cannot safely be demuxed as an object-axis tensor. Changed bucket membership or
+slot placement therefore requires a reconstruction callback; the provided
+encoder uses retained full-resolution masks, logits, conditioning flags and
+image features. Reconstructed values replace changed buckets; unchanged buckets
+remain exact. Missing reconstruction inputs produce an error, not silent loss
+or a guessed object slice. Changes across all frames commit together. Aggressive
+history trimming must retain/reload/recompute the needed inputs before such a
+change; full session storage integration remains unfinished.
+
+`multiplex-history-*-validation.json` contains 20 original demo removal core
+comparisons across CPU FP32 and CUDA FP32/FP16/BF16-reference, plus 12 independent
+layout-conservation checks for ID reordering, bucket growth and singleton
+extraction. Removal compares masks, logits, pointers, dense memory/positions,
+IoUs, effective confidence and conditioning sets; original positional caching
+is used. Input clearing and per-object view rebuilding are excluded from this
+component test. Additional 12 neural reconstruction cases compare exactly with
+the original memory host (24 tensor outputs), using CPU-stored image sequences
+and full-resolution masks, 18-object growth, singleton extraction and slot
+reassignment/overlap. These are synthetic feature tests. This does not claim
+full parity with upstream demo singleton extraction/merging: the explicit
+native dense-memory reconstruction policy replaces reliance on legacy
+object-axis assumptions there.
+
+`sam3_multiplex_history` passed with PATH=/nonexistent on CUDA FP16 (three to 20
+objects, three buckets) and CPU FP32 (three to five objects, two buckets). Both
+retain two earlier frames, reconstruct their changed buckets, propagate using
+that history and recondition the new objects. Checks cover an injected failure
+on the second frame with no partial history commit, byte-exact preservation of
+an unchanged bucket, absent historical masks and BF16 CPU storage. The probes
+use shared synthetic image features and the actual weights; real-video session
+quality still needs integration/evaluation.
+
+CTest passed 9/9 CUDA-enabled and 5/5 custom-CUDA-disabled checks. Native linkage
+has no libpython/libtorch_python dependency, and sm_75 cubins remain present.
+The existing intermittent original CPU prompt-encoder issue remains unresolved.
+Code/reports are pushed to `codex/native-onboarding`; private development builds
+and logs are stored under `native-foundation/multiplex-history-linux-cuda13`.
+They require compatible LibTorch/ICU/zlib and are not a relocatable release.
+Full SAM3.1 sessions/retention policy, codecs, high-level tracking, C ABI,
+multi-GPU, packaging and further quality/performance/size work remain. No GitHub
+Actions were used; Turing/Windows hardware validation remains with the user.

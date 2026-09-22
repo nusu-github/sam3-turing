@@ -44,6 +44,9 @@ class SAM3_NATIVE_EXPORT Sam31TrackingFrame {
       const at::Tensor& masks,const std::vector<int64_t>& indices,
       const std::optional<std::vector<int64_t>>& object_ids,MultiplexFrame&,MultiplexState&,
       const MultiplexMaskUpdate&,const MultiplexFrameOptions& options={},const std::string& mode="fp32") const;
+  // Rebuild dense history from retained full-resolution masks and shared image.
+  MaskMemoryOutput encode_history(const MultiplexFrame&,const MultiplexState&,
+      const MultiplexFrameOptions& options={},const std::string& mode="fp32") const;
  private:
   VideoInteractiveHeads interactive_;
   MultiplexPropagationHeads propagation_;
