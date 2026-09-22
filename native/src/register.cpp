@@ -11,6 +11,7 @@
 #include "sam3/interactive_image.h"
 #include "sam3/video_heads.h"
 #include "sam3/memory_encoder.h"
+#include "sam3/memory_attention.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
 #include <torch/library.h>
@@ -28,6 +29,16 @@ c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& ou
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("memory_attention(str directory, str model, Tensor source, Tensor source_position, Tensor memory, Tensor memory_position, int pointers, str mode, Tensor? image, Tensor? memory_image, Tensor? memory_image_position) -> Tensor[]",
+      [](const std::string& directory,const std::string& model,const at::Tensor& source,const at::Tensor& source_position,
+         const at::Tensor& memory,const at::Tensor& memory_position,int64_t pointers,const std::string& mode,
+         const std::optional<at::Tensor>& image,const std::optional<at::Tensor>& memory_image,const std::optional<at::Tensor>& memory_image_position) {
+        const sam3::WeightStore store(std::filesystem::u8path(directory));
+        const sam3::MemoryAttention module(store,model,source.device());std::vector<at::Tensor> trace;
+        const auto out=module.forward(source,source_position,memory,memory_position,pointers,mode,image.value_or(at::Tensor()),
+            memory_image.value_or(at::Tensor()),memory_image_position.value_or(at::Tensor()),&trace);
+        trace.push_back(out);return trace;
+      });
   m.def("memory_encode(str directory, str model, Tensor image, Tensor masks, bool skip_sigmoid, str mode) -> (Tensor, Tensor)",
       [](const std::string& directory,const std::string& model,const at::Tensor& image,const at::Tensor& masks,bool skip,const std::string& mode) {
         const sam3::WeightStore store(std::filesystem::u8path(directory));

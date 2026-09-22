@@ -289,7 +289,7 @@ compares all seven outputs against the original tracker methods: 57 CUDA cases
 and 19 completed CPU FP32 cases match exactly. Direct-mask output dimensions
 retain the upstream formulas: SAM3 uses `input_size // 14 * 4`, while SAM3.1
 uses `input_size // 4`. Supplied mask sizes and model-image sizes are separate.
-Temporal attention, frame selection, tracking sessions and multiplex propagation
+Frame selection, tracking sessions and multiplex propagation
 remain to be implemented; these head tests are not full video tracking tests.
 
 `MaskMemoryEncoder` in `memory_encoder.h` implements the memory downsampler,
@@ -324,4 +324,36 @@ scores of differing lengths and object counts exceeding one group's capacity.
 CUDA comparisons use the original builder's precomputed positional cache and
 check its output layout as well as values. CPU reference positions are generated
 on CPU because the original constructor hard-codes CUDA for precomputation.
-These tests do not yet cover temporal attention or complete video tracking.
+These encoder tests do not cover temporal attention or complete video tracking.
+
+`MemoryAttention` in `memory_attention.h` implements all four temporal attention
+layers and final normalization. SAM3 uses one attention head, 64-channel memory
+and ReLU; SAM3.1 uses eight heads, separate image/object streams, 256-channel
+memory and GELU. Axial complex rotary encoding repeats over spatial memories
+and excludes trailing object-pointer tokens. It preserves shared position/image
+batches and SAM3.1's image-stream padding for pointer tokens. Inputs and output
+are sequence-first tensors; optional layer traces are for development comparisons.
+
+```sh
+build/native/sam3_memory_attention /private/native-weights-v1 sam3.1 cuda fp16 1 2 4
+# Force standard SDPA math for a full-grid fallback probe:
+build/native/sam3_memory_attention /private/native-weights-v1 sam3.1 cuda fp16 1 1 4 math
+```
+
+The last three numbers are batch size, spatial memory frame count and pointer
+token count. The probe always uses the full 72×72 query grid; memory frames and
+pointer tokens are not truncated. The native module lets LibTorch dispatch its
+available precompiled SDPA backend and preserves the caller's backend settings.
+It does not force SAM3.1's source Flash-only context or import FA3/Triton.
+
+`memory_attention_parity.py` compares every layer and the final output against
+the original encoders. CUDA FP16/BF16-reference comparisons retain the source
+backend behavior. For CUDA FP32 (which fails in the source Flash-only context
+on this development build) and explicit math comparisons, the SAM3.1 reference
+removes only that backend context. Math tests also prevent SAM3's forward method
+from re-enabling fused backends and verify that only math stays enabled.
+CPU rotary caches are recomputed on CPU as on a CPU-only host. Reports explicitly
+identify adapted reference cases. These are backend compatibility and tensor
+parity checks on available hardware; Turing/Windows execution remains untested
+here, and complete video tracking still needs frame selection/session control
+and multiplex propagation.

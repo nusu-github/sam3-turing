@@ -616,3 +616,52 @@ are saved privately under `native-foundation/memory-encoder-linux-cuda13`.
 No GitHub Actions were used. Next: temporal attention and frame-memory selection,
 followed by tracking sessions and SAM3.1 multiplex propagation/control. Codecs,
 stable C ABI and standalone release packaging also remain outstanding.
+
+## 2026-09-22 — temporal memory attention without a Flash-only requirement
+
+Added `MemoryAttention` for the four temporal encoder layers of both models.
+SAM3 retains one-head attention, 64-channel memory and ReLU; SAM3.1 retains
+eight heads, decoupled image/object query and key projections, 256-channel
+memory and GELU. Axial complex rotary encoding is repeated for spatial memory
+grids and excludes trailing object-pointer tokens. The source's SAM3.1 image
+padding and pointer-position append behavior are preserved, along with shared
+or batched image/position streams. Optional traces expose each layer for parity
+diagnostics. No memory frame, object pointer or query count is truncated.
+
+The native path calls LibTorch's precompiled SDPA dispatch and preserves caller
+backend flags. It does not import FA3/Triton or force the original SAM3.1
+Flash-only context. An isolated probe confirmed that this development build's
+CUDA FP32 attention fails under that context with `No available kernel`.
+For SAM3.1 CUDA FP32 reference comparisons, only the backend context is removed;
+original weights and equations remain. Explicit math fallback comparisons also
+prevent the original SAM3 forward method from re-enabling fused backends.
+Tests verify that Flash, memory-efficient and cuDNN SDPA remain disabled in
+those math cases. This verifies a usable fallback on Blackwell, not Turing
+execution or performance. Original half-precision reference comparisons retain
+their normal source backend choices.
+
+`memory-attention-cuda-validation.json`: 45 exact comparisons across both
+models and FP32/FP16/BF16-reference, checking all four layer outputs and final
+normalization. Cases cover full 72×72 queries, multiple memory frames, variable
+pointer counts, pointer-only memory, batched and shared image streams, shared
+positions, pre-padded image pointers, mixed precision streams, and full-grid
+math fallback. Smaller diagnostic grids also test rotary-grid recomputation.
+`memory-attention-cpu-validation.json`: 13 exact FP32 comparisons. CPU reference
+rotary caches are computed on CPU as they would be on a CPU-only host; the source
+cache is not a registered buffer and otherwise initially resides on CUDA here.
+Reports explicitly mark backend adaptations. The prior intermittent CPU runtime
+issue remains open; successful runs do not establish overall CPU stability.
+
+The standalone `sam3_memory_attention` probe passed with Python absent from PATH
+for SAM3.1 CUDA FP16 with two memory frames, SAM3.1 CUDA FP16 with math-only
+attention, and SAM3 CPU FP32. All use 72×72 queries and four pointer tokens.
+CTest passed 7/7 CUDA-enabled and 4/4 custom-CUDA-disabled checks; linked libraries
+include no Python library and the custom CUDA objects retain sm_75 builds.
+
+Code/reports are pushed to `codex/native-onboarding`; development binaries,
+backend-probe output and validation logs are saved privately under
+`native-foundation/memory-attention-linux-cuda13`. Existing weight shards are
+reused without new model variants. Next are frame-memory selection and temporal
+position assembly, tracking sessions and SAM3.1 multiplex propagation/control.
+Codecs, stable C ABI and final distribution packaging remain. No GitHub Actions
+were used; Windows/Turing runtime checks remain with the user.
