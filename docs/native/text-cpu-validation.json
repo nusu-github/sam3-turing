@@ -1,0 +1,72 @@
+{
+  "device": "cpu",
+  "gpu": null,
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "tf32": false,
+  "dtype": "float32",
+  "rtol": 2e-05,
+  "atol": 2e-05,
+  "cases": [
+    {
+      "model": "sam3",
+      "case": "prompts",
+      "tokens": [
+        4,
+        32
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "case": "dynamic-length",
+      "tokens": [
+        2,
+        7
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "case": "single-token",
+      "tokens": [
+        1,
+        1
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "case": "prompts",
+      "tokens": [
+        4,
+        32
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "case": "dynamic-length",
+      "tokens": [
+        2,
+        7
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "case": "single-token",
+      "tokens": [
+        1,
+        1
+      ],
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0
+    }
+  ],
+  "scope": "Token IDs to VE outputs; native Unicode/BPE tokenization remains unimplemented."
+}

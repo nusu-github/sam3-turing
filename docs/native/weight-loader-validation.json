@@ -1,0 +1,10 @@
+{
+  "exact_tensor_roundtrips": 32,
+  "dtype_count": 12,
+  "cross_model_sharing": "passed",
+  "stale_alias_rejection": "passed",
+  "devices": [
+    "cpu",
+    "cuda"
+  ]
+}

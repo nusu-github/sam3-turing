@@ -73,3 +73,48 @@ All of these primitives are available to C++ callers and development tests;
 the original SAM3 Python inference paths have not yet been rewired. The native
 library is still not a full model runtime. Next: model reference fixtures,
 on-demand shared weight storage, C++ model components and host session control.
+
+## 2026-09-22 — lossless module store and native language encoder
+
+Implemented the v1 weight store, C++ reader and lossless exporter. Metadata is
+opened without allocating the full model; individual tensors or module prefixes
+can be loaded to CPU/CUDA and released by the caller. Identical typed/shaped
+contents are stored once, including cross-model/module references. The complete
+private store is 6,900,865,193 bytes across 17 files, including metadata/alignment.
+Original source checkpoints are backups outside the deployable store.
+
+All 3,088 named tensor references were read with payload checksum validation by
+a standalone C++ executable, with Python removed from PATH. Synthetic exporter
+and C++ reader comparisons passed exact bytes for 12 dtypes (including BF16 and
+complex), scalar/empty/noncontiguous tensors, sharing and CPU/CUDA placement.
+Truncation, inconsistent shape, checksum corruption, invalid shard paths and
+stale alias inputs are rejected. Format and commands: `WEIGHTS.md`.
+
+Implemented the complete 24-layer SAM3/SAM3.1 VE encoder in C++/ATen, reading
+only the language module from the shared store. The API accepts arbitrary token
+batches/lengths within the model's existing 32-token context; it returns all
+three outputs used by upstream VETextEncoder. The unused pooled projection is
+not executed because upstream VE discards it. Tokenizer is not yet ported.
+GPU FP32/TF32-off comparisons against both checkpoint versions passed on
+multi-prompt, variable-length and single-token cases; maximum absolute error
+was zero in all six cases. See `text-cuda-validation.json`.
+
+Captured unmodified SAM3 image eager FP32 reference tensors using the truck
+asset: three independent text prompts, a positive box, positive+negative boxes,
+and a changed confidence threshold. All 200 architectural queries and the
+original 1008 input resolution were retained. The private reference directory
+contains backbone/text features, raw detector outputs and final results; summary
+is `image-reference-summary.json`. These are reference fixtures, not evidence
+of a native image implementation. Interactive point/mask, batch and video
+fixtures remain outstanding.
+
+Next: native tokenizer, visual backbone/neck and geometry/detector components,
+then interactive image and video/session control. Keep user-owned Turing/Windows
+validation and no-Actions instruction in force.
+
+CPU text comparisons also passed with zero maximum absolute error for the same
+six cases (`text-cpu-validation.json`). The standalone C++ text CLI loaded the
+private module store and executed on CUDA with Python removed from PATH. The
+custom-CUDA-disabled build passed its 3 CTest cases; CUDA-enabled build passed
+6. This proves the module/loader path for those inputs, not tokenizer or whole
+model parity. Model modules and session lifetime control remain incomplete.

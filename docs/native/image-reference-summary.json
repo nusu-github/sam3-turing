@@ -1,0 +1,241 @@
+{
+  "source_commit": "9774725207f7ed2631339c77ccb9f6a8cb288933",
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "dtype": "float32",
+  "tf32": false,
+  "resolution": 1008,
+  "num_queries": 200,
+  "image": "assets/images/truck.jpg",
+  "image_sha256": "941715e721c8864324a1425b445ea4dde0498b995c45ddce0141a58971c6ff99",
+  "cases": [
+    {
+      "name": "text-0-grounding",
+      "inputs": {
+        "text": "truck"
+      },
+      "detections": 1,
+      "raw_queries": 200,
+      "shapes": {
+        "pred_boxes": [
+          1,
+          200,
+          4
+        ],
+        "pred_logits": [
+          1,
+          200,
+          1
+        ],
+        "pred_masks": [
+          1,
+          200,
+          288,
+          288
+        ],
+        "presence_logit_dec": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "name": "text-1-grounding",
+      "inputs": {
+        "text": "wheel"
+      },
+      "detections": 4,
+      "raw_queries": 200,
+      "shapes": {
+        "pred_boxes": [
+          1,
+          200,
+          4
+        ],
+        "pred_logits": [
+          1,
+          200,
+          1
+        ],
+        "pred_masks": [
+          1,
+          200,
+          288,
+          288
+        ],
+        "presence_logit_dec": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "name": "text-2-grounding",
+      "inputs": {
+        "text": "a yellow butterfly"
+      },
+      "detections": 0,
+      "raw_queries": 200,
+      "shapes": {
+        "pred_boxes": [
+          1,
+          200,
+          4
+        ],
+        "pred_logits": [
+          1,
+          200,
+          1
+        ],
+        "pred_masks": [
+          1,
+          200,
+          288,
+          288
+        ],
+        "presence_logit_dec": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "name": "box-positive",
+      "inputs": {
+        "boxes": [
+          [
+            0.5,
+            0.5,
+            0.8,
+            0.8
+          ]
+        ],
+        "labels": [
+          true
+        ]
+      },
+      "detections": 1,
+      "raw_queries": 200,
+      "shapes": {
+        "pred_boxes": [
+          1,
+          200,
+          4
+        ],
+        "pred_logits": [
+          1,
+          200,
+          1
+        ],
+        "pred_masks": [
+          1,
+          200,
+          288,
+          288
+        ],
+        "presence_logit_dec": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "name": "box-positive-negative",
+      "inputs": {
+        "boxes": [
+          [
+            0.5,
+            0.5,
+            0.8,
+            0.8
+          ],
+          [
+            0.1,
+            0.1,
+            0.1,
+            0.1
+          ]
+        ],
+        "labels": [
+          true,
+          false
+        ]
+      },
+      "detections": 1,
+      "raw_queries": 200,
+      "shapes": {
+        "pred_boxes": [
+          1,
+          200,
+          4
+        ],
+        "pred_logits": [
+          1,
+          200,
+          1
+        ],
+        "pred_masks": [
+          1,
+          200,
+          288,
+          288
+        ],
+        "presence_logit_dec": [
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "name": "box-threshold",
+      "inputs": {
+        "boxes": [
+          [
+            0.5,
+            0.5,
+            0.8,
+            0.8
+          ],
+          [
+            0.1,
+            0.1,
+            0.1,
+            0.1
+          ]
+        ],
+        "labels": [
+          true,
+          false
+        ],
+        "threshold": 0.25
+      },
+      "detections": 1,
+      "raw_queries": 200,
+      "shapes": {
+        "pred_boxes": [
+          1,
+          200,
+          4
+        ],
+        "pred_logits": [
+          1,
+          200,
+          1
+        ],
+        "pred_masks": [
+          1,
+          200,
+          288,
+          288
+        ],
+        "presence_logit_dec": [
+          1,
+          1
+        ]
+      }
+    }
+  ],
+  "elapsed_seconds": 15.087891360744834,
+  "peak_cuda_bytes": 5606176768,
+  "scope": "Image detector/text/geometry reference only; interactive point/mask, batch and video fixtures remain to be captured."
+}

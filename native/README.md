@@ -54,3 +54,19 @@ nonzero pixels, 8-connectivity, root-index labels, and 64-bit labels/counts. EDT
 returns float32 distances and uses upstream's finite `1e9` distance for masks
 without any zero pixel. These operations preserve input shape (EDT: `[B,H,W]`,
 components: `[B,H,W]` or `[B,1,H,W]`). GPU calls honor the current stream.
+
+The native weight reader and full token-level VE text encoder are now available.
+See [the store format](../docs/native/WEIGHTS.md). After exporting private weights,
+a standalone C++ command accepts arbitrary token IDs:
+
+```sh
+build/native/sam3_text /private/native-weights-v1 sam3 cuda 49406 4629 49407
+```
+
+`sam3::TextEncoder` retains its loaded language module across calls and accepts
+batched token tensors with variable sequence length up to the upstream context
+of 32. It executes all 24 layers and returns padding mask, resized language
+memory and input embeddings. Native Unicode/BPE tokenization is still pending;
+this CLI is a token-level development probe, not a complete text-prompt product.
+The Python `text_encode` test operator reloads weights per call; production C++
+callers should retain the `TextEncoder` object for the needed lifetime.
