@@ -59,7 +59,7 @@ AssociationMetadata realize_association(const AssociationTensors& value,const st
     if(cpu[2].const_data_ptr<bool>()[d])out.new_detections.push_back(d);
     if((policy==AssociationPolicy::Sam3 && m==0) || !cpu[6].const_data_ptr<bool>()[d])continue;
     auto& matches=out.detection_to_tracks[d];for(int64_t t=0;t<m;++t)if(cpu[7].const_data_ptr<bool>()[d*m+t])matches.push_back(ids[t]);
-    if(cpu[4].const_data_ptr<bool>()[d] && cpu[5].const_data_ptr<bool>()[d]){const auto t=cpu[3].const_data_ptr<int64_t>()[d];TORCH_CHECK(t>=0 && t<m,"reconditioning track index is out of range");out.track_to_recondition_detection[ids[t]]=d;}
+    if(cpu[4].const_data_ptr<bool>()[d] && cpu[5].const_data_ptr<bool>()[d]){const auto t=cpu[3].const_data_ptr<int64_t>()[d];TORCH_CHECK(t>=0 && t<m,"reconditioning track index is out of range");if(!out.track_to_recondition_detection.count(ids[t]))out.recondition_order.push_back(ids[t]);out.track_to_recondition_detection[ids[t]]=d;}
   }
   return out;
 }

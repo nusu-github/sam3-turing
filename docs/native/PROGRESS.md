@@ -1541,3 +1541,56 @@ documents the APIs and remaining work: recent-occlusion suppression,
 reconditioning, coordinated object insertion/removal, visual prompts/caches,
 user actions and full high-level video propagation. Codec, multi-GPU execution,
 portable distribution and overall quality/performance validation also remain.
+
+## Native recent occlusion and reconditioning preparation
+
+Added `sam3/occlusion.h`: separate SAM3/SAM3.1 recent-occlusion policies, host and
+device history adapters, box-based/periodic reconditioning gates, video-specific
+hole/sprinkle cleanup, mask preparation and ordered edit batches. The device
+adapter connects to hotstart state, preserving indices through compaction and
+extension. Updates leave input state/masks unchanged. Default mask-IoU count
+arithmetic remains FP32 under neural autocast; explicit reference modes reproduce
+source arithmetic, including dense-mask FP16 overflow.
+
+Preserved source differences: SAM3 existing history wins over removal, whereas
+SAM3.1 removal overrides history. SAM3 uses raw track scores >0.8, while SAM3.1
+uses sigmoid scores >0.8 and also merges low logits. Source finite removal
+sentinels, reverse comparisons, empty-mask handling, cleanup after hole filling
+and degenerate-box NaNs remain. Invalid missing global IDs are rejected during
+preparation; valid object/prompt/detection counts are not capped.
+
+Fixed association metadata to retain Python candidate insertion order in
+addition to its lookup map. This affects SAM3.1's source gate, which tests the
+first pair's IoU and any candidate's detection score. The previous map-only
+comparison did not check order. The updated report has 852 association workflows,
+10,968 exact tensor/metadata comparisons, 72 placement and 32 boundary checks.
+
+`occlusion-validation.json` contains 18,450 exact comparisons across CPU/CUDA
+FP32/FP16/BF16-reference modes: actual source methods, original extracted gate
+blocks, original reconditioning methods with a recording tracker, and
+hotstart -> occlusion -> compaction -> extension transitions. It covers reversed
+history, first-pair order, missing/stored history, empty and 201-object batches,
+noncontiguous tensors and dense 288x288 masks. Native strided cleanup is compared
+to contiguous source values because source CUDA CCL requires contiguous storage.
+The recording tracker validates edit batches without executing neural edits.
+
+Mask-to-box extraction now uses axis projections and reuses them for the empty
+check, avoiding full-resolution coordinate temporaries. Exact inclusive int32
+boxes match source. For 200 synthetic 288x288 masks on Blackwell, five warmups
+and 30 samples in both execution orders give median source time 0.929–0.930 ms
+and native 0.172–0.175 ms. Peak incremental PyTorch GPU allocation decreases from
+132,712,448 to 1,048,064 bytes above the same 16,777,216-byte baseline. These are
+isolated helper measurements, not full-video/Turing throughput or total VRAM.
+
+CTest passes 19/19 CUDA-enabled and 11/11 custom-CUDA-disabled checks. CPU/CUDA
+standalone probes run with PATH=/nonexistent, and the library links neither
+libpython nor libtorch_python. Existing sm_75 cubins remain. The earlier
+intermittent full-model CPU failure is still open. No GitHub Actions or
+Windows/Turing execution was used.
+
+Code/reports are pushed to `codex/native-onboarding`; binaries, headers and logs
+are preserved privately in `native-foundation/occlusion-linux-cuda13`. No new
+weights or whole-model variants were created. Full neural edit/preflight
+execution, coordinated insertion/removal and caches, text/visual prompt state,
+high-level propagation/output handling, codecs, multi-GPU execution and portable
+packaging remain unfinished. See `VIDEO_INTEGRATION.md` for the exact contracts.

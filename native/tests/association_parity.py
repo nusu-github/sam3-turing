@@ -11,10 +11,10 @@ NAMES=['unmatched','nonempty','is_new','best_track','high_confidence','high_over
 def metadata(value):
     if isinstance(value,base.LazyAssociateDetTrkResult):raise TypeError('realize first')
     if isinstance(value,base.RealizedAssociateDetTrkresult):value=(value.new_det_fa_inds,value.unmatched_trk_obj_ids,value.det_to_matched_trk_obj_ids,value.trk_id_to_max_iou_high_conf_det,value.empty_trk_obj_ids)
-    return dict(new_detections=np.asarray(value[0]).tolist(),unmatched_tracks=np.asarray(value[1]).tolist(),empty_tracks=np.asarray(value[4]).tolist(),matches={int(k):np.asarray(v).tolist() for k,v in value[2].items()},recondition={int(k):int(v) for k,v in value[3].items()})
+    return dict(new_detections=np.asarray(value[0]).tolist(),unmatched_tracks=np.asarray(value[1]).tolist(),empty_tracks=np.asarray(value[4]).tolist(),matches={int(k):np.asarray(v).tolist() for k,v in value[2].items()},recondition={int(k):int(v) for k,v in value[3].items()},recondition_order=[int(k) for k in value[3]])
 def actual_metadata(out):
     offsets=out['match_offsets'].tolist();keys=out['detection_keys'].tolist();ids=out['matched_ids'].tolist()
-    return dict(new_detections=out['new_detections'].tolist(),unmatched_tracks=out['unmatched_tracks'].tolist(),empty_tracks=out['empty_tracks'].tolist(),matches={k:ids[offsets[i]:offsets[i+1]] for i,k in enumerate(keys)},recondition=dict(zip(out['recondition_ids'].tolist(),out['recondition_detections'].tolist())))
+    return dict(new_detections=out['new_detections'].tolist(),unmatched_tracks=out['unmatched_tracks'].tolist(),empty_tracks=out['empty_tracks'].tolist(),matches={k:ids[offsets[i]:offsets[i+1]] for i,k in enumerate(keys)},recondition=dict(zip(out['recondition_ids'].tolist(),out['recondition_detections'].tolist())),recondition_order=out['recondition_order'].tolist())
 
 def cases():
     g=torch.Generator().manual_seed(7443)
@@ -25,6 +25,8 @@ def cases():
         yield f'random-{n}-{m}-{h}-{w}-{ht}-{wt}',det,scores,trk,keep
     yield 'full-288-mask',torch.ones(1,288,288),torch.tensor([.9]),torch.ones(1,288,288),torch.ones(1,dtype=torch.bool)
     yield 'no-tracks-keep-false',torch.zeros(3,2,2),torch.tensor([.9,.6,.7]),torch.empty(0,1,3),torch.tensor([False,True,True])
+    ordered=torch.eye(3).reshape(3,1,3)*2-1
+    yield 'ordered-reconditioning',ordered[[2,0,1]],torch.full((3,),.9),ordered,torch.ones(3,dtype=torch.bool)
     # Duplicates exercise ambiguity clearing, argmax ties and dictionary overwrite.
     det=torch.tensor([[[1.,-1.,-1.,-1.]],[[1.,-1.,-1.,-1.]],[[-1.,1.,-1.,-1.]],[[-1.,-1.,1.,1.]]])
     trk=torch.tensor([[[1.,-1.,-1.,-1.]],[[1.,-1.,-1.,-1.]],[[-1.,1.,1.,-1.]],[[-1.,-1.,-1.,-1.]]])
@@ -72,7 +74,7 @@ def main():
                 if raw:
                   for key,value in zip(NAMES,raw):torch.testing.assert_close(actual[key],value,rtol=0,atol=0);count+=1
                 if multiplex:expected=base.realize_adt_result(expected,{'obj_ids_all_gpu':ids},d)
-                assert actual_metadata(actual)==metadata(expected),(name,device,mode,multiplex,iom,threshold,padding,actual_metadata(actual),metadata(expected));count+=5;workflows+=1
+                assert actual_metadata(actual)==metadata(expected),(name,device,mode,multiplex,iom,threshold,padding,actual_metadata(actual),metadata(expected));count+=6;workflows+=1
               finally:base._associate_det_trk_compilable=original
           rows.append(dict(device=device,mode=mode,model='sam3.1' if multiplex else 'sam3',workflows=workflows,exact_tensor_and_metadata_comparisons=count));print(json.dumps(rows[-1]),flush=True)
     placements=0

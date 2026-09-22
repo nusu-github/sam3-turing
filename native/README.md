@@ -955,3 +955,18 @@ that range without truncating inputs. Persistent pair metadata remains quadratic
 actual source methods and extracted original planning blocks; `hotstart_benchmark.py`
 measures only the isolated state update. See [video integration](../docs/native/VIDEO_INTEGRATION.md)
 for state semantics, numerical bounds, measurements and remaining host integration.
+
+### Recent occlusion and reconditioning
+
+`sam3/occlusion.h` adds source-specific suppression/history updates, reconditioning
+gates, video mask cleanup and ordered edit recipes. The SAM3.1 helper connects to
+hotstart state and survives compaction/extension. Association metadata preserves
+candidate insertion order because the original SAM3.1 gate uses the first pair's
+IoU. Mask-to-box extraction avoids full-resolution coordinate temporaries without
+changing inclusive extrema or empty-mask behavior.
+
+`sam3_occlusion_test` runs without Python or weights. `occlusion_parity.py` checks
+original source methods, extracted gate blocks, edit batches with a recording
+tracker and consecutive state transitions. It does not execute neural session
+edits or complete the high-level video predictor. See [integration contracts](../docs/native/VIDEO_INTEGRATION.md)
+for model-specific score/history rules, source quirks and remaining integration.

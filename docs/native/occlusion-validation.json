@@ -1,0 +1,104 @@
+{
+  "cases": [
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "exact_comparisons": {
+        "occlusion": 378,
+        "input_immutability": 414,
+        "host_occlusion": 84,
+        "state_pipeline": 416,
+        "mask_boxes": 5,
+        "cleanup": 64,
+        "diagonal_iou": 4,
+        "gates": 90,
+        "recipes": 1620
+      }
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "exact_comparisons": {
+        "occlusion": 378,
+        "input_immutability": 414,
+        "host_occlusion": 84,
+        "state_pipeline": 416,
+        "mask_boxes": 5,
+        "cleanup": 64,
+        "diagonal_iou": 4,
+        "gates": 90,
+        "recipes": 1620
+      }
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "exact_comparisons": {
+        "occlusion": 378,
+        "input_immutability": 414,
+        "host_occlusion": 84,
+        "state_pipeline": 416,
+        "mask_boxes": 5,
+        "cleanup": 64,
+        "diagonal_iou": 4,
+        "gates": 90,
+        "recipes": 1620
+      }
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "exact_comparisons": {
+        "occlusion": 378,
+        "input_immutability": 414,
+        "host_occlusion": 84,
+        "state_pipeline": 416,
+        "mask_boxes": 5,
+        "cleanup": 64,
+        "diagonal_iou": 4,
+        "gates": 90,
+        "recipes": 1620
+      }
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "exact_comparisons": {
+        "occlusion": 378,
+        "input_immutability": 414,
+        "host_occlusion": 84,
+        "state_pipeline": 416,
+        "mask_boxes": 5,
+        "cleanup": 64,
+        "diagonal_iou": 4,
+        "gates": 90,
+        "recipes": 1620
+      }
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "exact_comparisons": {
+        "occlusion": 378,
+        "input_immutability": 414,
+        "host_occlusion": 84,
+        "state_pipeline": 416,
+        "mask_boxes": 5,
+        "cleanup": 64,
+        "diagonal_iou": 4,
+        "gates": 90,
+        "recipes": 1620
+      }
+    }
+  ],
+  "source_sha256": {
+    "sam3/model/sam3_video_base.py": "7ffae0a8c15f17814ce438078b6a00cc052be21ad16c8a59205df859c3df52c4",
+    "sam3/model/sam3_multiplex_base.py": "fad8ba0829e1223af919736d5c90b68a784c4941f936f088bccbdc4fb75d2bf8",
+    "sam3/model/sam3_tracker_utils.py": "dc5fdeba2d4416f273394a9bd4450dff050608db6009a4546ca68adbaa24a640",
+    "sam3/model/box_ops.py": "2d1a11337f1db93ccd87132319716cf68b215c59fa51e43416bdad7ab30c8151",
+    "sam3/perflib/masks_ops.py": "b1b6fae420565315dd434d4efb9a6f76fe0fc2959a8c30f2f1120a0a25e80a55"
+  },
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "scope": "Actual source occlusion and cleanup methods, AST-extracted reconditioning gates, actual masklet methods with a recording tracker (no neural edits), and hotstart->occlusion->compact->extend state transitions. FP16/BF16 modes reproduce source autocast arithmetic including count overflow; default runtime policy uses FP32 counts. Turing and Windows not executed."
+}

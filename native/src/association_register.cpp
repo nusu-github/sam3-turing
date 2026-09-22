@@ -10,7 +10,7 @@ TORCH_LIBRARY_FRAGMENT(sam3_native,m){
       std::vector<int64_t> keys,offsets{0},matched,recondition_ids,recondition_dets;
       for(const auto& [id,tracks]:metadata.detection_to_tracks){keys.push_back(id);matched.insert(matched.end(),tracks.begin(),tracks.end());offsets.push_back(matched.size());}
       for(const auto& [id,det]:metadata.track_to_recondition_detection){recondition_ids.push_back(id);recondition_dets.push_back(det);}
-      put("detection_keys",keys);put("match_offsets",offsets);put("matched_ids",matched);put("recondition_ids",recondition_ids);put("recondition_detections",recondition_dets);return out;
+      put("detection_keys",keys);put("match_offsets",offsets);put("matched_ids",matched);put("recondition_order",metadata.recondition_order);put("recondition_ids",recondition_ids);put("recondition_detections",recondition_dets);return out;
     });
   m.def("assign_detection_devices(int count, int[] previous, int capacity) -> int[]",&sam3::assign_detection_devices);
   m.def("detection_boundary_keep(Tensor boxes, float margin) -> Tensor",&sam3::detection_boundary_keep);

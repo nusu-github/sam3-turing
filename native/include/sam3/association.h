@@ -23,6 +23,8 @@ struct AssociationMetadata {
   std::map<int64_t,std::vector<int64_t>> detection_to_tracks;
   // Source iteration overwrites earlier detections if a track occurs again.
   std::map<int64_t,int64_t> track_to_recondition_detection;
+  // Python dict insertion order matters to the SAM3.1 first-pair IoU gate.
+  std::vector<int64_t> recondition_order;
 };
 // Floating logits [N,H,W], scores[N], tracks[M,Ht,Wt]. Resize to smaller area
 // before sign thresholding. SAM3 keep must be absent/all true (source prefilters).
