@@ -523,3 +523,45 @@ its interactive modules with a common image host, not multiplex scheduling.
 Next are video object gating/pointers, memory encoding/attention and tracking
 orchestration; codecs, stable C ABI and standalone packaging also remain.
 No GitHub Actions were used. Windows/Turing execution remains with the user.
+
+## 2026-09-22 — video interactive heads and object pointers
+
+Added `VideoInteractiveHeads`, loading the existing SAM3 tracker / SAM3.1
+interactive tracker weights. This connects missing-point padding, antialiased
+mask-prompt resize, interactive decoding, object-presence gating, best-IoU mask
+and token selection, and object-pointer projection. SAM3 uses its learned fixed
+absent-object pointer; SAM3.1 applies its learned linear absent-object transform.
+SAM3 processes a feature batch, while SAM3.1 repeats one image over object prompts.
+The separate SAM3.1 multiplex propagation head is not implemented by this change.
+
+Direct supplied masks now follow the original `use_mask_as_output` path,
+including learned mask downsampling for the pointer, mask-derived object scores,
+and the source's second absent-object pointer transformation. The original
+different low-resolution sizing formulas and dtype choices are preserved.
+In particular, SAM3 uses `input_size // 14 * 4`, whereas SAM3.1 uses
+`input_size // 4`; neither is silently replaced with a fixed 288 output size.
+
+`video-heads-cuda-validation.json` records 57 exact comparisons (both models,
+FP32/FP16/BF16-reference). `video-heads-cpu-validation.json` records 19 exact
+FP32 comparisons. Tests call the original tracker methods with their original
+neural modules and compare every returned mask, IoU, pointer and object logit.
+Coverage includes single/three-candidate output, empty/variable point sequences,
+full/low/non-square mask prompts, combined prompts, present/absent objects,
+direct empty/nonempty masks at two input sizes, and SAM3.1 object thresholds.
+The previously documented intermittent development CPU failure remains open;
+these successful runs do not establish general CPU stability.
+
+The standalone `sam3_video_heads` probe supports arbitrary positive batch size
+and nonnegative point count. It runs without Python on PATH and exercises prompt
+and direct-mask paths. No weight variants or duplicate shards were introduced.
+These tests establish head parity on synthetic features, not temporal tracking
+accuracy. Memory encoding/attention, frame selection and session scheduling,
+SAM3.1 propagation/multiplex control, codecs, C ABI and final packaging remain.
+
+CUDA FP16 SAM3.1 (batch 3, nine points) and CPU FP32 SAM3 (batch 1, empty point
+sequence) standalone probes passed with `PATH=/nonexistent`. CTest passed 7/7
+CUDA-enabled and 4/4 custom-CUDA-disabled checks. The probe links no Python
+library, and native CUDA objects retain sm_75 builds. Code/reports are pushed
+to `codex/native-onboarding`; binaries/logs are saved privately under
+`native-foundation/video-heads-linux-cuda13`. Windows/Turing runtime checks
+remain with the user. No GitHub Actions were used.

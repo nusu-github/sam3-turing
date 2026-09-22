@@ -207,7 +207,7 @@ Interactive neural modules are available in `interactive_prompt.h` and
 embeddings, mask/no-mask dense embeddings and the learned Fourier position grid.
 Point counts and batch sizes are variable; padding labels and box-corner labels
 follow the source. This module accepts masks at the model's 288×288 prompt size;
-the higher-level predictor's input-mask resize is still to be connected.
+the video heads below resize other mask sizes before prompt encoding.
 
 `InteractiveMaskDecoder` runs both two-way transformer layers and all four mask
 tokens. `project_pyramid` projects the two high-resolution feature maps once for
@@ -223,8 +223,9 @@ build/native/sam3_interactive /private/native-weights-v1 sam3.1 cuda fp16 3 9
 
 This executable chains prompt encoding and mask decoding on synthetic full-size
 features with variable batch/point counts. Existing weight shards serve these
-modules without duplication. Video-specific input-mask resizing, object gating,
-pointers and the separate multiplex propagation decoder remain outstanding.
+modules without duplication. Video-specific input-mask resizing, object gating
+and pointers are connected by `VideoInteractiveHeads` below. The separate
+multiplex propagation decoder remains outstanding.
 
 `InteractiveImageSession` in `interactive_image.h` connects real image features,
 pixel/normalized point and box coordinates, no-memory embeddings, original-size
@@ -267,3 +268,26 @@ An intermittent CPU crash in this development PyTorch build also reproduces with
 the original Python prompt encoder alone; see
 [`CPU_RUNTIME_ISSUE.md`](../docs/native/CPU_RUNTIME_ISSUE.md). A successful parity
 run does not establish CPU runtime stability. No GitHub Actions are used.
+
+`VideoInteractiveHeads` in `video_heads.h` implements the original SAM3 video
+heads and SAM3.1's per-object interactive video path. It handles missing-point
+padding, arbitrary-size mask prompts with antialiased resizing, object-presence
+mask gating, best-IoU selection and object-pointer projection. SAM3 uses its
+learned absent-object pointer; SAM3.1 uses its learned linear transformation.
+`use_mask_as_output` preserves supplied masks and computes pointers using the
+original downsample/decoder path, including the second absence transformation.
+The caller supplies projected high-resolution features and memory-conditioned
+72×72 features (one per object for SAM3, one repeated image for SAM3.1).
+
+```sh
+build/native/sam3_video_heads /private/native-weights-v1 sam3.1 cuda fp16 3 9
+```
+
+This standalone synthetic-feature probe exercises single/multimask output,
+variable batch/point counts and direct-mask output. `video_heads_parity.py`
+compares all seven outputs against the original tracker methods: 57 CUDA cases
+and 19 completed CPU FP32 cases match exactly. Direct-mask output dimensions
+retain the upstream formulas: SAM3 uses `input_size // 14 * 4`, while SAM3.1
+uses `input_size // 4`. Supplied mask sizes and model-image sizes are separate.
+Temporal memory, frame selection, tracking sessions and multiplex propagation
+remain to be implemented; these head tests are not full video tracking tests.

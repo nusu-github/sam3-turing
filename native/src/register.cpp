@@ -9,6 +9,7 @@
 #include "sam3/interactive_prompt.h"
 #include "sam3/interactive_decoder.h"
 #include "sam3/interactive_image.h"
+#include "sam3/video_heads.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
 #include <torch/library.h>
@@ -26,6 +27,16 @@ c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& ou
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("video_interactive_heads(str directory, str model, Tensor image, Tensor[] high, Tensor? points, Tensor? labels, Tensor? masks, bool multimask, bool direct_mask, str mode, float object_threshold=0.) -> Tensor[]",
+      [](const std::string& directory,const std::string& model,const at::Tensor& image,const std::vector<at::Tensor>& high,
+         const std::optional<at::Tensor>& points,const std::optional<at::Tensor>& labels,const std::optional<at::Tensor>& masks,
+         bool multimask,bool direct_mask,const std::string& mode,double threshold) {
+        const sam3::WeightStore store(std::filesystem::u8path(directory));
+        const sam3::VideoInteractiveHeads heads(store,model,image.device());
+        const auto out=direct_mask?heads.use_mask_as_output(image,high,masks.value(),mode,threshold):
+          heads.forward(image,high,points.value_or(at::Tensor()),labels.value_or(at::Tensor()),masks.value_or(at::Tensor()),multimask,mode,threshold);
+        return std::vector<at::Tensor>{out.low_res_multimasks,out.high_res_multimasks,out.iou,out.low_res_mask,out.high_res_mask,out.object_pointer,out.object_logits};
+      });
   m.def("interactive_image_batch_pixels(str directory, str model, Tensor[] pixels, str mode) -> (Tensor[], Tensor[], Tensor[], Tensor)",
       [](const std::string& directory,const std::string& model,const std::vector<at::Tensor>& pixels,const std::string& mode) {
         TORCH_CHECK(!pixels.empty(),"empty image batch");
