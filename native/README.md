@@ -355,8 +355,7 @@ from re-enabling fused backends and verify that only math stays enabled.
 CPU rotary caches are recomputed on CPU as on a CPU-only host. Reports explicitly
 identify adapted reference cases. These are backend compatibility and tensor
 parity checks on available hardware; Turing/Windows execution remains untested
-here, and complete video tracking still needs session control and multiplex
-propagation.
+here, and complete video tracking still needs session control.
 
 `Sam3MemoryConditioner` in `temporal_memory.h` connects SAM3 frame selection,
 temporal positions, pointer assembly and memory attention. `TemporalState`
@@ -385,8 +384,7 @@ Python, but it is not a real-video predictor or an accuracy benchmark.
 `temporal_memory_parity.py` compares selection, assembled memory and positions,
 pointer counts and conditioned features against the original SAM3 host. CPU
 comparisons redirect only hard-coded `.cuda()` transfers and recreate rotary
-caches on CPU. SAM3.1's temporal host still needs propagation decoding and
-orchestration with the multiplex state/controller described below.
+caches on CPU. SAM3.1 uses the separate multiplex temporal host described below.
 
 `MultiplexState` and `MultiplexController` in `multiplex.h` implement SAM3.1's
 inference object allocation and tensor mux/demux. Physical width defaults to 16;
@@ -414,7 +412,7 @@ The standalone C++ test covers transactional errors, bucket retention, external
 IDs, invalidation, noncontiguous/empty-feature tensors and up to 257 objects.
 `multiplex_parity.py` compares allocation, RNG output and repeated additions /
 removals against the original inference controller. This is the state/controller
-component; temporal orchestration and full video sessions remain to be connected.
+component; full video sessions remain to be connected.
 
 `MultiplexMaskDecoder` and `MultiplexPropagationHeads` in `multiplex_decoder.h`
 implement the shipped SAM3.1 propagation path. The trained decoder has 16 slots
@@ -448,3 +446,35 @@ including per-slot outputs, suppression, demux, positions, resized masks and
 pointers. `--math` prevents the original attention method from re-enabling
 Flash/memory-efficient SDPA to compare the ordinary math fallback. Model tensor
 operations remain the same; the native library preserves caller backend settings.
+
+`MultiplexMemoryConditioner` in `multiplex_temporal.h` connects SAM3.1 temporal
+selection to its separate image and object memory streams. It shares the ordered
+conditioning/stride/score selector with SAM3, while preserving SAM3.1's default
+future-conditioning pointers, unsigned pointer times and v2 spatial time
+embeddings. Options also expose past-only/signed pointers, dummy pointer times,
+v1 spatial time encoding and disabled pointers/memory. Spatial and image tensors
+may be offloaded to CPU; pointers stay on the execution device. The current image
+is shared across buckets. Stored history must already match the current bucket
+allocation; session-level history updates after rebucketing remain separate.
+
+Cleared spatial memory or pointer-only history falls back to the current image
+features, as in the original host. Legacy 5D per-slot memory/positions are
+demuxed, made contiguous and cached back into state. Initial or explicit
+previous-memory bypass frames must use interactive/direct-mask heads; the source
+does not support them in this temporal path unless memory is disabled.
+
+```sh
+build/native/sam3_multiplex_temporal /private/native-weights-v1 cuda fp16 17 3
+build/native/sam3_multiplex_temporal /private/native-weights-v1 cuda fp16 2 3 math
+```
+
+The arguments after precision are object and frame counts. This development
+probe initializes supplied masks with the interactive heads, stores encoded
+memory and image features on CPU, then conditions/propagates/encodes subsequent
+synthetic full-grid frames. All objects and three propagation candidates remain
+available. It is not yet a real-video session or an accuracy benchmark.
+`multiplex_temporal_parity.py` compares original assembled tensors and final
+conditioned features, including reverse/strided/score-based selection, cleared
+memory and 5D state normalization. CUDA FP32/math reference removes the source
+Flash-only context; CPU redirects hard-coded CUDA transfers and recreates rotary
+caches on CPU. These backend adaptations are recorded in the reports.

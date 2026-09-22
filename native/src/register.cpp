@@ -15,6 +15,7 @@
 #include "sam3/temporal_memory.h"
 #include "sam3/multiplex.h"
 #include "sam3/multiplex_decoder.h"
+#include "sam3/multiplex_temporal.h"
 #include "sam3/autocast.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
@@ -49,6 +50,34 @@ c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& ou
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("multiplex_temporal(str directory, Tensor source, Tensor source_position, int[][] assignments, int[] ids, bool[] conditioning, Tensor[] features, Tensor[] positions, Tensor[] pointers, Tensor[] scores, Tensor[] images, Tensor[] image_positions, int[] settings, bool[] flags, float threshold, str mode) -> Dict(str, Tensor)",
+      [](const std::string& directory,const at::Tensor& source,const at::Tensor& source_position,
+         const std::vector<std::vector<int64_t>>& assignments,const std::vector<int64_t>& ids,const c10::List<bool>& conditioning,
+         const std::vector<at::Tensor>& features,const std::vector<at::Tensor>& positions,const std::vector<at::Tensor>& pointers,
+         const std::vector<at::Tensor>& scores,const std::vector<at::Tensor>& images,const std::vector<at::Tensor>& image_positions,
+         const std::vector<int64_t>& settings,const c10::List<bool>& flags,double threshold,const std::string& mode) {
+        TORCH_CHECK(settings.size()==8 && flags.size()==10,"invalid multiplex temporal test options");
+        TORCH_CHECK(ids.size()==conditioning.size() && ids.size()==features.size() && ids.size()==positions.size() && ids.size()==pointers.size() && ids.size()==scores.size() && ids.size()==images.size() && ids.size()==image_positions.size(),"inconsistent temporal frame arrays");
+        const auto optional=[](const at::Tensor& t) {return t.dim()==1 && t.numel()==0?at::Tensor():t;};
+        sam3::MultiplexTemporalState state;
+        for (size_t i=0;i<ids.size();++i) (conditioning[i]?state.conditioning:state.tracked).push_back(
+            {ids[i],optional(features[i]),optional(positions[i]),optional(pointers[i]),optional(scores[i]),optional(images[i]),optional(image_positions[i])});
+        sam3::MultiplexTemporalOptions options;
+        options.memory_slots=settings[4];options.max_conditioning_frames=settings[5];options.max_pointer_frames=settings[6];options.stride=settings[7];
+        options.keep_first=flags[3];options.select_by_score=flags[4];options.only_past_pointers=flags[5];options.signed_pointer_time=flags[6];
+        options.temporal_v2=flags[7];options.encode_pointer_time=flags[8];options.use_pointers=flags[9];options.score_threshold=threshold;
+        const sam3::MultiplexState buckets(assignments,source.device(),at::kFloat,16);
+        const sam3::MultiplexMemoryConditioner conditioner(sam3::WeightStore(std::filesystem::u8path(directory)),source.device());
+        sam3::MultiplexTemporalAssembly trace;c10::Dict<std::string,at::Tensor> out;
+        out.insert("features",conditioner.forward(source,source_position,settings[0],settings[1],settings[2],settings[3],flags[0],flags[1],flags[2],state,buckets,options,mode,&trace));
+        out.insert("counts",at::tensor({trace.pointer_tokens,int64_t(trace.fuse)},at::kLong));
+        if (trace.fuse) {out.insert("memory",trace.memory);out.insert("position",trace.position);out.insert("image",trace.image);out.insert("image_position",trace.image_position);}
+        for (const auto* frames:{&state.conditioning,&state.tracked}) for (const auto& entry:*frames) {
+          if (entry.features.defined()) out.insert("stored_features_"+std::to_string(entry.index),entry.features);
+          if (entry.position.defined()) out.insert("stored_position_"+std::to_string(entry.index),entry.position);
+        }
+        return out;
+      });
   m.def("multiplex_decode(str directory, Tensor image, Tensor position, Tensor[] high, Tensor? extra, str mode) -> Tensor[]",
       [](const std::string& directory,const at::Tensor& image,const at::Tensor& position,const std::vector<at::Tensor>& high,
          const std::optional<at::Tensor>& extra,const std::string& mode) {

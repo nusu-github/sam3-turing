@@ -800,3 +800,55 @@ are saved privately under `native-foundation/multiplex-decoder-linux-cuda13`.
 Next is SAM3.1 temporal assembly/conditioning, followed by complete sessions
 and real-video parity. Codecs, C ABI and final packaging remain. No GitHub
 Actions were used; Windows/Turing runtime validation remains with the user.
+
+## 2026-09-22 — SAM3.1 multiplex temporal memory and conditioning
+
+Added `MultiplexMemoryConditioner`, `MultiplexTemporalState` and options for
+SAM3.1's temporal host. Spatial selection reuses the validated ordered
+conditioning/stride/score planner, while pointer selection preserves SAM3.1's
+different defaults: future conditioning pointers are included and pointer time
+distances are unsigned. V2 spatial time embeddings mark out-of-range frames;
+past-only/signed pointers, v1 spatial time, dummy pointer time and disabled
+pointers/memory are also available.
+
+Assembly keeps image/object memory streams separate, restores CPU-offloaded
+spatial/image features, projects sine pointer-time encodings and repeats each
+frame's position over its 16 slot pointers. Legacy 5D per-slot features and
+positions are demuxed, made contiguous and cached back into state. Missing
+pointers are skipped. Cleared spatial memory and pointer-only history fall back
+to current image features. Initial/bypass frames use interactive/direct-mask
+heads, matching the original temporal method's unsupported initial branch.
+History must already be aligned to the current bucket allocation; complete
+session-level history changes after object additions/removals remain separate.
+
+`multiplex-temporal-cuda-validation.json` contains 58 exact cases over FP32,
+FP16 and BF16-reference, including a full-grid math-only attention comparison.
+`multiplex-temporal-cpu-validation.json` contains 19 exact FP32 cases. Coverage
+includes forward/reverse, stride, score filtering with missing/NaN/tied scores,
+start/end boundaries, unrestricted conditioning selection, past/signed pointer
+options, v1/v2/dummy time encoding, disabled/missing pointers, partially cleared
+spatial state, empty/zero-batch memory fallback and legacy 5D normalization.
+Comparisons inspect assembled object/image memory and positions, pointer counts,
+cached-state mutations and final conditioned features. Full 72x72 features are
+included. CUDA FP32/math reference removes only the original Flash-only context;
+CPU redirects hard-coded CUDA transfers and reconstructs rotary caches on CPU.
+Native calls preserve the selected backend policy.
+
+`sam3_multiplex_temporal` chains direct-mask initialization, memory encoding,
+temporal conditioning and propagation over synthetic full-grid frames, with
+spatial and image history offloaded to CPU. Three frames passed with Python
+absent from PATH: CUDA FP16 with 17 objects/two buckets, CPU FP32 with two
+objects/one bucket, and CUDA FP16 math-only with two objects. The first frame
+stores memory; subsequent frames consume 16 then 32 pointer tokens per bucket.
+The source direct-mask path's 252x252 low-resolution output for a 1008px supplied
+mask is preserved; propagation produces 288x288 low-resolution masks. Final masks
+remain 1008px. This is a synthetic integration probe, not real-video validation.
+
+CTest passed 9/9 CUDA-enabled and 5/5 custom-CUDA-disabled checks. No Python
+libraries are linked; custom CUDA kernels retain sm_75 builds. The earlier CPU
+prompt-encoder runtime issue remains unresolved. Code/reports are pushed to
+`codex/native-onboarding`; development binaries/logs are saved privately under
+`native-foundation/multiplex-temporal-linux-cuda13`. Existing weight shards are
+reused. Full tracking sessions, real-video parity, codecs, C ABI and final
+packaging remain. No GitHub Actions were used; Windows/Turing execution remains
+with the user.
