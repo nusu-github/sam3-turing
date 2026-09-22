@@ -201,3 +201,30 @@ mappings, combining marks, entities, broken encodings and long input segments.
 The native CTest also covers variable context, empty batches, error handling
 and reuse. `image_probe_parity.py` now supplies actual text files to the child
 process; Python is used only to prepare/check the saved image fixtures.
+
+Interactive neural modules are available in `interactive_prompt.h` and
+`interactive_decoder.h`. `InteractivePromptEncoder` produces point/box sparse
+embeddings, mask/no-mask dense embeddings and the learned Fourier position grid.
+Point counts and batch sizes are variable; padding labels and box-corner labels
+follow the source. This module accepts masks at the model's 288×288 prompt size;
+the higher-level predictor's input-mask resize is still to be connected.
+
+`InteractiveMaskDecoder` runs both two-way transformer layers and all four mask
+tokens. `project_pyramid` projects the two high-resolution feature maps once for
+reuse. Decoding supports batched images or repeated prompts for one image,
+three-candidate output, and the original stability-based single-mask fallback.
+It preserves source object-pointer tokens even when stability chooses a different
+mask, and SAM3 versus SAM3.1 IoU activation differences. Raw candidates are also
+returned for diagnostics and subsequent tracking integration.
+
+```sh
+build/native/sam3_interactive /private/native-weights-v1 sam3.1 cuda fp16 3 9
+```
+
+This executable chains prompt encoding and mask decoding on synthetic full-size
+features with variable batch/point counts. It verifies native execution without
+Python; it does not yet implement the real-image interactive session. Coordinate
+transforms, input-mask resizing, no-memory feature injection, object gating and
+pointers, original-size mask postprocessing and image/video session control are
+the next integration steps. The separate multiplex propagation decoder is still
+outstanding. Existing weight shards serve these modules without duplication.

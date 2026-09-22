@@ -1,0 +1,606 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cpu",
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "full",
+      "selection": "multi",
+      "batch": 1,
+      "grid": [
+        72,
+        72
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "full",
+      "selection": "stability",
+      "batch": 1,
+      "grid": [
+        72,
+        72
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "full",
+      "selection": "force_fallback",
+      "batch": 1,
+      "grid": [
+        72,
+        72
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "full",
+      "selection": "stable",
+      "batch": 1,
+      "grid": [
+        72,
+        72
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "full",
+      "selection": "single",
+      "batch": 1,
+      "grid": [
+        72,
+        72
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "repeat",
+      "selection": "multi",
+      "batch": 3,
+      "grid": [
+        11,
+        17
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "repeat",
+      "selection": "stability",
+      "batch": 3,
+      "grid": [
+        11,
+        17
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "repeat",
+      "selection": "force_fallback",
+      "batch": 3,
+      "grid": [
+        11,
+        17
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "repeat",
+      "selection": "stable",
+      "batch": 3,
+      "grid": [
+        11,
+        17
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "repeat",
+      "selection": "single",
+      "batch": 3,
+      "grid": [
+        11,
+        17
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "batched",
+      "selection": "multi",
+      "batch": 2,
+      "grid": [
+        13,
+        9
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "batched",
+      "selection": "stability",
+      "batch": 2,
+      "grid": [
+        13,
+        9
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "batched",
+      "selection": "force_fallback",
+      "batch": 2,
+      "grid": [
+        13,
+        9
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "batched",
+      "selection": "stable",
+      "batch": 2,
+      "grid": [
+        13,
+        9
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "batched",
+      "selection": "single",
+      "batch": 2,
+      "grid": [
+        13,
+        9
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "full",
+      "selection": "multi",
+      "batch": 1,
+      "grid": [
+        72,
+        72
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "full",
+      "selection": "stability",
+      "batch": 1,
+      "grid": [
+        72,
+        72
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "full",
+      "selection": "force_fallback",
+      "batch": 1,
+      "grid": [
+        72,
+        72
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "full",
+      "selection": "stable",
+      "batch": 1,
+      "grid": [
+        72,
+        72
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "full",
+      "selection": "single",
+      "batch": 1,
+      "grid": [
+        72,
+        72
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "repeat",
+      "selection": "multi",
+      "batch": 3,
+      "grid": [
+        11,
+        17
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "repeat",
+      "selection": "stability",
+      "batch": 3,
+      "grid": [
+        11,
+        17
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "repeat",
+      "selection": "force_fallback",
+      "batch": 3,
+      "grid": [
+        11,
+        17
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "repeat",
+      "selection": "stable",
+      "batch": 3,
+      "grid": [
+        11,
+        17
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "repeat",
+      "selection": "single",
+      "batch": 3,
+      "grid": [
+        11,
+        17
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "batched",
+      "selection": "multi",
+      "batch": 2,
+      "grid": [
+        13,
+        9
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "batched",
+      "selection": "stability",
+      "batch": 2,
+      "grid": [
+        13,
+        9
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "batched",
+      "selection": "force_fallback",
+      "batch": 2,
+      "grid": [
+        13,
+        9
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "batched",
+      "selection": "stable",
+      "batch": 2,
+      "grid": [
+        13,
+        9
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "batched",
+      "selection": "single",
+      "batch": 2,
+      "grid": [
+        13,
+        9
+      ],
+      "max_errors": {
+        "masks": 0.0,
+        "iou": 0.0,
+        "tokens": 0.0,
+        "object_logits": 0.0,
+        "all_masks": 0.0,
+        "all_iou": 0.0,
+        "all_tokens": 0.0
+      }
+    }
+  ]
+}

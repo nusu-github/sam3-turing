@@ -420,3 +420,56 @@ Next: interactive point/mask prompt modules and image session orchestration,
 then video tracking and SAM3.1 multiplex control. Image/video codecs, stable
 C ABI and standalone packaging remain. No GitHub Actions were used; Windows
 and Turing runtime verification remains with the user.
+
+
+## 2026-09-22 — interactive prompt encoder and mask decoder
+
+Added `InteractivePromptEncoder` and `InteractiveMaskDecoder` for both models.
+SAM3 loads `tracker.sam_*`; SAM3.1 loads its separate
+`tracker.model.interactive_sam_*` prefixes from the existing modular archive.
+No new weight shards, model variants or copies were created.
+
+Prompt encoding retains variable point counts, labels -1/0/1/2/3, optional box
+corners, masks, empty input and the learned no-mask embedding. It reproduces the
+pixel-center shift, conditional point padding, Fourier coordinate/grid encoding,
+mask downscaling and source LayerNorm2d operation order under each precision mode.
+Full configured sizes remain 1008 input / 72 embedding / 288 mask prompt; tests
+also exercise non-square grids without changing the deployment model defaults.
+
+The decoder includes both two-way attention layers, all four mask tokens,
+object/IoU tokens, high-resolution skip projections, transpose convolutions,
+hypernetwork mask generation, mask quality and object logits. It supports the
+source single-mask and three-candidate outputs, repeated prompts for one image,
+and stability-based fallback. A source detail is preserved: the single-mask
+object-pointer token remains token zero even when stability selects another mask.
+SAM3 uses sigmoid IoU; SAM3.1's interactive decoder uses unactivated IoU scores.
+The separate multiplex propagation decoder has not been ported by this change.
+
+Exact comparisons against original modules:
+
+- `interactive-prompt-cuda-validation.json`: 96 cases across both models,
+  FP32/FP16/BF16-reference, full/non-square grids, empty/all prompt combinations,
+  noncontiguous inputs and 317 points; all compared tensors exactly equal.
+- `interactive-prompt-cpu-validation.json`: 32 FP32 cases, exactly equal.
+- `interactive-decoder-cuda-validation.json`: 90 cases, full 72×72 features,
+  repeated prompts, channels-last batches, all three precision modes, all raw
+  candidate masks/tokens/scores, multi/single output and forced/stable fallback;
+  every compared tensor exactly equal.
+- `interactive-decoder-cpu-validation.json`: 30 FP32 cases, exactly equal.
+
+The standalone `sam3_interactive` probe chains both modules and high-resolution
+projection on synthetic full-size image features. With `PATH=/nonexistent`,
+SAM3.1 CUDA FP16 processed three prompts with nine points each and returned
+`[3,1,288,288]` single masks and `[3,3,288,288]` multimasks, retaining all four
+raw candidates. SAM3 CPU FP32 also passed with an empty point sequence. This is
+module execution evidence, not yet a real-image interactive session test.
+CTest passed 7/7 CUDA-enabled and 4/4 custom-CUDA-disabled tests. Neither the
+library nor the probe links Python. Turing/Windows runtime testing remains
+with the user, and no GitHub Actions were used.
+
+Code/reports are pushed to `codex/native-onboarding`; development binaries/logs
+are saved privately under `native-foundation/interactive-modules-linux-cuda13`.
+Next: connect visual features and interactive host behavior (coordinate/mask
+transforms, no-memory embeddings, object gating/pointers, postprocessing and
+reusable image sessions), then memory/video tracking and multiplex orchestration.
+Standalone packaging and stable C ABI remain outstanding.

@@ -6,6 +6,8 @@
 #include "sam3/detection_heads.h"
 #include "sam3/grounding.h"
 #include "sam3/image_results.h"
+#include "sam3/interactive_prompt.h"
+#include "sam3/interactive_decoder.h"
 #include "sam3/vision_encoder.h"
 #include "sam3/preprocess.h"
 #include <torch/library.h>
@@ -23,6 +25,24 @@ c10::Dict<std::string,at::Tensor> detection_dict(const sam3::DetectionOutput& ou
 // Dispatcher registration permits development-time parity tests via load_library.
 // It does not link libtorch_python or embed a Python interpreter.
 TORCH_LIBRARY(sam3_native, m) {
+  m.def("interactive_decode(str directory, str model, Tensor image, Tensor sparse, Tensor dense, Tensor position, Tensor[] high, bool project_high, bool multimask, bool repeat_image, str mode, bool dynamic_stability, float delta, float threshold) -> Tensor[]",
+      [](const std::string& directory,const std::string& model,const at::Tensor& image,const at::Tensor& sparse,const at::Tensor& dense,const at::Tensor& position,
+         const std::vector<at::Tensor>& high,bool project_high,bool multimask,bool repeat_image,const std::string& mode,bool dynamic_stability,double delta,double threshold) {
+        const sam3::WeightStore store(std::filesystem::u8path(directory));
+        const sam3::InteractiveMaskDecoder decoder(store,model,image.device());
+        const auto out=decoder.forward(image,{sparse,dense,position},project_high?decoder.project_pyramid(high,mode):high,multimask,repeat_image,mode,dynamic_stability,delta,threshold);
+        return std::vector<at::Tensor>{out.masks,out.iou,out.tokens,out.object_logits,out.all_masks,out.all_iou,out.all_tokens};
+      });
+  m.def("interactive_prompt(str directory, str model, str device, Tensor? points, Tensor? labels, Tensor? boxes, Tensor? masks, int[] grid, int[] input_size, str mode) -> (Tensor, Tensor, Tensor)",
+      [](const std::string& directory,const std::string& model,const std::string& device,const std::optional<at::Tensor>& points,
+         const std::optional<at::Tensor>& labels,const std::optional<at::Tensor>& boxes,const std::optional<at::Tensor>& masks,
+         const std::vector<int64_t>& grid,const std::vector<int64_t>& input_size,const std::string& mode) {
+        TORCH_CHECK(grid.size()==2 && input_size.size()==2,"expected two spatial dimensions");
+        const sam3::WeightStore store(std::filesystem::u8path(directory));
+        const auto out=sam3::InteractivePromptEncoder(store,model,at::Device(device),{grid[0],grid[1]},{input_size[0],input_size[1]}).forward(
+            {points.value_or(at::Tensor()),labels.value_or(at::Tensor()),boxes.value_or(at::Tensor()),masks.value_or(at::Tensor())},mode);
+        return std::make_tuple(out.sparse,out.dense,out.position);
+      });
   m.def("postprocess_image(Tensor boxes, Tensor logits, Tensor masks, Tensor presence, int[] heights, int[] widths, float threshold, bool combine_presence, int chunk_size, str mode=\"fp32\") -> (Tensor[], Tensor[], Tensor[], Tensor[], Tensor[])",
       [](const at::Tensor& boxes,const at::Tensor& logits,const at::Tensor& masks,const at::Tensor& presence,
          const std::vector<int64_t>& heights,const std::vector<int64_t>& widths,double threshold,bool combine_presence,int64_t chunk_size,const std::string& mode) {

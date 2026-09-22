@@ -1,0 +1,1542 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cuda",
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "none",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "empty_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "labels",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "box",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "all",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "box_mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "many_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "none",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "empty_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "labels",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "box",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "all",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "box_mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "many_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "none",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "empty_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "labels",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "box",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "all",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "box_mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "many_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "none",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "empty_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "labels",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "box",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "all",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "box_mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "many_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "none",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "empty_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "labels",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "box",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "all",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "box_mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "many_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "none",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "empty_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "labels",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "box",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "all",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "box_mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "many_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "none",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "empty_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "labels",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "box",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "all",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "box_mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "many_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "none",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "empty_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "labels",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "box",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "all",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "box_mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "many_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "none",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "empty_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "labels",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "box",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "all",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "box_mask",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "many_points",
+      "grid": [
+        72,
+        72
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "none",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "empty_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "labels",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "box",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "all",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "box_mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "many_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "none",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "empty_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "labels",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "box",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "all",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "box_mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "many_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "none",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "empty_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "labels",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 9,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "box",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 3,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "all",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 6,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "box_mask",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 2,
+      "points": 0,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "many_points",
+      "grid": [
+        11,
+        17
+      ],
+      "batch": 1,
+      "points": 317,
+      "max_errors": {
+        "sparse": 0.0,
+        "dense": 0.0,
+        "position": 0.0
+      }
+    }
+  ]
+}
