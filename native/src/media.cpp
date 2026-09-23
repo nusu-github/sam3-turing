@@ -84,13 +84,14 @@ struct Decoder {
   std::pair<int64_t,int64_t> dimensions()const {return rotation%2?std::make_pair(frame->width,frame->height):std::make_pair(frame->height,frame->width);}
   double seconds()const {return frame->best_effort_timestamp==AV_NOPTS_VALUE?std::numeric_limits<double>::quiet_NaN():frame->best_effort_timestamp*av_q2d(format->streams[stream]->time_base);}
   double duration()const {return frame->duration*av_q2d(format->streams[stream]->time_base);}
-  at::Tensor rgb(){
+  at::Tensor rgb(MediaColorPolicy policy=MediaColorPolicy::Stream){
+    const bool opencv=policy==MediaColorPolicy::OpenCV;
     TORCH_CHECK(frame->width>0 && frame->width<=INT_MAX/3 && frame->height>0,"invalid decoded dimensions");auto result=at::empty({frame->height,frame->width,3},at::kByte);
-    scaler=sws_getCachedContext(scaler,frame->width,frame->height,AVPixelFormat(frame->format),frame->width,frame->height,AV_PIX_FMT_RGB24,SWS_BILINEAR,nullptr,nullptr,nullptr);TORCH_CHECK(scaler,"cannot create RGB converter");
+    scaler=sws_getCachedContext(scaler,frame->width,frame->height,AVPixelFormat(frame->format),frame->width,frame->height,opencv?AV_PIX_FMT_BGR24:AV_PIX_FMT_RGB24,opencv?SWS_BICUBIC:SWS_BILINEAR,nullptr,nullptr,nullptr);TORCH_CHECK(scaler,"cannot create RGB converter");
     int colorspace=SWS_CS_DEFAULT;switch(frame->colorspace){case AVCOL_SPC_BT709:colorspace=SWS_CS_ITU709;break;case AVCOL_SPC_BT2020_NCL:case AVCOL_SPC_BT2020_CL:colorspace=SWS_CS_BT2020;break;case AVCOL_SPC_FCC:colorspace=SWS_CS_FCC;break;case AVCOL_SPC_SMPTE240M:colorspace=SWS_CS_SMPTE240M;break;default:break;}
-    const auto* coeff=sws_getCoefficients(colorspace);avcheck(sws_setColorspaceDetails(scaler,coeff,frame->color_range==AVCOL_RANGE_JPEG,coeff,1,0,1<<16,1<<16),"set RGB colorspace");
+    const auto* coeff=sws_getCoefficients(colorspace);if(!opencv)avcheck(sws_setColorspaceDetails(scaler,coeff,frame->color_range==AVCOL_RANGE_JPEG,coeff,1,0,1<<16,1<<16),"set RGB colorspace");
     uint8_t* output[]={result.data_ptr<uint8_t>(),nullptr,nullptr,nullptr};int stride[]={frame->width*3,0,0,0};TORCH_CHECK(sws_scale(scaler,frame->data,frame->linesize,0,frame->height,output,stride)==frame->height,"incomplete RGB conversion");
-    result=result.permute({2,0,1});if(mirror)result=result.flip({1});if(rotation%4)result=at::rot90(result,rotation,{1,2});return result.contiguous();
+    result=result.permute({2,0,1});if(opencv)result=result.flip({0});if(mirror)result=result.flip({1});if(rotation%4)result=at::rot90(result,rotation,{1,2});return result.contiguous();
   }
 };
 at::Tensor image_rgb(const std::filesystem::path& path,int threads){
@@ -100,7 +101,7 @@ at::Tensor image_rgb(const std::filesystem::path& path,int threads){
 }
 }
 struct MediaSource::Impl {
-  std::filesystem::path path;MediaOptions options;MediaInfo metadata;std::vector<std::filesystem::path> images;std::vector<std::pair<double,double>> timestamps;std::unique_ptr<Decoder> decoder;int64_t next_index=0,cached_index=-1;MediaFrame cached;std::mutex mutex;
+  std::filesystem::path path;MediaOptions options;MediaColorPolicy color;MediaInfo metadata;std::vector<std::filesystem::path> images;std::vector<std::pair<double,double>> timestamps;std::unique_ptr<Decoder> decoder;int64_t next_index=0,cached_index=-1;MediaFrame cached;std::mutex mutex;
   struct IndexedFrame {int64_t pts;std::array<uint8_t,32> digest;};
   std::vector<IndexedFrame> index;std::vector<int64_t> keyframes;
   bool seekable=true,verify_decoder=false;
@@ -113,7 +114,7 @@ struct MediaSource::Impl {
     while(next_index<=target){
       if(!next())return false;
       if(verify_decoder && (decoder->frame->best_effort_timestamp!=index[next_index].pts || decoder->fingerprint()!=index[next_index].digest))return false;
-      if(next_index>=start && capacity>0){auto rgb=decoder->rgb();auto it=window.find(next_index);if(it==window.end()){counters.cache_bytes+=rgb.nbytes();window.emplace(next_index,std::move(rgb));}}
+      if(next_index>=start && capacity>0){auto rgb=decoder->rgb(color);auto it=window.find(next_index);if(it==window.end()){counters.cache_bytes+=rgb.nbytes();window.emplace(next_index,std::move(rgb));}}
       ++next_index;
     }
     return true;
@@ -127,10 +128,11 @@ struct MediaSource::Impl {
     if(found==index.end() || found->pts!=pts || found-index.begin()>start)return false;
     next_index=found-index.begin();verify_decoder=true;
     if(decoder->fingerprint()!=found->digest)return false;
-    if(next_index>=start && capacity>0){auto rgb=decoder->rgb();counters.cache_bytes+=rgb.nbytes();window.emplace(next_index,std::move(rgb));}
+    if(next_index>=start && capacity>0){auto rgb=decoder->rgb(color);counters.cache_bytes+=rgb.nbytes();window.emplace(next_index,std::move(rgb));}
     ++next_index;return positioned_read(target,start,capacity);
   }
-  Impl(const std::filesystem::path& p,const MediaOptions& o):path(p),options(o){
+  Impl(const std::filesystem::path& p,const MediaOptions& o,MediaColorPolicy c):path(p),options(o),color(c){
+    TORCH_CHECK(c==MediaColorPolicy::Stream || c==MediaColorPolicy::OpenCV,"invalid media color policy");
     TORCH_CHECK(o.threads>0,"decoder threads must be positive");TORCH_CHECK(std::filesystem::exists(p),"media path does not exist");
     if(std::filesystem::is_directory(p)){
       for(const auto& entry:std::filesystem::directory_iterator(p))if(entry.is_regular_file() && image_extension(entry.path()))images.push_back(entry.path());
@@ -175,13 +177,14 @@ struct MediaSource::Impl {
           if(!okay && verify_decoder){++counters.seek_fallbacks;seekable=false;clear_window();block=start;reopen();okay=positioned_read(requested,start,capacity);}
         }
         TORCH_CHECK(okay,"media changed since index scan");
-        auto found=window.find(requested);cached={found==window.end()?decoder->rgb():found->second,timestamps[requested].first,timestamps[requested].second};
+        auto found=window.find(requested);cached={found==window.end()?decoder->rgb(color):found->second,timestamps[requested].first,timestamps[requested].second};
       }
     }
     cached_index=requested;return {cached.rgb.clone(),cached.seconds,cached.duration};
   }
 };
-MediaSource::MediaSource(const std::filesystem::path& p,const MediaOptions& o):impl_(std::make_unique<Impl>(p,o)){}
+MediaSource::MediaSource(const std::filesystem::path& p,const MediaOptions& o):MediaSource(p,o,MediaColorPolicy::Stream){}
+MediaSource::MediaSource(const std::filesystem::path& p,const MediaOptions& o,MediaColorPolicy c):impl_(std::make_unique<Impl>(p,o,c)){}
 MediaSource::~MediaSource()=default;
 const MediaInfo& MediaSource::info()const{return impl_->metadata;}
 MediaFrame MediaSource::read(int64_t index){c10::InferenceMode inference(false);return impl_->read(index);}
@@ -198,6 +201,7 @@ void write_rgb_png(const std::filesystem::path& path,const at::Tensor& rgb){
 namespace sam3 {
 struct MediaSource::Impl{};
 MediaSource::MediaSource(const std::filesystem::path&,const MediaOptions&){TORCH_CHECK(false,"native media support disabled; build with SAM3_WITH_MEDIA=ON");}
+MediaSource::MediaSource(const std::filesystem::path&,const MediaOptions&,MediaColorPolicy){TORCH_CHECK(false,"native media support disabled; build with SAM3_WITH_MEDIA=ON");}
 MediaSource::~MediaSource()=default;
 const MediaInfo& MediaSource::info()const{TORCH_CHECK(false,"native media support disabled");}
 MediaFrame MediaSource::read(int64_t){TORCH_CHECK(false,"native media support disabled");}

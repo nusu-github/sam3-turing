@@ -2,6 +2,7 @@
 #include "sam3/weights.h"
 #include <memory>
 namespace sam3 {
+enum class MediaColorPolicy : int32_t { Stream=0, OpenCV=1 };
 struct MediaOptions {bool image_only=false;int threads=1;};
 struct MediaInfo {int64_t frames=0,height=0,width=0;double fps=0;bool image_only=false;};
 struct MediaFrame {at::Tensor rgb;double seconds=0,duration=0;};
@@ -11,6 +12,7 @@ struct MediaStats {int64_t index_decoded_frames=0,read_decoded_frames=0,seek_att
 class SAM3_NATIVE_EXPORT MediaSource {
  public:
   explicit MediaSource(const std::filesystem::path&,const MediaOptions& options={});
+  MediaSource(const std::filesystem::path&,const MediaOptions&,MediaColorPolicy);
   ~MediaSource();
   MediaSource(const MediaSource&)=delete;MediaSource& operator=(const MediaSource&)=delete;
   const MediaInfo& info()const;

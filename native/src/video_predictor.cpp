@@ -23,7 +23,7 @@ struct VideoPredictor::Impl {
  WeightStore store;Tokenizer tokenizer;FrameProvider provider;int64_t frames,h,w,cached_index=-1,encodes=0;at::Device device;VideoPredictorOptions options;bool mux;
  std::shared_ptr<const VisionEncoder> vision;std::shared_ptr<const GroundingDetector> detector;std::shared_ptr<const Sam3TrackingFrame> core3;std::shared_ptr<const Sam31TrackingFrame> core31;std::unique_ptr<VideoFrameEncoder> encoder;
  Sam3VideoSessions sessions3;Sam31VideoSessions sessions31;Sam3SessionFactory factory3;Sam31SessionFactory factory31;VideoFrameFeatures cached;
- VideoMetadata metadata;VideoInteractionState interaction;VideoSuppressionHistory suppressions;std::set<int64_t> initialized;std::optional<int64_t> prompt_frame;
+ VideoMetadata metadata;VideoInteractionState interaction;VideoSuppressionHistory suppressions;std::set<int64_t> initialized;std::optional<int64_t> prompt_frame;VideoPreprocess preprocess=VideoPreprocess::ImageFolder;bool preprocess_locked=false;
  std::map<int64_t,at::Tensor> image_masks;
  VideoSemanticPrompt semantic;GroundingPrompt encoded;bool has_text=false;std::atomic<bool> cancelled{false};
  Impl(const WeightStore& s,const std::filesystem::path& vocabulary,FrameProvider f,int64_t n,int64_t height,int64_t width,at::Device d,const VideoPredictorOptions& o,const VideoPredictorModules& modules)
@@ -37,7 +37,7 @@ struct VideoPredictor::Impl {
   else{core3=modules.sam3?modules.sam3:std::make_shared<Sam3TrackingFrame>(store,device);encoder=std::make_unique<VideoFrameEncoder>(vision,detector,core3,device);factory3=[this]{return std::make_unique<Sam3TrackingSession>(core3,[this](int64_t i){return features(i).tracking.propagation;},frames,h,w,device,options.mode,options.sam3_session);};}
  }
  void check(int64_t frame)const{TORCH_CHECK(frame>=0 && frame<frames,"frame outside video");}
- const VideoFrameFeatures& features(int64_t frame){check(frame);if(cached_index!=frame){auto rgb=provider(frame);TORCH_CHECK(rgb.sizes()==at::IntArrayRef({3,h,w}) && rgb.scalar_type()==at::kByte,"frame provider must return U8 RGB [3,H,W]");auto next=encoder->encode_rgb(rgb,options.mode);cached=std::move(next);cached_index=frame;++encodes;}return cached;}
+ const VideoFrameFeatures& features(int64_t frame){check(frame);if(cached_index!=frame){auto rgb=provider(frame);TORCH_CHECK(rgb.sizes()==at::IntArrayRef({3,h,w}) && rgb.scalar_type()==at::kByte,"frame provider must return U8 RGB [3,H,W]");preprocess_locked=true;auto next=encoder->encode_preprocessed(preprocess_video_rgb(rgb,preprocess,device),options.mode);cached=std::move(next);cached_index=frame;++encodes;}return cached;}
  GeometryPrompt empty_geometry()const{const auto o=at::TensorOptions().device(device);const auto labels=at::empty({0,1},o.dtype(at::kLong)),padding=at::empty({1,0},o.dtype(at::kBool));return {at::empty({0,1,2},o),labels,padding,at::empty({0,1,4},o),labels,padding};}
  void encode_text(){
   const auto model=mux?"sam3.1":"sam3";const auto text=has_text?*semantic.text:"<text placeholder>";const auto texts=mux?std::vector<std::string>{text,"visual","geometric"}:std::vector<std::string>{text,"visual"};
@@ -50,7 +50,7 @@ struct VideoPredictor::Impl {
   if(prompt_frame==frame && semantic.boxes_xywh.defined()){auto boxes=semantic.boxes_xywh.to(device,at::kFloat).clone();boxes.slice(1,0,2).add_(boxes.slice(1,2,4)*.5);result.geometry.boxes=boxes.unsqueeze(1);result.geometry.box_labels=semantic.box_labels.to(device,at::kLong).unsqueeze(1);result.geometry.box_padding=at::zeros({1,boxes.size(0)},at::TensorOptions().device(device).dtype(at::kBool));}
   result.visual_features=semantic.visual_features;result.visual_padding=semantic.visual_padding;return result;
  }
- void reset(){sessions3.clear();sessions31.clear();metadata=initialize_video_metadata(1,device);interaction.reset();suppressions.clear();initialized.clear();prompt_frame.reset();image_masks.clear();semantic={};encoded={};has_text=false;cached={};cached_index=-1;cancelled.store(false);}
+ void reset(){preprocess_locked=false;sessions3.clear();sessions31.clear();metadata=initialize_video_metadata(1,device);interaction.reset();suppressions.clear();initialized.clear();prompt_frame.reset();image_masks.clear();semantic={};encoded={};has_text=false;cached={};cached_index=-1;cancelled.store(false);}
  void cache_raw(const VideoRawOutput& raw){VideoOutput cache;cache.cached_masks=raw.masks;interaction.record(raw.frame,cache);}
  template<class Sessions,class Factory> VideoRawOutput full(int64_t frame,bool reverse,bool direct, Sessions& sessions,const Factory& factory){
   const auto& visual=features(frame);auto raw=encoder->detect(visual,prompt(frame),options.mode);auto detection=options.detection;
@@ -73,6 +73,8 @@ struct VideoPredictor::Impl {
  VideoRawOutput full(int64_t frame,bool reverse,bool direct){return mux?full(frame,reverse,direct,sessions31,factory31):full(frame,reverse,direct,sessions3,factory3);}
  void ensure_cache(int64_t frame){if(!interaction.cached_frames().count(frame))interaction.record(frame,VideoOutput{});}
 };
+void VideoPredictor::set_preprocess(VideoPreprocess policy){TORCH_CHECK(!impl_->preprocess_locked,"set preprocessing before frame encoding or after reset");TORCH_CHECK(video_preprocess_available(policy),"video preprocessing policy unavailable");TORCH_CHECK(policy!=VideoPreprocess::TorchCodecCuda || impl_->device.is_cuda(),"TorchCodecCuda requires a CUDA predictor");impl_->preprocess=policy;}
+VideoPreprocess VideoPredictor::preprocess_policy()const{return impl_->preprocess;}
 VideoPredictor::VideoPredictor(const WeightStore& s,const std::filesystem::path& vocabulary,FrameProvider provider,int64_t n,int64_t h,int64_t w,at::Device d,const VideoPredictorOptions& o):VideoPredictor(s,vocabulary,std::move(provider),n,h,w,d,o,VideoPredictorModules{}){}
 VideoPredictor::VideoPredictor(const WeightStore& s,const std::filesystem::path& vocabulary,FrameProvider provider,int64_t n,int64_t h,int64_t w,at::Device d,const VideoPredictorOptions& o,const VideoPredictorModules& modules):impl_(std::make_unique<Impl>(s,vocabulary,std::move(provider),n,h,w,d,o,modules)){}
 VideoPredictor::~VideoPredictor()=default;VideoPredictor::VideoPredictor(VideoPredictor&&) noexcept=default;VideoPredictor& VideoPredictor::operator=(VideoPredictor&&) noexcept=default;

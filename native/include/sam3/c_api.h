@@ -176,6 +176,17 @@ typedef struct sam3_semantic_prompt {
   const sam3_tensor_view *boxes_xywh,*box_labels; /* normalized [N,4], int64[N] */
   const sam3_tensor_view *visual_features,*visual_padding; /* [N,1,256], bool[1,N] */
 } sam3_semantic_prompt;
+typedef enum sam3_video_preprocess {
+  SAM3_PREPROCESS_IMAGE_FOLDER=0, SAM3_PREPROCESS_PIL_LIST=1,
+  SAM3_PREPROCESS_TORCHCODEC_CPU=2, SAM3_PREPROCESS_TORCHCODEC_CUDA=3,
+  SAM3_PREPROCESS_CV2_SOURCE=4
+} sam3_video_preprocess;
+/* These select preprocessing only; decoding and image/video semantics stay
+ * explicit. Cv2Source preserves upstream's no-/255 behavior. */
+SAM3_NATIVE_EXPORT int32_t sam3_video_preprocess_available(int32_t policy) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_preprocess_video_rgb(const sam3_rgb_view*,int32_t policy,const char* device,sam3_result**) SAM3_NOEXCEPT;
+/* Before first encoding or after reset. Default remains IMAGE_FOLDER. */
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_set_preprocess(sam3_predictor*,int32_t policy) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_options_init(sam3_predictor_options*,int32_t model) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_semantic_prompt_init(sam3_semantic_prompt*) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_create(sam3_context*,const sam3_predictor_options*,sam3_predictor**) SAM3_NOEXCEPT;
@@ -191,6 +202,10 @@ typedef struct sam3_media_options {uint32_t struct_size;int32_t image_only,threa
 SAM3_NATIVE_EXPORT int32_t sam3_media_available(void) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_media_options_init(sam3_media_options*) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_media_open(const char* path,const sam3_media_options*,sam3_media**) SAM3_NOEXCEPT;
+enum {SAM3_MEDIA_COLOR_STREAM=0,SAM3_MEDIA_COLOR_OPENCV=1};
+/* Immutable per-source video color conversion. OpenCV emulates its FFmpeg
+ * BGR24/default-colorspace conversion, then returns RGB. Images stay Pillow-like. */
+SAM3_NATIVE_EXPORT sam3_status sam3_media_open_with_color(const char* path,const sam3_media_options*,int32_t color_policy,sam3_media**) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT void sam3_media_release(sam3_media*) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_media_info(sam3_media*,sam3_result**) SAM3_NOEXCEPT;
 /* Statistics are owning scalar result fields. Budget excludes decoder memory and

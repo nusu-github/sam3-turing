@@ -131,12 +131,14 @@ seeking remains enabled. Counters are cumulative per source, serialized with
 reads; constructor indexing is separate from subsequent read decoding. Existing
 C options layouts and ABI 1 are unchanged.
 
-Decoded RGB enters the existing native Pillow-style preprocessing, whose prior
-image-folder references remain applicable. This is **not** bit-exact validation
-of the original default OpenCV video loader: that path uses cubic resizing and,
-in the checked source, normalizes float 0–255 values without division by 255.
-TorchCodec/OpenCV resize, color and normalization variants require a separate
-policy audit before claiming full video-loader parity.
+Decoded RGB defaults to the existing Pillow-style video-folder preprocessing.
+Explicit PIL-list, TorchCodec CPU/CUDA and original OpenCV policies are now exposed.
+For OpenCV file compatibility, combine `sam3_media_open_with_color` using
+`SAM3_MEDIA_COLOR_OPENCV` with predictor `SAM3_PREPROCESS_CV2_SOURCE`. The original
+media open call retains metadata-aware stream color conversion. See
+[VIDEO_PREPROCESS.md](VIDEO_PREPROCESS.md) for the source's differing normalization,
+44 exact file-frame comparisons and measured CPU binary-build variation. This
+is still not an all-codec or cross-build neural-quality equivalence claim.
 
 ## Validation and distribution
 

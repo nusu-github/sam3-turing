@@ -1,63 +1,74 @@
 {
-  "cases": [
+  "matched_cpu_preprocess_cases": 32,
+  "matched_cuda_preprocess_cases": 8,
+  "full_file_frames": 44,
+  "full_file_all_exact": true,
+  "native_neural_composition_results": 90,
+  "existing_codec_cases": 23,
+  "cpu_ctest_passed": 17,
+  "cuda_ctest_passed": 29,
+  "disabled_optional_source_syntax_passed": true,
+  "recovery": [
     {
-      "height": 1,
-      "width": 1,
-      "exact": true
+      "kind": "cpu",
+      "complete_sdk_entries": 130,
+      "complete_sdk_hashes_and_symlinks_exact": true,
+      "recovered_client_passed": true
     },
     {
-      "height": 1,
-      "width": 9,
-      "exact": true
-    },
-    {
-      "height": 17,
-      "width": 1,
-      "exact": true
-    },
-    {
-      "height": 5,
-      "width": 7,
-      "exact": true
-    },
-    {
-      "height": 37,
-      "width": 53,
-      "exact": true
-    },
-    {
-      "height": 1008,
-      "width": 1008,
-      "exact": true
-    },
-    {
-      "height": 1080,
-      "width": 1920,
-      "exact": true
-    },
-    {
-      "height": 2001,
-      "width": 9,
-      "exact": true
-    },
-    {
-      "path": "assets/videos/0001/0.jpg",
-      "height": 720,
-      "width": 1280,
-      "exact": true
-    },
-    {
-      "path": "assets/videos/0001/1.jpg",
-      "height": 720,
-      "width": 1280,
-      "exact": true
-    },
-    {
-      "path": "assets/videos/0001/2.jpg",
-      "height": 720,
-      "width": 1280,
-      "exact": true
+      "kind": "cuda",
+      "complete_sdk_entries": 163,
+      "complete_sdk_hashes_and_symlinks_exact": true,
+      "recovered_client_passed": true,
+      "recovered_sam31_cv2_video": "model=31 image=0 policy=4 exact_result_sets=7 source_and_context_lifetime=passed preprocessing_lock_reset=passed"
     }
   ],
-  "scope": "Exact original high-level io_utils image-folder preprocessing: Pillow bilinear byte resize, F32 division, F16 storage/normalization. Native output losslessly widens normalized half values to F32. Separate from low-level Pillow bicubic/F32 tracking path and codec-specific resize paths."
+  "installed_policy_checks": [
+    {
+      "client": "cpu-0",
+      "exact_source_preprocess_sha256": "b842ca6564932b354cbfd21e4e947e5ece5a15e3517bcc2567242ad2f6129dfa"
+    },
+    {
+      "client": "cpu-1",
+      "exact_source_preprocess_sha256": "a34fd8529d84c02c1821bda166ce4e7f1ab1e2ec784bafe6acbe13dd8b45e18f"
+    },
+    {
+      "client": "cpu-2",
+      "exact_source_preprocess_sha256": "c9fee5196c8fd147952343426e0380476a75176992321d1c7e72eb1a2f7b00d8"
+    },
+    {
+      "client": "cpu-4",
+      "exact_source_preprocess_sha256": "022b4e038655cab15e23ec9c4eb364fba99fb0d18e379ef5f07398e73230ca2c"
+    },
+    {
+      "client": "cuda-3",
+      "exact_source_preprocess_sha256": "c9fee5196c8fd147952343426e0380476a75176992321d1c7e72eb1a2f7b00d8"
+    }
+  ],
+  "sdk_overlays": [
+    {
+      "file": "preprocess-overlay-linux-common.tar.gz",
+      "bytes": 17998105,
+      "sha256": "52172e72cbe78a2b8637da4a34373857b08ec87837633bf2bdfc29427cce1a49",
+      "entries": 24
+    },
+    {
+      "file": "preprocess-overlay-linux-cpu.tar.gz",
+      "bytes": 1509672,
+      "sha256": "95ba2e2f2027cc355677dd0c3aa78495af305f6217b09d9c25f6db106c9397ec",
+      "entries": 6
+    },
+    {
+      "file": "preprocess-overlay-linux-cuda.tar.gz",
+      "bytes": 1787075,
+      "sha256": "ebf2496d3d3a840ad508797891a77bdccbd91d06eb02190aa5fbdf9fd8186e86",
+      "entries": 6
+    }
+  ],
+  "limits": [
+    "CPU interpolation is not bit-identical across PyTorch binary builds; retained reports expose differences.",
+    "Same-runtime preprocessing equivalence is separate from broad model quality or whole-source neural parity.",
+    "Windows/Turing physical verification remains with user. No GitHub Actions.",
+    "Goal remains active."
+  ]
 }

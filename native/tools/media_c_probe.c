@@ -17,7 +17,7 @@ static void dump(const sam3_result* result,const char* name){
 }
 int main(int argc,char** argv){
   CHECK(argc>=4);CHECK(sam3_media_available());output_root=argv[3];sam3_media_options options;OK(sam3_media_options_init(&options));options.image_only=strcmp(argv[2],"image")==0;const char* threads=getenv("SAM3_PROBE_THREADS");if(threads)options.threads=atoi(threads);
-  sam3_media* media=NULL;OK(sam3_media_open(argv[1],&options,&media));sam3_result* info=NULL;OK(sam3_media_info(media,&info));dump(info,"info");sam3_tensor_view count;OK(sam3_result_get(info,"frames",&count));const int64_t frames=*(const int64_t*)count.data;sam3_result_release(info);
+  const char* color_text=getenv("SAM3_PROBE_COLOR_POLICY");const int color=color_text?atoi(color_text):SAM3_MEDIA_COLOR_STREAM;sam3_media* media=NULL;OK(sam3_media_open_with_color(argv[1],&options,color,&media));sam3_result* info=NULL;OK(sam3_media_info(media,&info));dump(info,"info");sam3_tensor_view count;OK(sam3_result_get(info,"frames",&count));const int64_t frames=*(const int64_t*)count.data;sam3_result_release(info);
   sam3_result* bad=(sam3_result*)1;CHECK(sam3_media_read_frame(media,-1,&bad)==SAM3_INVALID_ARGUMENT && bad==NULL);CHECK(sam3_media_read_frame(media,frames,&bad)==SAM3_INVALID_ARGUMENT && bad==NULL);
   const char* budget=getenv("SAM3_PROBE_CACHE_BYTES");if(budget)OK(sam3_media_set_cache_bytes(media,strtoll(budget,NULL,10)));
   sam3_result* retained=NULL;

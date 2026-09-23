@@ -1,0 +1,67 @@
+{
+  "case": "37x53 RGB fixture4",
+  "cases": [
+    {
+      "runtime": "standalone",
+      "stages": [
+        {
+          "stage": "resize",
+          "different_from_nvidia": 2792214,
+          "max_abs_from_nvidia": 0.0005035400390625
+        },
+        {
+          "stage": "half",
+          "different_from_nvidia": 4370,
+          "max_abs_from_nvidia": 0.25
+        },
+        {
+          "stage": "div",
+          "different_from_nvidia": 4358,
+          "max_abs_from_nvidia": 0.0009765625
+        },
+        {
+          "stage": "sub",
+          "different_from_nvidia": 1525,
+          "max_abs_from_nvidia": 0.0009765625
+        },
+        {
+          "stage": "final",
+          "different_from_nvidia": 1525,
+          "max_abs_from_nvidia": 0.001953125
+        }
+      ]
+    },
+    {
+      "runtime": "python-wheel-libs",
+      "stages": [
+        {
+          "stage": "resize",
+          "different_from_nvidia": 2480306,
+          "max_abs_from_nvidia": 0.000457763671875
+        },
+        {
+          "stage": "half",
+          "different_from_nvidia": 3986,
+          "max_abs_from_nvidia": 0.25
+        },
+        {
+          "stage": "div",
+          "different_from_nvidia": 3975,
+          "max_abs_from_nvidia": 0.0009765625
+        },
+        {
+          "stage": "sub",
+          "different_from_nvidia": 1362,
+          "max_abs_from_nvidia": 0.0009765625
+        },
+        {
+          "stage": "final",
+          "different_from_nvidia": 1362,
+          "max_abs_from_nvidia": 0.001953125
+        }
+      ],
+      "final_exact_python_wheel": true
+    }
+  ],
+  "scope": "Same C++ ATen operator sequence linked to two CPU library builds; source Python functions separately captured. No custom arithmetic substitute used in production."
+}

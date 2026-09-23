@@ -118,3 +118,9 @@ No GitHub Actions are used.
 
 Local media sources can now be retained by `sam3_predictor_create_from_media`;
 see [MEDIA_IO.md](MEDIA_IO.md) for decode semantics and validation limits.
+
+Video input transforms can be selected before first frame encoding or after reset
+with `sam3_predictor_set_preprocess`; existing constructors retain the image-folder
+default. See [VIDEO_PREPROCESS.md](VIDEO_PREPROCESS.md) for all five source policies,
+OpenCV color conversion and CPU arithmetic limits. Model/image semantics and
+shared weights are unchanged.

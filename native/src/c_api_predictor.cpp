@@ -63,6 +63,10 @@ void pack(int64_t frame,const sam3::VideoOutput& value,sam3_result** out){
 }
 }
 extern "C" {
+int32_t sam3_video_preprocess_available(int32_t policy)noexcept{return sam3::video_preprocess_available(static_cast<sam3::VideoPreprocess>(policy));}
+sam3_status sam3_preprocess_video_rgb(const sam3_rgb_view* input,int32_t policy,const char* device,sam3_result** out)noexcept{return protect([&]{output(out);require(input && policy>=0 && policy<=4,"RGB input and known preprocessing policy are required");const auto selected=static_cast<sam3::VideoPreprocess>(policy);if(!sam3::video_preprocess_available(selected))throw Failure(SAM3_UNSUPPORTED,"preprocessing policy unavailable in this build");const at::Device target(device?device:"cpu");require(target.is_cpu() || target.is_cuda(),"CPU or CUDA device required");require(policy!=SAM3_PREPROCESS_TORCHCODEC_CUDA || target.is_cuda(),"TorchCodecCuda requires CUDA device");result({{"image",sam3::preprocess_video_rgb(rgb(*input),selected,target)}},out);});}
+sam3_status sam3_predictor_set_preprocess(sam3_predictor* handle,int32_t policy)noexcept{return protect([&]{require(policy>=0 && policy<=4,"unknown preprocessing policy");const auto selected=static_cast<sam3::VideoPreprocess>(policy);if(!sam3::video_preprocess_available(selected))throw Failure(SAM3_UNSUPPORTED,"preprocessing policy unavailable in this build");predictor(handle,[&](auto& p){p.set_preprocess(selected);});});}
+
 sam3_status sam3_predictor_options_init(sam3_predictor_options* o,int32_t model) noexcept{return protect([&]{
   require(o,"predictor options are required");const auto c=sam3::video_predictor_defaults(policy(model));*o={};o->struct_size=sizeof(*o);o->model=model;
   sam3_video_options_init(&o->tracking,model);o->tracking.select_by_score=model==SAM3_MODEL_3;o->tracking.all_edits_conditioning=model==SAM3_MODEL_3;
@@ -134,5 +138,5 @@ sam3_status sam3_predictor_propagate(sam3_predictor* handle,int64_t start,int64_
 sam3_status sam3_predictor_cancel(sam3_predictor* handle) noexcept{return protect([&]{require(handle,"predictor is required");handle->value->cancel();});}
 sam3_status sam3_predictor_remove_object(sam3_predictor* handle,int64_t id) noexcept{return protect([&]{predictor(handle,[&](auto& p){p.remove_object(id);});});}
 sam3_status sam3_predictor_reset(sam3_predictor* handle) noexcept{return protect([&]{predictor(handle,[&](auto& p){p.reset();});});}
-sam3_status sam3_predictor_info(sam3_predictor* handle,sam3_result** out) noexcept{return protect([&]{output(out);predictor(handle,[&](auto& p){std::vector<int64_t> frames;for(const auto& [frame,masks]:p.interaction().cached_frames())frames.push_back(frame);result({{"ids",at::tensor(p.metadata().object_ids(),at::kLong)},{"visual_encodes",at::scalar_tensor(p.visual_encodes(),at::kLong)},{"cached_frames",at::tensor(frames,at::kLong)},{"action_count",at::scalar_tensor(int64_t(p.interaction().actions().size()),at::kLong)}},out);});});}
+sam3_status sam3_predictor_info(sam3_predictor* handle,sam3_result** out) noexcept{return protect([&]{output(out);predictor(handle,[&](auto& p){std::vector<int64_t> frames;for(const auto& [frame,masks]:p.interaction().cached_frames())frames.push_back(frame);result({{"preprocess_policy",at::scalar_tensor(int32_t(p.preprocess_policy()),at::kInt)},{"ids",at::tensor(p.metadata().object_ids(),at::kLong)},{"visual_encodes",at::scalar_tensor(p.visual_encodes(),at::kLong)},{"cached_frames",at::tensor(frames,at::kLong)},{"action_count",at::scalar_tensor(int64_t(p.interaction().actions().size()),at::kLong)}},out);});});}
 }

@@ -2210,3 +2210,37 @@ LibTorch, FFmpeg or model-weight copies. Recovery hashes and actual C client
 execution are checked before persistence. No Actions, Windows or Turing execution.
 Goal remains active; indexing costs, wider codecs/preprocessing, video writing,
 multiGPU, CPU long-run stability and broad quality/performance remain.
+
+## Source video preprocessing and OpenCV color compatibility
+
+Added five selectable video preprocessing policies to the owning C/C++ predictor:
+image-folder (existing default), PIL list, TorchCodec CPU/CUDA transform and literal
+source OpenCV behavior. The latter preserves the checked source's missing /255.
+Selection is allowed before encoding or after reset; models/weights and prompt
+semantics remain shared. A separate owning C preprocessing result API is available.
+
+Actual source loader functions match32 CPU cases with the deployed LibTorch binary
+and8 CUDA cases with the existing NVIDIA reference. CPU bicubic arithmetic differs
+across library builds: both NVIDIA2.10a0 and official Python2.10 wheels differ from
+standalone LibTorch by up to0.001953125 after half normalization. Stage capture
+finds the difference before half conversion; C++/Python using the same binary
+match. Original mismatch reports remain retained, not relaxed into exact passes.
+
+Full file testing exposed OpenCV's different YUV conversion on BT.709. Added an
+immutable per-source OpenCV BGR/default-color policy alongside existing stream
+metadata-aware conversion. With that policy plus Cv2Source preprocessing,44 frames
+across6 files match the unmodified source loader exactly, including real720x1280
+BT.709 input. The prior default-color mismatch remains documented. Existing23
+codec cases and CPU/CUDA CTests17/29 pass;90 native predictor composition results
+match across both models, policies, reset/locking and lifetime checks.
+
+OpenCV4.10 core/imgproc are built and bundled once, with IPP notices and source
+provenance. Standalone C clients execute all policies without Python and their
+loaded model/media/OpenCV libraries come from the SDK. The incremental overlay
+contains no repeated LibTorch or weights. Recovery of both complete SDKs from
+all archived layers matches every file hash/symlink; recovered CUDA also executes
+full SAM3.1 OpenCV-compatible video inference. See VIDEO_PREPROCESS.md and reports.
+
+Remaining work includes broad codec/quality coverage and CPU arithmetic effects,
+input indexing costs, video writing, multiGPU and CPU long-run stability. No
+Actions or Windows/Turing execution. Full goal remains active.

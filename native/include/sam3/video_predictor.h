@@ -1,6 +1,7 @@
 #pragma once
 #include "sam3/video_frame.h"
 #include "sam3/video_edit.h"
+#include "sam3/preprocess.h"
 #include <atomic>
 namespace sam3 {
 struct VideoPredictorOptions {
@@ -61,6 +62,10 @@ class SAM3_NATIVE_EXPORT VideoPredictor {
   void propagate(const VideoPredictorPropagation&,const OutputCallback&);
   void cancel() noexcept;
   void reset();
+  // Configure before first frame encoding, or after reset. Does not alter
+  // image/video birth thresholds or model weights.
+  void set_preprocess(VideoPreprocess);
+  VideoPreprocess preprocess_policy()const;
   const VideoMetadata& metadata()const;
   const VideoInteractionState& interaction()const;
   int64_t visual_encodes()const;

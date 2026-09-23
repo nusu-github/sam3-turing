@@ -207,4 +207,19 @@ if(SAM3_TEST_CUDA)
 endif()
 
 endif() # SAM3_BUILD_DEVELOPMENT_TOOLS
+option(SAM3_WITH_OPENCV "Enable upstream OpenCV video preprocessing" OFF)
+target_sources(sam3_native PRIVATE src/video_preprocess.cpp)
+if(SAM3_WITH_OPENCV)
+  find_package(OpenCV 4 REQUIRED COMPONENTS core imgproc)
+  target_link_libraries(sam3_native PRIVATE ${OpenCV_LIBS})
+  set_property(SOURCE src/video_preprocess.cpp APPEND PROPERTY INCLUDE_DIRECTORIES "${OpenCV_INCLUDE_DIRS}")
+  set_property(SOURCE src/video_preprocess.cpp APPEND PROPERTY COMPILE_DEFINITIONS SAM3_WITH_OPENCV)
+endif()
+
+if(SAM3_BUILD_DEVELOPMENT_TOOLS)
+  add_executable(sam3_video_preprocess_c_probe tools/video_preprocess_c_probe.c)
+  target_compile_features(sam3_video_preprocess_c_probe PRIVATE c_std_11)
+  target_link_libraries(sam3_video_preprocess_c_probe PRIVATE sam3_native)
+endif()
+
 include(cmake/InstallSDK.cmake)

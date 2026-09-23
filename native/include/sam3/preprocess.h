@@ -13,5 +13,10 @@ SAM3_NATIVE_EXPORT at::Tensor resize_tracking_rgb(const at::Tensor&,int64_t heig
 // High-level video predictor image-folder path: Pillow byte bilinear, F32 /255,
 // F16 storage and each normalization step, then lossless F32 for neural input.
 SAM3_NATIVE_EXPORT at::Tensor preprocess_video_rgb(const at::Tensor&);
+// Upstream video input policies are deliberately distinct. Cv2Source preserves
+// the checked source's byte-scale F32 normalization (no division by 255).
+enum class VideoPreprocess : int32_t { ImageFolder=0, PilList=1, TorchCodecCpu=2, TorchCodecCuda=3, Cv2Source=4 };
+SAM3_NATIVE_EXPORT bool video_preprocess_available(VideoPreprocess) noexcept;
+SAM3_NATIVE_EXPORT at::Tensor preprocess_video_rgb(const at::Tensor&,VideoPreprocess,at::Device device=at::kCPU);
 SAM3_NATIVE_EXPORT at::Tensor preprocess_tracking_rgb(const at::Tensor&);
 }
