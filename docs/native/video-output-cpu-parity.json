@@ -1,0 +1,775 @@
+{
+  "device": "cpu",
+  "source_perflib": true,
+  "scope": "Actual source output generators/postprocessors with synthetic raw neural outputs.\nNeural execution is replaced only at the raw-frame boundary; temporal buffering,\nfiltering, cache exclusions, boxes, overlap resolution and centers run unmodified.\n",
+  "cases": [
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 138
+    },
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 138
+    },
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 138
+    },
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 123
+    },
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 133
+    },
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 133
+    },
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 121
+    },
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 123
+    },
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 131
+    },
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 119
+    },
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 121
+    },
+    {
+      "model": "sam3",
+      "reverse": false,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 129
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 138
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 138
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 138
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 123
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 133
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 133
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 121
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 123
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 131
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 119
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 121
+    },
+    {
+      "model": "sam3",
+      "reverse": true,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 129
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 0,
+      "batch": 4,
+      "confirmation_threshold": 1,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 0,
+      "batch": 4,
+      "confirmation_threshold": 3,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 0,
+      "batch": 4,
+      "confirmation_threshold": 20,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 0,
+      "batch": 16,
+      "confirmation_threshold": 1,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 0,
+      "batch": 16,
+      "confirmation_threshold": 3,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 0,
+      "batch": 16,
+      "confirmation_threshold": 20,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 144
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 144
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 1,
+      "batch": 4,
+      "confirmation_threshold": 1,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 1,
+      "batch": 4,
+      "confirmation_threshold": 3,
+      "checks": 140
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 1,
+      "batch": 4,
+      "confirmation_threshold": 20,
+      "checks": 144
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 1,
+      "batch": 16,
+      "confirmation_threshold": 1,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 1,
+      "batch": 16,
+      "confirmation_threshold": 3,
+      "checks": 136
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 1,
+      "batch": 16,
+      "confirmation_threshold": 20,
+      "checks": 144
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 142
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 3,
+      "batch": 4,
+      "confirmation_threshold": 1,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 3,
+      "batch": 4,
+      "confirmation_threshold": 3,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 3,
+      "batch": 4,
+      "confirmation_threshold": 20,
+      "checks": 142
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 3,
+      "batch": 16,
+      "confirmation_threshold": 1,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 3,
+      "batch": 16,
+      "confirmation_threshold": 3,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 3,
+      "batch": 16,
+      "confirmation_threshold": 20,
+      "checks": 142
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 130
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 140
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 15,
+      "batch": 4,
+      "confirmation_threshold": 1,
+      "checks": 130
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 15,
+      "batch": 4,
+      "confirmation_threshold": 3,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 15,
+      "batch": 4,
+      "confirmation_threshold": 20,
+      "checks": 140
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 15,
+      "batch": 16,
+      "confirmation_threshold": 1,
+      "checks": 130
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 15,
+      "batch": 16,
+      "confirmation_threshold": 3,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": false,
+      "delay": 15,
+      "batch": 16,
+      "confirmation_threshold": 20,
+      "checks": 140
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 0,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 0,
+      "batch": 4,
+      "confirmation_threshold": 1,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 0,
+      "batch": 4,
+      "confirmation_threshold": 3,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 0,
+      "batch": 4,
+      "confirmation_threshold": 20,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 0,
+      "batch": 16,
+      "confirmation_threshold": 1,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 0,
+      "batch": 16,
+      "confirmation_threshold": 3,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 0,
+      "batch": 16,
+      "confirmation_threshold": 20,
+      "checks": 149
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 144
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 1,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 144
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 1,
+      "batch": 4,
+      "confirmation_threshold": 1,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 1,
+      "batch": 4,
+      "confirmation_threshold": 3,
+      "checks": 140
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 1,
+      "batch": 4,
+      "confirmation_threshold": 20,
+      "checks": 144
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 1,
+      "batch": 16,
+      "confirmation_threshold": 1,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 1,
+      "batch": 16,
+      "confirmation_threshold": 3,
+      "checks": 136
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 1,
+      "batch": 16,
+      "confirmation_threshold": 20,
+      "checks": 144
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 3,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 142
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 3,
+      "batch": 4,
+      "confirmation_threshold": 1,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 3,
+      "batch": 4,
+      "confirmation_threshold": 3,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 3,
+      "batch": 4,
+      "confirmation_threshold": 20,
+      "checks": 142
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 3,
+      "batch": 16,
+      "confirmation_threshold": 1,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 3,
+      "batch": 16,
+      "confirmation_threshold": 3,
+      "checks": 134
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 3,
+      "batch": 16,
+      "confirmation_threshold": 20,
+      "checks": 142
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 1,
+      "checks": 130
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 3,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 15,
+      "batch": 1,
+      "confirmation_threshold": 20,
+      "checks": 140
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 15,
+      "batch": 4,
+      "confirmation_threshold": 1,
+      "checks": 130
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 15,
+      "batch": 4,
+      "confirmation_threshold": 3,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 15,
+      "batch": 4,
+      "confirmation_threshold": 20,
+      "checks": 140
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 15,
+      "batch": 16,
+      "confirmation_threshold": 1,
+      "checks": 130
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 15,
+      "batch": 16,
+      "confirmation_threshold": 3,
+      "checks": 132
+    },
+    {
+      "model": "sam3.1",
+      "reverse": true,
+      "delay": 15,
+      "batch": 16,
+      "confirmation_threshold": 20,
+      "checks": 140
+    }
+  ]
+}

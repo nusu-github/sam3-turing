@@ -23,8 +23,9 @@ def save_report(a,rows):
 
 @torch.inference_mode()
 def main():
- p=argparse.ArgumentParser();p.add_argument('--model',choices=['sam3','sam3.1'],required=True);p.add_argument('--checkpoint');p.add_argument('--native-output',type=Path,required=True);p.add_argument('--frames',nargs='+',type=Path,required=True);p.add_argument('--prompt',default='person');p.add_argument('--mode',choices=['fp16','fp32','bf16_reference'],default='fp16');p.add_argument('--reference-output',type=Path);p.add_argument('--trace-state',action='store_true');p.add_argument('--trace-frames',nargs='+',type=int,help='Save internal traces only for these frame indices; all frames still run');p.add_argument('--reference-cache',type=Path);p.add_argument('--reference-mode',choices=['fp16','fp32','bf16_reference']);p.add_argument('--require-exact',action='store_true');p.add_argument('--source-grounding-batch',type=int,default=16);p.add_argument('--source-complex-rope',action='store_true');p.add_argument('--report',type=Path,required=True);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--model',choices=['sam3','sam3.1'],required=True);p.add_argument('--checkpoint');p.add_argument('--native-output',type=Path,required=True);p.add_argument('--frames',nargs='+',type=Path,required=True);p.add_argument('--prompt',default='person');p.add_argument('--mode',choices=['fp16','fp32','bf16_reference'],default='fp16');p.add_argument('--reference-output',type=Path);p.add_argument('--final-output',action='store_true',help='Replay actual raw source results through its original output generator and compare native final output');p.add_argument('--trace-state',action='store_true');p.add_argument('--trace-frames',nargs='+',type=int,help='Save internal traces only for these frame indices; all frames still run');p.add_argument('--reference-cache',type=Path);p.add_argument('--reference-mode',choices=['fp16','fp32','bf16_reference']);p.add_argument('--require-exact',action='store_true');p.add_argument('--source-grounding-batch',type=int,default=16);p.add_argument('--source-complex-rope',action='store_true');p.add_argument('--report',type=Path,required=True);a=p.parse_args()
  if a.reference_cache:
+  assert not a.final_output,'final-output needs actual raw source metadata, not the older raw-mask cache'
   rows=[]
   for i in range(len(a.frames)):
    with np.load(a.reference_cache/f'{i}.npz') as r:rows.append(compare_frame(a.native_output,i,r['ids'].tolist(),r['masks'],r['low'],r['scores'].tolist()))
@@ -38,6 +39,7 @@ def main():
  torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False;torch.backends.cudnn.benchmark=False;model._warm_up_complete=True
  for block in model.detector.backbone.vision_backbone.trunk.blocks if hasattr(model.detector.backbone,'vision_backbone') else model.detector.backbone.visual.trunk.blocks:
   if a.mode!='bf16_reference':block.mlp.forward=lambda x,m=block.mlp:m.fc2(m.act(m.fc1(x)))
+ raw_outputs={};final_rows=[]
  dtype={'fp16':torch.float16,'fp32':torch.float32,'bf16_reference':torch.bfloat16}[a.mode];rows=[];captured={}
  original=model.run_tracker_propagation
  def capture(*args,**kwargs):
@@ -60,6 +62,7 @@ def main():
   if tri:state['backbone_out']=model.detector.backbone.forward_text(state['input_batch'].find_text_batch,device='cuda')
   for i in range(len(a.frames)):
    print('FRAME',a.model,a.mode,i,flush=True);out=model._run_single_frame_inference(state,i,False)
+   if a.final_output:raw_outputs[i]=out
    ids=list(map(int,sorted(out['obj_id_to_mask'])));h,w=state['orig_height'],state['orig_width']
    expected=torch.cat([out['obj_id_to_mask'][k] for k in ids]).cpu().numpy() if ids else np.empty((0,h,w),bool)
    low=captured['low'].float().cpu().numpy();scores=[float(out['obj_id_to_score'][k]) for k in ids]
@@ -81,5 +84,23 @@ def main():
       (a.reference_output/f'{i}.layout.json').write_text(json.dumps(captured.get('encoder_layout',[])))
       np.savez_compressed(a.reference_output/f'{i}.state{si}.npz',**fields)
    row=compare_frame(a.native_output,i,ids,expected,low,scores);rows.append(row);print(row,flush=True)
+ if a.final_output:
+  # Replay only the generator boundary: these are outputs of the actual neural
+  # engine above. Original buffering, caching and postprocessing remain intact.
+  latest=[None];original_raw=model._run_single_frame_inference
+  def replay(state,index,*args,**kwargs):latest[0]=index;return raw_outputs[index]
+  model._run_single_frame_inference=replay
+  from sam3.model.sam3_multiplex_tracking import Sam3MultiplexTracking
+  from sam3.model.sam3_video_inference import Sam3VideoInference
+  generator=Sam3MultiplexTracking.propagate_in_video if tri else Sam3VideoInference.propagate_in_video
+  for index,value in generator(model,state,start_frame_idx=0,max_frame_num_to_track=len(a.frames)-1,reverse=False):
+   root=a.native_output;meta=json.loads((root/f'{index}.final.json').read_text());n=meta['count'];h,w=state['orig_height'],state['orig_width']
+   actual=dict(out_obj_ids=np.fromfile(root/f'{index}.final.ids.i64.bin',np.int64),out_probs=np.fromfile(root/f'{index}.final.scores.f32.bin',np.float32),out_boxes_xywh=np.fromfile(root/f'{index}.final.boxes.f32.bin',np.float32).reshape(n,4))
+   packed=np.fromfile(root/f'{index}.final.masks.bin',np.uint8).reshape(n,h,(w+7)//8);actual['out_binary_masks']=np.unpackbits(packed,axis=-1,bitorder='little')[...,:w].astype(bool)
+   equal={key:bool(np.array_equal(v,value[key])) for key,v in actual.items()};equal['emission']=meta['emitted_at']==latest[0];final_rows.append(dict(frame=index,emitted_at=latest[0],objects=n,exact=equal))
+   if a.reference_output:np.savez_compressed(a.reference_output/f'{index}.final.npz',**{k:np.asarray(v) for k,v in value.items() if k!='frame_stats'},emitted_at=latest[0])
+  model._run_single_frame_inference=original_raw
+  a.report.with_suffix('.final.json').write_text(json.dumps(dict(model=a.model,mode=a.mode,scope='Actual source neural raw outputs replayed through original predictor generator, cache and final postprocessing. No neural outputs mocked. Temporal and final outputs compared with standalone C++; interactive actions remain outside this fixture.',cases=final_rows,exact=all(all(r['exact'].values()) for r in final_rows)),indent=2)+'\n')
+  if a.require_exact:assert final_rows and all(all(r['exact'].values()) for r in final_rows),'final predictor outputs differ'
  save_report(a,rows)
 if __name__=='__main__':main()

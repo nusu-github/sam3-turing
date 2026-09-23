@@ -1875,3 +1875,26 @@ before/after outputs and source tensors accompany the updated development probe
 snapshot. Continue with predictor temporal buffering, confirmation/final output
 filtering, prompt/user-action state, codecs, full C ABI, multi-GPU, portable SDK
 and quality/performance validation; the overall goal remains active.
+
+## Integrate video output buffering and final masks
+
+Added `video_output.h`: delayed output with removal snapshots, forward/reverse
+confirmation lookahead, source batch-emission timing, terminal flush, cancellation
+and reset. Final processing preserves source ordering of hidden/empty filtering,
+boxes, overlap resolution and optional centers. Cached masks retain empty and
+pre-overlap values; frame statistics pass through. There is no object count limit.
+
+The coherent standalone probe now emits final results in addition to raw traces.
+Focused original-source generator/postprocessor comparisons pass 96 workflows and
+13,144 exact checks each on CUDA/perflib, CPU/perflib and CUDA/torchvision. CTest
+passes 27/15, including 257 objects, snapshot mutation isolation and reset/cancel.
+Fresh real-neural 34-frame SAM3 and SAM3.1 runs match every final mask, ID, score,
+box and emission time, with the previous raw parity retained. BF16/no TF32;
+SAM3.1 neural batch-one/complex-RoPE configuration is explicitly recorded, while
+output batching uses source default 16. Python-free native processes ran with
+all 200 queries and one shared trunk evaluation per frame.
+
+See [video output details](VIDEO_OUTPUT.md) for API behavior, evidence and limits.
+No Actions or physical Windows/Turing tests were used. This is not full action
+routing/prompt lifecycle, full C ABI, codec/multi-GPU or portable SDK completion.
+Those integrations, CPU runtime stability and quality/performance work remain.

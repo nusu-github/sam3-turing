@@ -1,4 +1,5 @@
 #include "sam3/video_frame.h"
+#include "sam3/video_output.h"
 #include "sam3/multiplex_storage.h"
 #include "sam3/text_encoder.h"
 #include "sam3/tokenizer.h"
@@ -32,6 +33,8 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
   if constexpr(!Mux){update.hotstart.min_keep_alive=-1;update.hotstart.max_keep_alive=30;update.hotstart.initial_keep_alive=30;}
   update.recondition.period=16;update.occlusion_threshold=.7;update.cleanup_area=Mux?0:16;update.confirmation_enabled=Mux;
   auto metadata=sam3::initialize_video_metadata(1,device);const auto opts=at::TensorOptions().device(device).dtype(at::kFloat);std::filesystem::create_directories(root);
+  sam3::VideoOutputBufferOptions output_options;output_options.frame_count=files.size();output_options.end_frame=files.size()-1;output_options.height=h;output_options.width=w;output_options.batch_size=Mux?16:1;
+  sam3::VideoOutputBuffer output_buffer(output_options);
   for(size_t index=0;index<files.size();++index){
     const auto& visual=features(index);auto raw=encoder.detect(visual,prompt,mode);auto detected=sam3::postprocess_video_detections(raw.detection,detection_options);TORCH_CHECK(detected.size()==1,"this probe accepts one runtime text prompt");auto& detections=detected[0];
     std::vector<at::Tensor> masks,scores;std::vector<int64_t> ids;sam3::TrackingPropagation request;request.start=index;request.max_steps=0;request.encode_memory=false;
@@ -39,6 +42,16 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
     auto low=at::empty({0,288,288},opts),logits=at::empty({0},opts);
     if(!ids.empty()){const auto rows=sam3::video_memory_rows(ids,{metadata.object_ids()})[0];const auto order=at::tensor(rows,opts.dtype(at::kLong));low=sam3::clean_video_mask_scores(at::cat(masks).index_select(0,order).unsqueeze(1),update.cleanup_area).squeeze(1);logits=at::cat(scores).index_select(0,order);}
     auto plan=sam3::plan_video_update(index,false,detections,low,logits,metadata,update);sam3::execute_video_update(index,0,plan,detections,sessions,factory,update);auto output=sam3::build_video_outputs(plan,detections,h,w,update);sam3::finalize_video_scores(plan.metadata,index,plan.previous_ids,logits);metadata=std::move(plan.metadata);
+    sam3::VideoRawOutput final_raw;final_raw.frame=index;final_raw.masks=output;final_raw.scores=metadata.object_scores;final_raw.tracker_scores=metadata.frame_scores[index];final_raw.removed=plan.removed;
+    final_raw.frame_stats={{"num_obj_tracked",int64_t(metadata.object_ids().size())},{"num_obj_dropped",0}};
+    if constexpr(Mux){const auto suppressed=plan.suppressed.cpu();for(size_t i=0;i<plan.previous_ids.size();++i)if(suppressed[i].template item<bool>())final_raw.suppressed.insert(plan.previous_ids[i]);}
+    else if(metadata.host.suppressed.count(index))final_raw.suppressed=metadata.host.suppressed.at(index);
+    final_raw.unconfirmed=std::set<int64_t>{};if(update.confirmation_enabled){const auto all_ids=metadata.object_ids();for(size_t i=0;i<all_ids.size();++i)if(metadata.confirmation.status[i]==1)final_raw.unconfirmed->insert(all_ids[i]);}
+    for(const auto& emitted:output_buffer.push(final_raw)){
+      const auto prefix=std::to_string(emitted.frame)+".final.";const auto& value=emitted.output;
+      binary(root/(prefix+"ids.i64.bin"),value.ids);binary(root/(prefix+"scores.f32.bin"),value.probabilities);binary(root/(prefix+"boxes.f32.bin"),value.boxes_xywh);binary(root/(prefix+"masks.bin"),sam3::pack_masks(value.masks));
+      std::ofstream timing(root/(prefix+"json"));timing<<"{\"emitted_at\":"<<index<<",\"count\":"<<value.ids.numel()<<"}\n";TORCH_CHECK(timing,"cannot write final metadata");
+    }
     if constexpr(Mux){if(trace)for(size_t si=0;si<sessions.size();++si)for(const auto* history:{&sessions[si]->state().history.conditioning,&sessions[si]->state().history.tracked})for(const auto& stored:*history)if(stored.index==int64_t(index)){
       const auto frame=sam3::load_multiplex_frame(stored);const auto prefix=std::to_string(index)+".state"+std::to_string(si)+".";
       std::cout<<"trace frame="<<index<<" conditions="<<frame.conditioning_objects.size()<<" image_dtype="<<frame.image.scalar_type()<<" mask_dtype="<<(frame.memory_masks.defined()?frame.memory_masks.scalar_type():at::kFloat)<<"\n";
@@ -50,6 +63,7 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
     for(size_t i=0;i<output_ids.size();++i){if(i)json<<',';json<<output_ids[i];}json<<"],\"scores\":[";for(size_t i=0;i<output_ids.size();++i){if(i)json<<',';json<<metadata.object_scores.at(output_ids[i]);}json<<"]}\n";TORCH_CHECK(json,"cannot write frame metadata");
     std::cout<<"frame="<<index<<" queries="<<raw.detection.logits.size(1)<<" candidates="<<detections.keep.sum().template item<int64_t>()<<" tracked="<<metadata.object_ids().size()<<" masks="<<output.size()<<" encodes="<<encodes<<"\n";
   }
+  TORCH_CHECK(output_buffer.pending()==0,"final output buffer was not drained");
   TORCH_CHECK(encodes==int64_t(files.size()),"sequential pipeline repeated a visual trunk evaluation");std::cout<<"shared-trunk detector/tracker pipeline completed; raw outputs, no Python\n";
 }
 }

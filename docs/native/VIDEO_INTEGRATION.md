@@ -810,3 +810,13 @@ with its existing correction policy (`video-recondition-history-sam3-exact34.jso
 Both standalone runs use `PATH=/nonexistent`, all 200 queries, four objects and
 exactly 34 shared-trunk evaluations. CUDA-enabled and custom-CUDA-disabled probe
 builds succeed; no Actions or physical Windows/Turing validation was performed.
+
+## Native final output stage
+
+The probe now connects the raw neural/update pipeline to `VideoOutputBuffer` and
+`postprocess_video_output`. It reproduces delayed/batched emission, future-frame
+confirmation filtering, removal snapshots, final boxes and overlap handling, and
+writes `FRAME.final.*` files. Fresh 34-frame real-source comparisons pass for both
+models, including exact final outputs and emission timing. This supersedes the
+raw-only status above for this sequential probe, while action/prompt integration
+remains incomplete. See [VIDEO_OUTPUT.md](VIDEO_OUTPUT.md) for behavior and tests.
