@@ -980,3 +980,14 @@ bucket layout. Preflight releases consolidated temporary previews, so repeated
 correction starts from stored logits. See [neural execution contracts](../docs/native/VIDEO_INTEGRATION.md)
 for transaction scope, history storage and the still-missing high-level video
 coordinator. The standalone session tools exercise this API without Python.
+
+### Global video memory replacement
+
+`sam3/video_memory.h` prepares globally suppressed memory masks/proxy scores and
+maps explicit global IDs to local sessions. Session updates preserve predicted
+masks/scores, support SAM3.1's optional no-object pointer projection, and retain
+the effective encoder inputs for lossless history rebuilding after layout changes.
+`sam3_video_memory_test` needs no Python or weights; the session tools additionally
+exercise actual neural memory replacement. See [global memory contracts](../docs/native/VIDEO_INTEGRATION.md)
+for source differences, storage behavior, validation scope and remaining coordinator
+work. No multi-GPU communication or complete high-level predictor is claimed.

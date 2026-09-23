@@ -19,6 +19,8 @@ class SAM3_NATIVE_EXPORT VideoInteractiveHeads {
       bool multimask=false,const std::string& mode="fp32",double object_threshold=0.,bool attenuate_iou_by_stability=false) const;
   VideoMaskOutput use_mask_as_output(const at::Tensor& image,const std::vector<at::Tensor>& projected_high,
       const at::Tensor& mask,const std::string& mode="fp32",double object_threshold=0.) const;
+  // SAM3.1 no-object projection, using already loaded pointer weights.
+  at::Tensor project_no_object_pointer(const at::Tensor& pointer,const std::string& mode="fp32") const;
  private:
   at::Tensor gate_pointer(const at::Tensor& pointer,const at::Tensor& present) const;
   InteractivePromptEncoder encoder_;

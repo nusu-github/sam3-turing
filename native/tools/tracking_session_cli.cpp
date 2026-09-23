@@ -1,5 +1,6 @@
 #include "sam3/tracking_session.h"
 #include "sam3/video_recondition.h"
+#include "sam3/video_memory.h"
 #include <ATen/Context.h>
 #include <ATen/Parallel.h>
 #include <iostream>
@@ -36,6 +37,9 @@ int main(int argc,char** argv) {
     sam3::ReconditionMasks prepared;prepared.ids={202,101};prepared.binary_masks=at::stack({mask.gt(0),mask.flip({0}).gt(0)});
     const auto executed=sam3::execute_reconditioning(2,prepared,std::vector<sam3::Sam3TrackingSession*>{&session});
     TORCH_CHECK(executed.affected_ids==std::set<int64_t>({101,202}) && executed.preflight_states==std::vector<int64_t>({0,0}),"SAM3 did not preflight after each candidate");
+    const auto old=session.state().history.conditioning.back();
+    sam3::update_video_memories(2,at::ones({2,5,7},options),{202,101},std::vector<sam3::Sam3TrackingSession*>{&session});
+    for(const auto& frame:session.state().history.conditioning)if(frame.index==2)TORCH_CHECK(at::equal(old.low_mask,frame.low_mask) && at::equal(old.object_logits,frame.object_logits),"memory rewrite changed predicted masks/logits");
     session.add_points(2,101,points,true,true);request.start=3;request.reverse=true;request.preflight=true;
     session.propagate(request,emit);TORCH_CHECK(count==8,"reverse propagation missed frames");
     const auto updates=session.remove_object(101,true);

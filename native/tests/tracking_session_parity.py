@@ -96,6 +96,11 @@ def run_reference(host, arrays, operations, payloads, settings, flags, mode, dev
             Sam3VideoBase._recondition_masklets(SimpleNamespace(tracker=host),op[1],{'mask':payload.float().unsqueeze(0)},
                 {op[2]:0},[state],{'obj_ids_all_gpu':np.array(state['obj_ids'])},torch.full((len(state['obj_ids']),),2.,device=device))
             out[prefix+'affected']=torch.tensor(sorted(state['obj_ids']),dtype=torch.long)
+        elif op[0]==9:
+            policy=Sam3TrackerPredictor.__new__(Sam3TrackerPredictor);torch.nn.Module.__init__(policy)
+            host._suppress_object_pw_area_shrinkage=policy._suppress_object_pw_area_shrinkage
+            Sam3VideoBase._tracker_update_memories(SimpleNamespace(tracker=host,rank=0,_warm_up_complete=bool(op[3])),
+                [state],op[1],{'num_obj_per_gpu':[len(state['obj_ids'])]},payload.to(device))
         elif op[0]==3:host.propagate_in_video_preflight(state,bool(op[3]))
         elif op[0]==4:
             iterator=host.propagate_in_video(state,None if op[1]<0 else op[1],None if op[2]<0 else op[2],bool(op[3]),tqdm_disable=True,run_mem_encoder=bool(op[4]),propagate_preflight=bool(op[5]))
@@ -132,7 +137,9 @@ def scenarios(device):
     recondition=[op(2,0,101,payload=mask),op(2,0,202,payload=mask.roll(8,1)),op(3,a=1),
                  op(4,0,1,0,1),op(8,1,202,payload=prepared),op(4,2,0,0,1),
                  op(8,2,101,payload=prepared.roll(79,0)),op(4,2,2,1,1)]
-    return [('recondition_execute',recondition,[True,False,False,False,True,False,False,False],3),('multi_edit' ,common,[True,False,True,False,True,False,False,False],4),
+    memory=[op(2,0,101,payload=mask),op(2,0,202,payload=mask.roll(8,1)),op(3,a=1),op(4,0,1,0,1),
+            op(9,1,a=1,payload=torch.ones(2,7,9)),op(4,2,0,0,1),op(9,0,a=0,payload=-torch.ones(2,7,9)),op(4,2,2,1,1)]
+    return [('global_memory',memory,[True,False,False,False,True,False,False,False],3),('recondition_execute' ,recondition,[True,False,False,False,True,False,False,False],3),('multi_edit' ,common,[True,False,True,False,True,False,False,False],4),
             ('scores_and_noncond',basic,[False,True,True,True,False,False,True,True],3),
             ('sparse_order',sparse,[True,False,True,False,True,True,False,False],20)]
 

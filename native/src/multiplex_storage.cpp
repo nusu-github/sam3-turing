@@ -5,7 +5,7 @@ namespace {
 std::map<std::string,at::Tensor*> fields(MultiplexFrame& f,uint32_t mask){
   std::map<std::string,at::Tensor*> out;
   if(mask&(history_masks|history_output))out.insert({{"low",&f.masks.low_res_mask},{"scores",&f.masks.object_logits}});
-  if(mask&history_masks)out.insert({{"high",&f.masks.high_res_mask},{"input",&f.input_masks},{"ious",&f.iou},
+  if(mask&history_masks)out.insert({{"high",&f.masks.high_res_mask},{"memory_masks",&f.memory_masks},{"memory_scores",&f.memory_object_logits},{"input",&f.input_masks},{"ious",&f.iou},
       {"low_multi",&f.masks.low_res_multimasks},{"high_multi",&f.masks.high_res_multimasks},{"mask_ious",&f.masks.iou},{"mask_pointer",&f.masks.object_pointer}});
   if(mask&history_spatial)out.insert({{"memory",&f.memory},{"position",&f.memory_position},{"image",&f.image},{"image_position",&f.image_position}});
   if(mask&history_pointers)out.emplace("pointer",&f.pointer);

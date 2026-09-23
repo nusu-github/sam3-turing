@@ -1,0 +1,35 @@
+{
+  "device": "cuda",
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "cases": [
+    {
+      "mode": "fp32",
+      "case": "global_memory",
+      "operations": 8,
+      "tensors": 364,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "global_memory",
+      "operations": 8,
+      "tensors": 364,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "global_memory",
+      "operations": 8,
+      "tensors": 364,
+      "exact": true
+    }
+  ],
+  "postprocess_exact": 16,
+  "frame_order_exact": 608,
+  "adaptations": [
+    "FP32 restores BF16 stored memory to float at the memory encoder input; unmodified source fails without permanent autocast.",
+    "Wait for source D2H copies before CPU consolidation/snapshots to avoid timing-dependent reads.",
+    "CPU redirects original hard-coded CUDA transfers and rotary caches to CPU."
+  ],
+  "scope": "Original SAM3 low-level interactive tracker session, cached synthetic full-grid features; not the high-level text video tracker or real-video end-to-end validation."
+}

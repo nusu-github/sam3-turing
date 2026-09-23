@@ -42,7 +42,7 @@ void remap_multiplex_history(MultiplexFrameHistory& history,const MultiplexState
     frame=load_multiplex_frame(frame);frame.archive.reset();
     const auto old_memory=frame.memory,old_position=frame.memory_position;
     frame.masks.low_res_mask=rows(frame.masks.low_res_mask,-1024,true);frame.masks.high_res_mask=rows(frame.masks.high_res_mask,-1024);
-    frame.masks.object_logits=rows(frame.masks.object_logits,-1024,true);frame.input_masks=rows(frame.input_masks,0);
+    frame.memory_masks=rows(frame.memory_masks,-1024,true);frame.memory_object_logits=rows(frame.memory_object_logits,-1024,true);frame.masks.object_logits=rows(frame.masks.object_logits,-1024,true);frame.input_masks=rows(frame.input_masks,0);
     frame.masks.low_res_multimasks=rows(frame.masks.low_res_multimasks,-1024);frame.masks.high_res_multimasks=rows(frame.masks.high_res_multimasks,-1024);
     frame.masks.iou=rows(frame.masks.iou,0);frame.masks.object_pointer=rows(frame.masks.object_pointer,0);frame.iou=rows(frame.iou,0);
     if(frame.confidence.defined())frame.confidence=frame.iou.defined()?memory_confidence(frame.masks.object_logits,frame.iou):at::Tensor();

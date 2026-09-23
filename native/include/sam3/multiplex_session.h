@@ -44,6 +44,8 @@ class SAM3_NATIVE_EXPORT Sam31TrackingSession {
   // Correct existing IDs in a frame already held by this session. The bucket
   // layout is unchanged; memory is rebuilt by preflight after the edits.
   TrackingSessionOutput recondition_masks(int64_t frame,const std::vector<int64_t>& objects,const at::Tensor& masks);
+  void update_memory(int64_t frame,const at::Tensor& high_masks,const at::Tensor& proxy_logits,
+      bool reapply_no_object_pointer=false);
   void preflight(bool encode_memory=true);
   void propagate(const TrackingPropagation&,const OutputCallback&);
   void cancel() noexcept {cancelled_.store(true);}

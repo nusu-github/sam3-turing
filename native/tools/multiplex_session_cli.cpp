@@ -1,5 +1,6 @@
 #include "sam3/multiplex_session.h"
 #include "sam3/video_recondition.h"
+#include "sam3/video_memory.h"
 #include "sam3/multiplex_storage.h"
 #include <ATen/Context.h>
 #include <ATen/Parallel.h>
@@ -60,7 +61,14 @@ int main(int argc,char** argv){
     TORCH_CHECK(executed.affected_ids==std::set<int64_t>({700,800}) && executed.preflight_states==std::vector<int64_t>({0,1}) && executed.edited_states==std::vector<int64_t>{0} && session.state().dirty.empty(),"reconditioning did not preflight affected state");
     TORCH_CHECK(session.state().buckets->assignments()==layout && session.object_ids()==ids_before,"reconditioning changed object layout");
     TORCH_CHECK(partner.state().buckets->assignments()==partner_layout && partner.object_ids()==std::vector<int64_t>({700,900}),"shared-ID preflight modified partner layout");
+    auto before_memory=sam3::load_multiplex_frame(session.state().history.conditioning.back());
+    sam3::update_video_memories(1,at::ones({2,5,7},opts),{800,700},std::vector<sam3::Sam31TrackingSession*>{&session},true);
+    for(const auto& stored:session.state().history.conditioning)if(stored.index==1){
+      const auto frame=sam3::load_multiplex_frame(stored);
+      TORCH_CHECK(at::equal(before_memory.masks.low_res_mask,frame.masks.low_res_mask) && at::equal(before_memory.masks.object_logits,frame.masks.object_logits),"memory rewrite changed predictions");
+      TORCH_CHECK(frame.memory_object_logits[0].item<float>()==-10 && frame.memory_object_logits[1].item<float>()==10 && frame.memory_masks.size(-1)==1152,"memory rows ignored global IDs");
+    }
     request.start=2;request.max_steps=2;request.reverse=true;session.propagate(request,emit);session.reset();partner.reset();
-    std::cout<<"native SAM3.1 session passed: "<<callbacks<<" callbacks; 18 accumulated points, masks, box, midstream add, refinement, reverse, removal/clear, cancel/resume, rollback/reset, reconditioning/preflight; feature loads="<<loads<<"; no Python\n";return 0;
+    std::cout<<"native SAM3.1 session passed: "<<callbacks<<" callbacks; 18 accumulated points, masks, box, midstream add, refinement, reverse, removal/clear, cancel/resume, rollback/reset, reconditioning/preflight/global memory; feature loads="<<loads<<"; no Python\n";return 0;
   }catch(const std::exception& error){std::cerr<<error.what()<<'\n';return 1;}
 }

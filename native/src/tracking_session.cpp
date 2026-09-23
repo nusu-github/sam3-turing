@@ -193,6 +193,18 @@ void Sam3TrackingSession::clear_near(int64_t frame) {
     frames.erase(std::remove_if(frames.begin(),frames.end(),[&](const auto& value){return value.index>=frame-distance && value.index<=frame+distance;}),frames.end());
   }
 }
+void Sam3TrackingSession::update_memory(int64_t frame,const at::Tensor& masks,const at::Tensor& logits){
+  c10::InferenceMode inference;check_frame(frame);const auto n=int64_t(state_.objects.size());
+  TORCH_CHECK(masks.dim()==4 && masks.size(0)==n && masks.size(1)==1 && masks.size(2)>0 && masks.size(3)>0 && masks.is_floating_point() && logits.sizes()==at::IntArrayRef({n,1}) && logits.is_floating_point(),"invalid memory mask/proxy score shape");
+  if(!n || (!find(state_.history.conditioning,frame) && !find(state_.history.tracked,frame)))return;
+  auto previous=state_;try {
+    const auto memory=core_->encode_memory(features(frame,n),masks.to(device_),logits.to(device_),false,options_.frame.non_overlap_memory,mode_);
+    const auto encoded=memory.features.to(at::kBFloat16).to(storage_),position=cache_position(memory.position);
+    for(bool cond:{true,false})if(auto* current=find(group(state_.history,cond),frame)){
+      current->memory=encoded;current->memory_position=position;split(*current,cond);
+    }
+  }catch(...){state_=std::move(previous);throw;}
+}
 void Sam3TrackingSession::preflight(bool encode) {
   c10::InferenceMode inference;AutocastGuard autocast(device_.type(),mode_!="fp32",mode_=="fp16"?at::kHalf:at::kBFloat16);
   state_.started=true;

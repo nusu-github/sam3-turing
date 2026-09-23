@@ -1650,3 +1650,54 @@ detector insertion/removal, text/visual prompt state, caches/user actions and th
 complete high-level video coordinator remain. Codecs, multi-GPU execution,
 portable packaging and end-to-end quality/performance validation also remain.
 The next source boundary is `_tracker_update_memories` after correction/occlusion.
+
+## Apply global suppression to tracker memory
+
+Added `sam3/video_memory.h` and session/frame memory-replacement APIs. Global
+masks resize directly to the 1152 memory grid; objects retaining less than 0.3 of
+their positive area after pixelwise competition are suppressed. Surviving masks
+retain their logits and may overlap. Source singleton/warmup differences and
+argmax ties are preserved. Boolean winners avoid the source floating overlap
+image temporary; no detection/object cap or lower-precision count is introduced.
+
+Memory-only +10/-10 proxy scores do not replace predicted masks/scores. SAM3
+updates stored memory and per-object slices. SAM3.1 also saves image features and
+optionally projects newly suppressed pointers with the existing no-object weights.
+Explicit global-ID mapping preserves local state order, including reversed IDs
+and backfilling. Source neural comparisons use sorted coherent rank-zero IDs;
+native mapping avoids the source dynamic branch's order/rank-offset assumptions.
+The caller must still gather global inputs for multi-GPU use; communication is
+not implemented by these helpers.
+
+SAM3.1 retains actual memory input masks/proxy scores separately from predictions,
+so later bucket changes re-encode the same suppression decisions. The new fields
+participate in offload, paging, global-ID remapping and CRC-protected archives.
+Obsolete overrides clear when normal edits invalidate memory or preflight encodes
+new consolidated memory. They add runtime history storage, not model variants.
+Each session stages updates; the overall list of sessions is not one transaction.
+
+Validation uses actual original policies and high-level `_tracker_update_memories`
+methods. There are 388 exact policy tensor comparisons across CPU/CUDA and three
+precisions, including 201 objects, plus four mapping and three rejection cases.
+Actual-weight session comparisons total 2,390 tensors across CPU FP32 and CUDA
+FP32/FP16/BF16-reference, including both pointer settings, subsequent forward/
+reverse propagation and repeated-correction regression. Full-grid cached features
+are synthetic; this does not prove coherent vision/detector/video accuracy.
+
+Resident/offloaded/paged workflows add 1,350 exact comparisons across three CUDA
+modes, including object insertion/history rebuild after memory replacement. The
+rebuilt bucket is checked with the actual source neural encoder using effective
+masks/proxies. Predicted masks/scores stay unchanged, historical new objects are
+absent, preflight clears old overrides and temporary archives are cleaned up.
+
+CTest passes 21/21 CUDA-enabled and 12/12 custom-CUDA-disabled checks. Standalone
+actual-weight session tools run with PATH=/nonexistent, including paged state and
+reversed global IDs. Python-free linkage and existing sm_75 cubins remain. The
+previous intermittent full-model CPU failure is still open. No GitHub Actions or
+Windows/Turing execution was used; portable distribution is still unfinished.
+
+Code/reports are pushed to `codex/native-onboarding`; private binaries/headers/logs
+are in `native-foundation/video-memory-linux-cuda13`. No weights/model variants
+were added. The full coordinator still needs detection insertion/removal,
+text/visual prompt and cache/user-action management, phase integration and output
+assembly. Codec, multi-GPU and end-to-end quality/performance work also remain.

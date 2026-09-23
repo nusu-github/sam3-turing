@@ -375,3 +375,98 @@ sessions. CTest passes 19 CUDA-enabled/11 custom-CUDA-disabled checks. The earli
 intermittent full-model CPU runtime failure remains open; these passing runs do
 not establish its resolution. No GitHub Actions or Windows/Turing execution was
 used. No new model weights or model variants were produced.
+
+## Globally adjusted tracking memory
+
+`sam3/video_memory.h` now connects global mask suppression to actual session
+memory replacement. `prepare_video_memory` resizes the complete object mask set
+directly to the source memory encoder's 1152x1152 grid. It computes pixel winners
+and suppresses whole masks retaining less than 0.3 of their original positive
+area. Masks that pass retain their original logits and may still overlap; this
+is not unconditional pixelwise clipping. The native area-after calculation uses
+boolean winners, avoiding the source full floating non-overlap mask temporary.
+No object/detection limit or precision truncation is introduced.
+
+The source SAM3 warmup flag can skip suppression. SAM3.1 always suppresses but
+returns singleton masks unchanged, whereas SAM3 can clamp a singleton empty mask
+to at most -10. The implementation preserves these differences, argmax tie order,
+positive-area tests and nonfinite behavior. Memory-only proxy logits are +10 for
+any positive pixels after suppression and -10 otherwise. They do not replace
+predicted object scores, masks or confidence fields.
+
+`video_memory_rows` maps explicit global IDs into each local state's actual row
+order. The source SAM3 host uses contiguous per-rank slices; the dynamic SAM3.1
+host constructs assignments by sorting local IDs and assumes matching state/global
+order (its dynamic branch does not add the computed rank offset). The native
+coordinator requires the caller's explicit global ID order, supports arbitrary
+state order/backfilling, and rejects missing/duplicate IDs rather than relying
+on these source assumptions. Source neural comparisons use coherent sorted IDs
+on rank zero; separate mapping tests and standalone reversed-global-ID tests cover
+the broader native contract. This is not a claim of multi-GPU communication:
+callers must provide gathered global masks/IDs when needed, and only supplied local
+sessions are updated.
+
+`Sam3TrackingSession::update_memory` stores BF16 memory and cached positions in
+both matching conditioning/tracked outputs and refreshes per-object slices,
+without changing predictions/pointers. Missing SAM3 frames are a no-op, matching
+the original output-store loop. SAM3.1 requires a current frame to obtain its
+conditioning membership. `Sam31TrackingFrame::update_memory` updates encoded
+memory and saved image features/positions; an optional flag reapplies the loaded
+no-object linear projection to newly suppressed pointers before remultiplexing.
+The source's original predicted-score threshold controls which pointers qualify.
+Each session stages changes and rolls back on failure. Updating a list of sessions
+is not an all-session transaction.
+
+### Preserving the inputs to rebuilt memory
+
+Dynamic bucket changes can require re-encoding older SAM3.1 memory. A global
+memory rewrite may have used different masks and proxy scores from the stored
+predictions, so history now retains `memory_masks` and `memory_object_logits`
+separately. They are cloned from the actual encoder inputs, offloaded/paged with
+the history, remapped by global IDs and used by `encode_history`. Newly introduced
+objects get the same absent -1024 history values as the native dense-history
+policy. Using predicted logits during this rebuild would lose suppression.
+
+The retained inputs add runtime history storage; they are not another model or
+weight variant. Selected temporal reads still fetch only needed memory/pointer
+fields. Ordinary edits that invalidate memory, and preflight that encodes a fresh
+consolidated frame, clear obsolete override inputs. Deferred reconditioning keeps
+them with the still-existing memory until preflight. Temporary archives preserve
+these new fields using the existing dtype/shape/stride/CRC mechanism.
+
+### Evidence and remaining scope
+
+`video-memory-policy-validation.json` records 384 exact source tensor comparisons
+across CPU/CUDA FP32/FP16/BF16 and four additional comparisons with 201 objects on
+CPU/CUDA. It includes singleton empty masks, warmup, ties, nonfinite and strided
+inputs, plus four explicit-ID mapping cases and three rejection checks.
+
+Actual-weight session comparisons include 1,092 SAM3 CUDA and 364 CPU FP32 tensor
+comparisons, and 768 SAM3.1 CUDA plus 166 CPU FP32 comparisons (2,390 total,
+including repeated-correction regression). They call the original high-level
+`_tracker_update_memories` methods and compare subsequent forward/reverse
+propagation and stored session fields; SAM3.1 tests both pointer-reapplication
+settings. Features are full-grid synthetic projected tensors, not real-video
+vision/detector outputs. Existing documented source CPU/FP32 staging adaptations
+remain; this is not unmodified upstream CPU validation.
+
+`video-memory-storage-validation.json` adds 1,350 exact comparisons across three
+CUDA modes for resident/offloaded/paged execution, memory rewrite -> object
+insertion -> history rebuild -> propagation -> correction/preflight. The rebuilt
+bucket is also compared against the actual source neural memory encoder using
+the retained effective masks/proxies. Original predicted masks/scores remain
+unchanged, new historical rows are absent, obsolete overrides clear after
+preflight and temporary archives are removed on session destruction.
+
+CTest passes 21 CUDA-enabled and 12 custom-CUDA-disabled checks. Standalone
+SAM3/SAM3.1 session tools exercise actual-weight memory replacement with Python
+removed from PATH, including reversed global ID order and paged state. The earlier
+intermittent full-model CPU runtime fault remains unresolved. No GitHub Actions
+or Windows/Turing execution was used; existing sm_75 cubins are compile evidence
+only. Portable SDK packaging is still pending.
+
+A complete text/visual-guided video predictor still needs coordinated detection
+insertion/removal, prompt/cache/user-action state and output assembly. These
+memory helpers accept the already prepared global masks; they do not yet connect
+all association/hotstart/occlusion/correction phases into the full coordinator.
+Codecs, multi-GPU execution and end-to-end quality/performance validation remain.

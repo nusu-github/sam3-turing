@@ -27,7 +27,7 @@ MultiplexFrame* Sam31TrackingSession::find(int64_t index){for(auto* group:{&stat
 void Sam31TrackingSession::put(MultiplexFrame frame,bool conditioning){auto& group=conditioning?state_.history.conditioning:state_.history.tracked;auto& other=conditioning?state_.history.tracked:state_.history.conditioning;erase(other,frame.index);for(auto& old:group)if(old.index==frame.index){old=std::move(frame);return;}group.push_back(std::move(frame));}
 void Sam31TrackingSession::store(MultiplexFrame& frame,bool compress){
   if(frame.memory.defined())frame.memory=(compress?frame.memory.to(at::kBFloat16):frame.memory).to(storage_);
-  for(auto* value:{&frame.memory_position,&frame.image,&frame.image_position,&frame.masks.low_res_mask,&frame.masks.high_res_mask})if(value->defined())*value=value->to(storage_);
+  for(auto* value:{&frame.memory_position,&frame.image,&frame.image_position,&frame.masks.low_res_mask,&frame.masks.high_res_mask,&frame.memory_masks,&frame.memory_object_logits})if(value->defined())*value=value->to(storage_);
   frame.masks.low_res_multimasks=at::Tensor();frame.masks.high_res_multimasks=at::Tensor();frame.masks.iou=at::Tensor();frame.masks.object_pointer=at::Tensor();
   if(!options_.history_directory.empty()){if(frame.confidence.defined())frame.confidence=frame.confidence.cpu();archive_multiplex_frame(frame,options_.history_directory);}
 }
@@ -58,7 +58,7 @@ void Sam31TrackingSession::merge_edit(int64_t index,size_t object,const Multiple
   for(size_t bucket=0;bucket<state_.buckets->assignments().size();++bucket)for(int64_t slot=0;slot<16;++slot)if(state_.buckets->assignments()[bucket][slot]==int64_t(object))frame.pointer[bucket][slot].copy_(edit.pointer[0][0]);
   if(frame_options_.temporal.select_by_score){frame.iou=frame.iou.to(existing?c10::promoteTypes(frame.iou.scalar_type(),edit.masks.iou.scalar_type()):edit.masks.iou.scalar_type()).clone();frame.iou.slice(0,object,object+1).copy_(std::get<0>(edit.masks.iou.max(-1)));frame.confidence=memory_confidence(frame.masks.object_logits,frame.iou);}
   if(std::find(frame.conditioning_objects.begin(),frame.conditioning_objects.end(),object)==frame.conditioning_objects.end())frame.conditioning_objects.push_back(object);
-  frame.memory=at::Tensor();frame.memory_position=at::Tensor();store(frame);put(std::move(frame),!state_.tracked_direction.count(index) || options_.all_edits_conditioning);
+  frame.memory=at::Tensor();frame.memory_position=at::Tensor();frame.memory_masks=at::Tensor();frame.memory_object_logits=at::Tensor();store(frame);put(std::move(frame),!state_.tracked_direction.count(index) || options_.all_edits_conditioning);
   state_.objects[object].video_edits[index]=video.to(storage_);state_.dirty.insert(index);state_.annotated.insert(index);
 }
 TrackingSessionOutput Sam31TrackingSession::output(const MultiplexFrame& stored,bool preview)const{
@@ -148,11 +148,20 @@ TrackingSessionOutput Sam31TrackingSession::recondition_masks(int64_t index,cons
     state_.dirty.insert(index);state_.annotated.insert(index);return output(*find(index),true);
   }catch(...){state_=std::move(previous);throw;}
 }
+void Sam31TrackingSession::update_memory(int64_t index,const at::Tensor& masks,const at::Tensor& logits,bool reapply){
+  c10::InferenceMode inference;check_frame(index);TORCH_CHECK(state_.buckets && find(index),"memory update requires an existing frame");
+  auto previous=state_;try {
+    const auto value=features(index);
+    for(auto* group:{&state_.history.conditioning,&state_.history.tracked})for(auto& stored:*group)if(stored.index==index){
+      auto frame=load_multiplex_frame(stored);core_->update_memory(value.propagation,masks,logits,frame,*state_.buckets,reapply,frame_options_,mode_);store(frame);stored=std::move(frame);
+    }
+  }catch(...){state_=std::move(previous);throw;}
+}
 void Sam31TrackingSession::preflight(bool encode){
   c10::InferenceMode inference;AutocastGuard autocast(device_.type(),mode_!="fp32",mode_=="fp16"?at::kHalf:at::kBFloat16);auto previous=state_;try {
     for(auto index:state_.dirty){auto* original=find(index);if(!original)continue;auto frame=load_multiplex_frame(*original);frame.masks.low_res_mask=frame.masks.low_res_mask.to(device_).clone();
       for(size_t i=0;i<state_.objects.size();++i)if(state_.objects[i].video_edits.count(index))frame.masks.low_res_mask.slice(0,i,i+1).copy_(resize(state_.objects[i].video_edits.at(index).to(device_),288,288,true));
-      frame.masks.high_res_mask=non_overlap(resize(frame.masks.low_res_mask,1008,1008));
+      frame.masks.high_res_mask=non_overlap(resize(frame.masks.low_res_mask,1008,1008));frame.memory_masks=at::Tensor();frame.memory_object_logits=at::Tensor();
       if(encode && frame_options_.temporal.memory_slots>0){const auto memory=core_->encode_history(frame,*state_.buckets,frame_options_,mode_);frame.memory=memory.features;frame.memory_position=memory.position;}
       store(frame);*original=std::move(frame);
       // Brush/point previews are temporary. Once consolidated, later edits

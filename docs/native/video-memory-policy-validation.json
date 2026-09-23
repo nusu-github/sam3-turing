@@ -1,0 +1,53 @@
+{
+  "cases": [
+    {
+      "device": "cpu",
+      "dtype": "torch.float32",
+      "exact_tensor_comparisons": 64
+    },
+    {
+      "device": "cpu",
+      "dtype": "torch.float16",
+      "exact_tensor_comparisons": 64
+    },
+    {
+      "device": "cpu",
+      "dtype": "torch.bfloat16",
+      "exact_tensor_comparisons": 64
+    },
+    {
+      "device": "cuda",
+      "dtype": "torch.float32",
+      "exact_tensor_comparisons": 64
+    },
+    {
+      "device": "cuda",
+      "dtype": "torch.float16",
+      "exact_tensor_comparisons": 64
+    },
+    {
+      "device": "cuda",
+      "dtype": "torch.bfloat16",
+      "exact_tensor_comparisons": 64
+    }
+  ],
+  "large": [
+    {
+      "device": "cpu",
+      "objects": 201,
+      "exact_tensor_comparisons": 2
+    },
+    {
+      "device": "cuda",
+      "objects": 201,
+      "exact_tensor_comparisons": 2
+    }
+  ],
+  "assignment_cases": 4,
+  "assignment_rejections": 3,
+  "source_sha256": {
+    "sam3/model/sam3_tracking_predictor.py": "145df76a5c045605d4d15360456015adb4f987c4b18e82f4f4876a63e6a32345",
+    "sam3/model/video_tracking_multiplex_demo.py": "d57ac540b400d5cb37377fc84810f75c2721f1b6e6ee9c8f119b5d6af7a6a80c"
+  },
+  "scope": "Actual global shrinkage policy at 1152 resolution, warmup/model-specific singleton behavior, ties/empty masks/nonfinite/strided logits. Explicit global-ID mapping tested independently of source rank-order assumptions. Neural memory/session updates are separate tests."
+}

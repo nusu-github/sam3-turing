@@ -6,7 +6,8 @@ are exercised separately; this test does not imply full upstream demo parity.
 import argparse,json,hashlib
 from contextlib import contextmanager
 from pathlib import Path
-from types import MethodType
+from types import MethodType,SimpleNamespace
+from sam3.model.sam3_multiplex_base import Sam3MultiplexBase
 import torch
 from sam3.model.video_tracking_multiplex_demo import VideoTrackingMultiplexDemo,Sam3VideoTrackingMultiplexDemo
 from sam3.model.multiplex_utils import MultiplexController,MultiplexState
@@ -50,6 +51,9 @@ def session_reference(weights,device):
         if name!='__init__' and callable(getattr(VideoTrackingMultiplexDemo,name)):setattr(host,name,MethodType(getattr(VideoTrackingMultiplexDemo,name),host))
     for name in ['recondition_masks_in_existing_state','add_new_masks_to_existing_state']:
         setattr(host,name,MethodType(getattr(VideoTrackingDynamicMultiplex,name),host))
+    host._suppress_object_pw_area_shrinkage=Sam3VideoTrackingMultiplexDemo._suppress_object_pw_area_shrinkage
+    host.add_output_per_object=host._add_output_per_object
+    host.is_multiplex_dynamic=True
     host.init_state=MethodType(Sam3VideoTrackingMultiplexDemo.init_state,host);host.device=torch.device(device);host.image_size=1008;host.input_mask_size=1152;host.low_res_mask_size=288;host.is_dynamic_model=True
     original_init=host.init_state
     def init_state(*args,**kwargs):
@@ -101,6 +105,11 @@ def main():
         ([10,1,303,101],torch.stack([prepared.roll(47,0),prepared.roll(103,1)])),
         op(4,index=2,obj=0,y=1,z=0),
         ([10,2,202],prepared.unsqueeze(0)),op(4,index=2,obj=2,x=1,y=1,z=0)],False))
+    for reapply in [False,True]:
+        scenarios.append(('memory'+('_reapply' if reapply else ''),[
+            ([8,0,101,202,303],torch.stack([mask,mask.roll(8,1),mask.roll(12,0)])),op(3,x=1),
+            op(11,index=0,x=int(reapply),payload=torch.ones(3,7,9)),op(4,index=1,obj=0,y=1,z=0),
+            op(11,index=1,x=int(reapply),payload=-torch.ones(3,7,9)),op(4,index=2,obj=2,x=1,y=1,z=0)],False))
     for mode in a.modes:
         dtype={'fp16':torch.float16,'fp32':torch.float32,'bf16_reference':torch.bfloat16}[mode]
         def attention(**kwargs):
@@ -122,7 +131,7 @@ def main():
         for name,operations,score in scenarios:
             if a.cases and name not in a.cases:continue
             print('START',mode,name,flush=True);host.non_overlap_masks_for_output=False;host.use_memory_selection=score;host.non_overlap_masks_for_mem_enc=False
-            expected={};offload=not name.startswith('recondition')
+            expected={};offload=not name.startswith(('recondition','memory'))
             with backend_context(a.device=='cuda' and mode=='fp32',False),source_transfer_device(a.device),layout_staging(mode):
                 state=host.init_state(video_height=37,video_width=53,num_frames=4,offload_state_to_cpu=offload)
                 state['device']=torch.device(a.device);state['storage_device']=torch.device('cpu' if offload else a.device)
@@ -144,12 +153,14 @@ def main():
                             host.add_new_masks(state,operation[1],operation[2:],payload>0,reconditioning=True)
                             host.propagate_in_video_preflight(state,True)
                             expected[f'{i}/affected']=torch.tensor(sorted(state['obj_ids']),dtype=torch.long)
+                        elif operation[0]==11:
+                            Sam3MultiplexBase._tracker_update_memories(SimpleNamespace(tracker=host,rank=0,is_multiplex=True,reapply_no_object_pointer=bool(operation[3])),[state],operation[1],{'num_obj_per_gpu':[len(state['obj_ids'])]},payload.to(a.device))
                         elif operation[0]==3:host.propagate_in_video_preflight(state,bool(operation[3]))
                         elif operation[0]==4:
                             for value in host.propagate_in_video(state,operation[1],operation[2],bool(operation[3]),tqdm_disable=True,run_mem_encoder=bool(operation[4])):emit(*value)
                         elif operation[0]==7:host.clear_all_points_in_video(state)
                         expected[f'{i}/outputs']=torch.tensor(count)
-                        if name.startswith('recondition'):
+                        if name.startswith(('recondition','memory')):
                             for source,target in [('cond_frame_outputs','cond'),('non_cond_frame_outputs','tracked')]:
                                 for frame,entry in state['output_dict'][source].items():
                                     for key,field in [('low','pred_masks'),('memory','maskmem_features'),('pointer','obj_ptr'),('logits','object_score_logits')]:

@@ -2,6 +2,7 @@
 // The production API and session implementation do not require Python.
 #include "sam3/tracking_session.h"
 #include "sam3/video_recondition.h"
+#include "sam3/video_memory.h"
 #include "sam3/preprocess.h"
 #include "frame_order.h"
 #include <torch/library.h>
@@ -75,6 +76,7 @@ TORCH_LIBRARY_FRAGMENT(sam3_native,m) {
           emit(session.add_points(op[1],op[2],prompt,op[3],op[5]));
         } else if(op[0]==2) emit(session.add_mask(op[1],op[2],payloads[i]));
         else if(op[0]==8){sam3::ReconditionMasks prepared;prepared.ids={op[2]};prepared.binary_masks=payloads[i].gt(0).unsqueeze(0);const auto executed=sam3::execute_reconditioning(op[1],prepared,std::vector<sam3::Sam3TrackingSession*>{&session});save(result,prefix+"affected",at::tensor(std::vector<int64_t>(executed.affected_ids.begin(),executed.affected_ids.end()),at::kLong));}
+        else if(op[0]==9) sam3::update_video_memories(op[1],payloads[i].to(images.front().device()),session.object_ids(),std::vector<sam3::Sam3TrackingSession*>{&session},bool(op[3]));
         else if(op[0]==3) session.preflight(op[3]);
         else if(op[0]==4) {
           sam3::TrackingPropagation request;if(op[1]>=0)request.start=op[1];if(op[2]>=0)request.max_steps=op[2];request.reverse=op[3];request.encode_memory=op[4];request.preflight=op[5];

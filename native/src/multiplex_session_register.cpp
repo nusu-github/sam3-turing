@@ -1,5 +1,6 @@
 #include "sam3/multiplex_session.h"
 #include "sam3/video_recondition.h"
+#include "sam3/video_memory.h"
 #include "sam3/multiplex_storage.h"
 #include <torch/library.h>
 TORCH_LIBRARY_FRAGMENT(sam3_native,m) {
@@ -16,15 +17,16 @@ TORCH_LIBRARY_FRAGMENT(sam3_native,m) {
         else if(op[0]==8)emit(session.add_masks(op[1],std::vector<int64_t>(op.begin()+2,op.end()),payloads[i]));
         else if(op[0]==9)emit(session.recondition_masks(op[1],std::vector<int64_t>(op.begin()+2,op.end()),payloads[i]));
         else if(op[0]==10){sam3::ReconditionMasks prepared;prepared.ids={op.begin()+2,op.end()};prepared.binary_masks=payloads[i].gt(0);const auto executed=sam3::execute_reconditioning(op[1],prepared,std::vector<sam3::Sam31TrackingSession*>{&session});save(prefix+"affected",at::tensor(std::vector<int64_t>(executed.affected_ids.begin(),executed.affected_ids.end()),at::kLong));}
+        else if(op[0]==11)sam3::update_video_memories(op[1],payloads[i].to(device),session.object_ids(),std::vector<sam3::Sam31TrackingSession*>{&session},bool(op[3]));
         else if(op[0]==3)session.preflight(op[3]);
         else if(op[0]==4){sam3::TrackingPropagation request;if(op[1]>=0)request.start=op[1];if(op[2]>=0)request.max_steps=op[2];request.reverse=op[3];request.encode_memory=op[4];request.preflight=op[5];session.propagate(request,[&](const auto& value){emit(value);if(op[6]>0 && count>=op[6]){if(op[7])session.cancel();else return false;}return true;});}
         else if(op[0]==5)emit(session.clear_input(op[1],op[2]));else if(op[0]==6)session.remove_object(op[2],op[3]);else if(op[0]==7)session.reset();else TORCH_CHECK(false,"unknown operation");
         save(prefix+"outputs",at::scalar_tensor(count,at::kLong));save(prefix+"ids",at::tensor(session.object_ids(),at::kLong));
         const auto& state=session.state();save(prefix+"status",at::tensor({int64_t(state.started),state.first_annotation.value_or(-1)},at::kLong));
-        for(const bool cond:{true,false})for(const auto& stored:cond?state.history.conditioning:state.history.tracked){const auto frame=sam3::load_multiplex_frame(stored);const auto key=prefix+(cond?"cond/":"tracked/")+std::to_string(frame.index)+"/";save(key+"low",frame.masks.low_res_mask);save(key+"memory",frame.memory);save(key+"pointer",frame.pointer);save(key+"logits",frame.masks.object_logits);save(key+"position",frame.memory_position);save(key+"conditions",at::tensor(frame.conditioning_objects,at::kLong));}
+        for(const bool cond:{true,false})for(const auto& stored:cond?state.history.conditioning:state.history.tracked){const auto frame=sam3::load_multiplex_frame(stored);const auto key=prefix+(cond?"cond/":"tracked/")+std::to_string(frame.index)+"/";save(key+"low",frame.masks.low_res_mask);save(key+"memory_masks",frame.memory_masks);save(key+"memory_scores",frame.memory_object_logits);save(key+"memory",frame.memory);save(key+"pointer",frame.pointer);save(key+"logits",frame.masks.object_logits);save(key+"position",frame.memory_position);save(key+"conditions",at::tensor(frame.conditioning_objects,at::kLong));}
         int64_t resident=0,archived=0;
         for(const auto* group:{&state.history.conditioning,&state.history.tracked})for(const auto& frame:*group){
-          for(const auto& value:{frame.memory,frame.memory_position,frame.image,frame.image_position,frame.pointer,frame.masks.low_res_mask,frame.masks.high_res_mask,frame.masks.object_logits,frame.iou})if(value.defined())resident+=value.nbytes();
+          for(const auto& value:{frame.memory,frame.memory_position,frame.image,frame.image_position,frame.pointer,frame.masks.low_res_mask,frame.masks.high_res_mask,frame.masks.object_logits,frame.iou,frame.memory_masks,frame.memory_object_logits})if(value.defined())resident+=value.nbytes();
           if(frame.archive)archived+=frame.archive->bytes();
         }
         save(prefix+"resident_history_bytes",at::scalar_tensor(resident,at::kLong));save(prefix+"archived_history_bytes",at::scalar_tensor(archived,at::kLong));

@@ -154,19 +154,38 @@ std::vector<int64_t> Sam31TrackingFrame::update_masks(const TrackingFeatures& in
     const auto conditions=at::tensor(updated.conditioning_objects,at::TensorOptions().device(device).dtype(at::kLong));
     const auto encoded=memory_.encode_frame(pixels,updated.masks.high_res_mask,updated.masks.object_logits,
         {request.append && request.masks_from_points,options.non_overlap_memory,options.object_threshold},state.mux_matrix(),conditions,mode);
-    updated.memory=encoded.features;updated.memory_position=encoded.position;
+    updated.memory=encoded.features;updated.memory_position=encoded.position;updated.memory_masks=at::Tensor();updated.memory_object_logits=at::Tensor();
   }
   frame=std::move(updated);buckets=std::move(state);return affected;
+}
+void Sam31TrackingFrame::update_memory(const TrackingFeatures& propagation,const at::Tensor& high,const at::Tensor& scores,
+    MultiplexFrame& stored,const MultiplexState& buckets,bool reapply,const MultiplexFrameOptions& options,const std::string& mode) const {
+  c10::InferenceMode inference;detail::check_mode(mode);const auto device=no_memory_.device();AutocastGuard autocast(device.type(),mode!="fp32",mode=="fp16"?at::kHalf:at::kBFloat16);
+  TORCH_CHECK(high.dim()==4 && high.size(0)==buckets.object_count() && high.size(1)==1 && high.size(2)>0 && high.size(3)>0 && high.is_floating_point() && scores.sizes()==at::IntArrayRef({buckets.object_count(),1}) && scores.is_floating_point(),"invalid memory mask/proxy score shape");
+  auto frame=load_multiplex_frame(stored);
+  const auto masks=high.to(device),logits=scores.to(device),conditions=at::tensor(frame.conditioning_objects,at::TensorOptions().device(device).dtype(at::kLong));
+  const auto encoded=memory_.encode_frame(propagation.image,masks,logits,{false,options.non_overlap_memory,options.object_threshold},buckets.mux_matrix(),conditions,mode);
+  if(reapply){
+    const auto suppressed=frame.masks.object_logits.to(device).gt(options.object_threshold).logical_and(logits.lt(0));
+    if(suppressed.any().item<bool>()){
+      const auto pointer=buckets.demux(frame.pointer.to(device)),flag=suppressed.to(at::kFloat);
+      frame.pointer=buckets.mux(flag*interactive_.project_no_object_pointer(pointer,mode)+(1-flag)*pointer);
+    }
+  }
+  frame.memory=encoded.features;frame.memory_position=encoded.position;
+  frame.image=propagation.image.flatten(2).permute({2,0,1});frame.image_position=propagation.position.flatten(2).permute({2,0,1});
+  frame.memory_masks=masks.clone();frame.memory_object_logits=logits.clone();stored=std::move(frame);
 }
 MaskMemoryOutput Sam31TrackingFrame::encode_history(const MultiplexFrame& stored,const MultiplexState& buckets,
     const MultiplexFrameOptions& options,const std::string& mode) const {
   c10::InferenceMode inference;detail::check_mode(mode);const auto device=no_memory_.device();
   const auto frame=load_multiplex_frame(stored,history_masks|history_spatial);
-  TORCH_CHECK(frame.image.defined() && frame.image.sizes()==at::IntArrayRef({5184,1,256}) && frame.masks.high_res_mask.defined(),"history rebuild requires retained shared image features and full-resolution masks");
-  TORCH_CHECK(frame.masks.high_res_mask.size(0)==buckets.object_count(),"history masks must match the destination objects");
+  const auto masks=frame.memory_masks.defined()?frame.memory_masks:frame.masks.high_res_mask;
+  TORCH_CHECK(frame.image.defined() && frame.image.sizes()==at::IntArrayRef({5184,1,256}) && masks.defined(),"history rebuild requires retained shared image features and full-resolution masks");
+  TORCH_CHECK(masks.size(0)==buckets.object_count(),"history masks must match the destination objects");
   const auto pixels=frame.image.to(device).permute({1,2,0}).view({1,256,72,72});
   const auto conditions=at::tensor(frame.conditioning_objects,at::TensorOptions().device(device).dtype(at::kLong));
-  return memory_.encode_frame(pixels,frame.masks.high_res_mask.to(device),frame.masks.object_logits.to(device),
+  return memory_.encode_frame(pixels,masks.to(device),(frame.memory_object_logits.defined()?frame.memory_object_logits:frame.masks.object_logits).to(device),
       {false,options.non_overlap_memory,options.object_threshold},buckets.mux_matrix(),conditions,mode);
 }
 }

@@ -54,6 +54,9 @@ class SAM3_NATIVE_EXPORT Sam3TrackingSession {
   TrackingSessionOutput add_points(int64_t frame,int64_t object,const TrackingPoints&,
       bool clear_old=true,bool use_previous_memory=false);
   TrackingSessionOutput add_mask(int64_t frame,int64_t object,const at::Tensor& mask);
+  // Replace memory for existing current outputs without changing predicted
+  // masks/scores/pointers. Missing frames are a no-op, matching the source host.
+  void update_memory(int64_t frame,const at::Tensor& high_masks,const at::Tensor& proxy_logits);
   void preflight(bool encode_memory=true);
   // Callback false or cancel() stops after a consistent completed frame.
   void propagate(const TrackingPropagation&,const OutputCallback&);

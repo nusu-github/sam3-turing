@@ -20,6 +20,11 @@ VideoInteractiveHeads::VideoInteractiveHeads(const WeightStore& store,const std:
 std::vector<at::Tensor> VideoInteractiveHeads::project_pyramid(const std::vector<at::Tensor>& features,const std::string& mode) const {
   return decoder_.project_pyramid(features,mode);
 }
+at::Tensor VideoInteractiveHeads::project_no_object_pointer(const at::Tensor& pointer,const std::string& mode) const {
+  c10::InferenceMode inference;detail::check_mode(mode);TORCH_CHECK(multiplex_,"no-object linear projection requires SAM3.1");
+  AutocastGuard autocast(device_.type(),mode!="fp32",mode=="fp16"?at::kHalf:at::kBFloat16);
+  return detail::linear(weights_,pointer,"no_obj_ptr_linear");
+}
 at::Tensor VideoInteractiveHeads::gate_pointer(const at::Tensor& pointer,const at::Tensor& present) const {
   const auto probability=present.to(at::kFloat);
   if (multiplex_) return probability*pointer+(1-probability)*detail::linear(weights_,pointer,"no_obj_ptr_linear");

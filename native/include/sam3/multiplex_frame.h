@@ -8,6 +8,9 @@ struct MultiplexFrame {
   int64_t index=0;
   VideoMaskOutput masks;
   at::Tensor memory,memory_position,pointer,iou,confidence,image,image_position,input_masks;
+  // When global video heuristics rewrite memory, retain proxy scores separately
+  // from predicted logits, along with the exact memory input mask grid.
+  at::Tensor memory_masks,memory_object_logits;
   std::vector<int64_t> conditioning_objects;
   // Missing payload tensors may live in this immutable temporary archive.
   // Use load_multiplex_frame for inspection; confidence remains resident.
@@ -48,6 +51,10 @@ class SAM3_NATIVE_EXPORT Sam31TrackingFrame {
       const at::Tensor& masks,const std::vector<int64_t>& indices,
       const std::optional<std::vector<int64_t>>& object_ids,MultiplexFrame&,MultiplexState&,
       const MultiplexMaskUpdate&,const MultiplexFrameOptions& options={},const std::string& mode="fp32") const;
+  void update_memory(const TrackingFeatures& propagation,const at::Tensor& high_masks,
+      const at::Tensor& proxy_logits,MultiplexFrame&,const MultiplexState&,
+      bool reapply_no_object_pointer=false,const MultiplexFrameOptions& options={},
+      const std::string& mode="fp32") const;
   // Rebuild dense history from retained full-resolution masks and shared image.
   MaskMemoryOutput encode_history(const MultiplexFrame&,const MultiplexState&,
       const MultiplexFrameOptions& options={},const std::string& mode="fp32") const;
