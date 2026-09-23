@@ -1,0 +1,170 @@
+{
+  "device": "RTX PRO 4500 Blackwell",
+  "mode": "bf16_reference",
+  "native_path": "/nonexistent",
+  "image_cases": {
+    "food-image": {
+      "reference": {
+        "kind": "image",
+        "prompt": "food",
+        "matmul_tf32": false,
+        "cudnn_tf32": false,
+        "source_complex_rope": true,
+        "source_adapters": [],
+        "source_grounding_batch": 1,
+        "ids": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "scores": [
+          0.5151515007019043,
+          0.6167664527893066,
+          0.5241636037826538,
+          0.5816993117332458
+        ]
+      },
+      "scope": "Unmodified SAM3.1 single-frame semantic preview; empty-point audit is separate from native restoration invariants.",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0,
+      "all_exact": true
+    },
+    "food-video": {
+      "reference": {
+        "kind": "video",
+        "prompt": "food",
+        "matmul_tf32": false,
+        "cudnn_tf32": false,
+        "source_complex_rope": true,
+        "source_adapters": [],
+        "source_grounding_batch": 1,
+        "ids": [],
+        "scores": []
+      },
+      "scope": "Unmodified SAM3.1 single-frame semantic preview; empty-point audit is separate from native restoration invariants.",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0,
+      "all_exact": true
+    },
+    "person-image": {
+      "reference": {
+        "kind": "image",
+        "prompt": "person",
+        "matmul_tf32": false,
+        "cudnn_tf32": false,
+        "source_complex_rope": true,
+        "source_adapters": [],
+        "source_grounding_batch": 1,
+        "ids": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "scores": [
+          0.96875,
+          0.9649122953414917,
+          0.9726027250289917,
+          0.9452055096626282
+        ],
+        "empty_points_audit": [
+          {
+            "point_first": false,
+            "success": false,
+            "stage": "empty_points",
+            "error_type": "AttributeError",
+            "error": "'Sam3VideoTrackingMultiplexDemo' object has no attribute 'add_new_mask'"
+          },
+          {
+            "point_first": true,
+            "success": false,
+            "stage": "empty_points",
+            "error_type": "AttributeError",
+            "error": "'Sam3VideoTrackingMultiplexDemo' object has no attribute 'add_new_mask'"
+          }
+        ]
+      },
+      "scope": "Unmodified SAM3.1 single-frame semantic preview; empty-point audit is separate from native restoration invariants.",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0,
+      "all_exact": true,
+      "restored_input_equals_source_original": true
+    }
+  },
+  "video_regressions": {
+    "sam3": {
+      "cached_reference_exact": true,
+      "semantic_checkpoints": 11,
+      "mask_only_three_frame_propagation": true,
+      "original_configuration": {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "source_grounding_batch": 1,
+        "source_complex_rope": true,
+        "source_inclusive_grounding_bound_adapter": false,
+        "metadata_backfilled_from_live_command": true
+      }
+    },
+    "sam3.1": {
+      "cached_reference_exact": true,
+      "semantic_checkpoints": 11,
+      "mask_only_three_frame_propagation": true,
+      "original_configuration": {
+        "model": "sam3.1",
+        "mode": "bf16_reference",
+        "source_grounding_batch": 1,
+        "source_complex_rope": true,
+        "source_inclusive_grounding_bound_adapter": true,
+        "effective_precision": {
+          "matmul_tf32": false,
+          "cudnn_tf32": false
+        }
+      }
+    }
+  },
+  "ctest": {
+    "cuda": 28,
+    "custom_cuda_disabled": 16
+  },
+  "scope": "Finite fixtures; no Turing/Windows runtime tests, no GitHub Actions. Current binaries use development LibTorch and are not a portable SDK.",
+  "native_image_edit_checkpoints": [
+    "semantic",
+    "empty_stateless",
+    "point",
+    "cleared",
+    "cleared_twice",
+    "mask_new",
+    "mask_point",
+    "mask_cleared",
+    "mask_replaced",
+    "reset"
+  ],
+  "native_image_lifecycle": {
+    "checkpoints": 10,
+    "one_trunk_encode_before_reset": true,
+    "second_encode_only_after_reset": true,
+    "stateless_empty_restore": true,
+    "repeated_clear_stable": true,
+    "explicit_mask_retained": true,
+    "mask_replacement_retains_cached_input": true,
+    "overlap_arbitration_preserved": true,
+    "remove_and_reset": true,
+    "libpython_or_libtorch_python_linked": false
+  }
+}

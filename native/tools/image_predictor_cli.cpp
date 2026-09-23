@@ -1,0 +1,27 @@
+#include "sam3/video_predictor.h"
+#include "sam3/ops.h"
+#include "ppm.h"
+#include <ATen/Context.h>
+#include <ATen/Parallel.h>
+#include <fstream>
+#include <iostream>
+namespace {
+void binary(const std::filesystem::path& path,const at::Tensor& tensor){auto x=tensor.cpu().contiguous();std::ofstream f(path,std::ios::binary);f.write(static_cast<const char*>(x.const_data_ptr()),x.nbytes());TORCH_CHECK(f,"cannot write output");}
+at::Tensor object_mask(const sam3::VideoOutput& out,int64_t id){auto index=at::nonzero(out.ids.eq(id)).flatten();TORCH_CHECK(index.numel()==1,"expected one displayed object");return out.masks[index.item<int64_t>()];}
+}
+int main(int argc,char** argv){try{
+ TORCH_CHECK(argc==10,"usage: sam3_image_predictor_probe STORE sam3|sam3.1 DEVICE MODE IMAGE.ppm BPE.gz PROMPT.txt OUTPUT image|video|image-edits");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
+ const std::string model=argv[2],kind=argv[9];TORCH_CHECK(model=="sam3" || model=="sam3.1","invalid model");TORCH_CHECK(kind=="image" || kind=="video" || kind=="image-edits","invalid source kind");const at::Device device(argv[3]);const auto root=std::filesystem::u8path(argv[8]);std::filesystem::create_directories(root);const auto rgb=sam3::cli::read_ppm(std::filesystem::u8path(argv[5]));std::ifstream input(std::filesystem::u8path(argv[7]));TORCH_CHECK(input,"cannot read prompt");std::string prompt((std::istreambuf_iterator<char>(input)),{});while(!prompt.empty() && (prompt.back()=='\n' || prompt.back()=='\r'))prompt.pop_back();
+ auto options=sam3::video_predictor_defaults(model=="sam3"?sam3::AssociationPolicy::Sam3:sam3::AssociationPolicy::Sam31);options.mode=argv[4];options.image_only=kind!="video";options.centers=true;options.sam31_session.history_directory=root/"history";
+ sam3::VideoPredictor predictor(sam3::WeightStore(std::filesystem::u8path(argv[1])),std::filesystem::u8path(argv[6]),[&](int64_t frame){TORCH_CHECK(frame==0,"image frame must be zero");return rgb;},1,rgb.size(1),rgb.size(2),device,options);
+ const auto save=[&](const std::string& tag,const sam3::VideoOutput& out){binary(root/(tag+".ids.i64.bin"),out.ids);binary(root/(tag+".scores.f32.bin"),out.probabilities);binary(root/(tag+".boxes.f32.bin"),out.boxes_xywh);binary(root/(tag+".masks.bin"),sam3::pack_masks(out.masks));std::ofstream f(root/(tag+".json"));f<<"{\"height\":"<<rgb.size(1)<<",\"width\":"<<rgb.size(2)<<",\"image_only\":"<<(options.image_only?"true":"false")<<",\"visual_encodes\":"<<predictor.visual_encodes()<<"}\n";std::cout<<tag<<" count="<<out.ids.numel()<<" encodes="<<predictor.visual_encodes()<<std::endl;};
+ sam3::VideoSemanticPrompt semantic;semantic.text=prompt;const auto first=predictor.add_prompt(0,semantic);save("semantic",first);if(kind!="image-edits")return 0;
+ TORCH_CHECK(model=="sam3.1" && first.ids.numel()>0,"edit regression requires SAM3.1 and a detected object");const auto id=first.ids[0].item<int64_t>();sam3::TrackingPoints empty;empty.points=at::empty({0,2},at::kFloat);empty.labels=at::empty({0},at::kLong);
+ // Restoration before any real click also exercises stateless creation.
+ const auto restored=predictor.add_points(0,id,empty,true,false,true);save("empty_stateless",restored);binary(root/"restored-input.bool.bin",restored.cached_masks.at(id));const auto original=object_mask(restored,id).clone();
+ sam3::TrackingPoints point;point.points=at::tensor({.45,.55},at::kFloat).view({1,2});point.labels=at::tensor({1},at::kLong);save("point",predictor.add_points(0,id,point));const auto cleared=predictor.add_points(0,id,empty);save("cleared",cleared);TORCH_CHECK(at::equal(original,object_mask(cleared,id)),"clearing points did not restore original mask");const auto twice=predictor.add_points(0,id,empty);save("cleared_twice",twice);TORCH_CHECK(at::equal(cleared.masks,twice.masks),"repeated restoration changed masks");
+ auto mask=at::zeros({rgb.size(1),rgb.size(2)},at::kBool);mask.slice(0,rgb.size(1)/4,rgb.size(1)/2).slice(1,rgb.size(2)/4,rgb.size(2)/2).fill_(true);mask[0][0]=true; // authoritative single-pixel components survive cleanup
+ const auto added=predictor.add_mask(0,9000,mask);save("mask_new",added);TORCH_CHECK(at::equal(object_mask(added,9000).cpu(),mask),"authoritative new mask changed");save("mask_point",predictor.add_points(0,9000,point));const auto mask_reset=predictor.add_points(0,9000,empty);save("mask_cleared",mask_reset);TORCH_CHECK(at::equal(object_mask(mask_reset,9000).cpu(),mask),"explicit mask was not retained for restoration");
+ const auto changed=mask.logical_not();const auto edited=predictor.add_mask(0,9000,changed);save("mask_replaced",edited);TORCH_CHECK(at::equal(edited.cached_masks.at(9000).squeeze(0).cpu(),changed),"mask replacement changed cached input");TORCH_CHECK(!object_mask(edited,9000).cpu().logical_and(changed.logical_not()).any().item<bool>(),"displayed mask escaped authoritative input");predictor.remove_object(9000);TORCH_CHECK(!predictor.interaction().cached_frames().at(0).count(9000),"removal retained cached mask");
+ predictor.reset();const auto reset=predictor.add_prompt(0,semantic);save("reset",reset);TORCH_CHECK(at::equal(first.ids,reset.ids) && at::equal(first.masks,reset.masks),"image reset changed semantic output");TORCH_CHECK(predictor.visual_encodes()==2,"image edits reran the shared trunk");std::cout<<"image restoration/mask lifecycle passed without Python\n";return 0;
+}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

@@ -55,20 +55,32 @@ void remove_video_user_object(int64_t id,Sam31VideoSessions& sessions,VideoMetad
  interaction.forget_object(id);
  if(record)interaction.append({VideoActionType::Remove,{},std::vector<int64_t>{id}});
 }
-VideoOutput edit_video_points(int64_t frame,int64_t id,const TrackingPoints& points,Sam31VideoSessions& sessions,const Sam31SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const Sam31VideoEditOptions& options){
- c10::InferenceMode inference;validate_points(points);
+namespace {
+template<class Edit> VideoOutput edit31(int64_t frame,int64_t id,bool mask,Edit operation,Sam31VideoSessions& sessions,const Sam31SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const Sam31VideoEditOptions& options){
+ c10::InferenceMode inference;
  TORCH_CHECK(interaction.policy()==AssociationPolicy::Sam31 && frame>=0 && frame<interaction.frame_count() && options.rank>=0 && options.rank<int64_t(metadata.ids_per_rank.size()) && options.cleanup_area>=0 && options.confirmation_threshold>0 && factory,"invalid SAM3.1 video edit options");
  auto rank=owner(metadata,id);TORCH_CHECK(!rank || *rank==options.rank,"edit must execute on the object's owning rank");
- if(rank && options.stateless_refinement && !video_object_was_refined(interaction.actions(),id)){remove_video_user_object(id,sessions,metadata,interaction,false);rank.reset();}
+ if(!mask && rank && options.stateless_refinement && !video_object_was_refined(interaction.actions(),id)){remove_video_user_object(id,sessions,metadata,interaction,false);rank.reset();}
  auto* session=local_session(sessions,id);TORCH_CHECK(bool(session)==bool(rank),"session and metadata ownership disagree");
- if(session && !video_object_was_refined(interaction.actions(),id) && session->object_ids().size()>1){auto extracted=session->extract_object(id);session=extracted.get();sessions.push_back(std::move(extracted));}
+ if(!mask && session && !video_object_was_refined(interaction.actions(),id) && session->object_ids().size()>1){auto extracted=session->extract_object(id);session=extracted.get();sessions.push_back(std::move(extracted));}
  std::unique_ptr<Sam31TrackingSession> created;if(!session){created=factory();TORCH_CHECK(created && created->object_ids().empty(),"factory must return an empty session");session=created.get();}
- const auto preview=session->add_points(frame,id,points,options.clear_old_points,options.use_previous_memory);session->discard_mask_only_inputs();session->preflight(true);
+ const auto preview=operation(*session);if(!mask && !options.empty_points_mask.defined())session->discard_mask_only_inputs();session->preflight(true);
  const auto position=std::find(preview.object_ids.begin(),preview.object_ids.end(),id);TORCH_CHECK(position!=preview.object_ids.end(),"edit preview omitted requested ID");
- const auto selected=clean_video_mask_scores(preview.masks,options.cleanup_area)[position-preview.object_ids.begin()].squeeze(0).gt(0).to(at::kFloat);
+ const auto scores=mask?preview.masks:clean_video_mask_scores(preview.masks,options.cleanup_area);
+ const auto selected=scores[position-preview.object_ids.begin()].squeeze(0).gt(0).to(at::kFloat);
  if(created){const auto old=metadata.object_ids();metadata.ids_per_rank[options.rank].push_back(id);metadata.max_id=std::max(metadata.max_id,id);realign_confirmation(metadata,old);sessions.push_back(std::move(created));}
  int64_t buckets=0;for(const auto& s:sessions)if(s->state().buckets)buckets+=s->state().buckets->bucket_count();metadata.buckets_per_rank[options.rank]=buckets;
- assert_object(metadata,suppressions,id,frame,false,options.confirmation_threshold);interaction.append({rank?VideoActionType::Refine:VideoActionType::Add,frame,std::vector<int64_t>{id}});
+ assert_object(metadata,suppressions,id,frame,mask,options.confirmation_threshold);interaction.append({rank?VideoActionType::Refine:VideoActionType::Add,frame,std::vector<int64_t>{id}});
  return interaction.merge_refined(frame,{{id,{at::scalar_tensor(1.,selected.options()),selected}}},metadata,suppressions[frame]);
+}
+} // namespace
+VideoOutput edit_video_points(int64_t frame,int64_t id,const TrackingPoints& points,Sam31VideoSessions& sessions,const Sam31SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const Sam31VideoEditOptions& options){
+ validate_points(points);
+ if(options.empty_points_mask.defined())TORCH_CHECK(points.points.defined() && points.points.numel()==0 && !points.box.defined() && options.empty_points_mask.dim()==2 && options.empty_points_mask.numel()>0,"image restoration requires empty points and a nonempty [H,W] mask");
+ return edit31(frame,id,false,[&](auto& session){if(options.empty_points_mask.defined()){const auto ids=session.object_ids();if(std::find(ids.begin(),ids.end(),id)!=ids.end())session.clear_input(frame,id);return session.add_mask(frame,id,options.empty_points_mask);}return session.add_points(frame,id,points,options.clear_old_points,options.use_previous_memory);},sessions,factory,metadata,interaction,suppressions,options);
+}
+VideoOutput edit_video_mask(int64_t frame,int64_t id,const at::Tensor& mask,Sam31VideoSessions& sessions,const Sam31SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const Sam31VideoEditOptions& options){
+ TORCH_CHECK(mask.defined() && mask.dim()==2 && mask.numel()>0,"mask must be nonempty [H,W]");
+ return edit31(frame,id,true,[&](auto& session){return session.add_mask(frame,id,mask);},sessions,factory,metadata,interaction,suppressions,options);
 }
 }

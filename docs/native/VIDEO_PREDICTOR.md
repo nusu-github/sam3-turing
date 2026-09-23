@@ -30,7 +30,7 @@ are loaded temporarily and only the encoded tokens are retained. One cached
 frame's shared trunk features feed both detector and tracker necks; the fixture's
 initial preview plus frames0–3 requires four trunk evaluations, not five.
 
-Existing point edits, SAM3 exact-mask edits, user removal, cached fetch, partial
+Existing point edits, SAM3/SAM3.1 exact-mask edits, user removal, cached fetch, partial
 propagation, full forward/reverse scheduling and reset are available through this
 owner. Calls must be exclusive, except `cancel()` can be called from another
 thread. Cancellation is checked between frames; it does not interrupt a running
@@ -129,8 +129,8 @@ does not exercise this owner's new semantic replacements.
 ## Remaining scope and persistence
 
 This is a development C++ API, not the finished full-function distribution.
-SAM3.1 high-level exact-mask orchestration is explicitly rejected here; its low-level
-mask session API exists. Image-only fallback policy, complete video C ABI, codecs,
+Explicit image mode, original-mask restoration and SAM3.1 high-level exact-mask
+edits are described in [IMAGE_PREDICTOR.md](IMAGE_PREDICTOR.md). Complete video C ABI, codecs,
 multi-GPU transport, resumed-session checkpoints, portable SDK packaging and broader
 quality/performance remain. Caller-encoded visual tokens and reverse scheduling
 are available through the owner but are not newly compared by this semantic fixture.

@@ -2044,3 +2044,32 @@ exactly with both endpoint and stored-geometry source adapters explicitly enable
 Controlled replay with TF32 enabled matches84recorded decoder-layer tensors;
 disabling it reproduces the earlier FFN divergence. CTest28/16 and the existing
 34-frame raw/final SAM3.1 baseline pass after the output policy correction.
+
+## Explicit image mode and SAM3.1 high-level mask integration
+
+The C++ owner now distinguishes an image from a one-frame video. SAM3.1 uses its
+source image birth threshold of 0.5 (configurable), retaining 0.65 for video.
+Actual food/image detection returns four objects with scores between 0.515 and
+0.617; the same image as a one-frame video returns none. Both cases and the person
+image match unmodified original previews exactly in IDs, scores, boxes and masks.
+All 200 queries and full model dimensions execute with shared modular weights.
+
+The owner retains image mask baselines across point edits, restores them on empty
+points, and supports authoritative SAM3.1 mask creation/replacement. Removal and
+reset clear retained baselines. Stateless initial restoration, repeated clearing,
+mask-point-mask restoration and semantic reset pass without Python on PATH. The
+restored input matches the source detector input exactly. Only one trunk encode is
+needed before reset. Display still applies source overlap arbitration.
+
+The original empty-point image route raises AttributeError because its tracker
+has no add_new_mask method, both directly and after a real click. This is recorded
+without a reference adapter; native restoration is an invariant-checked repair of
+intended behavior, not parity with a nonexistent original output.
+
+Existing SAM3/SAM3.1 semantic video cases remain exact (11 each against retained
+references, with the earlier source configuration/adapters still recorded). New
+mask-only objects propagate through three frames in both models. CTest 28/16
+passes. See IMAGE_PREDICTOR.md and image-predictor-validation.json. Owning C ABI,
+codecs, multi-GPU transport, portable SDK/CPU stability and broad quality/performance
+remain; the 120-pixel reverse-edit discrepancy is unresolved. No Actions or physical
+Windows/Turing tests were used. The overall goal remains active.

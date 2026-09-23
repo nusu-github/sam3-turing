@@ -25,9 +25,16 @@ SAM3_NATIVE_EXPORT void remove_video_user_object(int64_t id,Sam3VideoSessions&,
 struct Sam31VideoEditOptions : VideoEditOptions {
   Sam31VideoEditOptions(){cleanup_area=0;}
   bool clear_old_points=true;
+  // Optional retained original image mask when all point prompts are cleared.
+  // This restores an annotation and keeps it usable for later edits.
+  at::Tensor empty_points_mask;
 };
 SAM3_NATIVE_EXPORT VideoOutput edit_video_points(int64_t frame,int64_t id,
     const TrackingPoints&,Sam31VideoSessions&,const Sam31SessionFactory&,
+    VideoMetadata&,VideoInteractionState&,VideoSuppressionHistory&,
+    const Sam31VideoEditOptions& options={});
+SAM3_NATIVE_EXPORT VideoOutput edit_video_mask(int64_t frame,int64_t id,
+    const at::Tensor& mask,Sam31VideoSessions&,const Sam31SessionFactory&,
     VideoMetadata&,VideoInteractionState&,VideoSuppressionHistory&,
     const Sam31VideoEditOptions& options={});
 SAM3_NATIVE_EXPORT void remove_video_user_object(int64_t id,Sam31VideoSessions&,

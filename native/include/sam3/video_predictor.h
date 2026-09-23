@@ -11,7 +11,8 @@ struct VideoPredictorOptions {
   TrackingSessionOptions sam3_session;
   MultiplexSessionOptions sam31_session;
   int64_t output_batch_size=1;
-  bool centers=false;
+  bool centers=false,image_only=false; // explicit image source, not a one-frame video
+  double image_detection_threshold=.5; // SAM3.1 image-mode birth threshold
 };
 SAM3_NATIVE_EXPORT VideoPredictorOptions video_predictor_defaults(AssociationPolicy);
 struct VideoSemanticPrompt {
@@ -42,7 +43,7 @@ class SAM3_NATIVE_EXPORT VideoPredictor {
   VideoOutput add_prompt(int64_t frame,const VideoSemanticPrompt&);
   VideoOutput add_points(int64_t frame,int64_t id,const TrackingPoints&,
       bool clear_old=true,bool use_previous=false,bool stateless=false);
-  VideoOutput add_mask(int64_t frame,int64_t id,const at::Tensor&); // SAM3 instance masks
+  VideoOutput add_mask(int64_t frame,int64_t id,const at::Tensor&); // authoritative instance mask
   void remove_object(int64_t id);
   VideoOutput fetch(int64_t frame)const;
   void propagate(const VideoPredictorPropagation&,const OutputCallback&);

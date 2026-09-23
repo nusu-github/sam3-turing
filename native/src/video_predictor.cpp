@@ -3,6 +3,7 @@
 #include "sam3/tokenizer.h"
 #include <c10/core/InferenceMode.h>
 #include <algorithm>
+#include <cmath>
 namespace sam3 {
 namespace {
 VideoOutput centers(VideoOutput out,int64_t h,int64_t w,bool enabled){
@@ -23,10 +24,13 @@ struct VideoPredictor::Impl {
  std::shared_ptr<VisionEncoder> vision;std::shared_ptr<GroundingDetector> detector;std::shared_ptr<Sam3TrackingFrame> core3;std::shared_ptr<Sam31TrackingFrame> core31;std::unique_ptr<VideoFrameEncoder> encoder;
  Sam3VideoSessions sessions3;Sam31VideoSessions sessions31;Sam3SessionFactory factory3;Sam31SessionFactory factory31;VideoFrameFeatures cached;
  VideoMetadata metadata;VideoInteractionState interaction;VideoSuppressionHistory suppressions;std::set<int64_t> initialized;std::optional<int64_t> prompt_frame;
+ std::map<int64_t,at::Tensor> image_masks;
  VideoSemanticPrompt semantic;GroundingPrompt encoded;bool has_text=false;std::atomic<bool> cancelled{false};
  Impl(const WeightStore& s,const std::filesystem::path& vocabulary,FrameProvider f,int64_t n,int64_t height,int64_t width,at::Device d,const VideoPredictorOptions& o)
   :store(s),tokenizer(vocabulary),provider(std::move(f)),frames(n),h(height),w(width),device(d),options(o),mux(o.model==AssociationPolicy::Sam31),metadata(initialize_video_metadata(1,d)),interaction(o.model,n,height,width){
   TORCH_CHECK(provider && n>0 && h>0 && w>0 && o.output_batch_size>0,"invalid video source/options");TORCH_CHECK(o.mode=="fp32" || o.mode=="fp16" || o.mode=="bf16_reference","invalid neural mode");
+  TORCH_CHECK(!o.image_only || n==1,"an image source requires exactly one frame");TORCH_CHECK(std::isfinite(o.image_detection_threshold) && o.image_detection_threshold>=0 && o.image_detection_threshold<=1,"invalid image detection threshold");
+  if(mux && o.image_only)options.update.association.new_detection_threshold=o.image_detection_threshold;
   TORCH_CHECK(o.detection.model==o.model && o.update.association.policy==o.model && o.update.recondition.policy==o.model,"video policies must match model");
   const auto model=mux?"sam3.1":"sam3";vision=std::make_shared<VisionEncoder>(store,model,device);detector=std::make_shared<GroundingDetector>(store,model,device);
   if(mux){core31=std::make_shared<Sam31TrackingFrame>(store,device);encoder=std::make_unique<VideoFrameEncoder>(vision,detector,core31,device);factory31=[this]{return std::make_unique<Sam31TrackingSession>(core31,[this](int64_t i){return features(i).tracking;},frames,h,w,device,options.mode,options.sam31_session);};}
@@ -46,7 +50,7 @@ struct VideoPredictor::Impl {
   if(prompt_frame==frame && semantic.boxes_xywh.defined()){auto boxes=semantic.boxes_xywh.to(device,at::kFloat).clone();boxes.slice(1,0,2).add_(boxes.slice(1,2,4)*.5);result.geometry.boxes=boxes.unsqueeze(1);result.geometry.box_labels=semantic.box_labels.to(device,at::kLong).unsqueeze(1);result.geometry.box_padding=at::zeros({1,boxes.size(0)},at::TensorOptions().device(device).dtype(at::kBool));}
   result.visual_features=semantic.visual_features;result.visual_padding=semantic.visual_padding;return result;
  }
- void reset(){sessions3.clear();sessions31.clear();metadata=initialize_video_metadata(1,device);interaction.reset();suppressions.clear();initialized.clear();prompt_frame.reset();semantic={};encoded={};has_text=false;cached={};cached_index=-1;cancelled.store(false);}
+ void reset(){sessions3.clear();sessions31.clear();metadata=initialize_video_metadata(1,device);interaction.reset();suppressions.clear();initialized.clear();prompt_frame.reset();image_masks.clear();semantic={};encoded={};has_text=false;cached={};cached_index=-1;cancelled.store(false);}
  void cache_raw(const VideoRawOutput& raw){VideoOutput cache;cache.cached_masks=raw.masks;interaction.record(raw.frame,cache);}
  template<class Sessions,class Factory> VideoRawOutput full(int64_t frame,bool reverse,bool direct, Sessions& sessions,const Factory& factory){
   const auto& visual=features(frame);auto raw=encoder->detect(visual,prompt(frame),options.mode);auto detection=options.detection;
@@ -58,6 +62,7 @@ struct VideoPredictor::Impl {
   const auto o=at::TensorOptions().device(device).dtype(at::kFloat);auto low=at::empty({0,288,288},o),logits=at::empty({0},o);
   if(!ids.empty()){const auto order=at::tensor(video_memory_rows(ids,{metadata.object_ids()})[0],o.dtype(at::kLong));low=clean_video_mask_scores(at::cat(masks).index_select(0,order).unsqueeze(1),options.update.cleanup_area).squeeze(1);logits=at::cat(scores).index_select(0,order);}
   auto plan=plan_video_update(frame,reverse,d,low,logits,metadata,options.update);execute_video_update(frame,0,plan,d,sessions,factory,options.update);auto masks_out=build_video_outputs(plan,d,h,w,options.update);finalize_video_scores(plan.metadata,frame,plan.previous_ids,logits);metadata=std::move(plan.metadata);metadata.host.removed.insert(plan.removed.begin(),plan.removed.end());
+  if(mux && options.image_only)for(const auto& session:sessions31)for(const auto& object:session->state().objects)if(!image_masks.count(object.id) && object.masks.count(frame))image_masks[object.id]=object.masks.at(frame).squeeze(0).squeeze(0).cpu().clone();
   VideoRawOutput out;out.frame=frame;out.masks=std::move(masks_out);out.scores=metadata.object_scores;out.tracker_scores=metadata.frame_scores[frame];out.removed=metadata.host.removed;out.frame_stats={{"num_obj_tracked",int64_t(metadata.object_ids().size())},{"num_obj_dropped",0}};
   // Source SAM3.1 computes a GPU suppression candidate but does not publish it
   // to rank0 suppressed_obj_ids. Only the published host set filters outputs.
@@ -78,12 +83,17 @@ VideoOutput VideoPredictor::add_prompt(int64_t frame,const VideoSemanticPrompt& 
 }
 VideoOutput VideoPredictor::add_points(int64_t frame,int64_t id,const TrackingPoints& p,bool clear,bool previous,bool stateless){
  c10::InferenceMode inference;auto& s=*impl_;s.check(frame);s.ensure_cache(frame);VideoOutput out;
- if(s.mux){Sam31VideoEditOptions o;o.cleanup_area=s.options.update.cleanup_area;o.confirmation_threshold=s.options.update.confirmation_threshold;o.clear_old_points=clear;o.use_previous_memory=previous;o.stateless_refinement=stateless;out=edit_video_points(frame,id,p,s.sessions31,s.factory31,s.metadata,s.interaction,s.suppressions,o);}
+ if(s.mux){Sam31VideoEditOptions o;o.cleanup_area=s.options.update.cleanup_area;o.confirmation_threshold=s.options.update.confirmation_threshold;o.clear_old_points=clear;o.use_previous_memory=previous;o.stateless_refinement=stateless;if(s.options.image_only && p.points.defined() && !p.points.numel() && !p.box.defined() && s.image_masks.count(id))o.empty_points_mask=s.image_masks.at(id);out=edit_video_points(frame,id,p,s.sessions31,s.factory31,s.metadata,s.interaction,s.suppressions,o);}
  else{TORCH_CHECK(clear,"SAM3 high-level point API replaces previous points");VideoEditOptions o;o.cleanup_area=s.options.update.cleanup_area;o.confirmation_threshold=s.options.update.confirmation_threshold;o.use_previous_memory=previous;o.stateless_refinement=stateless;out=edit_video_points(frame,id,p,s.sessions3,s.factory3,s.metadata,s.interaction,s.suppressions,o);}
  s.initialized.insert(frame);return centers(std::move(out),s.h,s.w,s.options.centers);
 }
-VideoOutput VideoPredictor::add_mask(int64_t frame,int64_t id,const at::Tensor& mask){c10::InferenceMode inference;auto& s=*impl_;s.check(frame);TORCH_CHECK(!s.mux,"high-level SAM3.1 exact-mask orchestration is not integrated; use its low-level session mask API");s.ensure_cache(frame);VideoEditOptions o;o.cleanup_area=s.options.update.cleanup_area;o.confirmation_threshold=s.options.update.confirmation_threshold;auto out=edit_video_mask(frame,id,mask,s.sessions3,s.factory3,s.metadata,s.interaction,s.suppressions,o);s.initialized.insert(frame);return centers(std::move(out),s.h,s.w,s.options.centers);}
-void VideoPredictor::remove_object(int64_t id){auto& s=*impl_;if(s.mux)remove_video_user_object(id,s.sessions31,s.metadata,s.interaction);else remove_video_user_object(id,s.sessions3,s.metadata,s.interaction);}
+VideoOutput VideoPredictor::add_mask(int64_t frame,int64_t id,const at::Tensor& mask){
+ c10::InferenceMode inference;auto& s=*impl_;s.check(frame);TORCH_CHECK(mask.defined() && mask.dim()==2 && mask.numel()>0,"mask must be nonempty [H,W]");s.ensure_cache(frame);VideoOutput out;
+ if(s.mux){Sam31VideoEditOptions o;o.cleanup_area=s.options.update.cleanup_area;o.confirmation_threshold=s.options.update.confirmation_threshold;out=edit_video_mask(frame,id,mask,s.sessions31,s.factory31,s.metadata,s.interaction,s.suppressions,o);if(s.options.image_only)for(const auto& session:s.sessions31)for(const auto& object:session->state().objects)if(object.id==id)s.image_masks[id]=object.masks.at(frame).squeeze(0).squeeze(0).cpu().clone();}
+ else{VideoEditOptions o;o.cleanup_area=s.options.update.cleanup_area;o.confirmation_threshold=s.options.update.confirmation_threshold;out=edit_video_mask(frame,id,mask,s.sessions3,s.factory3,s.metadata,s.interaction,s.suppressions,o);}
+ s.initialized.insert(frame);return centers(std::move(out),s.h,s.w,s.options.centers);
+}
+void VideoPredictor::remove_object(int64_t id){auto& s=*impl_;if(s.mux)remove_video_user_object(id,s.sessions31,s.metadata,s.interaction);else remove_video_user_object(id,s.sessions3,s.metadata,s.interaction);s.image_masks.erase(id);}
 VideoOutput VideoPredictor::fetch(int64_t frame)const{const auto& s=*impl_;const auto found=s.suppressions.find(frame);return centers(s.interaction.fetch(frame,s.metadata,found==s.suppressions.end()?std::set<int64_t>{}:found->second),s.h,s.w,s.options.centers);}
 void VideoPredictor::propagate(const VideoPredictorPropagation& request,const OutputCallback& callback){
  c10::InferenceMode inference;auto& s=*impl_;TORCH_CHECK(callback,"output callback is required");const auto range=video_processing_range(s.frames,s.initialized,request.start,request.max_steps,request.reverse);const auto route=s.interaction.route(s.metadata.object_ids(),request.force_tracker);s.interaction.append({route.type,request.start,route.ids});s.cancelled.store(false);if(range.empty)return;
