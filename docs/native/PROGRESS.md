@@ -2322,3 +2322,31 @@ This is a serial lower-level boundary, not a completed owning multiGPU API.
 Device-list configuration, feature/core ownership, parallel scheduling and
 multi-rank edit/reset/cancel coordination remain. Physical multiGPU operation
 is untested; Windows/Turing remain user-owned. No Actions. Goal remains active.
+
+## Owning multi-device video API
+
+Integrated tracking rank collections into the owning C++ predictor and added
+sam3_predictor_set_tracking_devices to the C ABI without changing ABI1 structures.
+The coordinator retains vision/detection and output composition; each distinct
+tracking device owns its tracker core and transferred frame features. Logical
+ranks on one device share those immutable resources. No extra on-disk weights.
+New detector objects retain the existing global rank planner; user edits route
+to their owner or the least-loaded rank. Stateless first refinement can reassign
+its new session after removal. Edited/refined masks return to the coordinator
+before merging. Reset and semantic replacement preserve device configuration;
+active reconfiguration is rejected. Execution remains serial across ranks.
+
+Real-frame three-object lifecycle probes cover both models/precisions with two
+logical GPU ranks, ten exact output comparisons each against a single rank,
+plus stateless semantic refinement and reset/reconfiguration. Mixed CUDA+CPU
+FP16 cases cover both models; SAM3.1 exposed and fixed CPU autocast rejection
+of BF16 stored-memory concatenation, preserving the CUDA path. Existing four-frame
+video probes compare default outputs against843709a and exercise two-rank full
+propagation. C11 probes exercise device configuration, callbacks and ownership.
+Detailed outcomes and SDK recovery evidence are in VIDEO_MULTIDEVICE.md and
+video-multidevice-validation.json. Incremental private SDK patches reuse all
+weights and dependency layers.
+
+Physical multiGPU execution, parallel scheduling, broader quality and CPU
+long-run stability remain open. Windows/Turing tests remain user-owned. No Actions.
+Goal remains active.

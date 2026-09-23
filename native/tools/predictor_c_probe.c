@@ -44,7 +44,7 @@ static int32_t callback(void* user,const sam3_result* result){
 }
 static void propagate(int64_t start,int64_t steps,const char* tag){suffix=tag;callbacks=0;OK(sam3_predictor_propagate(running,start,steps,0,0,callback,NULL));}
 int main(int argc,char** argv){
-  CHECK(argc==12); /* STORE MODEL DEVICE PRECISION RGB_DIR H W BPE PROMPT OUTPUT video|image */
+  CHECK(argc==12 || argc==13); /* STORE MODEL DEVICE PRECISION RGB_DIR H W BPE PROMPT OUTPUT video|image [TRACKING_DEVICES] */
   const int model=atoi(argv[2]),precision=atoi(argv[4]),image=strcmp(argv[11],"image")==0;CHECK(image || strcmp(argv[11],"video")==0);
   frames_root=argv[5];height=strtoll(argv[6],NULL,10);width=strtoll(argv[7],NULL,10);output_root=argv[10];CHECK(height>0 && width>0);
   FILE* prompt_file=fopen(argv[9],"rb");CHECK(prompt_file);CHECK(fseek(prompt_file,0,SEEK_END)==0);long length=ftell(prompt_file);CHECK(length>=0);rewind(prompt_file);char* text=(char*)malloc((size_t)length+1);CHECK(text);CHECK(fread(text,1,(size_t)length,prompt_file)==(size_t)length);fclose(prompt_file);while(length && (text[length-1]=='\n' || text[length-1]=='\r'))--length;
@@ -54,6 +54,8 @@ int main(int argc,char** argv){
   sam3_predictor* other=NULL;sam3_predictor_options invalid=options;invalid.output_batch_size=0;CHECK(sam3_predictor_create(context,&invalid,&other)==SAM3_INVALID_ARGUMENT && other==NULL);
   invalid=options;invalid.model=model==3?31:3;CHECK(sam3_predictor_create(context,&invalid,&other)==SAM3_INVALID_ARGUMENT && other==NULL);
   OK(sam3_predictor_create(context,&options,&running));OK(sam3_predictor_create(context,&options,&other));OK(sam3_context_trim(context));sam3_context_release(context); /* modules and children survive */
+  if(argc==13){char* names=(char*)malloc(strlen(argv[12])+1);CHECK(names);strcpy(names,argv[12]);const char** devices=(const char**)malloc((strlen(names)+1)*sizeof(char*));CHECK(devices);int64_t n=0;for(char* token=strtok(names,",");token;token=strtok(NULL,","))devices[n++]=token;
+    CHECK(sam3_predictor_set_tracking_devices(running,NULL,0)==SAM3_INVALID_ARGUMENT);OK(sam3_predictor_set_tracking_devices(running,devices,n));OK(sam3_predictor_set_tracking_devices(other,devices,n));free(devices);free(names);}
   sam3_result* result=NULL;failure=1;CHECK(sam3_predictor_add_prompt(running,0,&prompt,&result)==SAM3_CALLBACK_ERROR && result==NULL);failure=0;OK(sam3_predictor_reset(running));
   if(image){
     OK(sam3_predictor_add_prompt(running,0,&prompt,&result));dump(result,"semantic");const int64_t id=first_id(result);OK(sam3_result_retain(result,&retained));sam3_result_release(result);

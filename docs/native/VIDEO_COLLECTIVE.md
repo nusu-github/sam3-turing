@@ -2,9 +2,11 @@
 
 `sam3/video_collective.h` adds a synchronous C++ boundary for collecting tracker
 predictions and executing a global video update on multiple rank collections.
-The owning `VideoPredictor` uses this boundary with its existing single rank.
-An owning multi-device predictor and C device-list API are **not implemented**
-yet. Rank execution is currently serial, so this is not a multi-GPU speedup claim.
+The initial owning integration used one rank. The subsequent
+[owning multi-device integration](VIDEO_MULTIDEVICE.md) adds C++/C device-list
+configuration and coordinated edits. This page records the lower-level boundary
+and its original validation. Rank execution is currently serial, so this is not
+a multi-GPU speedup claim.
 
 ## Source contract and platform choice
 
@@ -131,7 +133,7 @@ retains source snapshots, logs, the original CPU failure, owner regression
 outputs and comparison reports. These evidence fixtures are separate from the
 deployable SDK.
 
-Remaining work includes an owning device-list API, device-local feature/core
-ownership, parallel rank workers and edit/reset/cancel coordination. Broader
-quality, CPU long-run stability and prior open items also remain. The overall
-development goal is active.
+The owning device-list API, device-local feature/core ownership and coordinated
+edits/reset/cancel were subsequently implemented in VIDEO_MULTIDEVICE.md.
+Parallel rank workers, broader quality, CPU long-run stability and prior open
+items remain. The overall development goal is active.

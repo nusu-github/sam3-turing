@@ -91,9 +91,16 @@ MultiplexTemporalAssembly MultiplexMemoryConditioner::assemble(int64_t frame,int
   }
   if (memory.empty()) return out;
   TORCH_CHECK(!positions.empty(),"selected multiplex memory has no positions");
-  out.memory=at::cat(memory,0);out.position=at::cat(positions,0);
-  if (images.empty() || image_positions.empty()) return out;
-  out.image=at::cat(images,0);out.image_position=at::cat(image_positions,0);out.fuse=true;
+  const auto concatenate=[&]{
+    out.memory=at::cat(memory,0);out.position=at::cat(positions,0);
+    if (images.empty() || image_positions.empty()) return;
+    out.image=at::cat(images,0);out.image_position=at::cat(image_positions,0);out.fuse=true;
+  };
+  if(device_.is_cpu()) {
+    // BF16 stored spatial memory and FP16 pointers use normal type promotion.
+    // CPU autocast's cat policy rejects this mixed lower-precision input.
+    AutocastGuard join(at::kCPU,false,at::kBFloat16);concatenate();
+  } else concatenate();
   return out;
 }
 at::Tensor MultiplexMemoryConditioner::forward(const at::Tensor& source,const at::Tensor& source_position,int64_t height,int64_t width,

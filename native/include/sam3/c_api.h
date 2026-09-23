@@ -187,6 +187,11 @@ SAM3_NATIVE_EXPORT int32_t sam3_video_preprocess_available(int32_t policy) SAM3_
 SAM3_NATIVE_EXPORT sam3_status sam3_preprocess_video_rgb(const sam3_rgb_view*,int32_t policy,const char* device,sam3_result**) SAM3_NOEXCEPT;
 /* Before first encoding or after reset. Default remains IMAGE_FOLDER. */
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_set_preprocess(sam3_predictor*,int32_t policy) SAM3_NOEXCEPT;
+/* Before use or after reset. Nonempty CPU/CUDA device list, copied on return.
+ * The context device remains the vision/detection/output coordinator. Duplicate
+ * devices represent logical ranks and share cores. Existing ABI structs do not
+ * change. Execution is synchronous; cancel remains callable from another thread. */
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_set_tracking_devices(sam3_predictor*,const char* const* devices,int64_t count) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_options_init(sam3_predictor_options*,int32_t model) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_semantic_prompt_init(sam3_semantic_prompt*) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_create(sam3_context*,const sam3_predictor_options*,sam3_predictor**) SAM3_NOEXCEPT;

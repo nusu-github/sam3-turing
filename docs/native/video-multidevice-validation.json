@@ -1,0 +1,941 @@
+{
+  "scope": "Owning C++/C tracking device list and coordinated lifecycle; serial across ranks; physical multiGPU unverified",
+  "baseline_commit": "843709ac350371598de45740b0aa12c5c3407daa",
+  "baseline_probe_source_sha256": "2dfc571f38a4be5137192d488d86cb73bbd364dd022df82356052453efc91c9b",
+  "hardware": "RTX PRO 4500 Blackwell, driver 580.159.04",
+  "libtorch": "Official standalone 2.10.0 CPU/cu130",
+  "source_sha256": {
+    "native/include/sam3/video_predictor.h": "e187c574f5e1cdf52075ae9748153f2eb50f6d60344a64706f347a871f3929f4",
+    "native/src/video_predictor.cpp": "23da79011927973cbde67b3d101b31138688ce9e6070e89da1c8d6c4a2aa06ca",
+    "native/include/sam3/video_edit.h": "3135c29505e94a70a9d7c468ef0e65a5fb7dad3a6b1f9105368db148421ff2d9",
+    "native/src/video_edit.cpp": "7083de5bdfbe58a7d52fc80ea1d286e5950bce3dd29b3658ff66d5b8df6a57c7",
+    "native/src/multiplex_temporal.cpp": "24d9f34ac2293920ad2948a746c00923b20d3b8d91ed00abbf72c5b480e84663",
+    "native/include/sam3/c_api.h": "30ed38d3a6a8121208b256183610d290b2fb7a72ff5163d40cc6a1036075b8a4",
+    "native/src/c_api_predictor.cpp": "2fa364fdad4eaea4ce1cf837eef81a8d7035b38563de1c9aa30cc7c5f744c93c",
+    "native/tools/video_multidevice_probe.cpp": "44a2c420241f30939303f0494253cf4d1d4205165d1c500b9040378162661f43",
+    "native/tools/video_predictor_cli.cpp": "bdb354d90f3c4c36c2d277b8c9c8ac2c000e043d192a1a6ccc15dcf845380390",
+    "native/tools/predictor_c_probe.c": "b756655d5b44c1d58941ff34583f276662a9f17f43f794e5b4b119caf806d07c",
+    "native/eval/CMakeLists.txt": "c0734546982cc165043402f13335e0ff744b87cf4754ee55c3df7de039914711",
+    "native/eval/c-predictor/CMakeLists.txt": "4d481816f9c03cdb34934285d068722db5c0dd8e1babf6745a530e6c964019ca",
+    "native/CMakeLists.txt": "728538d28f3ded7bdaa8aaf170329372fc5b88dcc44d12a9bc24b5a423836957"
+  },
+  "libraries": {
+    "cpu": {
+      "baseline": "4691bea4a8d4951db55e03dbfe4b92fc33933ad4d4336318d96ed01a50940f5a",
+      "current": "d7a45bdae292eac9a7aca123715786f2c7ea0c570aae79eb771bdd9725b767f6"
+    },
+    "cuda": {
+      "baseline": "0ebcdf6e3e8731e2fda999d6b1370530caa89154a908809cec5b047f0e2bcb42",
+      "current": "c7b8af0d807c43fca67de02e1ed721b62ac5bf66705084fd33128bbd2f94e6c9"
+    }
+  },
+  "ctest": {
+    "cpu": 19,
+    "cuda_build": 33,
+    "all_pass": true
+  },
+  "lifecycle_cases": [
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "ranks": 2,
+      "all_ranks_on_coordinator": true,
+      "exact_single_rank_comparisons": 10,
+      "lifecycle_pass": true
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "ranks": 2,
+      "all_ranks_on_coordinator": true,
+      "exact_single_rank_comparisons": 10,
+      "lifecycle_pass": true
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "ranks": 2,
+      "all_ranks_on_coordinator": true,
+      "exact_single_rank_comparisons": 10,
+      "lifecycle_pass": true
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "ranks": 2,
+      "all_ranks_on_coordinator": true,
+      "exact_single_rank_comparisons": 10,
+      "lifecycle_pass": true
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "ranks": 2,
+      "all_ranks_on_coordinator": false,
+      "exact_single_rank_comparisons": 0,
+      "lifecycle_pass": true
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "ranks": 2,
+      "all_ranks_on_coordinator": false,
+      "exact_single_rank_comparisons": 0,
+      "lifecycle_pass": true
+    }
+  ],
+  "owner_regression": [
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "files": 65,
+      "default_all_bytes_exact": true,
+      "multiple_ranks_probe_pass": true,
+      "multiple_rank_changed_files": [
+        "0.person_track.masks.bin",
+        "1.person_track.masks.bin",
+        "2.box_track.masks.bin",
+        "2.person_track.masks.bin",
+        "3.person_track.masks.bin"
+      ],
+      "default_output_sha256": {
+        "0.mask_only.boxes.f32.bin": "0a92884baebf09c5b6d24918a635cef0dd7db75f76004663797c304f4a89478a",
+        "0.mask_only.ids.i64.bin": "a2ca73c6c50871106e5922a407955f2a50023aada125e68cddd1171bf435de22",
+        "0.mask_only.json": "7529b72b316240ae4e9299ff0c41171c859074f2fa752683bde2c137abf2b05d",
+        "0.mask_only.masks.bin": "db4621a60424ef027763461f3ae420f6266c5e34e4f6a83a94123ea52449a1d6",
+        "0.mask_only.scores.f32.bin": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+        "0.person.boxes.f32.bin": "623a5dff2cec9ccd4f82a764ec4c18cec81fa119f9c5a8751113c913c811e385",
+        "0.person.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.person.json": "17ea5ab72eea5766ae17a13097146cbfee4827b6441ba6b8a02f076455ffeafd",
+        "0.person.masks.bin": "683c951d0c43b9dec98e4787b9d2668fd788777ee5da5eb9b1475699ddc8d421",
+        "0.person.scores.f32.bin": "eed399e0df8ec39703d61789a409fd928647c8d7ad5158ee46d76d5c4dcbf732",
+        "0.person_track.boxes.f32.bin": "53008556f8d9e06a35e1ae602eff9c0d0fac3e4dca0bf80a74bbd3b8579d5613",
+        "0.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "0.person_track.masks.bin": "aff79aed9ed80ea4d2b837ec6601fa616d98ab0ec7f7137ba1ec94b225ac0c98",
+        "0.person_track.scores.f32.bin": "eed399e0df8ec39703d61789a409fd928647c8d7ad5158ee46d76d5c4dcbf732",
+        "0.point_only.boxes.f32.bin": "1432c7fe75cbf62d2e2763a604c3b0f6efa8b9b4e9b59004e993c3d37354aed7",
+        "0.point_only.ids.i64.bin": "c5c63ad0c4e2dda2d13fcf4ec119c5dda24c06195e5ba459a2e55acd428fed27",
+        "0.point_only.json": "7529b72b316240ae4e9299ff0c41171c859074f2fa752683bde2c137abf2b05d",
+        "0.point_only.masks.bin": "49d7f8329c6cc2e4569d7e108ef8a671cd6fac9659de1667ccbac1c9949c5a75",
+        "0.point_only.scores.f32.bin": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+        "0.reset_person.boxes.f32.bin": "623a5dff2cec9ccd4f82a764ec4c18cec81fa119f9c5a8751113c913c811e385",
+        "0.reset_person.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.reset_person.json": "da80364f054189a396fc400b3ef22f1d72131282d211c592b4944717aa279dab",
+        "0.reset_person.masks.bin": "683c951d0c43b9dec98e4787b9d2668fd788777ee5da5eb9b1475699ddc8d421",
+        "0.reset_person.scores.f32.bin": "eed399e0df8ec39703d61789a409fd928647c8d7ad5158ee46d76d5c4dcbf732",
+        "1.box.boxes.f32.bin": "57f2da4439a8c26fdc1a74597d5ee09510fa19b31c45270d8bf457b58d357916",
+        "1.box.ids.i64.bin": "ab25350e3e65efebe24584461683ecda68725576e825e550038b90e7b1479946",
+        "1.box.json": "ca5c9767feb7b7dcb4d7e64d5e4883e634770904585d6a83758761c776497963",
+        "1.box.masks.bin": "d8003d946b2eac21acb4f47b0b2b363c0d443ad547cc189def07bdccd9756647",
+        "1.box.scores.f32.bin": "d01d678b2c2f0c143eee64658c924f7434da75dd98ba7879c715fb235c2e24e6",
+        "1.box_track.boxes.f32.bin": "b0161b93dfefca2dc52980f30e7396a7234de0402753d451893798e683edd25f",
+        "1.box_track.ids.i64.bin": "ab25350e3e65efebe24584461683ecda68725576e825e550038b90e7b1479946",
+        "1.box_track.json": "bcc6c9bd94a80a8c9a434b8e68ff83600a9d44e0911661cb86af9d86b83cf0dc",
+        "1.box_track.masks.bin": "e5f3a172c246846186a0e2a607bb6908643e540535a149dc4a6bc00803598acd",
+        "1.box_track.scores.f32.bin": "d01d678b2c2f0c143eee64658c924f7434da75dd98ba7879c715fb235c2e24e6",
+        "1.person_track.boxes.f32.bin": "912195f71338b97730fdff358a67e48c6e91c4dd0b5d356d4be9c26887e93414",
+        "1.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "1.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "1.person_track.masks.bin": "05e0cc5ca409ba52d0473a925b4caa4e17f47b5e066e57d3068281f2b7c7d869",
+        "1.person_track.scores.f32.bin": "eed399e0df8ec39703d61789a409fd928647c8d7ad5158ee46d76d5c4dcbf732",
+        "2.box_track.boxes.f32.bin": "c539096819fa9f8ab5b9a0a9c8d9c3d342b7e8ad0ae5ce6f9cbf8fb2bef05f59",
+        "2.box_track.ids.i64.bin": "ab25350e3e65efebe24584461683ecda68725576e825e550038b90e7b1479946",
+        "2.box_track.json": "bcc6c9bd94a80a8c9a434b8e68ff83600a9d44e0911661cb86af9d86b83cf0dc",
+        "2.box_track.masks.bin": "a7818f57b7b53550447e17dbcd14e7322858a3d036b7b792aa2fa2cc5cd60b94",
+        "2.box_track.scores.f32.bin": "d01d678b2c2f0c143eee64658c924f7434da75dd98ba7879c715fb235c2e24e6",
+        "2.fetch.boxes.f32.bin": "c455e9f674ec28fd297639e3904e338360af45e731f2a452062a8fc38deb9626",
+        "2.fetch.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.fetch.json": "6649f0048cc261bbe796f8ce892ef6b81351205fd46f683dca0ab7d517416a15",
+        "2.fetch.masks.bin": "c422581d8e2b3e8dcfcaf540503921adb8b7eb94e3aeaf5987751d3d20696ffc",
+        "2.fetch.scores.f32.bin": "790c91cefafc9fb615e13ff12b9daef7e4a2e460d5249dd157694f707ef5e229",
+        "2.person_track.boxes.f32.bin": "596d6b6da0f3cf01118b50afc6955bc283b52ad505b3638b65f94fd26e1fe7e9",
+        "2.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "2.person_track.masks.bin": "a05ce7c780ab5b3adb152483484df3ede3ccddba95afd9e7d509140e58113cf5",
+        "2.person_track.scores.f32.bin": "eed399e0df8ec39703d61789a409fd928647c8d7ad5158ee46d76d5c4dcbf732",
+        "2.text_box.boxes.f32.bin": "c455e9f674ec28fd297639e3904e338360af45e731f2a452062a8fc38deb9626",
+        "2.text_box.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.text_box.json": "6649f0048cc261bbe796f8ce892ef6b81351205fd46f683dca0ab7d517416a15",
+        "2.text_box.masks.bin": "c422581d8e2b3e8dcfcaf540503921adb8b7eb94e3aeaf5987751d3d20696ffc",
+        "2.text_box.scores.f32.bin": "790c91cefafc9fb615e13ff12b9daef7e4a2e460d5249dd157694f707ef5e229",
+        "3.person_track.boxes.f32.bin": "3d6bfa4bbfba62e27d47bbfa0cb574ab5ced8b29ed32cd4125ebe944c4bd11d2",
+        "3.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "3.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "3.person_track.masks.bin": "232e0e9ab88ba6903f4aaa1d46b54b13988e5c0f4f383eac6545d7c7ba47b78e",
+        "3.person_track.scores.f32.bin": "eed399e0df8ec39703d61789a409fd928647c8d7ad5158ee46d76d5c4dcbf732"
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "files": 65,
+      "default_all_bytes_exact": true,
+      "multiple_ranks_probe_pass": true,
+      "multiple_rank_changed_files": [
+        "0.person_track.masks.bin",
+        "1.person_track.masks.bin",
+        "2.box_track.masks.bin",
+        "2.person_track.masks.bin",
+        "3.person_track.masks.bin"
+      ],
+      "default_output_sha256": {
+        "0.mask_only.boxes.f32.bin": "0a92884baebf09c5b6d24918a635cef0dd7db75f76004663797c304f4a89478a",
+        "0.mask_only.ids.i64.bin": "a2ca73c6c50871106e5922a407955f2a50023aada125e68cddd1171bf435de22",
+        "0.mask_only.json": "7529b72b316240ae4e9299ff0c41171c859074f2fa752683bde2c137abf2b05d",
+        "0.mask_only.masks.bin": "db4621a60424ef027763461f3ae420f6266c5e34e4f6a83a94123ea52449a1d6",
+        "0.mask_only.scores.f32.bin": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+        "0.person.boxes.f32.bin": "623a5dff2cec9ccd4f82a764ec4c18cec81fa119f9c5a8751113c913c811e385",
+        "0.person.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.person.json": "17ea5ab72eea5766ae17a13097146cbfee4827b6441ba6b8a02f076455ffeafd",
+        "0.person.masks.bin": "2e73d6d5c4da4fc32926e4a748e00dca14a7877b70417b0c210cd2e51ab41279",
+        "0.person.scores.f32.bin": "b0a9e94896526f467c151d3e69b849c6c85c0662c9dae071a5be05812d243653",
+        "0.person_track.boxes.f32.bin": "9c4bee17d02ca122850b2112100d4129e3d29440854f50f37d47e7d615e8b795",
+        "0.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "0.person_track.masks.bin": "82f5d56ee1d30769a0e09f6dceed1e28dfde0cbb42507e896e781027a1e7631d",
+        "0.person_track.scores.f32.bin": "b0a9e94896526f467c151d3e69b849c6c85c0662c9dae071a5be05812d243653",
+        "0.point_only.boxes.f32.bin": "1432c7fe75cbf62d2e2763a604c3b0f6efa8b9b4e9b59004e993c3d37354aed7",
+        "0.point_only.ids.i64.bin": "c5c63ad0c4e2dda2d13fcf4ec119c5dda24c06195e5ba459a2e55acd428fed27",
+        "0.point_only.json": "7529b72b316240ae4e9299ff0c41171c859074f2fa752683bde2c137abf2b05d",
+        "0.point_only.masks.bin": "5c7013edc2c9aee31f07e1a105b36beb13ec2bac64715f0aa20eb65da1d37cb4",
+        "0.point_only.scores.f32.bin": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+        "0.reset_person.boxes.f32.bin": "623a5dff2cec9ccd4f82a764ec4c18cec81fa119f9c5a8751113c913c811e385",
+        "0.reset_person.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.reset_person.json": "da80364f054189a396fc400b3ef22f1d72131282d211c592b4944717aa279dab",
+        "0.reset_person.masks.bin": "2e73d6d5c4da4fc32926e4a748e00dca14a7877b70417b0c210cd2e51ab41279",
+        "0.reset_person.scores.f32.bin": "b0a9e94896526f467c151d3e69b849c6c85c0662c9dae071a5be05812d243653",
+        "1.box.boxes.f32.bin": "57f2da4439a8c26fdc1a74597d5ee09510fa19b31c45270d8bf457b58d357916",
+        "1.box.ids.i64.bin": "ab25350e3e65efebe24584461683ecda68725576e825e550038b90e7b1479946",
+        "1.box.json": "ca5c9767feb7b7dcb4d7e64d5e4883e634770904585d6a83758761c776497963",
+        "1.box.masks.bin": "b655be7ff411cefbba496864b3063272819519d848c78a1d78c400bc2a08aefa",
+        "1.box.scores.f32.bin": "c9e89b4bedfa0f80f67d32d04c345630c29f47404d1e7cf7096571b004740c67",
+        "1.box_track.boxes.f32.bin": "599e05e7902496e28cc5808269b786e21773c70cc876913d643a028772afc29e",
+        "1.box_track.ids.i64.bin": "ab25350e3e65efebe24584461683ecda68725576e825e550038b90e7b1479946",
+        "1.box_track.json": "bcc6c9bd94a80a8c9a434b8e68ff83600a9d44e0911661cb86af9d86b83cf0dc",
+        "1.box_track.masks.bin": "1558eb529546173c0e437ae2c56ca1691128488eac7c94107fc2fb4d96ff6c48",
+        "1.box_track.scores.f32.bin": "c9e89b4bedfa0f80f67d32d04c345630c29f47404d1e7cf7096571b004740c67",
+        "1.person_track.boxes.f32.bin": "912195f71338b97730fdff358a67e48c6e91c4dd0b5d356d4be9c26887e93414",
+        "1.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "1.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "1.person_track.masks.bin": "f48218ed78302cb1a38b931f0fe839eed419a9d5c68a3cbb196efcf0c6c91b3f",
+        "1.person_track.scores.f32.bin": "b0a9e94896526f467c151d3e69b849c6c85c0662c9dae071a5be05812d243653",
+        "2.box_track.boxes.f32.bin": "3e9bd9ee3732db7e7013c31e79f8b93e9b385ad2fe18f6418ecab6848fc22821",
+        "2.box_track.ids.i64.bin": "ab25350e3e65efebe24584461683ecda68725576e825e550038b90e7b1479946",
+        "2.box_track.json": "bcc6c9bd94a80a8c9a434b8e68ff83600a9d44e0911661cb86af9d86b83cf0dc",
+        "2.box_track.masks.bin": "618ee5b475f51a0967d4998f5a627fd918d6acc11f109579c696b1f35fcfd47e",
+        "2.box_track.scores.f32.bin": "c9e89b4bedfa0f80f67d32d04c345630c29f47404d1e7cf7096571b004740c67",
+        "2.fetch.boxes.f32.bin": "c455e9f674ec28fd297639e3904e338360af45e731f2a452062a8fc38deb9626",
+        "2.fetch.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.fetch.json": "6649f0048cc261bbe796f8ce892ef6b81351205fd46f683dca0ab7d517416a15",
+        "2.fetch.masks.bin": "41c0215e831096f1b5771c14528695f40e048b61507658c550d3cb3b1dff8b26",
+        "2.fetch.scores.f32.bin": "48357910f52c3d289d3e5ad5852f57d0b86146e647e96e2a5aed14333f0891a2",
+        "2.person_track.boxes.f32.bin": "92f9829f54a8dada357e7f72a159a3dee98d6f101707d6079d2386bbcc1ff9d8",
+        "2.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "2.person_track.masks.bin": "32282d057d33906bfbd8b3a99b96182cf89cac5545e08c6ee3ecbd5b6e57919c",
+        "2.person_track.scores.f32.bin": "b0a9e94896526f467c151d3e69b849c6c85c0662c9dae071a5be05812d243653",
+        "2.text_box.boxes.f32.bin": "c455e9f674ec28fd297639e3904e338360af45e731f2a452062a8fc38deb9626",
+        "2.text_box.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.text_box.json": "6649f0048cc261bbe796f8ce892ef6b81351205fd46f683dca0ab7d517416a15",
+        "2.text_box.masks.bin": "41c0215e831096f1b5771c14528695f40e048b61507658c550d3cb3b1dff8b26",
+        "2.text_box.scores.f32.bin": "48357910f52c3d289d3e5ad5852f57d0b86146e647e96e2a5aed14333f0891a2",
+        "3.person_track.boxes.f32.bin": "dca208ef5409fa9c430062e6a0efd436391009b4afab109155112b20dd648171",
+        "3.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "3.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "3.person_track.masks.bin": "576a19ebed4aa22631abbabd076064b4e5fe0742c885c684acfd3cbdc83b8fb9",
+        "3.person_track.scores.f32.bin": "b0a9e94896526f467c151d3e69b849c6c85c0662c9dae071a5be05812d243653"
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "files": 68,
+      "default_all_bytes_exact": true,
+      "multiple_ranks_probe_pass": true,
+      "multiple_rank_changed_files": [],
+      "default_output_sha256": {
+        "0.mask_only.boxes.f32.bin": "0a92884baebf09c5b6d24918a635cef0dd7db75f76004663797c304f4a89478a",
+        "0.mask_only.ids.i64.bin": "a2ca73c6c50871106e5922a407955f2a50023aada125e68cddd1171bf435de22",
+        "0.mask_only.json": "7529b72b316240ae4e9299ff0c41171c859074f2fa752683bde2c137abf2b05d",
+        "0.mask_only.masks.bin": "db4621a60424ef027763461f3ae420f6266c5e34e4f6a83a94123ea52449a1d6",
+        "0.mask_only.scores.f32.bin": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+        "0.person.boxes.f32.bin": "623a5dff2cec9ccd4f82a764ec4c18cec81fa119f9c5a8751113c913c811e385",
+        "0.person.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.person.json": "17ea5ab72eea5766ae17a13097146cbfee4827b6441ba6b8a02f076455ffeafd",
+        "0.person.masks.bin": "c5d188f2afb57e35e954acb8a0843d36e434ed52a425fa71c60b5816480e8f9b",
+        "0.person.scores.f32.bin": "5a79749110d837e0b1058df4da8e6deadf3482b830bbb6999112b1367d978f2d",
+        "0.person_track.boxes.f32.bin": "53008556f8d9e06a35e1ae602eff9c0d0fac3e4dca0bf80a74bbd3b8579d5613",
+        "0.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "0.person_track.masks.bin": "d31ae63056552f0fdbf4e6add1518b3ea93931a2f93edeb7afb35407faf4b429",
+        "0.person_track.scores.f32.bin": "5a79749110d837e0b1058df4da8e6deadf3482b830bbb6999112b1367d978f2d",
+        "0.point_only.boxes.f32.bin": "1432c7fe75cbf62d2e2763a604c3b0f6efa8b9b4e9b59004e993c3d37354aed7",
+        "0.point_only.ids.i64.bin": "c5c63ad0c4e2dda2d13fcf4ec119c5dda24c06195e5ba459a2e55acd428fed27",
+        "0.point_only.json": "7529b72b316240ae4e9299ff0c41171c859074f2fa752683bde2c137abf2b05d",
+        "0.point_only.masks.bin": "b01d8f7dda21ecfdd13b60c615376e7210ab219e6dd066cfd54fba70997dec7d",
+        "0.point_only.scores.f32.bin": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+        "0.reset_person.boxes.f32.bin": "623a5dff2cec9ccd4f82a764ec4c18cec81fa119f9c5a8751113c913c811e385",
+        "0.reset_person.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.reset_person.json": "da80364f054189a396fc400b3ef22f1d72131282d211c592b4944717aa279dab",
+        "0.reset_person.masks.bin": "c5d188f2afb57e35e954acb8a0843d36e434ed52a425fa71c60b5816480e8f9b",
+        "0.reset_person.scores.f32.bin": "5a79749110d837e0b1058df4da8e6deadf3482b830bbb6999112b1367d978f2d",
+        "1.box.boxes.f32.bin": "827d661ae2870c27c7100ad0dd432623a2daa21eefa277fd4054098f7f6335f7",
+        "1.box.ids.i64.bin": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+        "1.box.json": "ca5c9767feb7b7dcb4d7e64d5e4883e634770904585d6a83758761c776497963",
+        "1.box.masks.bin": "dcc3f23e005d7d824a7b7ffcd35025ca100eae51844dd28956f903adb11424e3",
+        "1.box.scores.f32.bin": "c326669b7cbb518ac16fb6f46ea63c789dd1fcd9cf85e6dc52e07bed1acef490",
+        "1.box_track.boxes.f32.bin": "efef2c1f650f3cfb8b7f5b393eb8a64dc31ba24093371347fdfbf238d337cf68",
+        "1.box_track.cache_areas.i64.bin": "8fe77648d179a0ecf06ed0af79ae6eef5a75cae4631100d08cabdac31e2b166b",
+        "1.box_track.ids.i64.bin": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+        "1.box_track.json": "bcc6c9bd94a80a8c9a434b8e68ff83600a9d44e0911661cb86af9d86b83cf0dc",
+        "1.box_track.masks.bin": "e21c50f7983025b57ebeb55afa39f4f9e0d58ac9bb2b7f9449719830bf2594c0",
+        "1.box_track.scores.f32.bin": "c326669b7cbb518ac16fb6f46ea63c789dd1fcd9cf85e6dc52e07bed1acef490",
+        "1.person_track.boxes.f32.bin": "45a33f8e561d0439becf13a72f755a647101b12580dfcb43544efcf5a8d572d5",
+        "1.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "1.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "1.person_track.masks.bin": "2c46fd73fc1fef3c43eeffe575a95b5caffddf18d4ca066abd4351c6f03c5352",
+        "1.person_track.scores.f32.bin": "5a79749110d837e0b1058df4da8e6deadf3482b830bbb6999112b1367d978f2d",
+        "2.box_track.boxes.f32.bin": "0e818d839b0a7da07a76a42c5a32c7762fd5aefb50ec2556c576c6f164d18f61",
+        "2.box_track.cache_areas.i64.bin": "26f7a489318f2750fccbc6f447dd81708c57ffd8798cb57b61f2622c892cbe3e",
+        "2.box_track.ids.i64.bin": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+        "2.box_track.json": "bcc6c9bd94a80a8c9a434b8e68ff83600a9d44e0911661cb86af9d86b83cf0dc",
+        "2.box_track.masks.bin": "a663eff88bd525af4d13352403996225388b91440d6fdc68d50e571e7d372eba",
+        "2.box_track.scores.f32.bin": "c326669b7cbb518ac16fb6f46ea63c789dd1fcd9cf85e6dc52e07bed1acef490",
+        "2.fetch.boxes.f32.bin": "d87e5a6af86a95ec5218faf35567a14150a48cff721e9e4163254589fca72c80",
+        "2.fetch.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.fetch.json": "6649f0048cc261bbe796f8ce892ef6b81351205fd46f683dca0ab7d517416a15",
+        "2.fetch.masks.bin": "b018b4525c36bc25d4dc302888179aae096e996ab9bd5ae161eb1fcf099f3603",
+        "2.fetch.scores.f32.bin": "48748e3f634d9e96116fa7efd06829d005ea559b20e745ecf5dd10fa7a105d94",
+        "2.person_track.boxes.f32.bin": "7015b59a44037f67d934f3513c092201387a3e87382638010c283396b48a8964",
+        "2.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "2.person_track.masks.bin": "e0e9ef99aa44ad3e2c2076d9dc39a0e3d1b827967c43684bf675eb146d9eac61",
+        "2.person_track.scores.f32.bin": "5a79749110d837e0b1058df4da8e6deadf3482b830bbb6999112b1367d978f2d",
+        "2.text_box.boxes.f32.bin": "d87e5a6af86a95ec5218faf35567a14150a48cff721e9e4163254589fca72c80",
+        "2.text_box.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.text_box.json": "6649f0048cc261bbe796f8ce892ef6b81351205fd46f683dca0ab7d517416a15",
+        "2.text_box.masks.bin": "b018b4525c36bc25d4dc302888179aae096e996ab9bd5ae161eb1fcf099f3603",
+        "2.text_box.scores.f32.bin": "48748e3f634d9e96116fa7efd06829d005ea559b20e745ecf5dd10fa7a105d94",
+        "3.person_track.boxes.f32.bin": "a1ff011b6cc9383d4508c20b76dacb7863bcc8d8a54eea12ccf7f68cae31d5d5",
+        "3.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "3.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "3.person_track.masks.bin": "eed74a1665f0de941b545afe73cb6fddfe08610a1e00857e8806120ff5d21cc9",
+        "3.person_track.scores.f32.bin": "5a79749110d837e0b1058df4da8e6deadf3482b830bbb6999112b1367d978f2d",
+        "box_track.keep_alive.i64.bin": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "files": 68,
+      "default_all_bytes_exact": true,
+      "multiple_ranks_probe_pass": true,
+      "multiple_rank_changed_files": [],
+      "default_output_sha256": {
+        "0.mask_only.boxes.f32.bin": "0a92884baebf09c5b6d24918a635cef0dd7db75f76004663797c304f4a89478a",
+        "0.mask_only.ids.i64.bin": "a2ca73c6c50871106e5922a407955f2a50023aada125e68cddd1171bf435de22",
+        "0.mask_only.json": "7529b72b316240ae4e9299ff0c41171c859074f2fa752683bde2c137abf2b05d",
+        "0.mask_only.masks.bin": "db4621a60424ef027763461f3ae420f6266c5e34e4f6a83a94123ea52449a1d6",
+        "0.mask_only.scores.f32.bin": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+        "0.person.boxes.f32.bin": "623a5dff2cec9ccd4f82a764ec4c18cec81fa119f9c5a8751113c913c811e385",
+        "0.person.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.person.json": "17ea5ab72eea5766ae17a13097146cbfee4827b6441ba6b8a02f076455ffeafd",
+        "0.person.masks.bin": "2ebe6bb9db0e4427edda45ecbd4b8b8ea217eccdf0bb631e0594c6555bdc8e19",
+        "0.person.scores.f32.bin": "b1f219cc54632e873fdb6ce5362856abdad729fc77db68a00afa859d94bd6a2a",
+        "0.person_track.boxes.f32.bin": "53008556f8d9e06a35e1ae602eff9c0d0fac3e4dca0bf80a74bbd3b8579d5613",
+        "0.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "0.person_track.masks.bin": "5101559570a8971cf8ae06b8492a1f00e86aa6a877806050d1b26c2b226a3903",
+        "0.person_track.scores.f32.bin": "b1f219cc54632e873fdb6ce5362856abdad729fc77db68a00afa859d94bd6a2a",
+        "0.point_only.boxes.f32.bin": "1432c7fe75cbf62d2e2763a604c3b0f6efa8b9b4e9b59004e993c3d37354aed7",
+        "0.point_only.ids.i64.bin": "c5c63ad0c4e2dda2d13fcf4ec119c5dda24c06195e5ba459a2e55acd428fed27",
+        "0.point_only.json": "7529b72b316240ae4e9299ff0c41171c859074f2fa752683bde2c137abf2b05d",
+        "0.point_only.masks.bin": "3da6aba430359a6367b384f14411e20c6a722e8b2a329a6511516909939ca363",
+        "0.point_only.scores.f32.bin": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+        "0.reset_person.boxes.f32.bin": "623a5dff2cec9ccd4f82a764ec4c18cec81fa119f9c5a8751113c913c811e385",
+        "0.reset_person.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "0.reset_person.json": "da80364f054189a396fc400b3ef22f1d72131282d211c592b4944717aa279dab",
+        "0.reset_person.masks.bin": "2ebe6bb9db0e4427edda45ecbd4b8b8ea217eccdf0bb631e0594c6555bdc8e19",
+        "0.reset_person.scores.f32.bin": "b1f219cc54632e873fdb6ce5362856abdad729fc77db68a00afa859d94bd6a2a",
+        "1.box.boxes.f32.bin": "9f7c43c62d92c7b274cd9f8299d856e5596142e311e569181caa3ea397c83c73",
+        "1.box.ids.i64.bin": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+        "1.box.json": "ca5c9767feb7b7dcb4d7e64d5e4883e634770904585d6a83758761c776497963",
+        "1.box.masks.bin": "ea2fb910cf422b09b942d38e61f4ee28b1619eba2f68c78e0d1888d7c8834b1b",
+        "1.box.scores.f32.bin": "c51458a5aa7993a48049d3272c9ba6556354da2b4d85197c3f0b364e164703f0",
+        "1.box_track.boxes.f32.bin": "d80f5ae68f8a9018fb55ef803646c5a065b7e61c78804a88e2d1823ed73b8662",
+        "1.box_track.cache_areas.i64.bin": "f50ccbbc4e83105f3a5197b1465ee17464cd162f93f716726d5c765d2d6e0cc5",
+        "1.box_track.ids.i64.bin": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+        "1.box_track.json": "bcc6c9bd94a80a8c9a434b8e68ff83600a9d44e0911661cb86af9d86b83cf0dc",
+        "1.box_track.masks.bin": "a3280cf387a10ceab39ed815f1f8099be661a07f448982bf982c0516be899d4e",
+        "1.box_track.scores.f32.bin": "c51458a5aa7993a48049d3272c9ba6556354da2b4d85197c3f0b364e164703f0",
+        "1.person_track.boxes.f32.bin": "13f860d114914f6dc7c6cd81e0ba7c6d9d7dc9e0332cb7272278bba4524c7669",
+        "1.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "1.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "1.person_track.masks.bin": "743af1957fe27812c4ed2f6990d2f0f3b4d9c3629a0bd5c79312caf2b0c8a925",
+        "1.person_track.scores.f32.bin": "b1f219cc54632e873fdb6ce5362856abdad729fc77db68a00afa859d94bd6a2a",
+        "2.box_track.boxes.f32.bin": "b740d5becd0329125a196f5b1e3ded84179bf833ca12a0bcbdab9711db726d49",
+        "2.box_track.cache_areas.i64.bin": "25ed5e777491d564c66f30a9a3f4006b5064b81d413b6c05c33c994b4bc7bb17",
+        "2.box_track.ids.i64.bin": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+        "2.box_track.json": "bcc6c9bd94a80a8c9a434b8e68ff83600a9d44e0911661cb86af9d86b83cf0dc",
+        "2.box_track.masks.bin": "862d4a7633e58a942101637fe617cd03bbcdecd8845085d1f79b64dae1d2de7f",
+        "2.box_track.scores.f32.bin": "c51458a5aa7993a48049d3272c9ba6556354da2b4d85197c3f0b364e164703f0",
+        "2.fetch.boxes.f32.bin": "d87e5a6af86a95ec5218faf35567a14150a48cff721e9e4163254589fca72c80",
+        "2.fetch.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.fetch.json": "6649f0048cc261bbe796f8ce892ef6b81351205fd46f683dca0ab7d517416a15",
+        "2.fetch.masks.bin": "67a25abf188cd20a13e209a4e991b54fcbd8ad400c1e5f796ccfb9b0a286e4f7",
+        "2.fetch.scores.f32.bin": "48357910f52c3d289d3e5ad5852f57d0b86146e647e96e2a5aed14333f0891a2",
+        "2.person_track.boxes.f32.bin": "7015b59a44037f67d934f3513c092201387a3e87382638010c283396b48a8964",
+        "2.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "2.person_track.masks.bin": "f5f19294f93c0673019ee1bef1b862a372b4a9f100dec68fce303ebf5ba7e9b7",
+        "2.person_track.scores.f32.bin": "b1f219cc54632e873fdb6ce5362856abdad729fc77db68a00afa859d94bd6a2a",
+        "2.text_box.boxes.f32.bin": "d87e5a6af86a95ec5218faf35567a14150a48cff721e9e4163254589fca72c80",
+        "2.text_box.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "2.text_box.json": "6649f0048cc261bbe796f8ce892ef6b81351205fd46f683dca0ab7d517416a15",
+        "2.text_box.masks.bin": "67a25abf188cd20a13e209a4e991b54fcbd8ad400c1e5f796ccfb9b0a286e4f7",
+        "2.text_box.scores.f32.bin": "48357910f52c3d289d3e5ad5852f57d0b86146e647e96e2a5aed14333f0891a2",
+        "3.person_track.boxes.f32.bin": "a1ff011b6cc9383d4508c20b76dacb7863bcc8d8a54eea12ccf7f68cae31d5d5",
+        "3.person_track.ids.i64.bin": "a1e03200f1f82ad2c1cec8795c271aaecf98f5aa2d151d2229ec5fa0c177cf77",
+        "3.person_track.json": "df96bc3859c7277be7bd70c6b0c8dbbb237ee5fe3bd019cb3130847465336a58",
+        "3.person_track.masks.bin": "3eb40675823ebc6a8ca9a50b59f0de0f264aa87f6721609e6592ea6a320e9300",
+        "3.person_track.scores.f32.bin": "b1f219cc54632e873fdb6ce5362856abdad729fc77db68a00afa859d94bd6a2a",
+        "box_track.keep_alive.i64.bin": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+      }
+    }
+  ],
+  "multiple_rank_mask_differences": {
+    "frames": 10,
+    "changed_pixels": 159,
+    "minimum_object_iou": 0.9997611369879374,
+    "details": [
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "frame_tag": "0.person_track",
+        "objects": [
+          {
+            "id": 0,
+            "changed_pixels": 0,
+            "union_pixels": 72084,
+            "iou": 1.0
+          },
+          {
+            "id": 1,
+            "changed_pixels": 0,
+            "union_pixels": 33189,
+            "iou": 1.0
+          },
+          {
+            "id": 2,
+            "changed_pixels": 5,
+            "union_pixels": 94542,
+            "iou": 0.9999471134522223
+          },
+          {
+            "id": 3,
+            "changed_pixels": 4,
+            "union_pixels": 20763,
+            "iou": 0.9998073496122911
+          }
+        ]
+      },
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "frame_tag": "1.person_track",
+        "objects": [
+          {
+            "id": 0,
+            "changed_pixels": 1,
+            "union_pixels": 72970,
+            "iou": 0.9999862957379745
+          },
+          {
+            "id": 1,
+            "changed_pixels": 0,
+            "union_pixels": 33486,
+            "iou": 1.0
+          },
+          {
+            "id": 2,
+            "changed_pixels": 3,
+            "union_pixels": 91880,
+            "iou": 0.9999673487157161
+          },
+          {
+            "id": 3,
+            "changed_pixels": 0,
+            "union_pixels": 21912,
+            "iou": 1.0
+          }
+        ]
+      },
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "frame_tag": "2.box_track",
+        "objects": [
+          {
+            "id": 0,
+            "changed_pixels": 1,
+            "union_pixels": 33640,
+            "iou": 0.9999702734839477
+          },
+          {
+            "id": 1,
+            "changed_pixels": 1,
+            "union_pixels": 73588,
+            "iou": 0.9999864108278523
+          },
+          {
+            "id": 2,
+            "changed_pixels": 0,
+            "union_pixels": 90231,
+            "iou": 1.0
+          }
+        ]
+      },
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "frame_tag": "2.person_track",
+        "objects": [
+          {
+            "id": 0,
+            "changed_pixels": 2,
+            "union_pixels": 73675,
+            "iou": 0.9999728537495758
+          },
+          {
+            "id": 1,
+            "changed_pixels": 2,
+            "union_pixels": 33826,
+            "iou": 0.9999408738839946
+          },
+          {
+            "id": 2,
+            "changed_pixels": 2,
+            "union_pixels": 90029,
+            "iou": 0.9999777849359651
+          },
+          {
+            "id": 3,
+            "changed_pixels": 0,
+            "union_pixels": 23130,
+            "iou": 1.0
+          }
+        ]
+      },
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "frame_tag": "3.person_track",
+        "objects": [
+          {
+            "id": 0,
+            "changed_pixels": 3,
+            "union_pixels": 73536,
+            "iou": 0.9999592036553525
+          },
+          {
+            "id": 1,
+            "changed_pixels": 1,
+            "union_pixels": 33627,
+            "iou": 0.9999702619918518
+          },
+          {
+            "id": 2,
+            "changed_pixels": 0,
+            "union_pixels": 89682,
+            "iou": 1.0
+          },
+          {
+            "id": 3,
+            "changed_pixels": 1,
+            "union_pixels": 23443,
+            "iou": 0.9999573433434288
+          }
+        ]
+      },
+      {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "frame_tag": "0.person_track",
+        "objects": [
+          {
+            "id": 0,
+            "changed_pixels": 0,
+            "union_pixels": 72065,
+            "iou": 1.0
+          },
+          {
+            "id": 1,
+            "changed_pixels": 0,
+            "union_pixels": 33186,
+            "iou": 1.0
+          },
+          {
+            "id": 2,
+            "changed_pixels": 4,
+            "union_pixels": 94542,
+            "iou": 0.9999576907617779
+          },
+          {
+            "id": 3,
+            "changed_pixels": 3,
+            "union_pixels": 20752,
+            "iou": 0.999855435620663
+          }
+        ]
+      },
+      {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "frame_tag": "1.person_track",
+        "objects": [
+          {
+            "id": 0,
+            "changed_pixels": 10,
+            "union_pixels": 72979,
+            "iou": 0.9998629742802724
+          },
+          {
+            "id": 1,
+            "changed_pixels": 8,
+            "union_pixels": 33492,
+            "iou": 0.9997611369879374
+          },
+          {
+            "id": 2,
+            "changed_pixels": 16,
+            "union_pixels": 91878,
+            "iou": 0.9998258560264699
+          },
+          {
+            "id": 3,
+            "changed_pixels": 3,
+            "union_pixels": 21919,
+            "iou": 0.9998631324421735
+          }
+        ]
+      },
+      {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "frame_tag": "2.box_track",
+        "objects": [
+          {
+            "id": 0,
+            "changed_pixels": 7,
+            "union_pixels": 33676,
+            "iou": 0.9997921368333531
+          },
+          {
+            "id": 1,
+            "changed_pixels": 8,
+            "union_pixels": 73287,
+            "iou": 0.9998908401217133
+          },
+          {
+            "id": 2,
+            "changed_pixels": 14,
+            "union_pixels": 90252,
+            "iou": 0.9998448787838496
+          }
+        ]
+      },
+      {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "frame_tag": "2.person_track",
+        "objects": [
+          {
+            "id": 0,
+            "changed_pixels": 6,
+            "union_pixels": 73673,
+            "iou": 0.9999185590379107
+          },
+          {
+            "id": 1,
+            "changed_pixels": 8,
+            "union_pixels": 33857,
+            "iou": 0.9997637120831734
+          },
+          {
+            "id": 2,
+            "changed_pixels": 11,
+            "union_pixels": 89565,
+            "iou": 0.9998771841679227
+          },
+          {
+            "id": 3,
+            "changed_pixels": 5,
+            "union_pixels": 23136,
+            "iou": 0.9997838865836791
+          }
+        ]
+      },
+      {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "frame_tag": "3.person_track",
+        "objects": [
+          {
+            "id": 0,
+            "changed_pixels": 10,
+            "union_pixels": 72840,
+            "iou": 0.9998627127951675
+          },
+          {
+            "id": 1,
+            "changed_pixels": 8,
+            "union_pixels": 33695,
+            "iou": 0.9997625760498591
+          },
+          {
+            "id": 2,
+            "changed_pixels": 9,
+            "union_pixels": 89692,
+            "iou": 0.9998996566025955
+          },
+          {
+            "id": 3,
+            "changed_pixels": 3,
+            "union_pixels": 23452,
+            "iou": 0.9998720791403718
+          }
+        ]
+      }
+    ],
+    "interpretation": "SAM3 differences retained, not hidden by tolerance. Multiple-rank FP32 collection and partitioning are intentional source contracts; exact distributed-source numerical parity remains to be audited."
+  },
+  "c_api": [
+    {
+      "model": 3,
+      "source": "video",
+      "mode": "fp16",
+      "ranks": 2,
+      "passed": true
+    },
+    {
+      "model": 31,
+      "source": "video",
+      "mode": "fp16",
+      "ranks": 2,
+      "passed": true
+    },
+    {
+      "model": 31,
+      "source": "image",
+      "mode": "fp16",
+      "ranks": 2,
+      "passed": true
+    }
+  ],
+  "cpu_fix": {
+    "original_failure": "multidevice-sam31-cpu-cat-original-failure.log",
+    "function": "MultiplexMemoryConditioner::assemble",
+    "fix": "Disable CPU autocast only around final tensor concatenation of BF16 stored memory and FP16 pointers",
+    "mixed_sam31_fp16_rerun_pass": true
+  },
+  "sdk_runs": [
+    {
+      "variant": "installed",
+      "bundled_libraries_initialized": 35,
+      "all_workspace_libraries_from_sdk": true,
+      "python_in_path": false,
+      "probe": {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "ranks": 2,
+        "all_ranks_on_coordinator": true,
+        "exact_single_rank_comparisons": 10,
+        "lifecycle_pass": true
+      }
+    },
+    {
+      "variant": "recovered",
+      "bundled_libraries_initialized": 35,
+      "all_workspace_libraries_from_sdk": true,
+      "python_in_path": false,
+      "probe": {
+        "model": "sam3",
+        "mode": "fp16",
+        "ranks": 2,
+        "all_ranks_on_coordinator": true,
+        "exact_single_rank_comparisons": 10,
+        "lifecycle_pass": true
+      }
+    },
+    {
+      "variant": "c-sdk",
+      "bundled_libraries_initialized": 35,
+      "all_workspace_libraries_from_sdk": true,
+      "python_in_path": false,
+      "c11_link_without_libtorch_development_prefix": true
+    }
+  ],
+  "sdk_overlay": {
+    "prerequisite": "video-collective-sdk-overlay/overlays.json (includes base/media/seek/preprocess recipe)",
+    "prerequisite_sha256": "b889c2bfc66fdf4a0e8d3bca953a199fd1ade2a104070cdfecc037845155edf8",
+    "notes": "Apply the matching archive at the preceding complete SDK root. Reuses all dependency and weight layers. Owning multi-device API is synchronous; physical multiGPU execution remains unverified.",
+    "overlays": [
+      {
+        "variant": "cpu",
+        "archive": "cpu.tar.gz",
+        "bytes": 1741608,
+        "sha256": "5797936925cc6b2cde54e102369f86f98a9bf658ffbda3ce63399c2ce150d204",
+        "files": [
+          {
+            "path": "bin/sam3_image_benchmark",
+            "bytes": 124152,
+            "sha256": "17b33d664c5d8a0ff9b266401cd56529f2c73499e765a164dddedebc74d55636"
+          },
+          {
+            "path": "bin/sam3_image_results_test",
+            "bytes": 88392,
+            "sha256": "57f9af145a8979607ca24c887299b90d64cf947cdc1d7bd91f4c956cfc81c2eb"
+          },
+          {
+            "path": "bin/sam3_predictor_c_probe",
+            "bytes": 35312,
+            "sha256": "832df3f338bb6f92c0e0cc936e407d3820ccd0f17aa6541deeae0426828f7901"
+          },
+          {
+            "path": "bin/sam3_video_collective_probe",
+            "bytes": 190016,
+            "sha256": "613334afc864517ca1d312f39a3d7dd67e72be7e6c04fb7c337a1e1211efa360"
+          },
+          {
+            "path": "bin/sam3_video_collective_test",
+            "bytes": 82480,
+            "sha256": "11cef54f43e2f2c4dfe42c4248243647bffa47eeafd7997ddf8e7410d68e84c2"
+          },
+          {
+            "path": "bin/sam3_video_multidevice_probe",
+            "bytes": 92288,
+            "sha256": "62596bb15060358001c5c4cd22fe9d5bc08ae77b9ef1b6747c80c8ad108b8422"
+          },
+          {
+            "path": "include/sam3/c_api.h",
+            "bytes": 18372,
+            "sha256": "30ed38d3a6a8121208b256183610d290b2fb7a72ff5163d40cc6a1036075b8a4"
+          },
+          {
+            "path": "include/sam3/video_edit.h",
+            "bytes": 3822,
+            "sha256": "3135c29505e94a70a9d7c468ef0e65a5fb7dad3a6b1f9105368db148421ff2d9"
+          },
+          {
+            "path": "include/sam3/video_predictor.h",
+            "bytes": 4281,
+            "sha256": "e187c574f5e1cdf52075ae9748153f2eb50f6d60344a64706f347a871f3929f4"
+          },
+          {
+            "path": "lib/libsam3_native.so",
+            "bytes": 4326760,
+            "sha256": "d7a45bdae292eac9a7aca123715786f2c7ea0c570aae79eb771bdd9725b767f6"
+          }
+        ],
+        "complete_recovery_entries_verified": 150
+      },
+      {
+        "variant": "cuda",
+        "archive": "cuda.tar.gz",
+        "bytes": 2015961,
+        "sha256": "26d25c446ee9550a644c2099c0f1071b6b7fef4ea4d53c6d4cf4337f79dab237",
+        "files": [
+          {
+            "path": "bin/sam3_image_benchmark",
+            "bytes": 124944,
+            "sha256": "32bb14178a98dcfbd33178d9166b6f63f5d7541b2042526f3e9fb3c28e9ddb73"
+          },
+          {
+            "path": "bin/sam3_image_results_test",
+            "bytes": 98664,
+            "sha256": "2baf8afe7b9735e52e81a13e58ffd4835429f2d3598b720ae9bbf1bffcb46678"
+          },
+          {
+            "path": "bin/sam3_predictor_c_probe",
+            "bytes": 35312,
+            "sha256": "b080dfcb0d8def0fbc2c98df67d7fb64d3f6619cb93c0012f8b8896a85681265"
+          },
+          {
+            "path": "bin/sam3_video_collective_probe",
+            "bytes": 190016,
+            "sha256": "7c5eb59e8d26df094c74281c3407decd9cb59bdc28d91c0ec35879cbb4138cc2"
+          },
+          {
+            "path": "bin/sam3_video_collective_test",
+            "bytes": 82480,
+            "sha256": "aee3eabb3d5154d204d5a2047dfb30b4e8d75e01ed4448223aee8c66673f5957"
+          },
+          {
+            "path": "bin/sam3_video_multidevice_probe",
+            "bytes": 92288,
+            "sha256": "57a54e730344532141920955fd240ceaba46109050c30c20737d2ba923b82f9d"
+          },
+          {
+            "path": "include/sam3/c_api.h",
+            "bytes": 18372,
+            "sha256": "30ed38d3a6a8121208b256183610d290b2fb7a72ff5163d40cc6a1036075b8a4"
+          },
+          {
+            "path": "include/sam3/video_edit.h",
+            "bytes": 3822,
+            "sha256": "3135c29505e94a70a9d7c468ef0e65a5fb7dad3a6b1f9105368db148421ff2d9"
+          },
+          {
+            "path": "include/sam3/video_predictor.h",
+            "bytes": 4281,
+            "sha256": "e187c574f5e1cdf52075ae9748153f2eb50f6d60344a64706f347a871f3929f4"
+          },
+          {
+            "path": "lib/libsam3_native.so",
+            "bytes": 5453184,
+            "sha256": "c7b8af0d807c43fca67de02e1ed721b62ac5bf66705084fd33128bbd2f94e6c9"
+          }
+        ],
+        "complete_recovery_entries_verified": 183
+      }
+    ]
+  },
+  "fixture_reuse": {
+    "bucket_archive": "native-foundation/video-collective-linux/owner-input-frames.tar.gz",
+    "frames": [
+      {
+        "frame": 0,
+        "ppm_sha256": "d71b1f479b7a319196f528161e375a25e4edca653d0d7394af3d9eb0dba145f7",
+        "rgb_sha256": "9135063f3aa588db53a153698a5a39e40ad133c134cee7671940fe4e22f01b7d"
+      },
+      {
+        "frame": 1,
+        "ppm_sha256": "b36a0e8d76cbf4b37c80e76f069d9527ad26594baeebb2c6418bbfa737856980",
+        "rgb_sha256": "3fcc095879079aaa90488d1c0c4b4bb270615eca1f3d6e28ce9dfb44cda6840f"
+      },
+      {
+        "frame": 2,
+        "ppm_sha256": "74bb92ca94ec3b716259d418ec51a8c37e96f9d0a303ef7b0fbbfd46fdb2d252",
+        "rgb_sha256": "405b0460384ca12652661e860bff6509d9d33da5ee01a5d967c456cc534b5cf5"
+      },
+      {
+        "frame": 3,
+        "ppm_sha256": "56071cc871c70927599aa7f4c254e5ae0d20f888623c9a8e443d94c4e26ca2f5",
+        "rgb_sha256": "d2554bdc1cace614624b8d40572c3cc78fa0730bc3f0dda40ac7008825c50f01"
+      }
+    ],
+    "c_prompt_sha256": "51d7a35f479052ab571dc6996a486c94d766358e9dab8d223c98e455544e8080"
+  },
+  "private_bucket": "RamRom/sam3-turing-native-20260922",
+  "evidence_prefix": "native-foundation/video-multidevice-linux",
+  "sdk_prefix": "video-multidevice-sdk-overlay",
+  "limitations": [
+    "No two-physical-GPU, Windows or Turing execution",
+    "Rank execution is serial; no multiGPU throughput claim",
+    "Mixed CPU/CUDA outputs not asserted equal to CUDA-only outputs",
+    "Default compatibility and rank lifecycle evidence are not full distributed upstream numerical parity",
+    "Broader quality and CPU long-run stability remain open"
+  ],
+  "actions_used": false
+}

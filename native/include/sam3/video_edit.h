@@ -39,4 +39,10 @@ SAM3_NATIVE_EXPORT VideoOutput edit_video_mask(int64_t frame,int64_t id,
     const Sam31VideoEditOptions& options={});
 SAM3_NATIVE_EXPORT void remove_video_user_object(int64_t id,Sam31VideoSessions&,
     VideoMetadata&,VideoInteractionState&,bool record_action=true);
+// Coordinated edits return the selected mask to output_device before merging
+// with displayed masks. Existing overloads retain local-device behavior.
+SAM3_NATIVE_EXPORT VideoOutput edit_video_points(int64_t frame,int64_t id,const TrackingPoints& points,Sam3VideoSessions& sessions,const Sam3SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const VideoEditOptions& options,at::Device target);
+SAM3_NATIVE_EXPORT VideoOutput edit_video_mask(int64_t frame,int64_t id,const at::Tensor& mask,Sam3VideoSessions& sessions,const Sam3SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const VideoEditOptions& options,at::Device target);
+SAM3_NATIVE_EXPORT VideoOutput edit_video_points(int64_t frame,int64_t id,const TrackingPoints& points,Sam31VideoSessions& sessions,const Sam31SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const Sam31VideoEditOptions& options,at::Device target);
+SAM3_NATIVE_EXPORT VideoOutput edit_video_mask(int64_t frame,int64_t id,const at::Tensor& mask,Sam31VideoSessions& sessions,const Sam31SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const Sam31VideoEditOptions& options,at::Device target);
 }
