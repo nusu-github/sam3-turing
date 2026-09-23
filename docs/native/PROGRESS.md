@@ -1735,3 +1735,37 @@ were added. Next: global ID/score/confirmation metadata and orchestration of the
 local-state APIs with detector/association/hotstart/occlusion/reconditioning/
 memory phases. Prompt/cache/user-action state, output assembly, codecs, multi-GPU,
 portable packaging and end-to-end quality/performance work remain.
+
+## Compose per-frame update planning and execution
+
+Added `sam3/video_update.h`: persistent rank/ID/score/confirmation metadata,
+immutable planning across existing association/hotstart/reconditioning/occlusion
+components, local neural correction-memory-birth-removal execution, and raw video
+mask assembly. New IDs are monotonic and uncapped; removed object scores remain
+-10000 while the final per-frame sigmoid write follows source overwrite order.
+SAM3.1 device metadata rows explicitly follow rank-concatenated IDs after
+compaction/extension, correcting a source multi-rank ordering assumption.
+
+Original planning and raw-output methods match for 44,868 exact numerical
+comparisons in 96 workflows / 768 frames: both models, CPU/CUDA, three precisions,
+both directions, confirmation, correction, occlusion, boundary/IoM and disabled
+warmup. Neural calls in this comparison are recording/no-op fixtures. The source
+CPU empty-batch connected-components failure is adapted with empty label/count
+outputs only. This is not complete neural-video parity.
+
+Separate actual-weight standalone tools execute the new planner/executor/output
+path with Python absent from PATH, controlled projected features/global masks,
+real neural memory encoding, births/removals and SAM3.1 paged state. Native unit
+checks cover prior-state immutability, two-rank ID/device-row alignment, score
+ordering, compaction and overflow rejection. CTest passes 25 CUDA-enabled and
+14 custom-CUDA-disabled checks. Python-free linkage and sm_75 cubins remain;
+Windows/Turing runtime is untested and no GitHub Actions were used.
+
+Code/reports are on `codex/native-onboarding`; private headers/binaries/logs are
+in `native-foundation/video-update-linux-cuda13`. No weights/model variants were
+added. Warmup metadata lifecycle, coherent detector/visual caches, prompt and
+user-action state, predictor temporal/output filtering, complete high-level C ABI,
+codecs, multi-GPU, portable SDK packaging and end-to-end accuracy/performance are
+still open. Earlier intermittent CPU instability is unresolved. Continue with
+coherent feature/detection/propagation integration rather than claiming the full
+predictor is finished.

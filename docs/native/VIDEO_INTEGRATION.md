@@ -554,3 +554,98 @@ ordering across detector/association/hotstart/reconditioning/memory updates,
 text/visual prompt and cache/user-action state, and output assembly. Codecs,
 actual multi-GPU execution, portable packaging and end-to-end quality/performance
 validation are still open.
+
+## Integrated frame-update planning and local execution
+
+`sam3/video_update.h` now composes association, hotstart, reconditioning preparation,
+occlusion, global ID/score/confirmation updates, local neural execution and raw
+frame-output assembly. It consumes detector results and globally ordered tracker
+predictions; it does not yet run the visual detector, maintain text/visual prompt
+state, collect remote ranks or implement the complete predictor service.
+
+`VideoMetadata` retains rank-ordered IDs, actual bucket workloads, monotonically
+assigned IDs, object scores, per-frame scores, occlusion history and the distinct
+SAM3 host/SAM3.1 device hotstart state. `initialize_video_metadata` creates this
+state for a caller-specified rank count and device. There is no maximum-object
+setting or detection dropping; integer ID overflow is rejected.
+
+`plan_video_update` is pure with respect to previous metadata and input tensors.
+It preserves the original ordering and model-specific policy choices:
+
+1. Associate detector and tracker masks, with SAM3's optional boundary filter
+   applied only to new detections. SAM3.1 consumes the caller's detector keep mask.
+2. Allocate monotonically increasing IDs and plan least-workload placement from
+   previous object counts (SAM3) or bucket counts (SAM3.1). Hotstart uses the
+   existing model-specific host/device implementations.
+3. Evaluate periodic/geometric correction and prepare eligible mask edits.
+   SAM3.1 updates global low logits using sign agreement and cleanup before
+   occlusion; SAM3 leaves its propagated global logits unchanged here.
+4. Apply recent-occlusion suppression, append new rank IDs, remove deleted IDs,
+   initialize detection scores and preserve removed object-score entries at
+   -10000. Update confirmation state by object ID.
+5. Compact and extend SAM3.1 device metadata for the next frame. Native code
+   explicitly reorders these rows to the final rank-concatenated ID order. The
+   original appends new device rows globally, which can differ from this order
+   with multiple ranks. A two-rank CPU/CUDA test checks the ID/first-frame mapping;
+   this is bookkeeping validation, not distributed execution.
+
+Both association and recent-occlusion counting default to FP32 independently of
+neural mode; `policy_mode` allows explicit same-mode reference comparisons.
+Warmup-disabled planning preserves the source skip behavior. As in the source,
+metadata produced during warmup must be discarded/reset before enabling normal
+hotstart; the SAM3.1 device metadata count is not extended during warmup. The
+higher-level warmup lifecycle remains to be integrated. Confirmation configuration
+must remain consistent with the metadata carried between frames.
+
+`execute_video_update` applies prepared correction/preflight, globally adjusted
+memory updates, local births, then removals. SAM3.1 records all IDs affected by
+local correction and refreshes the local actual bucket workload. Factories and
+session ownership use `video_objects.h`; shared neural cores do not copy weights.
+The caller supplies global masks in `previous.object_ids()` order, executes each
+rank once, and commits the resulting metadata after successful execution. There
+is no cross-session rollback or cross-rank communication in this function.
+Planning is separate from execution, but the neural operations preserve the
+source dependency order; none of these policies depends on newly computed memory.
+
+`finalize_video_scores` performs the source's final sigmoid-score write after
+planning/execution. This deliberately overwrites a removed object's **frame**
+score while its persistent **object** score remains -10000. Scalar scores are
+represented as tensors, retaining their original numeric precision rather than
+converting SAM3 values through Python lists.
+
+`build_video_outputs` resizes propagated masks and cleaned new detector masks to
+video resolution, thresholds at zero, and applies SAM3's geometry-triggered
+output overrides. Removed IDs remain in this raw mapping, just as in the original
+method; later predictor filtering uses score/confirmation/suppression metadata.
+This API requires coherent mask/ID counts rather than silently padding/truncating
+inconsistent SAM3.1 input metadata. It introduces no cap or prompt restriction.
+
+Validation:
+
+- `video_update_parity.py` runs the actual original planning and `build_outputs`
+  methods for 96 workflows / 768 frames across CPU/CUDA and FP32/FP16/BF16-reference,
+  both models, forward/reverse, geometry/periodic correction, confirmation,
+  boundary filtering, IoM, occlusion and warmup-disabled cases. 44,868 planned/
+  final metadata, correction-mask and output comparisons are exact numerically.
+- These policy comparisons replace only neural correction/memory execution with
+  recording/no-op fixtures. They do not prove combined neural output parity.
+  Original CPU connected-components fails on an empty batch (`stack([])`); the
+  reference adapter returns empty label/count images only for that case, retaining
+  all nonempty source computation. CPU CUDA-transfer adaptations are reused.
+- Standalone actual-weight SAM3/SAM3.1 probes with `PATH=/nonexistent` run the new
+  planner/executor/output path, real neural memory encoding, births and forced
+  unmatched-removal inputs, including paged history. Features and detector inputs
+  are controlled/synthetic, so this is execution evidence rather than real-video
+  accuracy. Final score ordering and empty-state deletion are asserted.
+- CPU/CUDA native unit checks cover immutable previous maps/tensors, multi-rank
+  ID-to-device-row alignment, confirmation, compaction, unfiltered raw outputs,
+  final score overwrite and ID overflow rejection. CTest passes 25 CUDA-enabled
+  and 14 custom-CUDA-disabled checks. No libpython/libtorch_python is linked;
+  existing sm_75 cubins remain compilation-only evidence.
+
+No GitHub Actions or Windows/Turing execution was used. The earlier intermittent
+full-model CPU failure is still open. Development binaries are not a portable
+SDK. Remaining work includes coherent detector/tracker feature-cache integration,
+text/visual prompt and user-action state, predictor-level temporal/output filtering,
+C ABI exposure of the complete high-level lifecycle, codecs, actual multi-GPU
+execution, portable packaging and end-to-end quality/performance validation.

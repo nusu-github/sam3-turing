@@ -2,6 +2,7 @@
 #include "sam3/video_recondition.h"
 #include "sam3/video_memory.h"
 #include "sam3/video_objects.h"
+#include "video_update_probe.h"
 #include <ATen/Context.h>
 #include <ATen/Parallel.h>
 #include <iostream>
@@ -56,6 +57,7 @@ int main(int argc,char** argv) {
     TORCH_CHECK(sam3::add_video_objects(0,{500,600},at::stack({logits,logits}),pool,factory)==0 && sam3::add_video_objects(1,{700},logits.unsqueeze(0),pool,factory)==1,"SAM3 birth groups were merged");
     sam3::remove_video_objects({600,999},pool);TORCH_CHECK(pool.size()==2 && pool[0]->object_ids()==std::vector<int64_t>{500},"pool removal changed remaining IDs");
     sam3::remove_video_objects({500,700},pool);TORCH_CHECK(pool.empty(),"empty sessions retained");
+    check_video_update(pool,factory,device);
     std::cout<<"native session passed: callbacks="<<count<<" provider_reads="<<reads<<"; synthetic features, no Python\n";
     return 0;
   }catch(const std::exception& error){std::cerr<<error.what()<<'\n';return 1;}

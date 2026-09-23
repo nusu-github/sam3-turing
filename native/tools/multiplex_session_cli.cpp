@@ -2,6 +2,7 @@
 #include "sam3/video_recondition.h"
 #include "sam3/video_memory.h"
 #include "sam3/video_objects.h"
+#include "video_update_probe.h"
 #include "sam3/multiplex_storage.h"
 #include <ATen/Context.h>
 #include <ATen/Parallel.h>
@@ -82,6 +83,7 @@ int main(int argc,char** argv){
     TORCH_CHECK(strict_rejected && pool[0]->object_ids()==before_ids,"strict batch removal partially committed");
     sam3::remove_video_objects({10,30,999,10},pool);TORCH_CHECK(pool[0]->object_ids()==std::vector<int64_t>{20},"batch removal lost surviving ID");
     sam3::remove_video_objects(many_ids,pool);TORCH_CHECK(pool.size()==1,"empty pooled state retained");sam3::remove_video_objects({20},pool);TORCH_CHECK(pool.empty(),"pool did not empty");
+    check_video_update(pool,factory,device);
     std::cout<<"native SAM3.1 session passed: "<<callbacks<<" callbacks; 18 accumulated points, masks, box, midstream add, refinement, reverse, removal/clear, cancel/resume, rollback/reset, reconditioning/preflight/global memory; feature loads="<<loads<<"; no Python\n";return 0;
   }catch(const std::exception& error){std::cerr<<error.what()<<'\n';return 1;}
 }

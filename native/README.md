@@ -1000,3 +1000,13 @@ full-resolution binary masks, runs mask insertion/preflight, and prunes empty
 states. SAM3.1 removes multiple objects with one history remap. Placement,
 original actual-weight new-state workflows and native best-fit/storage workflows
 are tested separately; the complete high-level predictor remains unfinished.
+
+`sam3/video_update.h` composes frame-update planning, ID/score/confirmation metadata,
+association/hotstart/reconditioning/occlusion policies, local neural execution and
+raw output-mask assembly. The caller provides detector outputs and globally ordered
+tracker predictions; the planner preserves inputs, and the executor performs
+correction, memory, births and removal in dependency order. Policy arithmetic is
+FP32 by default; there is no object cap. Predictor prompt/cache/user-action state,
+temporal output filtering, distributed communication and a complete high-level
+C ABI remain unfinished. See `docs/native/VIDEO_INTEGRATION.md` for the split between
+original policy comparisons and actual-weight synthetic execution probes.
