@@ -991,3 +991,12 @@ the effective encoder inputs for lossless history rebuilding after layout change
 exercise actual neural memory replacement. See [global memory contracts](../docs/native/VIDEO_INTEGRATION.md)
 for source differences, storage behavior, validation scope and remaining coordinator
 work. No multi-GPU communication or complete high-level predictor is claimed.
+
+`sam3/video_objects.h` owns collections of tracker sessions for detector births
+and removals. SAM3 starts a new state per birth group; SAM3.1 uses stable best-fit
+placement without limiting group/object counts. Factories share existing cores
+and caches, so new sessions do not duplicate model weights. The API prepares
+full-resolution binary masks, runs mask insertion/preflight, and prunes empty
+states. SAM3.1 removes multiple objects with one history remap. Placement,
+original actual-weight new-state workflows and native best-fit/storage workflows
+are tested separately; the complete high-level predictor remains unfinished.

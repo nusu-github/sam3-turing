@@ -51,6 +51,8 @@ class SAM3_NATIVE_EXPORT Sam31TrackingSession {
   void cancel() noexcept {cancelled_.store(true);}
   TrackingSessionOutput clear_input(int64_t frame,int64_t object);
   void remove_object(int64_t object,bool strict=false);
+  // Deduplicated batch removal remaps/re-encodes each affected history once.
+  void remove_objects(const std::vector<int64_t>& objects,bool strict=false);
   void reset();
   std::vector<int64_t> object_ids() const;
   const MultiplexSessionState& state() const {return state_;}

@@ -204,10 +204,15 @@ TrackingSessionOutput Sam31TrackingSession::clear_input(int64_t index,int64_t id
   classify_inputs();const auto frame=find(index)?*find(index):blank(index);return output(frame,true);
   }catch(...){state_=std::move(previous);throw;}
 }
-void Sam31TrackingSession::remove_object(int64_t id,bool strict){
-  c10::InferenceMode inference;auto found=std::find_if(state_.objects.begin(),state_.objects.end(),[&](const auto& object){return object.id==id;});if(found==state_.objects.end()){TORCH_CHECK(!strict,"unknown object ID");return;}if(state_.objects.size()==1){reset();return;}
+void Sam31TrackingSession::remove_object(int64_t id,bool strict){remove_objects({id},strict);}
+void Sam31TrackingSession::remove_objects(const std::vector<int64_t>& ids,bool strict){
+  c10::InferenceMode inference;std::set<int64_t> indices;
+  for(auto id:ids){const auto found=std::find_if(state_.objects.begin(),state_.objects.end(),[&](const auto& object){return object.id==id;});
+    if(found==state_.objects.end()){TORCH_CHECK(!strict,"unknown object ID");}else indices.insert(found-state_.objects.begin());}
+  if(indices.empty())return;if(indices.size()==state_.objects.size()){reset();return;}
   auto previous=state_;try {
-  const auto index=found-state_.objects.begin();auto next=*state_.buckets;next.remove_objects({index});remap(next);state_.objects.erase(state_.objects.begin()+index);classify_inputs();
+    auto next=*state_.buckets;next.remove_objects(std::vector<int64_t>(indices.begin(),indices.end()));remap(next);
+    for(auto it=indices.rbegin();it!=indices.rend();++it)state_.objects.erase(state_.objects.begin()+*it);classify_inputs();
   }catch(...){state_=std::move(previous);throw;}
 }
 void Sam31TrackingSession::reset(){state_=MultiplexSessionState{};cancelled_.store(false);}

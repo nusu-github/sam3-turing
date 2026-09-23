@@ -1701,3 +1701,37 @@ are in `native-foundation/video-memory-linux-cuda13`. No weights/model variants
 were added. The full coordinator still needs detection insertion/removal,
 text/visual prompt and cache/user-action management, phase integration and output
 assembly. Codec, multi-GPU and end-to-end quality/performance work also remain.
+
+## Coordinate detector births and object removals
+
+Added `sam3/video_objects.h`: owning collections, shared-core/session factories,
+source mask preparation at 1152, SAM3 birth-batch states and SAM3.1 stable best-fit
+placement. First-state/new-state grouping policies are also available. Counts
+are not capped; standalone validation includes a 17-object group. Empty additions
+are no-ops and duplicate/existing new IDs are rejected. Fresh states are published
+only after preflight; in-place operations retain per-session rollback boundaries.
+
+SAM3 removal keeps the source ID/state iteration order. SAM3.1 now exposes batch
+removal with upfront strict validation, duplicate normalization and one history
+remap; empty collection entries are destroyed. Native stable-slot/dense-history
+semantics remain explicit, not claimed equivalent to source packed-history bugs.
+Per-mask layout updates during insertion remain an optimization opportunity.
+
+Original high-level add/remove calls and forward/reverse tracking match exactly
+for 1,048 actual-weight output/state tensors over both models and CPU FP32/CUDA
+FP32/FP16/BF16-reference. Best-fit, removal and storage checks add 974 comparisons,
+including batch/sequential removal equivalence on CUDA. Policy/preprocessing
+fixtures run 489 checks per device. Full-grid projected features are synthetic;
+coherent real-video accuracy remains unproven. Earlier CPU instability is open.
+
+CTest passes 23 CUDA-enabled and 13 custom-CUDA-disabled checks. Standalone tools
+run with Python absent from PATH, including paged state. Linkage excludes
+libpython/libtorch_python and sm_75 kernels are present. No Actions or physical
+Windows/Turing checks were used. Development binaries are not a portable SDK.
+
+Code/reports are on `codex/native-onboarding`; binaries/headers/logs are saved in
+private `native-foundation/video-objects-linux-cuda13`. No weights/model variants
+were added. Next: global ID/score/confirmation metadata and orchestration of these
+local-state APIs with detector/association/hotstart/occlusion/reconditioning/
+memory phases. Prompt/cache/user-action state, output assembly, codecs, multi-GPU,
+portable packaging and end-to-end quality/performance work remain.

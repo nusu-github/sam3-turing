@@ -1,6 +1,7 @@
 #include "sam3/tracking_session.h"
 #include "sam3/video_recondition.h"
 #include "sam3/video_memory.h"
+#include "sam3/video_objects.h"
 #include <ATen/Context.h>
 #include <ATen/Parallel.h>
 #include <iostream>
@@ -49,6 +50,12 @@ int main(int argc,char** argv) {
     session.add_points(0,202,points);session.reset();TORCH_CHECK(session.object_ids().empty(),"reset retained objects");
     bool failed=false;try {session.remove_object(404,true);}catch(const c10::Error&){failed=true;}
     TORCH_CHECK(failed,"strict removal accepted an unknown ID");
+    sam3::Sam3VideoSessions pool;
+    sam3::Sam3SessionFactory factory=[&]{return std::make_unique<sam3::Sam3TrackingSession>(core,[&](int64_t index){return sam3::TrackingFeatures{at::full({1,256,72,72},index*.01,options),at::zeros({1,256,72,72},options),{at::zeros({1,32,288,288},options),at::zeros({1,64,144,144},options)}};},4,73,91,device,mode,policy);};
+    const auto logits=mask*2-1;
+    TORCH_CHECK(sam3::add_video_objects(0,{500,600},at::stack({logits,logits}),pool,factory)==0 && sam3::add_video_objects(1,{700},logits.unsqueeze(0),pool,factory)==1,"SAM3 birth groups were merged");
+    sam3::remove_video_objects({600,999},pool);TORCH_CHECK(pool.size()==2 && pool[0]->object_ids()==std::vector<int64_t>{500},"pool removal changed remaining IDs");
+    sam3::remove_video_objects({500,700},pool);TORCH_CHECK(pool.empty(),"empty sessions retained");
     std::cout<<"native session passed: callbacks="<<count<<" provider_reads="<<reads<<"; synthetic features, no Python\n";
     return 0;
   }catch(const std::exception& error){std::cerr<<error.what()<<'\n';return 1;}

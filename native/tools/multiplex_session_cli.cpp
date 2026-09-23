@@ -1,6 +1,7 @@
 #include "sam3/multiplex_session.h"
 #include "sam3/video_recondition.h"
 #include "sam3/video_memory.h"
+#include "sam3/video_objects.h"
 #include "sam3/multiplex_storage.h"
 #include <ATen/Context.h>
 #include <ATen/Parallel.h>
@@ -69,6 +70,18 @@ int main(int argc,char** argv){
       TORCH_CHECK(frame.memory_object_logits[0].item<float>()==-10 && frame.memory_object_logits[1].item<float>()==10 && frame.memory_masks.size(-1)==1152,"memory rows ignored global IDs");
     }
     request.start=2;request.max_steps=2;request.reverse=true;session.propagate(request,emit);session.reset();partner.reset();
+    sam3::Sam31VideoSessions pool;
+    sam3::Sam31SessionFactory factory=[&]{return std::make_unique<sam3::Sam31TrackingSession>(core,provider,5,37,53,device,mode,options);};
+    const auto logits=brush*2-1;
+    sam3::add_video_objects(0,{10,20},at::stack({logits,logits}),pool,factory);
+    TORCH_CHECK(sam3::add_video_objects(1,{30},logits.unsqueeze(0),pool,factory)==0 && pool.size()==1,"best-fit did not reuse free slots");
+    std::vector<int64_t> many_ids;for(int64_t i=100;i<117;++i)many_ids.push_back(i);
+    TORCH_CHECK(sam3::add_video_objects(1,many_ids,logits.unsqueeze(0).expand({17,37,53}),pool,factory)==1 && pool[1]->object_ids().size()==17,"larger than one bucket group was capped");
+    const auto before_ids=pool[0]->object_ids();bool strict_rejected=false;
+    try{pool[0]->remove_objects({20,999},true);}catch(const c10::Error&){strict_rejected=true;}
+    TORCH_CHECK(strict_rejected && pool[0]->object_ids()==before_ids,"strict batch removal partially committed");
+    sam3::remove_video_objects({10,30,999,10},pool);TORCH_CHECK(pool[0]->object_ids()==std::vector<int64_t>{20},"batch removal lost surviving ID");
+    sam3::remove_video_objects(many_ids,pool);TORCH_CHECK(pool.size()==1,"empty pooled state retained");sam3::remove_video_objects({20},pool);TORCH_CHECK(pool.empty(),"pool did not empty");
     std::cout<<"native SAM3.1 session passed: "<<callbacks<<" callbacks; 18 accumulated points, masks, box, midstream add, refinement, reverse, removal/clear, cancel/resume, rollback/reset, reconditioning/preflight/global memory; feature loads="<<loads<<"; no Python\n";return 0;
   }catch(const std::exception& error){std::cerr<<error.what()<<'\n';return 1;}
 }

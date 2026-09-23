@@ -1,0 +1,24 @@
+{
+  "model": "sam3",
+  "device": "cuda",
+  "policy_checks": 489,
+  "cases": [
+    {
+      "mode": "fp16",
+      "source_exact_tensors": 131
+    },
+    {
+      "mode": "fp32",
+      "source_exact_tensors": 131
+    },
+    {
+      "mode": "bf16_reference",
+      "source_exact_tensors": 131
+    }
+  ],
+  "source_sha256": {
+    "sam3/model/sam3_video_base.py": "7ffae0a8c15f17814ce438078b6a00cc052be21ad16c8a59205df859c3df52c4",
+    "sam3/model/sam3_multiplex_base.py": "fad8ba0829e1223af919736d5c90b68a784c4941f936f088bccbdc4fb75d2bf8"
+  },
+  "scope": "Actual-weight original high-level add/remove calls, new-state grouping and forward/reverse propagation using synthetic full-grid projected features. Source comparisons remove whole states; native best-fit insertion, multi-ID removal and dense-history rebuilding checked separately across resident/offloaded/paged storage. No coherent full-video accuracy or multi-GPU communication claim."
+}

@@ -470,3 +470,87 @@ insertion/removal, prompt/cache/user-action state and output assembly. These
 memory helpers accept the already prepared global masks; they do not yet connect
 all association/hotstart/occlusion/correction phases into the full coordinator.
 Codecs, multi-GPU execution and end-to-end quality/performance validation remain.
+
+## Collections of detected tracking objects
+
+`sam3/video_objects.h` now connects detector object births/removals to owning
+collections of native tracker sessions. This implements the local-state boundary
+of `Sam3VideoBase._tracker_add_new_objects` / `_tracker_remove_objects` and the
+corresponding `Sam3MultiplexBase` methods. It does not yet implement the complete
+high-level video predictor or rank communication.
+
+`prepare_video_object_masks` bilinearly resizes floating detector logits to the
+1152 input grid without antialiasing, then thresholds at zero. It preserves the
+source order (resize before threshold), including strided FP32/FP16/BF16 inputs.
+`add_video_objects` accepts all supplied IDs/masks, runs the relevant mask-input
+API and preflight, and returns the destination state index. Empty additions are
+explicit no-ops. Duplicate IDs, including IDs already present in the collection,
+are rejected before editing. The source host calls this boundary only for new
+objects; existing-object correction uses the reconditioning API instead.
+
+SAM3 creates one new state per birth batch. SAM3.1 defaults to best-fit placement:
+choose the existing state with the fewest available slots that can hold the
+whole batch, breaking ties by collection order. Otherwise create another state.
+The entire group can span multiple multiplex buckets; there is no detection or
+object limit. `FirstState` and `NewState` grouping are also exposed, corresponding
+to the alternative source host placement branches. They select native session
+groups; they do not change the neural model into a different inference backend.
+
+Factories return empty sessions sharing the caller's frame core and feature
+cache. The collection owns sessions via `unique_ptr`; session state owns no model
+weights. A fresh session is appended only after successful preflight. In-place
+addition to an existing state follows the session's per-operation rollback;
+addition plus preflight and the whole collection are not a single transaction.
+The caller must coordinate access and supply any global/rank metadata.
+
+Removal ignores unknown IDs and drops empty sessions while retaining collection
+order. SAM3 follows the source ID-then-state loop. SAM3.1 removes IDs together per
+state, with the new `Sam31TrackingSession::remove_objects` API. This validates
+strict requests before mutation, deduplicates requested IDs and remaps affected
+history once. Previously repeated single removals rebuilt history repeatedly.
+No speedup is claimed without an isolated measurement. Paged state archives are
+released through their existing reference-counted lifetime; retained snapshots
+can deliberately keep their archives alive.
+
+SAM3.1 continues to use the previously documented native stable-slot/dense-history
+policy, including re-encoding changed joint memory. It is not a literal port of
+the upstream packed-history slicing bugs. Existing per-mask insertion still
+performs successive layout updates inside `add_masks`; batching those updates
+is a remaining optimization, with history equivalence to be checked.
+
+Validation in `video_objects_parity.py`:
+
+- 489 policy/preprocessing checks per CPU/CUDA run, covering three precisions
+  and 240 placements. Recording tracker fixtures execute the actual original
+  host method, including stable ties, first-state and new-state branches.
+- Actual-weight original high-level add/remove methods, two birth groups,
+  shared projected frame inputs, forward/reverse propagation and whole-state
+  removals: 131 exact output/state tensors per model/mode, 1,048 total over both
+  models, CUDA FP32/FP16/BF16-reference and CPU FP32.
+- Native SAM3.1 best-fit insertion into an existing tracked state, multiple-ID
+  removal, duplicate/missing removal IDs, reverse propagation and empty-state
+  cleanup: 248 exact comparisons per CUDA mode, including batch-versus-sequential
+  removal equivalence, plus 230 CPU FP32 resident/offloaded/paged comparisons.
+  These 974 checks exercise the native history policy independently from source
+  new-state grouping comparisons. The CPU report predates the additional 18
+  sequential-removal checks, which passed in all three CUDA modes.
+
+Neural comparisons use synthetic full-resolution projected features and the
+existing documented original-runtime adaptations. They do not prove coherent
+real-video end-to-end accuracy. All inference math uses actual model weights.
+The earlier intermittent CPU full-model instability remains unresolved.
+
+Standalone actual-weight session probes run with `PATH=/nonexistent`; they now
+also exercise birth groups, best-fit reuse, 17-object groups, strict batch-removal
+rejection, partial removal and empty-state deletion, including paged history.
+CTest passes 23/23 CUDA-enabled and 13/13 custom-CUDA-disabled tests. The latter
+still links this machine's GPU-enabled PyTorch distribution. No libpython or
+libtorch_python is linked; four existing sm_75 cubins remain compilation evidence.
+No GitHub Actions or Windows/Turing execution was used. Binaries are development
+artifacts, not a relocatable Windows/Linux SDK.
+
+Remaining integration includes global ID/score/confirmation metadata, phase
+ordering across detector/association/hotstart/reconditioning/memory updates,
+text/visual prompt and cache/user-action state, and output assembly. Codecs,
+actual multi-GPU execution, portable packaging and end-to-end quality/performance
+validation are still open.
