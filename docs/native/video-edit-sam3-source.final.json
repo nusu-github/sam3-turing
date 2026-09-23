@@ -1,0 +1,416 @@
+{
+  "model": "sam3",
+  "mode": "bf16_reference",
+  "scope": "Actual source neural raw outputs replayed through original predictor generator, cache and final postprocessing. No neural outputs mocked. Temporal and final outputs compared with standalone C++; interactive actions remain outside this fixture.",
+  "cases": [
+    {
+      "frame": 0,
+      "emitted_at": 14,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 1,
+      "emitted_at": 15,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 2,
+      "emitted_at": 16,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 3,
+      "emitted_at": 17,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 4,
+      "emitted_at": 18,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 5,
+      "emitted_at": 19,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 6,
+      "emitted_at": 20,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 7,
+      "emitted_at": 21,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 8,
+      "emitted_at": 22,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 9,
+      "emitted_at": 23,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 10,
+      "emitted_at": 24,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 11,
+      "emitted_at": 25,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 12,
+      "emitted_at": 26,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 13,
+      "emitted_at": 27,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 14,
+      "emitted_at": 28,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 15,
+      "emitted_at": 29,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 16,
+      "emitted_at": 30,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 17,
+      "emitted_at": 31,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 18,
+      "emitted_at": 32,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 19,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 20,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 21,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 22,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 23,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 24,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 25,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 26,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 27,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 28,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 29,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 30,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 31,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 32,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "frame": 33,
+      "emitted_at": 33,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    }
+  ],
+  "exact": true
+}

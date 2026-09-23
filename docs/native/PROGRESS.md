@@ -1924,3 +1924,23 @@ Code/reports and private runtime/reference snapshots are persisted. No Actions o
 physical Windows/Turing tests. Next integrate actual point/mask edits and semantic
 text/geometry/visual prompt lifecycle, then full C ABI, codecs, multi-GPU, portable
 SDK, broad quality/performance and unresolved CPU runtime stability.
+
+## Integrate actual SAM3 point/mask instance edits
+
+Added `video_edit.h` high-level SAM3 point/mask edit and user removal helpers.
+They locate/create shared-core sessions, update IDs/scores/actions/cache, clear
+point-nearby detector conditioning, retain authoritative mask observations and
+support stateless first refinement. Basic validation precedes stateless removal.
+The regression confirms invalid frame input leaves IDs/actions unchanged.
+
+After34real-neural frames, the original high-level SAM3 predictor and standalone
+C++ match all10output sets from existing-point edit, new/existing exact masks,
+five-frame partial propagation, user removal/fetch and stateless point refinement.
+All34raw/final pre-edit frames remain exact. BF16/noTF32; native PATH=/nonexistent,
+all200queries and no object limit. Latest rerun also matches saved actual reference
+tensors; cached comparison now supports final/partial/edit outputs. CTest28/16.
+
+See [VIDEO_EDIT.md](VIDEO_EDIT.md). SAM3.1 needs separate singleton extraction and
+history/input consolidation work; these helpers do not claim that integration.
+Semantic prompt lifecycle, full C ABI, codecs, multi-GPU, portable SDK, CPU stability
+and broad quality/performance remain. No Actions or physical Windows/Turing tests.

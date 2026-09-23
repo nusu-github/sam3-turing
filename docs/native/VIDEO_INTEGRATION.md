@@ -831,3 +831,12 @@ The library supports arbitrary valid IDs/bounds; this probe scenario is a regres
 fixture. No new point/mask edit is applied yet. See
 [VIDEO_INTERACTION.md](VIDEO_INTERACTION.md) for semantics, source quirks and
 remaining prompt/edit orchestration.
+
+## Actual SAM3 instance edits
+
+`video_edit.h` now connects user points and exact masks to sessions, metadata,
+actions and cached output. The standalone `--edit-probe` scenario matches actual
+original SAM3 high-level edits and subsequent tracking at10output checkpoints,
+including new IDs, removal and stateless refinement, after34exact forward frames.
+See [VIDEO_EDIT.md](VIDEO_EDIT.md) for distinctions between point and mask history,
+validation evidence, and the remaining SAM3.1/semantic prompt integration.

@@ -32,6 +32,8 @@ class SAM3_NATIVE_EXPORT VideoInteractionState {
       const std::set<int64_t>& suppressed={});
   void forget_object(int64_t id);
   void reset();
+  int64_t frame_count()const{return frames_;}
+  AssociationPolicy policy()const{return policy_;}
   const std::vector<VideoAction>& actions()const{return actions_;}
   const std::map<int64_t,std::map<int64_t,at::Tensor>>& cached_frames()const{return cache_;}
  private:

@@ -23,13 +23,28 @@ def save_report(a,rows):
 
 @torch.inference_mode()
 def main():
- p=argparse.ArgumentParser();p.add_argument('--model',choices=['sam3','sam3.1'],required=True);p.add_argument('--checkpoint');p.add_argument('--native-output',type=Path,required=True);p.add_argument('--frames',nargs='+',type=Path,required=True);p.add_argument('--prompt',default='person');p.add_argument('--mode',choices=['fp16','fp32','bf16_reference'],default='fp16');p.add_argument('--reference-output',type=Path);p.add_argument('--partial-output',action='store_true');p.add_argument('--final-output',action='store_true',help='Replay actual raw source results through its original output generator and compare native final output');p.add_argument('--trace-state',action='store_true');p.add_argument('--trace-frames',nargs='+',type=int,help='Save internal traces only for these frame indices; all frames still run');p.add_argument('--reference-cache',type=Path);p.add_argument('--reference-mode',choices=['fp16','fp32','bf16_reference']);p.add_argument('--require-exact',action='store_true');p.add_argument('--source-grounding-batch',type=int,default=16);p.add_argument('--source-complex-rope',action='store_true');p.add_argument('--report',type=Path,required=True);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--model',choices=['sam3','sam3.1'],required=True);p.add_argument('--checkpoint');p.add_argument('--native-output',type=Path,required=True);p.add_argument('--frames',nargs='+',type=Path,required=True);p.add_argument('--prompt',default='person');p.add_argument('--mode',choices=['fp16','fp32','bf16_reference'],default='fp16');p.add_argument('--reference-output',type=Path);p.add_argument('--edit-output',action='store_true');p.add_argument('--partial-output',action='store_true');p.add_argument('--final-output',action='store_true',help='Replay actual raw source results through its original output generator and compare native final output');p.add_argument('--trace-state',action='store_true');p.add_argument('--trace-frames',nargs='+',type=int,help='Save internal traces only for these frame indices; all frames still run');p.add_argument('--reference-cache',type=Path);p.add_argument('--reference-mode',choices=['fp16','fp32','bf16_reference']);p.add_argument('--require-exact',action='store_true');p.add_argument('--source-grounding-batch',type=int,default=16);p.add_argument('--source-complex-rope',action='store_true');p.add_argument('--report',type=Path,required=True);a=p.parse_args()
  if a.reference_cache:
-  assert not a.final_output,'final-output needs actual raw source metadata, not the older raw-mask cache'
   rows=[]
   for i in range(len(a.frames)):
    with np.load(a.reference_cache/f'{i}.npz') as r:rows.append(compare_frame(a.native_output,i,r['ids'].tolist(),r['masks'],r['low'],r['scores'].tolist()))
-  save_report(a,rows);return
+  save_report(a,rows)
+  tasks=[]
+  if a.final_output:tasks.append(('final',[f'{i}.final' for i in range(len(a.frames))]))
+  if a.partial_output:tasks.append(('partial',[f'{i}.partial' for i in (17,16,15)]))
+  if a.edit_output:tasks.append(('edit',['18.edit_point','20.edit_mask_new','21.edit_mask_existing']+[f'{i}.edit_track' for i in range(18,23)]+['20.edit_remove','22.edit_stateless']))
+  for kind,tags in tasks:
+   checked=[]
+   for tag in tags:
+    with np.load(a.reference_cache/f'{tag}.npz') as ref:
+     masks=ref['out_binary_masks'];h,w=masks.shape[-2:];ids=np.fromfile(a.native_output/f'{tag}.ids.i64.bin',np.int64);n=len(ids)
+     actual=dict(out_obj_ids=ids,out_probs=np.fromfile(a.native_output/f'{tag}.scores.f32.bin',np.float32),out_boxes_xywh=np.fromfile(a.native_output/f'{tag}.boxes.f32.bin',np.float32).reshape(n,4));packed=np.fromfile(a.native_output/f'{tag}.masks.bin',np.uint8).reshape(n,h,(w+7)//8);actual['out_binary_masks']=np.unpackbits(packed,axis=-1,bitorder='little')[...,:w].astype(bool)
+     equal={key:bool(np.array_equal(value,ref[key])) for key,value in actual.items()}
+     if kind=='final':equal['emission']=json.loads((a.native_output/f'{tag}.json').read_text())['emitted_at']==int(ref['emitted_at'])
+     checked.append(dict(tag=tag,exact=equal))
+   exact=all(all(row['exact'].values()) for row in checked);a.report.with_suffix(f'.{kind}.json').write_text(json.dumps(dict(model=a.model,mode=a.mode,reference_mode=a.reference_mode or a.mode,scope='Compare latest standalone outputs with retained actual original neural/predictor reference tensors. No reference tensors regenerated in this cached check.',cases=checked,exact=exact),indent=2)+'\n')
+   if a.require_exact:assert exact,f'{kind} cached outputs differ'
+  return
  assert not a.reference_mode or a.reference_mode==a.mode,'reference mode override only applies to cached comparisons'
  assert a.checkpoint,'checkpoint is required when generating original outputs'
  torch.set_num_threads(1);torch.manual_seed(189);tri=a.model=='sam3.1'
@@ -115,4 +130,25 @@ def main():
     if a.reference_output:np.savez_compressed(a.reference_output/f'{index}.partial.npz',**{k:np.asarray(v) for k,v in value.items() if k!='frame_stats'})
   a.report.with_suffix('.partial.json').write_text(json.dumps(dict(model=a.model,mode=a.mode,scope='Full real-neural forward pass and original base output stage, followed by a refine action selecting the first tracked ID and original high-level partial reverse propagation over17,16,15. No new point/mask edit is applied in this regression. Standalone C++ selects actual sessions, encodes memories and merges only selected IDs into prior cached outputs.',cases=partial_rows,exact=all(all(r['exact'].values()) for r in partial_rows)),indent=2)+'\n')
   if a.require_exact:assert len(partial_rows)==3 and all(all(r['exact'].values()) for r in partial_rows),'partial outputs differ'
+ if a.edit_output:
+  assert a.final_output and not tri and not a.partial_output and len(a.frames)>22,'edit regression requires SAM3 final-output,23frames and no preceding partial regression'
+  selected,other=map(int,state['tracker_metadata']['obj_ids_all_gpu'][:2]);edit_rows=[];h,w=state['orig_height'],state['orig_width']
+  def compare_edit(tag,value):
+   root=a.native_output;ids=np.fromfile(root/f'{tag}.ids.i64.bin',np.int64);n=len(ids)
+   actual=dict(out_obj_ids=ids,out_probs=np.fromfile(root/f'{tag}.scores.f32.bin',np.float32),out_boxes_xywh=np.fromfile(root/f'{tag}.boxes.f32.bin',np.float32).reshape(n,4));packed=np.fromfile(root/f'{tag}.masks.bin',np.uint8).reshape(n,h,(w+7)//8);actual['out_binary_masks']=np.unpackbits(packed,axis=-1,bitorder='little')[...,:w].astype(bool)
+   equal={key:bool(np.array_equal(v,value[key])) for key,v in actual.items()};row=dict(tag=tag,exact=equal,mask_mismatches=int(np.count_nonzero(actual['out_binary_masks']!=value['out_binary_masks'])) if actual['out_binary_masks'].shape==value['out_binary_masks'].shape else -1);edit_rows.append(row);print(row,flush=True)
+   if a.reference_output:np.savez_compressed(a.reference_output/f'{tag}.npz',**{k:np.asarray(v) for k,v in value.items() if k!='frame_stats'})
+  with torch.autocast('cuda',enabled=a.mode!='fp32',dtype=dtype):
+   points=torch.tensor([[.45,.55],[.8,.15]],device='cuda');labels=torch.tensor([1,0],device='cuda')
+   _,value=model.add_prompt(state,18,points=points,point_labels=labels,obj_id=selected);compare_edit('18.edit_point',value)
+   mask=torch.zeros(h,w,device='cuda');mask[h//4:3*h//4,w//3:2*w//3]=1
+   _,value=model.add_tracker_new_mask(state,20,9000,mask);compare_edit('20.edit_mask_new',value)
+   _,value=model.add_tracker_new_mask(state,21,selected,mask.roll((h//10,w//12),(0,1)));compare_edit('21.edit_mask_existing',value)
+   for index,value in model.propagate_in_video(state,start_frame_idx=18,max_frame_num_to_track=4,reverse=False):compare_edit(f'{index}.edit_track',value)
+   model.remove_object(state,9000,is_user_action=True)
+   for index,value in model.propagate_in_video(state,start_frame_idx=20,max_frame_num_to_track=0,reverse=False):compare_edit('20.edit_remove',value)
+   model.use_stateless_refinement=True
+   _,value=model.add_prompt(state,22,points=points,point_labels=labels,obj_id=other);compare_edit('22.edit_stateless',value)
+  a.report.with_suffix('.edit.json').write_text(json.dumps(dict(model=a.model,mode=a.mode,scope='Actual original high-level SAM3 point edit, new and existing exact-mask edits, five-frame partial propagation, user removal/fetch and stateless first point refinement after34real-neural forward frames. Standalone C++ controller uses the same shared neural cores and cache.',cases=edit_rows,exact=all(all(r['exact'].values()) for r in edit_rows)),indent=2)+'\n')
+  if a.require_exact:assert len(edit_rows)==10 and all(all(r['exact'].values()) for r in edit_rows),'edited video outputs differ'
 if __name__=='__main__':main()
