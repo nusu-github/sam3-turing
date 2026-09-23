@@ -2406,3 +2406,23 @@ See VISION_POSITION_SELECTION.md and vision-position-selection-validation.json.
 Incremental CPU/CUDA SDKs and evidence reuse existing dependency/weight layers.
 No Actions or Windows/Turing execution. Goal remains active; prior source FP16
 residual and broader quality/performance work remain open.
+
+## Fuse rotary encoding casts and multiplication
+
+Vision and memory attention now use one precompiled CUDA kernel for FP32
+conversion, complex multiplication and conversion back to FP16/BF16. The same
+operation also supports FP32. It retains the original complex arithmetic and
+TensorIterator layouts; CPU, unsupported layouts/dtypes and empty tensors retain
+the original ATen expression. Public C/C++ predictor behavior, model weights and
+attention backend selection are unchanged.
+
+CPU21/CUDA38 CTests pass. Eight actual-weight precision/batch cases retain all
+vision tensors and layouts; 19 API regressions retain 774 files. Final-library
+profiling retains 68 outputs, and a recovered C SDK retains 153 image-lifecycle
+outputs. An installed-SDK audit also passes 240 small layout cases per device.
+The fused kernel is present as sm_75 machine code, with physical tests left to
+the user. Three independent Blackwell FP16 runs measure 3.30–3.61% lower encoder
+time than the position-selection SDK; encoder peak allocation remains unchanged.
+See ROTARY_FUSION.md and rotary-fusion-validation.json for exact measurement and
+artifact scope. No Actions or Windows/Turing execution. Goal remains active;
+source FP16 residual and broader quality/performance work remain open.

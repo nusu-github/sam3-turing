@@ -1,5 +1,6 @@
 #include "sam3/memory_attention.h"
 #include "sam3/autocast.h"
+#include "sam3/rotary.h"
 #include "detector_layers.h"
 #include <c10/core/InferenceMode.h>
 namespace sam3 {
@@ -13,8 +14,7 @@ at::Tensor axial_frequencies(int64_t size,int64_t dim,at::Device device) {
   return at::cat({at::polar(at::ones_like(fx),fx),at::polar(at::ones_like(fy),fy)},-1);
 }
 at::Tensor rotate(const at::Tensor& value,const at::Tensor& frequencies) {
-  const auto complex=at::view_as_complex(value.to(at::kFloat).reshape({value.size(0),value.size(1),value.size(2),-1,2}));
-  return at::view_as_real(complex*frequencies).flatten(3).to(value.scalar_type());
+  return rotary_embedding(value,frequencies.view({value.size(2),value.size(3)/2}));
 }
 }
 MemoryAttention::MemoryAttention(const WeightStore& store,const std::string& model,at::Device device)

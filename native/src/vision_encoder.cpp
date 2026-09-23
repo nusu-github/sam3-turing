@@ -1,5 +1,6 @@
 #include "sam3/vision_encoder.h"
 #include "sam3/autocast.h"
+#include "sam3/rotary.h"
 #include <c10/core/InferenceMode.h>
 #include <cmath>
 #include <set>
@@ -36,8 +37,7 @@ at::Tensor VisionEncoder::attention(const at::Tensor& x, const std::string& pref
   const auto& frequencies = weight(prefix + ".freqs_cis");
   TORCH_CHECK(frequencies.sizes() == at::IntArrayRef({length,32}), "RoPE token grid mismatch");
   const auto rotate = [&](const at::Tensor& value) {
-    const auto complex = at::view_as_complex(value.to(at::kFloat).reshape({b,16,length,32,2}));
-    return at::view_as_real(complex * frequencies.view({1,1,length,32})).flatten(3).to(value.scalar_type());
+    return rotary_embedding(value, frequencies);
   };
   const auto q = rotate(qkv[0]), k = rotate(qkv[1]);
   const auto attended = at::scaled_dot_product_attention(q, k, qkv[2]);
