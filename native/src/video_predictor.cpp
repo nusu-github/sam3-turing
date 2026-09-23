@@ -755,13 +755,32 @@ void VideoPredictor::remove_object(int64_t id) {
 }
 VideoOutput VideoPredictor::fetch(int64_t frame) const {
   auto &s = *impl_;
-  s.restore_cache(frame);
   const auto found = s.suppressions.find(frame);
-  auto out = centers(s.interaction.fetch(frame, s.metadata,
-                                     found == s.suppressions.end()
-                                         ? std::set<int64_t>{}
-                                         : found->second),
-                 s.h, s.w, s.options.centers);
+  const auto suppressed = found == s.suppressions.end()
+                              ? std::set<int64_t>{} : found->second;
+  VideoOutput out;
+  if (s.mask_cache && s.mask_cache->contains(frame)) {
+    // A fetch does not change cached masks. Read an independent copy directly
+    // into the usual output postprocessor, retaining the packed source. This
+    // avoids resident clones, repacking, device-to-host copies and disk writes.
+    VideoRawOutput raw;
+    raw.frame = frame;
+    raw.masks = s.mask_cache->read(frame);
+    // Previously restore_cache() cloned after VideoMaskCache::read() left its
+    // inference guard. Preserve ordinary, writable cached tensors for C++
+    // callers outside inference mode, while guarded callers avoid that copy.
+    if (!c10::InferenceMode::is_enabled())
+      for (auto& [id, mask] : raw.masks) mask = mask.clone();
+    raw.scores = s.metadata.object_scores;
+    const auto scores = s.metadata.frame_scores.find(frame);
+    if (scores != s.metadata.frame_scores.end()) raw.tracker_scores = scores->second;
+    raw.suppressed = suppressed;
+    out = postprocess_video_output(raw, s.h, s.w);
+  } else {
+    out = s.interaction.fetch(frame, s.metadata, suppressed);
+  }
+  out = centers(std::move(out), s.h, s.w, s.options.centers);
+  // Preserve recovery of resident frames left by a previous failed compaction.
   s.compact_cache_all();
   return out;
 }

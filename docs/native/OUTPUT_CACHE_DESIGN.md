@@ -119,3 +119,8 @@ at `output-cache-sdk-overlay/overlays.json` and validation evidence at
 rotary SDK's dependency and shared-weight layers. Output bytes that match prior
 evidence are referenced by archive/member and SHA-256 instead of being copied
 again.
+
+Subsequent [read-only fetch optimization](CACHE_FETCH.md) retains packed archives
+during ordinary reads and avoids repacking/rewrite. The component storage
+measurements above still describe the original packing operation; they are not
+owning-predictor fetch timings.

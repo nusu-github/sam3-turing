@@ -144,3 +144,7 @@ at the matching preceding SDK root described by `rotary-sdk-overlay/overlays.jso
 The recipe verifies its prerequisite hash and lists changed-file hashes; all
 dependency and shared-weight layers are reused. Validation details are in
 `output-cache-validation.json`.
+
+The next increment, `cache-fetch-sdk-overlay/overlays.json`, is based on that
+output-cache SDK and removes repeated packed-cache writes during reads. See
+[CACHE_FETCH.md](CACHE_FETCH.md) for exact regression and measurement scope.

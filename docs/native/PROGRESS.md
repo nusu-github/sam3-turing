@@ -2454,3 +2454,28 @@ compression/transfer add work. See OUTPUT_CACHE_DESIGN.md and
 output-cache-validation.json for measurement scope and incremental SDK recovery.
 No Actions or Windows/Turing execution. Goal remains active; source FP16 residual,
 broader quality/performance and further optimization remain open.
+
+## Read-only packed-cache fetch
+
+Packed displayed masks now go directly to the existing output postprocessor.
+Ordinary reads retain their CPU/disk source and avoid repacking, GPU-to-host
+transfer and archive replacement. Guarded inference also avoids the resident
+clone; C++ callers outside inference mode retain one compatibility clone so
+cached tensors remain ordinarily writable. No public ABI, model weights,
+dependencies or inference limits change.
+
+CPU22/CUDA40 CTests and all 19 API cases (1,940 files) pass. Sixteen separate
+baseline/current fetch process pairs preserve every 40-file output/metadata set,
+including ordinary C++ mutation isolation, cached propagation, empty frames,
+corrupt-read recovery and legacy inspection/reset. Disk archive identities stay
+unchanged in the new read path. Recovered C SDK lifecycle and standalone fetch
+probe retain 153 and 40 files respectively; no Python/Triton runtime is loaded.
+
+Three independent FP16 pairs per model/storage measure 19.09–19.65% lower packed
+CPU fetch time and 37.52–38.27% lower disk fetch time on Blackwell. These are
+warmed guarded owning-predictor reads, not encoding/full-model/C-wrapper timings
+or cold-disk performance. Peak additional CUDA allocation is unchanged.
+See CACHE_FETCH.md and cache-fetch-validation.json. Private SDK increment and
+evidence reuse the existing dependency/weight layers. No Actions or Windows/
+Turing execution. The goal remains active under the user's six-hour deadline;
+new optimization stops 2026-09-23 17:02:10 UTC, final work stops 18:02:10 UTC.
