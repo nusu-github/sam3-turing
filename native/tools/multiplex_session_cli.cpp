@@ -1,4 +1,5 @@
 #include "sam3/multiplex_session.h"
+#include "sam3/video_recondition.h"
 #include "sam3/multiplex_storage.h"
 #include <ATen/Context.h>
 #include <ATen/Parallel.h>
@@ -43,7 +44,23 @@ int main(int argc,char** argv){
     TORCH_CHECK(rejected && session.object_ids()==ids,"failed new-object edit changed session IDs");fail=false;
     session.reset();TORCH_CHECK(session.object_ids().empty() && !session.state().buckets && session.state().history.conditioning.empty(),"reset retained state");
     session.add_points(4,909,{{},{},at::tensor({.1f,.2f,.7f,.8f},opts),true});request.start=4;request.max_steps=0;session.propagate(request,emit);session.remove_object(909,true);TORCH_CHECK(session.object_ids().empty(),"last-object removal failed");
-    const auto batched=session.add_masks(0,{700,800},at::stack({brush,brush}));TORCH_CHECK((batched.masks.select(2,10).select(2,15)<0).all().item<bool>(),"simultaneous brushes did not mutually suppress overlap");session.preflight();session.reset();
-    std::cout<<"native SAM3.1 session passed: "<<callbacks<<" callbacks; 18 accumulated points, masks, box, midstream add, refinement, reverse, removal/clear, cancel/resume, rollback/reset; feature loads="<<loads<<"; no Python\n";return 0;
+    const auto batched=session.add_masks(0,{700,800},at::stack({brush,brush}));TORCH_CHECK((batched.masks.select(2,10).select(2,15)<0).all().item<bool>(),"simultaneous brushes did not mutually suppress overlap");session.preflight();
+    request.start=1;request.max_steps=1;request.reverse=false;request.preflight=false;session.propagate(request,emit);
+    const auto layout=session.state().buckets->assignments();const auto ids_before=session.object_ids();const auto dirty_before=session.state().dirty;
+    bool unknown=false,duplicate=false,missing_frame=false;
+    try{session.recondition_masks(1,{999},brush.unsqueeze(0));}catch(const c10::Error&){unknown=true;}
+    try{session.recondition_masks(1,{700,700},at::stack({brush,brush}));}catch(const c10::Error&){duplicate=true;}
+    try{session.recondition_masks(4,{700},brush.unsqueeze(0));}catch(const c10::Error&){missing_frame=true;}
+    TORCH_CHECK(unknown && duplicate && missing_frame && session.object_ids()==ids_before && session.state().dirty==dirty_before && session.state().buckets->assignments()==layout,"invalid reconditioning changed session metadata");
+    sam3::ReconditionMasks prepared;prepared.ids={800,700};prepared.binary_masks=at::stack({brush.gt(0),brush.flip({0}).gt(0)});
+    sam3::Sam31TrackingSession partner(core,provider,5,37,53,device,mode,options);
+    partner.add_masks(0,{700,900},at::stack({brush,brush}));partner.preflight();
+    const auto partner_layout=partner.state().buckets->assignments();
+    const auto executed=sam3::execute_reconditioning(1,prepared,std::vector<sam3::Sam31TrackingSession*>{&session,&partner});
+    TORCH_CHECK(executed.affected_ids==std::set<int64_t>({700,800}) && executed.preflight_states==std::vector<int64_t>({0,1}) && executed.edited_states==std::vector<int64_t>{0} && session.state().dirty.empty(),"reconditioning did not preflight affected state");
+    TORCH_CHECK(session.state().buckets->assignments()==layout && session.object_ids()==ids_before,"reconditioning changed object layout");
+    TORCH_CHECK(partner.state().buckets->assignments()==partner_layout && partner.object_ids()==std::vector<int64_t>({700,900}),"shared-ID preflight modified partner layout");
+    request.start=2;request.max_steps=2;request.reverse=true;session.propagate(request,emit);session.reset();partner.reset();
+    std::cout<<"native SAM3.1 session passed: "<<callbacks<<" callbacks; 18 accumulated points, masks, box, midstream add, refinement, reverse, removal/clear, cancel/resume, rollback/reset, reconditioning/preflight; feature loads="<<loads<<"; no Python\n";return 0;
   }catch(const std::exception& error){std::cerr<<error.what()<<'\n';return 1;}
 }

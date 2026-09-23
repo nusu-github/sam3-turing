@@ -1594,3 +1594,59 @@ weights or whole-model variants were created. Full neural edit/preflight
 execution, coordinated insertion/removal and caches, text/visual prompt state,
 high-level propagation/output handling, codecs, multi-GPU execution and portable
 packaging remain unfinished. See `VIDEO_INTEGRATION.md` for the exact contracts.
+
+## Execute neural reconditioning and release consolidated previews
+
+Added `sam3/video_recondition.h` to apply prepared corrections to actual tracker
+sessions and preflight their memories. SAM3 follows candidate order and preflights
+affected states after each candidate. SAM3.1 batches into the first containing
+state, records all IDs in changed states as affected, then preflights states
+sharing those IDs in session order. The executor borrows sessions/model cores;
+it does not clone models or silently drop valid candidates. Multi-state execution
+is not atomic: a later failure does not roll back already committed states.
+
+`Sam31TrackingSession::recondition_masks` now applies the existing dynamic frame
+helper to current-frame masks, scores and multiplexed pointers while preserving
+bucket layout. It rejects unknown/duplicate IDs and missing frames and retains
+individual-edit rollback. A native auxiliary 1008 high-mask grid is reconstructed
+after the source-equivalent deferred 1152 brush update; preflight rebuilds memory
+from consolidated masks. Resident, offloaded and paged histories are supported.
+
+Repeated corrections exposed an existing session bug: already-consolidated brush
+previews remained in `video_edits` and could be reapplied/suppressed by later edits
+on the same frame. Preflight now releases these temporary previews. Original
+annotations and encoded history are retained. The failing repeated-correction
+fixture now matches source, including edits before and after preflight.
+
+Actual-weight neural comparisons use full-grid synthetic cached features, not
+a coherent detector/vision/video sequence. SAM3.1 compares actual demo correction,
+preflight, subsequent forward/reverse propagation and stored state: 1,905 exact
+comparisons in 24 CUDA workflows over three modes, plus 214 in two CPU FP32
+workflows. SAM3 compares the original video-base `_recondition_masklets` and full
+session snapshots: 1,116 across three CUDA modes plus 372 on CPU FP32. Total:
+3,607 exact neural output/state comparisons, with no tolerance adjustment.
+
+The original SAM3.1 offloaded correction scatter fails on CPU/CUDA device mismatch,
+so those source comparisons keep state on the compute device. Native resident,
+CPU-offloaded and disk-paged workflows compare separately: 1,083 exact tensor
+comparisons across three modes, unchanged old conditioning history and temporary
+archive cleanup. Existing source adaptations for CPU device transfers and FP32
+compressed memory are recorded in the reports; no claim of unmodified upstream
+CPU support is made. The older intermittent full-model CPU runtime issue remains
+unresolved despite the passing CPU comparisons here.
+
+The dynamic session invariant suite passes, including 44 cancellation/resume
+comparisons, 18-point retention, insertion/removal and old-bucket preservation.
+Standalone SAM3 and SAM3.1 probes run with PATH=/nonexistent; the latter also
+checks paged history, invalid corrections and shared-ID preflight across two
+sessions. CTest passes 19/19 CUDA-enabled and 11/11 custom-CUDA-disabled checks.
+No GitHub Actions or Windows/Turing execution was used. Python-free linkage and
+existing sm_75 cubins remain; portable distribution is still unfinished.
+
+Code/reports are pushed to `codex/native-onboarding`; headers, binaries and logs
+are private in `native-foundation/recondition-linux-cuda13`. No weights or full
+model variants were added. Global occlusion-adjusted memory updates, coordinated
+detector insertion/removal, text/visual prompt state, caches/user actions and the
+complete high-level video coordinator remain. Codecs, multi-GPU execution,
+portable packaging and end-to-end quality/performance validation also remain.
+The next source boundary is `_tracker_update_memories` after correction/occlusion.

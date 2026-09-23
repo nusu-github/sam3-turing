@@ -1,4 +1,5 @@
 #include "sam3/tracking_session.h"
+#include "sam3/video_recondition.h"
 #include <ATen/Context.h>
 #include <ATen/Parallel.h>
 #include <iostream>
@@ -32,11 +33,14 @@ int main(int argc,char** argv) {
     session.propagate(request,[&](const auto& out){emit(out);if(count==2)session.cancel();return true;});
     TORCH_CHECK(count==2 && session.state().tracked_direction.size()==2,"cancellation did not preserve completed frames");
     request.start=2;session.propagate(request,emit);TORCH_CHECK(count==4,"resume missed frames");
+    sam3::ReconditionMasks prepared;prepared.ids={202,101};prepared.binary_masks=at::stack({mask.gt(0),mask.flip({0}).gt(0)});
+    const auto executed=sam3::execute_reconditioning(2,prepared,std::vector<sam3::Sam3TrackingSession*>{&session});
+    TORCH_CHECK(executed.affected_ids==std::set<int64_t>({101,202}) && executed.preflight_states==std::vector<int64_t>({0,0}),"SAM3 did not preflight after each candidate");
     session.add_points(2,101,points,true,true);request.start=3;request.reverse=true;request.preflight=true;
     session.propagate(request,emit);TORCH_CHECK(count==8,"reverse propagation missed frames");
     const auto updates=session.remove_object(101,true);
     TORCH_CHECK(session.object_ids()==std::vector<int64_t>{202} && updates.size()==2,"object removal/remapping failed");
-    session.clear_input(1,202);
+    session.clear_input(2,202);session.clear_input(1,202);
     TORCH_CHECK(!session.state().started && session.state().history.conditioning.empty() && session.state().history.tracked.empty(),"last annotation clear did not reset tracking");
     session.add_points(0,202,points);session.reset();TORCH_CHECK(session.object_ids().empty(),"reset retained objects");
     bool failed=false;try {session.remove_object(404,true);}catch(const c10::Error&){failed=true;}

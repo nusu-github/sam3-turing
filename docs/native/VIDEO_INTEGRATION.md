@@ -256,11 +256,9 @@ prompts, objects or detections.
 
 `recondition_batches` preserves SAM3's per-candidate/per-containing-state order.
 SAM3.1 assigns each target to its first containing state and, when multiplexing,
-groups targets in first-encounter state order. These are **edit recipes**, not
-neural session updates. The future executor must still run SAM3 preflight after
-each affected candidate/state, and implement SAM3.1's affected-state behavior
-(including all IDs in the changed state, not just target IDs) and subsequent
-preflight. Caller masks and state are not modified during preparation.
+groups targets in first-encounter state order. These are **edit recipes**; preparation itself does not run neural updates.
+The executor described below consumes them and performs model-specific neural
+edits/preflight. Caller masks and state are not modified during preparation.
 
 ### Geometry optimization and validation
 
@@ -301,3 +299,79 @@ native. Peak additional PyTorch GPU allocation is 132,712,448 versus 1,048,064
 bytes (about 99.2% less), above the same 16,777,216-byte baseline. Event timing
 includes stream work/launch gaps, and allocation excludes host RSS/reserved GPU
 memory. This is not full-video throughput or Turing performance.
+
+## Neural execution of reconditioning
+
+`sam3/video_recondition.h` connects prepared masks to real tracker sessions.
+`execute_reconditioning` borrows distinct session pointers, preserving shared
+model-core/visual-cache ownership. It accepts `ReconditionMasks` produced by the
+preparation helper; the caller still chooses whether periodic/geometry gates
+trigger execution and still owns the updated global low logits.
+
+For SAM3, each candidate is applied to every containing state, followed by
+preflight of those states before advancing to the next candidate. For SAM3.1,
+candidates are batched into their first containing state. After all batches,
+every state sharing any affected ID is preflighted in session order. Affected
+IDs include all objects in an edited state, rather than only the target masks.
+The returned edited/preflight state lists describe execution, and are distinct
+from SAM3's geometry-triggered ID set used by output assembly. An empty prepared
+list is a no-op. Execution mutates sessions and is not an all-session transaction:
+a later failure does not undo an earlier state's completed edit/preflight.
+
+`Sam31TrackingSession::recondition_masks` specifically updates an existing frame
+and existing IDs through the tested dynamic frame helper. It does not use the
+ordinary new-object brush path or change bucket assignments. It demultiplexes
+existing pointers, applies selected mask/pointer/score changes, remultiplexes
+pointers, retains conditioning membership, updates pending brush previews and
+marks the frame for preflight. Unknown/duplicate IDs and absent frames fail
+without changing session metadata. The individual edit rolls back on exceptions,
+including failures while reading paged state. Preflight encodes the consolidated
+masks and subsequent propagation uses the new memory.
+
+Native dense history retains an auxiliary 1008-resolution mask grid, while the
+demo's deferred update omits high masks and accepts 1152 brush logits. The session
+therefore reconstructs its auxiliary grid from updated low logits after the
+frame helper; preflight then regenerates the grid with source non-overlap rules
+before memory encoding. This avoids assigning a 1152 brush into a 1008 buffer
+without altering the actual source mask/pointer equations.
+
+Repeated correction testing exposed a pre-existing session bug: `video_edits`
+kept already-consolidated +/-1024 brush previews. A later edit on the same frame
+could suppress/reapply those obsolete previews instead of using stored logits.
+Preflight now clears these temporary previews after successful consolidation.
+Original point/mask annotations and the resulting history remain available for
+future edits, clearing, removal and propagation.
+
+Source neural comparisons use full 72/144/288 projected features and actual
+weights; they do not include the vision encoder/detector or a coherent real
+video sequence. SAM3 compares the original `_recondition_masklets` with full
+session snapshots. SAM3.1 compares actual demo correction/preflight and stored
+masks, memory, pointers, logits, positions and conditioning sets, including
+repeated/reordered edits on the same frame. Its source reconditioning comparisons
+keep state on the compute device because unmodified offloaded scatter raises a
+CPU/CUDA device mismatch. Separate native comparisons check resident, CPU-offloaded
+and disk-paged execution, including archive cleanup and unchanged older history.
+Existing source adaptations for CPU device transfers/FP32 compressed memory are
+recorded in the reports. They are not claims of unmodified upstream CPU support.
+
+The high-level detector/tracker coordinator is still incomplete. In particular,
+this executor does not yet apply global occlusion-adjusted tracking masks to each
+state's current-frame memory, manage detector insertion/removal, visual/text
+prompt caches and user actions, or assemble complete high-level video outputs.
+The source `_tracker_update_memories` phase after reconditioning/occlusion is the
+next integration boundary. Codec support, multi-GPU execution, portable packages
+and end-to-end quality/performance validation also remain.
+
+The reconditioning milestone reports 3,607 exact neural output/state comparisons:
+SAM3.1 has 1,905 across 24 CUDA workflows (all existing demo comparisons plus the
+new correction cases, three modes) and 214 in two CPU FP32 correction workflows;
+SAM3 has 1,116 across three CUDA modes and 372 on CPU FP32. Storage equivalence
+adds 1,083 exact comparisons across three CUDA modes. The existing dynamic
+session invariant suite also passes, including 44 cancellation/resume comparisons,
+18 retained points, insertion/removal and old-bucket preservation. Standalone
+SAM3/SAM3.1 session probes run with PATH=/nonexistent; the multiplex probe includes
+paged history, invalid-correction rejection and shared-ID preflight across two
+sessions. CTest passes 19 CUDA-enabled/11 custom-CUDA-disabled checks. The earlier
+intermittent full-model CPU runtime failure remains open; these passing runs do
+not establish its resolution. No GitHub Actions or Windows/Turing execution was
+used. No new model weights or model variants were produced.

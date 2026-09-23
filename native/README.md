@@ -970,3 +970,13 @@ original source methods, extracted gate blocks, edit batches with a recording
 tracker and consecutive state transitions. It does not execute neural session
 edits or complete the high-level video predictor. See [integration contracts](../docs/native/VIDEO_INTEGRATION.md)
 for model-specific score/history rules, source quirks and remaining integration.
+
+### Executing video corrections
+
+`sam3/video_recondition.h` executes prepared corrections through real SAM3/SAM3.1
+sessions and memory preflight in model-specific order. SAM3.1's
+`recondition_masks` corrects existing IDs/current frames without changing their
+bucket layout. Preflight releases consolidated temporary previews, so repeated
+correction starts from stored logits. See [neural execution contracts](../docs/native/VIDEO_INTEGRATION.md)
+for transaction scope, history storage and the still-missing high-level video
+coordinator. The standalone session tools exercise this API without Python.

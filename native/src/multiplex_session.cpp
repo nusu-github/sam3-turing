@@ -116,6 +116,38 @@ TrackingSessionOutput Sam31TrackingSession::add_masks(int64_t index,const std::v
     return output(*find(index),true);
   }catch(...){state_=std::move(previous);throw;}
 }
+TrackingSessionOutput Sam31TrackingSession::recondition_masks(int64_t index,const std::vector<int64_t>& ids,const at::Tensor& masks){
+  c10::InferenceMode inference;check_frame(index);
+  TORCH_CHECK(!ids.empty() && masks.dim()==3 && masks.size(0)==int64_t(ids.size()) && masks.size(1)>0 && masks.size(2)>0,"one nonempty [H,W] mask per object ID is required");
+  TORCH_CHECK(std::set<int64_t>(ids.begin(),ids.end()).size()==ids.size(),"mask object IDs must be unique");
+  TORCH_CHECK(state_.buckets && find(index),"reconditioning requires an existing frame");
+  std::vector<int64_t> objects;
+  for(auto id:ids){const auto it=std::find_if(state_.objects.begin(),state_.objects.end(),[&](const auto& obj){return obj.id==id;});TORCH_CHECK(it!=state_.objects.end(),"reconditioning cannot introduce an object ID");objects.push_back(it-state_.objects.begin());}
+  auto previous=state_;try {
+    AutocastGuard autocast(device_.type(),mode_!="fp32",mode_=="fp16"?at::kHalf:at::kBFloat16);
+    auto frame=load_multiplex_frame(*find(index));auto layout=*state_.buckets;const auto value=features(index);
+    const auto raw=masks.to(device_,at::kFloat).unsqueeze(1);
+    // The demo's deferred current output omits high masks. Native history
+    // retains a 1008 grid for paging/remapping, while brush logits use 1152.
+    // Reconstruct this auxiliary grid after the deferred update; preflight
+    // will impose overlap constraints before encoding it.
+    frame.masks.high_res_mask=at::Tensor();
+    MultiplexMaskUpdate request;request.encode_memory=false;
+    core_->update_masks(value.interactive,value.propagation,resize(raw,1152,1152,true),objects,ids,frame,layout,request,frame_options_,mode_);
+    frame.masks.high_res_mask=resize(frame.masks.low_res_mask.to(device_),1008,1008);
+    if(frame_options_.temporal.select_by_score)frame.confidence=memory_confidence(frame.masks.object_logits,frame.iou);
+    const auto binary=resize(raw,height_,width_,true)>.5,counts=binary.to(at::kLong).sum(0,true);
+    for(size_t i=0;i<ids.size();++i){
+      const auto own=binary.slice(0,i,i+1);auto& object=state_.objects[objects[i]];
+      object.masks[index]=own.to(storage_);object.points.erase(index);object.refined.erase(index);
+      object.video_edits[index]=at::where((counts-own.to(at::kLong))>0,-1024.,at::where(own,1024.,-1024.)).to(storage_);
+    }
+    // Only already pending brush outputs are suppressed, as in the source.
+    for(auto& object:state_.objects)if(std::find(ids.begin(),ids.end(),object.id)==ids.end() && object.video_edits.count(index))object.video_edits[index]=at::where((counts>0).to(storage_),-1024.,object.video_edits.at(index));
+    store(frame);put(std::move(frame),!state_.tracked_direction.count(index) || options_.all_edits_conditioning);
+    state_.dirty.insert(index);state_.annotated.insert(index);return output(*find(index),true);
+  }catch(...){state_=std::move(previous);throw;}
+}
 void Sam31TrackingSession::preflight(bool encode){
   c10::InferenceMode inference;AutocastGuard autocast(device_.type(),mode_!="fp32",mode_=="fp16"?at::kHalf:at::kBFloat16);auto previous=state_;try {
     for(auto index:state_.dirty){auto* original=find(index);if(!original)continue;auto frame=load_multiplex_frame(*original);frame.masks.low_res_mask=frame.masks.low_res_mask.to(device_).clone();
@@ -123,6 +155,9 @@ void Sam31TrackingSession::preflight(bool encode){
       frame.masks.high_res_mask=non_overlap(resize(frame.masks.low_res_mask,1008,1008));
       if(encode && frame_options_.temporal.memory_slots>0){const auto memory=core_->encode_history(frame,*state_.buckets,frame_options_,mode_);frame.memory=memory.features;frame.memory_position=memory.position;}
       store(frame);*original=std::move(frame);
+      // Brush/point previews are temporary. Once consolidated, later edits
+      // must start from the stored low logits, not reapply old +/-1024 masks.
+      for(auto& object:state_.objects)object.video_edits.erase(index);
     }
     state_.dirty.clear();if(!state_.first_annotation && !state_.annotated.empty())state_.first_annotation=*state_.annotated.begin();state_.started=true;
   }catch(...){state_=std::move(previous);throw;}

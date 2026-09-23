@@ -9,7 +9,9 @@ import gc
 import json
 import random
 from pathlib import Path
-from types import MethodType
+from types import MethodType,SimpleNamespace
+import numpy as np
+from sam3.model.sam3_video_base import Sam3VideoBase
 import torch
 from sam3.model.sam3_tracking_predictor import Sam3TrackerPredictor
 from sam3.model.sam3_tracker_utils import fill_holes_in_mask_scores
@@ -90,6 +92,10 @@ def run_reference(host, arrays, operations, payloads, settings, flags, mode, dev
             kwargs=dict(points=payload[:,:2],labels=payload[:,2].int()) if op[0]==0 else dict(box=payload)
             emit(*host.add_new_points_or_box(state,op[1],op[2],clear_old_points=bool(op[3]),rel_coordinates=bool(op[4]),use_prev_mem_frame=bool(op[5]),**kwargs))
         elif op[0]==2:emit(*host.add_new_mask(state,op[1],op[2],payload))
+        elif op[0]==8:
+            Sam3VideoBase._recondition_masklets(SimpleNamespace(tracker=host),op[1],{'mask':payload.float().unsqueeze(0)},
+                {op[2]:0},[state],{'obj_ids_all_gpu':np.array(state['obj_ids'])},torch.full((len(state['obj_ids']),),2.,device=device))
+            out[prefix+'affected']=torch.tensor(sorted(state['obj_ids']),dtype=torch.long)
         elif op[0]==3:host.propagate_in_video_preflight(state,bool(op[3]))
         elif op[0]==4:
             iterator=host.propagate_in_video(state,None if op[1]<0 else op[1],None if op[2]<0 else op[2],bool(op[3]),tqdm_disable=True,run_mem_encoder=bool(op[4]),propagate_preflight=bool(op[5]))
@@ -122,7 +128,11 @@ def scenarios(device):
     # conditioning memory even when all individual prompt outputs match.
     sparse=[op(0,i,101,1,1,payload=point) for i in [17,8,1]]+[op(3,a=1),op(4,9,0,0,1)]
     basic=[op(0,0,101,1,1,payload=point),op(4,0,2,0,1,1),op(0,1,101,1,1,1,payload=point),op(4,2,2,1,1,1),op(5,0,101),op(7)]
-    return [('multi_edit',common,[True,False,True,False,True,False,False,False],4),
+    prepared=torch.nn.functional.interpolate(mask[None,None],(1152,1152),mode='bilinear',align_corners=False)[0,0]>.5
+    recondition=[op(2,0,101,payload=mask),op(2,0,202,payload=mask.roll(8,1)),op(3,a=1),
+                 op(4,0,1,0,1),op(8,1,202,payload=prepared),op(4,2,0,0,1),
+                 op(8,2,101,payload=prepared.roll(79,0)),op(4,2,2,1,1)]
+    return [('recondition_execute',recondition,[True,False,False,False,True,False,False,False],3),('multi_edit' ,common,[True,False,True,False,True,False,False,False],4),
             ('scores_and_noncond',basic,[False,True,True,True,False,False,True,True],3),
             ('sparse_order',sparse,[True,False,True,False,True,True,False,False],20)]
 

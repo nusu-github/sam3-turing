@@ -6,7 +6,7 @@ struct MultiplexTrackingFeatures {TrackingFeatures interactive,propagation;};
 struct MultiplexSessionObject {
   int64_t id;
   OrderedFrames<TrackingPoints> points;
-  OrderedFrames<at::Tensor> masks,video_edits;
+  OrderedFrames<at::Tensor> masks,video_edits; // video_edits contains pending previews only
   std::set<int64_t> refined;
 };
 struct MultiplexSessionState {
@@ -41,6 +41,9 @@ class SAM3_NATIVE_EXPORT Sam31TrackingSession {
   TrackingSessionOutput add_points(int64_t frame,int64_t object,const TrackingPoints&,bool clear_old=true,bool use_previous_memory=false);
   TrackingSessionOutput add_mask(int64_t frame,int64_t object,const at::Tensor&);
   TrackingSessionOutput add_masks(int64_t frame,const std::vector<int64_t>& objects,const at::Tensor& masks);
+  // Correct existing IDs in a frame already held by this session. The bucket
+  // layout is unchanged; memory is rebuilt by preflight after the edits.
+  TrackingSessionOutput recondition_masks(int64_t frame,const std::vector<int64_t>& objects,const at::Tensor& masks);
   void preflight(bool encode_memory=true);
   void propagate(const TrackingPropagation&,const OutputCallback&);
   void cancel() noexcept {cancelled_.store(true);}

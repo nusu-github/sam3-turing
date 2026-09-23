@@ -1,4 +1,5 @@
 #include "sam3/multiplex_session.h"
+#include "sam3/video_recondition.h"
 #include "sam3/multiplex_storage.h"
 #include <torch/library.h>
 TORCH_LIBRARY_FRAGMENT(sam3_native,m) {
@@ -8,11 +9,13 @@ TORCH_LIBRARY_FRAGMENT(sam3_native,m) {
       const auto core=std::make_shared<sam3::Sam31TrackingFrame>(sam3::WeightStore(std::filesystem::u8path(directory)),device);sam3::MultiplexSessionOptions options;options.history_directory=std::filesystem::u8path(history_directory);options.offload_state=flags[0];options.non_overlap_output=flags[1];options.all_edits_conditioning=flags[2];options.frame.temporal.select_by_score=flags[3];options.frame.non_overlap_memory=flags[4];options.frame.temporal.memory_slots=3;options.frame.temporal.max_pointer_frames=4;options.frame.temporal.max_conditioning_frames=2;
       sam3::Sam31TrackingSession session(core,[&](int64_t index){const auto& x=features[index%features.size()];TORCH_CHECK(x.size()==8,"two feature pyramids required");return sam3::MultiplexTrackingFeatures{{x[0],x[1],{x[2],x[3]}},{x[4],x[5],{x[6],x[7]}}};},settings[0],settings[1],settings[2],device,mode,options);
       c10::Dict<std::string,at::Tensor> result;const auto save=[&](const std::string& key,const at::Tensor& value){if(value.defined())result.insert(key,value.cpu().clone());};
-      for(size_t i=0;i<operations.size();++i){const auto& op=operations[i];TORCH_CHECK(op.size()>=2 && (op[0]==8?op.size()>=3:op.size()==8),"invalid operation fields");const auto prefix=std::to_string(i)+"/";int64_t count=0;
+      for(size_t i=0;i<operations.size();++i){const auto& op=operations[i];TORCH_CHECK(op.size()>=2 && ((op[0]==8 || op[0]==9 || op[0]==10)?op.size()>=3:op.size()==8),"invalid operation fields");const auto prefix=std::to_string(i)+"/";int64_t count=0;
         const auto emit=[&](const sam3::TrackingSessionOutput& value){const auto key=prefix+"out"+std::to_string(count++)+"/";save(key+"frame",at::scalar_tensor(value.index,at::kLong));save(key+"ids",at::tensor(value.object_ids,at::kLong));save(key+"masks",value.masks);save(key+"low",value.low_masks);save(key+"logits",value.object_logits);};
         if(op[0]==0 || op[0]==1){sam3::TrackingPoints prompt;prompt.normalized=op[4];if(op[0]==0){prompt.points=payloads[i].slice(1,0,2);prompt.labels=payloads[i].select(1,2);}else prompt.box=payloads[i];emit(session.add_points(op[1],op[2],prompt,op[3],op[5]));}
         else if(op[0]==2)emit(session.add_mask(op[1],op[2],payloads[i]));
         else if(op[0]==8)emit(session.add_masks(op[1],std::vector<int64_t>(op.begin()+2,op.end()),payloads[i]));
+        else if(op[0]==9)emit(session.recondition_masks(op[1],std::vector<int64_t>(op.begin()+2,op.end()),payloads[i]));
+        else if(op[0]==10){sam3::ReconditionMasks prepared;prepared.ids={op.begin()+2,op.end()};prepared.binary_masks=payloads[i].gt(0);const auto executed=sam3::execute_reconditioning(op[1],prepared,std::vector<sam3::Sam31TrackingSession*>{&session});save(prefix+"affected",at::tensor(std::vector<int64_t>(executed.affected_ids.begin(),executed.affected_ids.end()),at::kLong));}
         else if(op[0]==3)session.preflight(op[3]);
         else if(op[0]==4){sam3::TrackingPropagation request;if(op[1]>=0)request.start=op[1];if(op[2]>=0)request.max_steps=op[2];request.reverse=op[3];request.encode_memory=op[4];request.preflight=op[5];session.propagate(request,[&](const auto& value){emit(value);if(op[6]>0 && count>=op[6]){if(op[7])session.cancel();else return false;}return true;});}
         else if(op[0]==5)emit(session.clear_input(op[1],op[2]));else if(op[0]==6)session.remove_object(op[2],op[3]);else if(op[0]==7)session.reset();else TORCH_CHECK(false,"unknown operation");
