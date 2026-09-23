@@ -140,5 +140,13 @@ sam3_status sam3_predictor_propagate(sam3_predictor* handle,int64_t start,int64_
 sam3_status sam3_predictor_cancel(sam3_predictor* handle) noexcept{return protect([&]{require(handle,"predictor is required");handle->value->cancel();});}
 sam3_status sam3_predictor_remove_object(sam3_predictor* handle,int64_t id) noexcept{return protect([&]{predictor(handle,[&](auto& p){p.remove_object(id);});});}
 sam3_status sam3_predictor_reset(sam3_predictor* handle) noexcept{return protect([&]{predictor(handle,[&](auto& p){p.reset();});});}
-sam3_status sam3_predictor_info(sam3_predictor* handle,sam3_result** out) noexcept{return protect([&]{output(out);predictor(handle,[&](auto& p){std::vector<int64_t> frames;for(const auto& [frame,masks]:p.interaction().cached_frames())frames.push_back(frame);result({{"preprocess_policy",at::scalar_tensor(int32_t(p.preprocess_policy()),at::kInt)},{"ids",at::tensor(p.metadata().object_ids(),at::kLong)},{"visual_encodes",at::scalar_tensor(p.visual_encodes(),at::kLong)},{"cached_frames",at::tensor(frames,at::kLong)},{"action_count",at::scalar_tensor(int64_t(p.interaction().actions().size()),at::kLong)}},out);});});}
+sam3_status sam3_predictor_set_output_cache(sam3_predictor* handle,int32_t storage,const char* directory) noexcept{return protect([&]{
+  require(storage>=0 && storage<=2,"invalid output cache storage");
+  require(storage!=SAM3_OUTPUT_CACHE_PACKED_DISK || (directory && *directory),"disk output cache requires a directory");
+  predictor(handle,[&](auto& p){p.set_output_cache(static_cast<sam3::VideoOutputCacheStorage>(storage),std::filesystem::u8path(directory?directory:""));});
+});}
+sam3_status sam3_predictor_output_cache_stats(sam3_predictor* handle,sam3_result** out) noexcept{return protect([&]{output(out);predictor(handle,[&](auto& p){
+  const auto s=p.output_cache_stats();result({{"storage",at::scalar_tensor(int64_t(s.storage),at::kLong)},{"inspection_pinned",at::scalar_tensor(int64_t(s.inspection_pinned),at::kLong)},{"frames",at::scalar_tensor(s.frames,at::kLong)},{"masks",at::scalar_tensor(s.masks,at::kLong)},{"resident_bytes",at::scalar_tensor(int64_t(s.resident_bytes),at::kLong)},{"packed_bytes",at::scalar_tensor(int64_t(s.packed_bytes),at::kLong)},{"disk_bytes",at::scalar_tensor(int64_t(s.disk_bytes),at::kLong)}},out);
+});});}
+sam3_status sam3_predictor_info(sam3_predictor* handle,sam3_result** out) noexcept{return protect([&]{output(out);predictor(handle,[&](auto& p){const auto frames=p.cached_frame_indices();result({{"preprocess_policy",at::scalar_tensor(int32_t(p.preprocess_policy()),at::kInt)},{"ids",at::tensor(p.metadata().object_ids(),at::kLong)},{"visual_encodes",at::scalar_tensor(p.visual_encodes(),at::kLong)},{"cached_frames",at::tensor(frames,at::kLong)},{"action_count",at::scalar_tensor(p.action_count(),at::kLong)}},out);});});}
 }

@@ -152,3 +152,9 @@ Standalone development SDK installation and runtime isolation are documented in
 
 Local image/video/folder sources and their ownership are now available through
 [MEDIA_IO.md](MEDIA_IO.md); full codec/preprocessing parity remains scoped there.
+
+Optional displayed-mask storage now retains every cached frame/object in packed
+CPU memory or temporary disk archives. See
+[OUTPUT_CACHE_DESIGN.md](OUTPUT_CACHE_DESIGN.md) for configuration, fetch/edit
+semantics, legacy inspection behavior and memory accounting. This is separate
+from neural tracker history and requires no additional model weights.

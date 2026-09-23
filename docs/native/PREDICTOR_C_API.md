@@ -124,3 +124,11 @@ with `sam3_predictor_set_preprocess`; existing constructors retain the image-fol
 default. See [VIDEO_PREPROCESS.md](VIDEO_PREPROCESS.md) for all five source policies,
 OpenCV color conversion and CPU arithmetic limits. Model/image semantics and
 shared weights are unchanged.
+
+All displayed frame/object masks can now be retained in packed CPU memory or
+temporary disk archives with `sam3_predictor_set_output_cache`. Configure before
+use or after reset; reset preserves the policy. `sam3_predictor_output_cache_stats`
+returns owning scalar counters without loading cached masks. `predictor_info`
+also remains nonmaterializing. See [OUTPUT_CACHE_DESIGN.md](OUTPUT_CACHE_DESIGN.md)
+for failure behavior, memory accounting and exact regression scope. These are
+additive functions; existing ABI-1 structures retain their sizes and fields.

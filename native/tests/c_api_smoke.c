@@ -24,6 +24,10 @@ int main(void){
   CHECK(sam3_predictor_options_init(&predictor,SAM3_MODEL_3)==SAM3_OK && predictor.tracking.select_by_score==1 && predictor.new_detection_threshold==.7);
   CHECK(sam3_predictor_create(NULL,&predictor,&owner)==SAM3_INVALID_ARGUMENT && owner==NULL);
   CHECK(sam3_predictor_cancel(NULL)==SAM3_INVALID_ARGUMENT);
+  CHECK(sam3_predictor_set_output_cache(NULL,SAM3_OUTPUT_CACHE_PACKED_CPU,NULL)==SAM3_INVALID_ARGUMENT);
+  CHECK(sam3_predictor_set_output_cache(NULL,99,NULL)==SAM3_INVALID_ARGUMENT);
+  CHECK(sam3_predictor_set_output_cache(NULL,SAM3_OUTPUT_CACHE_PACKED_DISK,NULL)==SAM3_INVALID_ARGUMENT);
+  result=(sam3_result*)1;CHECK(sam3_predictor_output_cache_stats(NULL,&result)==SAM3_INVALID_ARGUMENT && result==NULL);
   CHECK(sam3_semantic_prompt_init(&semantic)==SAM3_OK && semantic.struct_size==sizeof(semantic) && semantic.text==NULL);
   sam3_predictor_release(NULL);
   sam3_context_release(NULL);sam3_image_release(NULL);sam3_video_release(NULL);sam3_result_release(NULL);

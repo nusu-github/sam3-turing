@@ -1,7 +1,18 @@
-# Native SAM3 building blocks
+# Native SAM3/SAM3.1 runtime and building blocks
 
-This is a Python-independent ATen C++/CUDA library with a connected image
-grounding pipeline, **not yet the full SAM3/SAM3.1 runtime**.
+This is a Python-independent ATen C++/CUDA library with owning image/video
+predictors, C ABI 1, media input, shared model modules and tracking ranks.
+The Linux SDK runs without Python or Triton. Windows/Turing physical validation
+belongs to the user; source-reference precision and broader quality/performance
+work remain open. No GitHub Actions are used.
+
+The component notes below retain the development sequence. Their historical
+"pending" statements describe that stage, not the current runtime. See the
+latest [progress entries](../docs/native/PROGRESS.md),
+[owning predictor](../docs/native/VIDEO_PREDICTOR.md),
+[source precision evidence](../docs/native/VIDEO_COLLECTIVE_REFERENCE.md) and
+[lossless output cache](../docs/native/OUTPUT_CACHE_DESIGN.md) for current scope.
+
 It implements little-endian mask packing/unpacking, chunked bilinear resize +
 sigmoid + mask packing, stable score-ordered generic NMS with no detection count cap, 8-connected
 component labeling/counts, and Euclidean distance transform. CPU and CUDA implementations use the same public C++ API in
@@ -43,9 +54,10 @@ Development-only extensive reference comparisons (Python is allowed here):
 python native/tests/parity.py build/native/libsam3_native.so --cuda
 ```
 
-The C++ ABI currently follows LibTorch and is not a stable C ABI. An application
-must distribute matching LibTorch/CUDA libraries, and this directory is not yet
-a relocatable runtime package. Generic NMS materializes a boolean N-by-N matrix;
+The C++ ABI follows the matching LibTorch build. The separate C ABI in
+`include/sam3/c_api.h` uses owning opaque handles and ABI-1 option structures.
+Relocatable Linux SDK layers include matching runtime dependencies; applications
+must distribute those libraries with their binaries. Generic NMS materializes a boolean N-by-N matrix;
 this is a correctness baseline with optimization still pending. Resize preserves
 ATen's dtype and sigmoid rounding, and bounds temporaries by `chunk_size` without
 limiting output count.

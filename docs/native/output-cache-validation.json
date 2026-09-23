@@ -1,0 +1,515 @@
+{
+  "scope": "Opt-in lossless displayed-mask CPU/disk storage, retaining every frame/object and all edit/fetch routes.",
+  "baseline_commit": "fccd8d12957aa2fb593b57d519a5f46bbc7361c2",
+  "hardware": "RTX PRO 4500 Blackwell 32GB; Linux; no Turing/Windows physical tests",
+  "libtorch": "Official standalone 2.10.0 CPU/cu130",
+  "source_sha256": {
+    "native/CMakeLists.txt": "efb3e802cbcbf309e6cbeb1e6007a0735d75180947faef91732e035690c3272d",
+    "native/README.md": "4896cab11313908ec50056d2c01ab853fb6efe9c5433110e0e6eb03f7d38936c",
+    "native/eval/CMakeLists.txt": "7d99bee5a394d1285ad2eceec31c78f67ea3a6ff558a41d7cc18c1a84e73e051",
+    "native/include/sam3/c_api.h": "22ef9faa841d10fce67d321d13fde83cddbf4dce8226b9d4032bf6272d1d909b",
+    "native/include/sam3/video_interaction.h": "5ccb597cb610c32cb53bd12b97fcb8fdd4af8cca7834142a7091ddd46d1ccd5d",
+    "native/include/sam3/video_mask_cache.h": "e8eae38f0f7c59e98f2a25c54c34c5e1975ff8f54284182fad7df2793616c72e",
+    "native/include/sam3/video_predictor.h": "a1e56e2b3dd2aa4efc24ebc60ecfc94f9384896e70541d874e6f980d6193b0ac",
+    "native/src/c_api_predictor.cpp": "f2b37d225d48411b8d06140ed78d4db49dfee50d6096710a4aca731c13da8eec",
+    "native/src/video_interaction.cpp": "83e2b1f10708a2b5dc76027105093da3d386cb838cda226b03e5376436ca1047",
+    "native/src/video_mask_cache.cpp": "13093d0caf4f95b71f6800b1a748659e6bdc7d7599c7337ff6016c1518f0b8fb",
+    "native/src/video_predictor.cpp": "4d26e4071dca5a6d13527c8bc8b738653e1e52bae6792d080a8efba8e0f6bcfe",
+    "native/tests/c_api_smoke.c": "bfe090b7fba97702473c571b9a32428bfdce18d4fd6eda58736854a9ce0c2cab",
+    "native/tests/video_interaction_test.cpp": "af93a551169f4733cf9f5020649a5066c0da652314121df50e32597f35df2cce",
+    "native/tests/video_mask_cache_test.cpp": "b16dee183de28c89e526c02c008f9ec52aa7368ed5959e99493500bbb7197989",
+    "native/tools/predictor_c_probe.c": "2fa490390c83306246ad8dd3e88fb765aad74b30426fbd47e046e0f80c8d7370",
+    "native/tools/video_mask_cache_benchmark.cpp": "6803a44978c0e74cb91f78196e051b04cd59fe493c714025fc24560b6173145b",
+    "native/tools/video_predictor_cli.cpp": "6814764cb40c03629e1800545b806d226b0b69d5d50a46b5970ddacbd75d5a07"
+  },
+  "libraries": {
+    "cpu": {
+      "baseline": "0c30f58737c18f56a422d7adbac49b7ae7614316be8a1088f02121a614b7c008",
+      "current": "594586e72889c1149c00b2a67420300627453a4707e29b63cfb576e0c9055f4b",
+      "build_tree": "20c4e2158a4c8a7a39efafb667fea07968574b7d1ce88005350f4c41ff98c6db"
+    },
+    "cuda": {
+      "baseline": "c6630e8834e3f28c9853963798dad71b0e787f16b021b0603a6a11a3fe98d2ea",
+      "current": "ddf7236fbe5b4dd624fb4a8a74880053fa82f87a88d47a68aa052b3f9586eaf8",
+      "build_tree": "ea803b06e5cec46b14a3d04950136eba1f04dad60355ede602785645b95fdaf1"
+    }
+  },
+  "ctest": {
+    "cpu": 22,
+    "cuda_build": 40,
+    "all_pass": true,
+    "coverage": [
+      "257 objects and odd pixel counts",
+      "values, device and dense strides",
+      "independent reads and input isolation",
+      "empty frames, replacement, removal and move/reset",
+      "validation and I/O rollback",
+      "shared parent directory cleanup",
+      "CRC and truncation rejection",
+      "atomic resident record replacement",
+      "C API invalid arguments"
+    ]
+  },
+  "owner": [
+    {
+      "case": "sam3-fp16-cache0",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-fp16-cache1",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-fp16-cache2",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache0",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache1",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache2",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache0",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache1",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache2",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache0",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache1",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache2",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache2-parallel",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    }
+  ],
+  "c_api": [
+    {
+      "case": "3-video-cache1",
+      "files": 195,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "3-video-cache2",
+      "files": 195,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-video-cache1",
+      "files": 189,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-video-cache2",
+      "files": 189,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-image-cache1",
+      "files": 153,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-image-cache2",
+      "files": 153,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    }
+  ],
+  "abi_symbols": [
+    {
+      "variant": "cpu",
+      "previous_public_strong_symbols": 440,
+      "all_preserved": true,
+      "new_strong_symbols": 22
+    },
+    {
+      "variant": "cuda",
+      "previous_public_strong_symbols": 447,
+      "all_preserved": true,
+      "new_strong_symbols": 22
+    }
+  ],
+  "cache_allocation": {
+    "device": "cuda:0",
+    "frames": 32,
+    "objects": 8,
+    "height": 1080,
+    "width": 1920,
+    "cases": [
+      {
+        "storage": 0,
+        "gpu_bytes_measured": true,
+        "retained_gpu_bytes": 536918016,
+        "logical_mask_bytes": 530841600,
+        "packed_bytes": 0,
+        "disk_bytes": 0,
+        "store_ms": 6.63929,
+        "mean_read_ms": 0.00255333,
+        "exact": true
+      },
+      {
+        "storage": 1,
+        "gpu_bytes_measured": true,
+        "retained_gpu_bytes": 0,
+        "logical_mask_bytes": 530841600,
+        "packed_bytes": 66355200,
+        "disk_bytes": 0,
+        "store_ms": 55.8806,
+        "mean_read_ms": 0.379576,
+        "exact": true
+      },
+      {
+        "storage": 2,
+        "gpu_bytes_measured": true,
+        "retained_gpu_bytes": 0,
+        "logical_mask_bytes": 530841600,
+        "packed_bytes": 66355200,
+        "disk_bytes": 66355200,
+        "store_ms": 46.1998,
+        "mean_read_ms": 2.90933,
+        "exact": true
+      }
+    ]
+  },
+  "measurement_scope": "One component process, no competing GPU work. Retained allocated CUDA bytes above live input tensors, not allocator reserve, peak, total predictor VRAM or throughput. Read timing samples first/middle/last frame. Storage and timing depend on OS page cache and allocator warmup. CPU memory overhead and filesystem allocation units are not counted.",
+  "sdk": {
+    "overlays": {
+      "prerequisite": "rotary-sdk-overlay/overlays.json (includes base/media/seek/preprocess recipe)",
+      "prerequisite_sha256": "9e9258c9bbf62f481bd92b9eac1537bf597a2626286206da6ad6876ab704c79a",
+      "notes": "Apply the matching archive at the preceding complete SDK root. Reuses all dependency and weight layers. Optional packed CPU/disk display-mask storage retains every frame/object without changing output values. C ABI1 and existing C++ layouts are preserved. No new weights or dependencies.",
+      "overlays": [
+        {
+          "variant": "cpu",
+          "archive": "cpu.tar.gz",
+          "bytes": 1916792,
+          "sha256": "81ec8288d942be5db67c1f314f788e88ba8c038bcd81f52ac2fad059680997a7",
+          "files": [
+            {
+              "path": "bin/sam3_image_benchmark",
+              "bytes": 124168,
+              "sha256": "ec8114ba1b7564674049d9c280111d6abd226d900882f72946a445c624382227"
+            },
+            {
+              "path": "bin/sam3_image_results_test",
+              "bytes": 88392,
+              "sha256": "2b8fd6333786e3988b16467bd2ed0739f4196e242046fb5ac22e8d680d6b4a99"
+            },
+            {
+              "path": "bin/sam3_predictor_c_probe",
+              "bytes": 39584,
+              "sha256": "41abfeab529716d045445ee15ebe413307af5bd91a16552addd50915852d7ef3"
+            },
+            {
+              "path": "bin/sam3_rank_executor_test",
+              "bytes": 98504,
+              "sha256": "fcfc6f651bef048b2a1a2b668f19438f94569b707878bbc42854611b5d48b7d0"
+            },
+            {
+              "path": "bin/sam3_rotary_test",
+              "bytes": 72248,
+              "sha256": "a8c95aa8990be0dc8bcc0e22b04a30836fb2a62a37a8d15250d1bbd6ebf456cc"
+            },
+            {
+              "path": "bin/sam3_video_collective_probe",
+              "bytes": 191112,
+              "sha256": "87dba23ad3b6a59c9a77cd9fb42e4ef21af2fb3f63f33e8eb184848fde9c992f"
+            },
+            {
+              "path": "bin/sam3_video_collective_test",
+              "bytes": 82664,
+              "sha256": "01754b0c3966b266907df2349a062d9ea888c112b9c6dd2735fecdab385d0767"
+            },
+            {
+              "path": "bin/sam3_video_mask_cache_benchmark",
+              "bytes": 50264,
+              "sha256": "97772afecaeee32eb8d298c4ec8ecf565b2caccb202283fad76a7cda750ba5b7"
+            },
+            {
+              "path": "bin/sam3_video_mask_cache_test",
+              "bytes": 64296,
+              "sha256": "8a2eec6fe9587c6a5789bbab697beca6e17c33da9010a277933a0697bc9b21c6"
+            },
+            {
+              "path": "bin/sam3_video_multidevice_probe",
+              "bytes": 96304,
+              "sha256": "90f8cd9c0d7f7685476bda8e9e6c21aa7e6dd6fa94e190a3a83db7386471149f"
+            },
+            {
+              "path": "bin/sam3_vision_positions_benchmark",
+              "bytes": 83712,
+              "sha256": "58a3a8fa663fd7f2ec4f984d6ff07502b7648458f17f70dcbcf4db5e9af0b5e7"
+            },
+            {
+              "path": "include/sam3/c_api.h",
+              "bytes": 19453,
+              "sha256": "22ef9faa841d10fce67d321d13fde83cddbf4dce8226b9d4032bf6272d1d909b"
+            },
+            {
+              "path": "include/sam3/video_interaction.h",
+              "bytes": 3302,
+              "sha256": "5ccb597cb610c32cb53bd12b97fcb8fdd4af8cca7834142a7091ddd46d1ccd5d"
+            },
+            {
+              "path": "include/sam3/video_mask_cache.h",
+              "bytes": 1263,
+              "sha256": "e8eae38f0f7c59e98f2a25c54c34c5e1975ff8f54284182fad7df2793616c72e"
+            },
+            {
+              "path": "include/sam3/video_predictor.h",
+              "bytes": 5592,
+              "sha256": "a1e56e2b3dd2aa4efc24ebc60ecfc94f9384896e70541d874e6f980d6193b0ac"
+            },
+            {
+              "path": "lib/libsam3_native.so",
+              "bytes": 4542352,
+              "sha256": "594586e72889c1149c00b2a67420300627453a4707e29b63cfb576e0c9055f4b"
+            }
+          ],
+          "complete_recovery_entries_verified": 157
+        },
+        {
+          "variant": "cuda",
+          "archive": "cuda.tar.gz",
+          "bytes": 2278611,
+          "sha256": "43d4e70ab19bd0a7861f3b70da0c1b55786a41f353fb5ae2eb8a523c7431007f",
+          "files": [
+            {
+              "path": "bin/sam3_image_benchmark",
+              "bytes": 129048,
+              "sha256": "8875cbc016215c2558fecb6db52f449c2de7ed0da4c0ec50a4694b05c17433a9"
+            },
+            {
+              "path": "bin/sam3_image_results_test",
+              "bytes": 98664,
+              "sha256": "1b3005c8f71ea1739148c0431d4834ba9e442aac19f54c57e9101260bea2cf05"
+            },
+            {
+              "path": "bin/sam3_predictor_c_probe",
+              "bytes": 39584,
+              "sha256": "3a6b2f7141884499bc782745b1e67506aeda57ac32522371b252b08914b7a9fc"
+            },
+            {
+              "path": "bin/sam3_rank_executor_test",
+              "bytes": 98504,
+              "sha256": "7ed649963d463706398edee2ae2b7b3113bd63cc47fd0efe4fdb1fa1a47ef726"
+            },
+            {
+              "path": "bin/sam3_rotary_stream_test",
+              "bytes": 117200,
+              "sha256": "263c383f913fc157af63cdd6468d6339f437042f30e94450fd5c30ba41d240a3"
+            },
+            {
+              "path": "bin/sam3_rotary_test",
+              "bytes": 72248,
+              "sha256": "9817b904225031e515bea704eebff566f4570e533e3283a2144c8cc61ed2a628"
+            },
+            {
+              "path": "bin/sam3_video_collective_probe",
+              "bytes": 191112,
+              "sha256": "aa137cfc1d05cc32a39cba754c1fc5bb7ec5ceccfb57e64c0146f52f4d29602c"
+            },
+            {
+              "path": "bin/sam3_video_collective_test",
+              "bytes": 82664,
+              "sha256": "f49633ca283aa9f2e11b422c1463886ffdcc27ef463c6ba968c9034c2b452e23"
+            },
+            {
+              "path": "bin/sam3_video_mask_cache_benchmark",
+              "bytes": 55088,
+              "sha256": "9b7c3cac4c740c57339a9cf85fdb98d67ffa3b824c506eee5f73f3d3222e9280"
+            },
+            {
+              "path": "bin/sam3_video_mask_cache_test",
+              "bytes": 64296,
+              "sha256": "58ae07f12cd3c161e163e923c2d0cc5f5b71e1044e1c75ba55a5887052362e86"
+            },
+            {
+              "path": "bin/sam3_video_multidevice_probe",
+              "bytes": 96304,
+              "sha256": "0a7d2360505d2e92e23d36a8739f5728e4cf77107f3be3fc66fc51787abab386"
+            },
+            {
+              "path": "bin/sam3_vision_positions_benchmark",
+              "bytes": 84440,
+              "sha256": "c0a90249260a502c54d47007c1a394571612cbdd9cd9931a14a5373620746fc7"
+            },
+            {
+              "path": "include/sam3/c_api.h",
+              "bytes": 19453,
+              "sha256": "22ef9faa841d10fce67d321d13fde83cddbf4dce8226b9d4032bf6272d1d909b"
+            },
+            {
+              "path": "include/sam3/video_interaction.h",
+              "bytes": 3302,
+              "sha256": "5ccb597cb610c32cb53bd12b97fcb8fdd4af8cca7834142a7091ddd46d1ccd5d"
+            },
+            {
+              "path": "include/sam3/video_mask_cache.h",
+              "bytes": 1263,
+              "sha256": "e8eae38f0f7c59e98f2a25c54c34c5e1975ff8f54284182fad7df2793616c72e"
+            },
+            {
+              "path": "include/sam3/video_predictor.h",
+              "bytes": 5592,
+              "sha256": "a1e56e2b3dd2aa4efc24ebc60ecfc94f9384896e70541d874e6f980d6193b0ac"
+            },
+            {
+              "path": "lib/libsam3_native.so",
+              "bytes": 6011200,
+              "sha256": "ddf7236fbe5b4dd624fb4a8a74880053fa82f87a88d47a68aa052b3f9586eaf8"
+            }
+          ],
+          "complete_recovery_entries_verified": 191
+        }
+      ]
+    },
+    "runtime": {
+      "recovered_operator_checks": [
+        {
+          "sdk": "cpu",
+          "tool": "sam3_video_mask_cache_test",
+          "device": "cpu",
+          "passed": true
+        },
+        {
+          "sdk": "cuda",
+          "tool": "sam3_video_mask_cache_test",
+          "device": "cuda",
+          "passed": true
+        }
+      ],
+      "c_api_exact_output_files": 153,
+      "c_api_model": "sam3.1",
+      "c_api_precision": "fp16",
+      "c_api_source": "image",
+      "c_api_tracking_ranks": 2,
+      "c_api_parallel": true,
+      "workspace_runtime_libraries": [
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libavcodec.so.60",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libavformat.so.60",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libavutil.so.58",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libbz2.so.1.0",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libc10.so",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libc10_cuda.so",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcublas-e70f38ef.so.13",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcublasLt-656298c8.so.13",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcudart-96c42e41.so.13",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcudart.so.13",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcudnn.so.9",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcudnn_engines_precompiled.so.9",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcudnn_engines_runtime_compiled.so.9",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcudnn_graph.so.9",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcudnn_heuristic.so.9",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcufft.so.12",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcupti-e2f9ed86.so.13",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcurand.so.10",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libcusparse.so.12",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libgomp-98b21ff3.so.1",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libicudata.so.74",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libicui18n.so.74",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libicuuc.so.74",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libjpeg.so.8",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/liblzma.so.5",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libnvJitLink.so.13",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libopencv_core.so.410",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libopencv_imgproc.so.410",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libsam3_native.so",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libswresample.so.4",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libswscale.so.7",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libtorch.so",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libtorch_cpu.so",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libtorch_cuda.so",
+        "/workspace/output-cache-recovered-cuda/bin/../lib/libz.so.1"
+      ],
+      "no_python_or_triton": true,
+      "storage": "packed_disk",
+      "temporary_files_cleaned": true
+    }
+  },
+  "private_artifacts": {
+    "bucket": "RamRom/sam3-turing-native-20260922",
+    "sdk_prefix": "output-cache-sdk-overlay",
+    "evidence_prefix": "native-foundation/output-cache-linux"
+  },
+  "limits": [
+    "No GitHub Actions; Windows/Turing physical validation remains user-owned.",
+    "No new weights, dependencies, model variants or object/frame/prompt limits.",
+    "Exact regression compares native baseline; prior source-reference FP16 residual remains open.",
+    "Model state, tracker history, buffered raw outputs and application-retained results are separate.",
+    "Legacy interaction() bulk inspection pins resident cache until reset.",
+    "Disk cache is temporary and does not implement portable session resume.",
+    "Failed compaction can leave current frame resident; entire inference calls are not transactional."
+  ]
+}

@@ -2,6 +2,7 @@
 #include "sam3/preprocess.h"
 #include "sam3/video_edit.h"
 #include "sam3/video_frame.h"
+#include "sam3/video_mask_cache.h"
 #include <atomic>
 namespace sam3 {
 struct VideoPredictorOptions {
@@ -37,6 +38,13 @@ struct VideoPredictorModules {
   std::shared_ptr<const GroundingDetector> detector;
   std::shared_ptr<const Sam3TrackingFrame> sam3;
   std::shared_ptr<const Sam31TrackingFrame> sam31;
+};
+enum class VideoOutputCacheStorage { Resident = 0, PackedCPU = 1, PackedDisk = 2 };
+struct VideoPredictorCacheStats {
+  VideoOutputCacheStorage storage = VideoOutputCacheStorage::Resident;
+  bool inspection_pinned = false;
+  int64_t frames = 0, masks = 0;
+  uint64_t resident_bytes = 0, packed_bytes = 0, disk_bytes = 0;
 };
 // Owns one local video: prompts, shared modules/features, neural sessions,
 // metadata, displayed-frame cache and action/output scheduling. The frame
@@ -81,11 +89,21 @@ public:
   // at the existing frame boundaries. Reset retains this setting.
   void set_parallel_tracking(bool enabled);
   bool parallel_tracking() const;
+  // Before use/after reset. All cached frames remain fetchable/editable. Disk
+  // files are temporary; callers own the parent directory. Reset retains policy.
+  void set_output_cache(VideoOutputCacheStorage,
+                        const std::filesystem::path& directory = {});
+  VideoPredictorCacheStats output_cache_stats() const;
+  std::vector<int64_t> cached_frame_indices() const;
+  int64_t action_count() const;
   // Configure before first frame encoding, or after reset. Does not alter
   // image/video birth thresholds or model weights.
   void set_preprocess(VideoPreprocess);
   VideoPreprocess preprocess_policy() const;
   const VideoMetadata &metadata() const;
+  // Legacy bulk access materializes a compressed cache and pins it resident
+  // until reset, so references remain valid under later operations. Prefer
+  // cached_frame_indices()/output_cache_stats() for nonmaterializing inspection.
   const VideoInteractionState &interaction() const;
   int64_t visual_encodes() const;
 

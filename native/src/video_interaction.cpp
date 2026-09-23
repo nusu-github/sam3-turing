@@ -37,7 +37,7 @@ void VideoInteractionState::append(const VideoAction& action){
  if(action.frame)check_frame(*action.frame);if(action.type==VideoActionType::Add || action.type==VideoActionType::Refine)TORCH_CHECK(action.ids,"add/refine action needs IDs");actions_.push_back(action);
 }
 VideoActionRoute VideoInteractionState::route(const std::vector<int64_t>& ids,bool force)const{if(force){TORCH_CHECK(policy_==AssociationPolicy::Sam3,"forced tracker route is a SAM3 extension");return ids.empty()?VideoActionRoute{VideoActionType::Full,{}}:VideoActionRoute{VideoActionType::Partial,ids};}return route_video_actions(actions_,frames_,policy_);}
-void VideoInteractionState::record(int64_t frame,const VideoOutput& output){check_frame(frame);auto& masks=cache_[frame];masks.clear();for(const auto& [id,x]:output.cached_masks)masks.emplace(id,x.clone());}
+void VideoInteractionState::record(int64_t frame,const VideoOutput& output){check_frame(frame);std::map<int64_t,at::Tensor> masks;for(const auto& [id,x]:output.cached_masks)masks.emplace(id,x.clone());cache_.insert_or_assign(frame,std::move(masks));}
 VideoRawOutput VideoInteractionState::raw(int64_t frame,const VideoMetadata& metadata,const std::set<int64_t>& suppressed)const{
  check_frame(frame);VideoRawOutput out;out.frame=frame;const auto found=cache_.find(frame);if(found!=cache_.end())out.masks=found->second;out.scores=metadata.object_scores;const auto scores=metadata.frame_scores.find(frame);if(scores!=metadata.frame_scores.end())out.tracker_scores=scores->second;out.suppressed=suppressed;return out;
 }
@@ -51,6 +51,7 @@ VideoOutput VideoInteractionState::merge_refined(int64_t frame,const RefinedVide
  auto output=postprocess_video_output(input,height_,width_);for(const auto& [id,pair]:refined)metadata.frame_scores[frame][id]=input.tracker_scores.at(id);record(frame,output);return output;
 }
 void VideoInteractionState::forget_object(int64_t id){for(auto& [frame,masks]:cache_)masks.erase(id);}
+void VideoInteractionState::forget_frame(int64_t frame){check_frame(frame);cache_.erase(frame);}
 void VideoInteractionState::reset(){actions_.clear();cache_.clear();}
 namespace {
 template<class Session> RefinedVideoObjects propagate(int64_t frame,bool reverse,const std::vector<int64_t>& ids,const std::vector<Session*>& sessions,int64_t cleanup,bool preflight){

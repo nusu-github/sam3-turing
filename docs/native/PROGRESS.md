@@ -2426,3 +2426,31 @@ time than the position-selection SDK; encoder peak allocation remains unchanged.
 See ROTARY_FUSION.md and rotary-fusion-validation.json for exact measurement and
 artifact scope. No Actions or Windows/Turing execution. Goal remains active;
 source FP16 residual and broader quality/performance work remain open.
+
+## Lossless displayed-mask CPU/disk cache
+
+The owning video/image predictor now offers resident (default), packed CPU and
+packed disk display-cache policies through additive C/C++ functions. Every
+cached frame/object remains available for fetching and edits. The feature uses
+existing compiled mask operations and temporary tensor archives, retains ABI-1
+structures and public C++ layouts, and introduces no model variants or weights.
+Legacy C++ bulk inspection materializes/pins the cache until reset; new stats
+and indices, including C predictor_info, avoid materialization. Failed writes
+retain the latest resident masks; frame replacement commits only after all
+clones succeed.
+
+CPU22/CUDA40 CTests pass. Thirteen actual-weight owner cases retain 866 output
+files; six C API cases retain 1,074 files. Coverage includes both models,
+FP16/BF16 owner paths, all storage policies, two logical parallel ranks,
+semantic/point/mask edits, deletion, reset, cancellation, callback errors and
+retained results. Component tests cover 257 objects, odd pixel counts, dense
+strides, independent reads, I/O rollback, CRC/truncation and shared-parent cleanup.
+
+For 32 frames × 8 objects at 1920×1080, the component retains 536,918,016 CUDA
+bytes in resident mode and zero in packed CPU/disk modes. Packed payload is
+66,355,200 bytes, one eighth of bool payload. This excludes model/history,
+buffered raw outputs, application-retained tensors and allocator reservation;
+compression/transfer add work. See OUTPUT_CACHE_DESIGN.md and
+output-cache-validation.json for measurement scope and incremental SDK recovery.
+No Actions or Windows/Turing execution. Goal remains active; source FP16 residual,
+broader quality/performance and further optimization remain open.

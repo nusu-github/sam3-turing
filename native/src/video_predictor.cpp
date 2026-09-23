@@ -95,6 +95,9 @@ struct VideoPredictor::Impl {
   VideoFrameFeatures cached;
   VideoMetadata metadata;
   VideoInteractionState interaction;
+  VideoOutputCacheStorage cache_storage = VideoOutputCacheStorage::Resident;
+  std::unique_ptr<VideoMaskCache> mask_cache;
+  bool cache_inspection_pinned = false;
   VideoSuppressionHistory suppressions;
   std::set<int64_t> initialized;
   std::optional<int64_t> prompt_frame;
@@ -362,6 +365,8 @@ struct VideoPredictor::Impl {
     }
     metadata = initialize_video_metadata(ranks.size(), device);
     interaction.reset();
+    if (mask_cache) mask_cache->clear();
+    cache_inspection_pinned = false;
     suppressions.clear();
     initialized.clear();
     prompt_frame.reset();
@@ -377,6 +382,7 @@ struct VideoPredictor::Impl {
     VideoOutput cache;
     cache.cached_masks = raw.masks;
     interaction.record(raw.frame, cache);
+    compact_cache(raw.frame);
   }
   template <class Rank>
   VideoRawOutput full_impl(int64_t frame, bool reverse, bool direct) {
@@ -446,7 +452,36 @@ struct VideoPredictor::Impl {
     return mux ? full_impl<Sam31VideoRank>(frame, reverse, direct)
                : full_impl<Sam3VideoRank>(frame, reverse, direct);
   }
+  void restore_cache(int64_t frame) {
+    if (mask_cache && mask_cache->contains(frame)) {
+      VideoOutput restored;
+      restored.cached_masks = mask_cache->read(frame);
+      interaction.record(frame, restored);
+      mask_cache->erase(frame);
+    }
+  }
+  void compact_cache(int64_t frame) {
+    if (!mask_cache || cache_inspection_pinned) return;
+    const auto found = interaction.cached_frames().find(frame);
+    if (found == interaction.cached_frames().end()) return;
+    try {
+      mask_cache->store(frame, found->second);
+    } catch (...) {
+      // The resident frame is the latest complete output. An older packed
+      // version must not replace it on the next fetch after a failed write.
+      mask_cache->erase(frame);
+      throw;
+    }
+    interaction.forget_frame(frame);
+  }
+  void compact_cache_all() {
+    if (!mask_cache || cache_inspection_pinned) return;
+    std::vector<int64_t> frames;
+    for(const auto& [frame,_]:interaction.cached_frames())frames.push_back(frame);
+    for(auto frame:frames)compact_cache(frame);
+  }
   void ensure_cache(int64_t frame) {
+    restore_cache(frame);
     if (!interaction.cached_frames().count(frame))
       interaction.record(frame, VideoOutput{});
   }
@@ -472,6 +507,42 @@ void VideoPredictor::set_parallel_tracking(bool enabled) {
 bool VideoPredictor::parallel_tracking() const {
   return impl_->parallel_tracking;
 }
+void VideoPredictor::set_output_cache(VideoOutputCacheStorage storage,
+                                      const std::filesystem::path& directory) {
+  auto& s=*impl_;
+  TORCH_CHECK(!s.preprocess_locked && s.initialized.empty() &&
+                  s.metadata.object_ids().empty() && s.interaction.actions().empty(),
+              "set output cache before use or after reset");
+  TORCH_CHECK(storage==VideoOutputCacheStorage::Resident ||
+                  storage==VideoOutputCacheStorage::PackedCPU ||
+                  storage==VideoOutputCacheStorage::PackedDisk,"invalid output cache storage");
+  std::unique_ptr<VideoMaskCache> next;
+  if(storage!=VideoOutputCacheStorage::Resident)
+    next=std::make_unique<VideoMaskCache>(s.h,s.w,
+        storage==VideoOutputCacheStorage::PackedCPU?VideoMaskStorage::PackedCPU:VideoMaskStorage::PackedDisk,
+        directory);
+  s.mask_cache=std::move(next);s.cache_storage=storage;s.cache_inspection_pinned=false;
+}
+VideoPredictorCacheStats VideoPredictor::output_cache_stats() const {
+  const auto& s=*impl_;VideoPredictorCacheStats out;
+  out.storage=s.cache_storage;out.inspection_pinned=s.cache_inspection_pinned;
+  if(s.mask_cache) {
+    const auto p=s.mask_cache->stats();out.frames=p.frames;out.masks=p.masks;
+    out.packed_bytes=p.packed_bytes;out.disk_bytes=p.disk_bytes;
+  }
+  for(const auto& [_,masks]:s.interaction.cached_frames()) {
+    ++out.frames;out.masks+=masks.size();
+    for(const auto& [id,mask]:masks)out.resident_bytes+=mask.nbytes();
+  }
+  return out;
+}
+std::vector<int64_t> VideoPredictor::cached_frame_indices() const {
+  const auto& s=*impl_;std::set<int64_t> frames;
+  if(s.mask_cache)for(auto frame:s.mask_cache->frames())frames.insert(frame);
+  for(const auto& [frame,_]:s.interaction.cached_frames())frames.insert(frame);
+  return {frames.begin(),frames.end()};
+}
+int64_t VideoPredictor::action_count() const {return impl_->interaction.actions().size();}
 void VideoPredictor::set_preprocess(VideoPreprocess policy) {
   TORCH_CHECK(!impl_->preprocess_locked,
               "set preprocessing before frame encoding or after reset");
@@ -548,6 +619,7 @@ VideoOutput VideoPredictor::add_prompt(int64_t frame,
   auto raw = s.full(frame, false, true);
   auto out = postprocess_video_output(raw, s.h, s.w, {}, {}, s.options.centers);
   s.interaction.record(frame, out);
+  s.compact_cache_all();
   return out;
 }
 VideoOutput VideoPredictor::add_points(int64_t frame, int64_t id,
@@ -587,6 +659,7 @@ VideoOutput VideoPredictor::add_points(int64_t frame, int64_t id,
     else
       remove_video_user_object(id, previous_rank.sessions3, s.metadata,
                                s.interaction, false);
+    if (s.mask_cache) s.mask_cache->forget_object(id);
   }
   s.ensure_cache(frame);
   const auto rank = s.rank_for(id);
@@ -624,6 +697,7 @@ VideoOutput VideoPredictor::add_points(int64_t frame, int64_t id,
                             s.device);
   }
   s.initialized.insert(frame);
+  s.compact_cache_all();
   return centers(std::move(out), s.h, s.w, s.options.centers);
 }
 VideoOutput VideoPredictor::add_mask(int64_t frame, int64_t id,
@@ -665,6 +739,7 @@ VideoOutput VideoPredictor::add_mask(int64_t frame, int64_t id,
                         s.metadata, s.interaction, s.suppressions, o, s.device);
   }
   s.initialized.insert(frame);
+  s.compact_cache_all();
   return centers(std::move(out), s.h, s.w, s.options.centers);
 }
 void VideoPredictor::remove_object(int64_t id) {
@@ -676,15 +751,19 @@ void VideoPredictor::remove_object(int64_t id) {
   else
     remove_video_user_object(id, local.sessions3, s.metadata, s.interaction);
   s.image_masks.erase(id);
+  if (s.mask_cache) s.mask_cache->forget_object(id);
 }
 VideoOutput VideoPredictor::fetch(int64_t frame) const {
-  const auto &s = *impl_;
+  auto &s = *impl_;
+  s.restore_cache(frame);
   const auto found = s.suppressions.find(frame);
-  return centers(s.interaction.fetch(frame, s.metadata,
+  auto out = centers(s.interaction.fetch(frame, s.metadata,
                                      found == s.suppressions.end()
                                          ? std::set<int64_t>{}
                                          : found->second),
                  s.h, s.w, s.options.centers);
+  s.compact_cache_all();
+  return out;
 }
 void VideoPredictor::propagate(const VideoPredictorPropagation &request,
                                const OutputCallback &callback) {
@@ -721,6 +800,7 @@ void VideoPredictor::propagate(const VideoPredictorPropagation &request,
         for (const auto &emitted :
              buffer.push(s.full(frame, request.reverse, false))) {
           s.interaction.record(emitted.frame, emitted.output);
+          s.compact_cache(emitted.frame);
           if (!callback(emitted.frame, emitted.output)) {
             s.cancelled.store(true);
             break;
@@ -777,6 +857,7 @@ void VideoPredictor::propagate(const VideoPredictorPropagation &request,
                                                 s.suppressions[frame]),
                     s.h, s.w, s.options.centers);
         s.initialized.insert(frame);
+        s.compact_cache(frame);
         if (!callback(frame, out))
           s.cancelled.store(true);
       }
@@ -793,6 +874,7 @@ void VideoPredictor::propagate(const VideoPredictorPropagation &request,
     if (s.mux)
       s.interaction.append({VideoActionType::Cancel, {}, {}});
   }
+  s.compact_cache_all();
 }
 void VideoPredictor::cancel() noexcept {
   if (impl_)
@@ -803,6 +885,11 @@ const VideoMetadata &VideoPredictor::metadata() const {
   return impl_->metadata;
 }
 const VideoInteractionState &VideoPredictor::interaction() const {
+  auto& s=*impl_;
+  if(s.mask_cache) {
+    for(auto frame:s.mask_cache->frames())s.restore_cache(frame);
+    s.cache_inspection_pinned=true;
+  }
   return impl_->interaction;
 }
 int64_t VideoPredictor::visual_encodes() const { return impl_->encodes; }

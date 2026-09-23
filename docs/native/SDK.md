@@ -100,6 +100,9 @@ a previous location otherwise remain stale.
 
 ## Evidence and remaining scope
 
+The following checks describe the initial SDK. Later component and SDK overlays
+have their own evidence linked below.
+
 - Official CPU LibTorch: all 16 CTests pass. Official CUDA LibTorch: all 28 pass.
 - Official CUDA C11 client: all 10 image and 26 video checkpoints match the
   retained development-reference C++ outputs exactly, including video timing.
@@ -124,10 +127,20 @@ user. sm75 code presence is build evidence only. No GitHub Actions were used.
 The original CPU instability has not been diagnosed by this environment change;
 finite official-runtime tests do not establish long-run CPU stability.
 
-Native local media support and modular SDK overlays are now described in
-[MEDIA_IO.md](MEDIA_IO.md). The overall goal remains open: broader media/preprocess
-coverage, efficient seeking, video output, multi-GPU transport,
-broader quality/performance and wider platform validation still need work.
+Native local media support and modular SDK overlays are described in
+[MEDIA_IO.md](MEDIA_IO.md), random access in [MEDIA_SEEK.md](MEDIA_SEEK.md),
+source input transforms in [VIDEO_PREPROCESS.md](VIDEO_PREPROCESS.md), and
+tracking ranks in [VIDEO_MULTIDEVICE.md](VIDEO_MULTIDEVICE.md) and
+[VIDEO_PARALLEL.md](VIDEO_PARALLEL.md). Broader quality/performance, codec coverage,
+source FP16 precision and platform validation remain open.
 The previously unresolved 120-pixel reverse-edit difference was subsequently
 traced to a stale original pointer; see [REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md). This SDK is a tested development distribution, not a full-function
 completion claim.
+
+The lossless displayed-mask cache adds C/C++ configuration and statistics APIs;
+see [OUTPUT_CACHE_DESIGN.md](OUTPUT_CACHE_DESIGN.md). Its CPU/CUDA SDK increment is
+`output-cache-sdk-overlay/overlays.json` in the existing private bucket. Apply it
+at the matching preceding SDK root described by `rotary-sdk-overlay/overlays.json`.
+The recipe verifies its prerequisite hash and lists changed-file hashes; all
+dependency and shared-weight layers are reused. Validation details are in
+`output-cache-validation.json`.

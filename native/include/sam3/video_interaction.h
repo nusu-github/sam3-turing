@@ -31,6 +31,7 @@ class SAM3_NATIVE_EXPORT VideoInteractionState {
   VideoOutput merge_refined(int64_t frame,const RefinedVideoObjects&,VideoMetadata&,
       const std::set<int64_t>& suppressed={});
   void forget_object(int64_t id);
+  void forget_frame(int64_t frame);
   void reset();
   int64_t frame_count()const{return frames_;}
   AssociationPolicy policy()const{return policy_;}

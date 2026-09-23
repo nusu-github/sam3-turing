@@ -195,6 +195,15 @@ SAM3_NATIVE_EXPORT sam3_status sam3_predictor_set_tracking_devices(sam3_predicto
 /* Opt-in parallel tracking ranks, enabled must be 0 or 1. Before use/after
  * reset; retained across reset. Calls still complete synchronously. */
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_set_parallel_tracking(sam3_predictor*,int32_t enabled) SAM3_NOEXCEPT;
+enum {SAM3_OUTPUT_CACHE_RESIDENT=0,SAM3_OUTPUT_CACHE_PACKED_CPU=1,SAM3_OUTPUT_CACHE_PACKED_DISK=2};
+/* Lossless, all-frame/object storage. Before use/after reset; policy survives
+ * reset. PACKED_DISK requires a UTF-8 parent directory owned by the caller.
+ * Temporary files are cleaned up by the predictor. No ABI1 structures change. */
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_set_output_cache(sam3_predictor*,int32_t storage,const char* directory) SAM3_NOEXCEPT;
+/* Nonmaterializing inspection: storage, inspection_pinned, frames, masks,
+ * resident_bytes, packed_bytes and disk_bytes (owning int64 scalar fields).
+ * Counters exclude model state, retained caller results and allocator reserve. */
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_output_cache_stats(sam3_predictor*,sam3_result**) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_options_init(sam3_predictor_options*,int32_t model) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_semantic_prompt_init(sam3_semantic_prompt*) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_create(sam3_context*,const sam3_predictor_options*,sam3_predictor**) SAM3_NOEXCEPT;
