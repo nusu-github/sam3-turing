@@ -15,15 +15,15 @@ double cubic(double x) {
   if(x<2.)return (((x-5.)*x+8.)*x-4.)*(-.5);
   return 0.;
 }
-std::vector<Kernel> kernels(int64_t input,int64_t output) {
-  const double scale=double(float(input))/output,filter_scale=std::max(1.,scale),support=2*filter_scale,reciprocal=1./filter_scale;
+std::vector<Kernel> kernels(int64_t input,int64_t output,bool bilinear) {
+  const double scale=double(float(input))/output,filter_scale=std::max(1.,scale),support=(bilinear?1:2)*filter_scale,reciprocal=1./filter_scale;
   std::vector<Kernel> result;result.reserve(output);
   for(int64_t i=0;i<output;++i) {
     const auto center=(i+.5)*scale;
     const auto first=std::max<int64_t>(0,int64_t(center-support+.5));
     const auto last=std::min<int64_t>(input,int64_t(center+support+.5));
     std::vector<double> values;double sum=0.;
-    for(auto j=first;j<last;++j){const auto value=cubic((j-center+.5)*reciprocal);values.push_back(value);sum+=value;}
+    for(auto j=first;j<last;++j){const auto x=(j-center+.5)*reciprocal;const auto value=bilinear?std::max(0.,1.-std::abs(x)):cubic(x);values.push_back(value);sum+=value;}
     Kernel kernel;kernel.first=first;
     for(auto value:values){if(sum!=0.)value/=sum;kernel.weights.push_back(int32_t(value*(1<<22)+(value<0?-.5:.5)));}
     result.push_back(std::move(kernel));
@@ -32,13 +32,16 @@ std::vector<Kernel> kernels(int64_t input,int64_t output) {
 }
 uint8_t quantize(int64_t sum) {return sum<=0?0:sum>=(int64_t(255)<<22)?255:uint8_t(sum>>22);}
 }
-at::Tensor resize_tracking_rgb(const at::Tensor& pixels,int64_t height,int64_t width) {
+static at::Tensor resize_pillow_rgb(const at::Tensor& pixels,int64_t height,int64_t width,bool bilinear) {
   c10::InferenceMode inference;
   TORCH_CHECK(pixels.dim()==3 && pixels.size(0)==3 && pixels.scalar_type()==at::kByte && pixels.size(1)>0 && pixels.size(2)>0,"tracking pixels require RGB uint8 [3,H,W]");
   TORCH_CHECK(height>0 && width>0 && height<=std::numeric_limits<int>::max() && width<=std::numeric_limits<int>::max() && pixels.size(1)<=std::numeric_limits<int>::max() && pixels.size(2)<=std::numeric_limits<int>::max(),"invalid resize dimensions");
+  // Pillow 12.2 switches pass order for extremely tall shrinking images.
+  if(pixels.size(1)>pixels.size(2)*100 && height<pixels.size(1) && width!=pixels.size(2))
+    return resize_pillow_rgb(resize_pillow_rgb(pixels,height,pixels.size(2),bilinear),height,width,bilinear);
   auto input=pixels.cpu().contiguous();const auto old_h=input.size(1),old_w=input.size(2);
   if(old_w!=width) {
-    const auto weights=kernels(old_w,width);auto output=at::empty({3,old_h,width},input.options());
+    const auto weights=kernels(old_w,width,bilinear);auto output=at::empty({3,old_h,width},input.options());
     const auto* src=input.const_data_ptr<uint8_t>();auto* dst=output.mutable_data_ptr<uint8_t>();
     at::parallel_for(0,3*old_h,16,[&](int64_t begin,int64_t end){
       for(auto row=begin;row<end;++row) for(int64_t x=0;x<width;++x) {
@@ -49,7 +52,7 @@ at::Tensor resize_tracking_rgb(const at::Tensor& pixels,int64_t height,int64_t w
     });input=std::move(output);
   }
   if(old_h!=height) {
-    const auto weights=kernels(old_h,height);auto output=at::empty({3,height,width},input.options());
+    const auto weights=kernels(old_h,height,bilinear);auto output=at::empty({3,height,width},input.options());
     const auto* src=input.const_data_ptr<uint8_t>();auto* dst=output.mutable_data_ptr<uint8_t>();
     at::parallel_for(0,3*height,16,[&](int64_t begin,int64_t end){
       for(auto row=begin;row<end;++row) {
@@ -62,6 +65,11 @@ at::Tensor resize_tracking_rgb(const at::Tensor& pixels,int64_t height,int64_t w
     });input=std::move(output);
   }
   return input;
+}
+at::Tensor resize_tracking_rgb(const at::Tensor& pixels,int64_t height,int64_t width){return resize_pillow_rgb(pixels,height,width,false);}
+at::Tensor preprocess_video_rgb(const at::Tensor& pixels){
+  c10::InferenceMode inference;
+  return resize_pillow_rgb(pixels,1008,1008,true).to(at::kFloat).div_(255.).to(at::kHalf).sub_(.5).div_(.5).to(at::kFloat).unsqueeze(0);
 }
 at::Tensor preprocess_tracking_rgb(const at::Tensor& pixels) {
   // Division is deliberately not multiplication by a rounded F32 reciprocal.

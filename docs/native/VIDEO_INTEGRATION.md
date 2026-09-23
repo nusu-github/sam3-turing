@@ -712,3 +712,53 @@ Reports are `video-detection-validation.json`, `video-frame-validation.json` and
 `video-pipeline-probe-validation.json`. Outputs and binaries are retained in the
 private bucket. Earlier CPU instability remains open; the feature comparison uses
 one CPU thread after a captured source MKL `erfinv` initialization crash.
+
+## Correct upper-level video inputs and compare coherent source tracking
+
+A subsequent coherent comparison exposed a preprocessing mismatch in the first
+integration probe. The low-level tracker JPEG loader uses Pillow bicubic and
+F32 normalization. The upper-level `io_utils` image-folder loader instead uses
+Pillow bilinear, divides in F32, stores F16, and performs each normalization step
+in F16. `preprocess_video_rgb` now reproduces the latter and losslessly widens
+its normalized values to F32 for the shared neural encoder. The low-level API
+retains its separate behavior. Codec-specific resize paths and image-only video
+sessions still need explicit integration policies.
+
+Both resize paths also follow Pillow 12.2's vertical-first ordering for extremely
+tall shrinking images (see upstream [Image.resize](https://github.com/python-pillow/Pillow/blob/12.2.0/src/PIL/Image.py)).
+Eleven upper-level preprocessing cases match exactly, including three real frames.
+Low-level regression adds an extreme-aspect-ratio case: 53 resize/real-frame
+comparisons and 10 normalization/stride cases pass. The real shared-feature test
+now starts from decoded RGB, rather than supplying an already-normalized tensor;
+all 12 cases again match exactly across both models and three precisions.
+
+The probe now enables SAM3's source score-based memory selection. It also batches
+text with the source's auxiliary `visual` token (plus `geometric` for SAM3.1).
+These auxiliary slots preserve numerical behavior at the source text batch shape;
+they do not replace or restrict the runtime text prompt.
+
+`video_pipeline_parity.py` executes the original actual-weight raw frame engine,
+including neural propagation and state updates. It can retain private reference
+arrays and replay comparisons against those arrays without rebuilding the source
+model. `--require-exact` gates masks/low tracking values and allows only 1e-8 JSON
+score serialization rounding. Optional source batch/RoPE controls are recorded
+in reports and distinguish configuration-matched diagnostics from builder defaults.
+The native probe's optional `--trace` writes SAM3.1 history tensors for diagnosis.
+
+On three real frames with text `person`, SAM3 BF16-reference is exact for every
+raw mask and low tracking value; IDs and scores match. SAM3 FP16 versus the
+precision-adapted source retains matching IDs/scores and differs by at most three
+mask pixels per object (minimum IoU 0.9999112). Source SAM3 still forces tracker
+features through BF16 during its gather path, even on one GPU; this differs from
+the native FP16 path. Native FP16 versus the original BF16 neural mode is a
+separate quality measurement, not an exact-parity claim. The three-frame fixture
+is insufficient to establish dataset-level quality.
+
+SAM3.1 comparison remains under investigation. With the source's one-frame batch
+and complex RoPE configuration, the first two frames are exact. At frame 1's
+memory update, masks/proxy scores, image features, positions and object pointers
+match, but encoded memory differs; this affects frame 2. Default source batching/
+real RoPE is recorded separately. Existing isolated memory comparisons passing
+are not evidence that this combined path is fixed. Private state traces preserve
+the failing intermediate tensors for continued investigation. No full-video
+quality, predictor temporal filtering or complete user-action parity is claimed.

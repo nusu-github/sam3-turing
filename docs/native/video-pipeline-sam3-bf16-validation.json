@@ -1,0 +1,110 @@
+{
+  "model": "sam3",
+  "mode": "bf16_reference",
+  "cases": [
+    {
+      "frame": 0,
+      "ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mask_mismatches": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mask_iou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "max_tracker_error": 0.0,
+      "native_scores": [
+        0.96875,
+        0.960975647,
+        0.96875,
+        0.93750006
+      ],
+      "source_scores": [
+        0.96875,
+        0.9609756469726562,
+        0.96875,
+        0.9375000596046448
+      ]
+    },
+    {
+      "frame": 1,
+      "ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mask_mismatches": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mask_iou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "max_tracker_error": 0.0,
+      "native_scores": [
+        0.96875,
+        0.960975647,
+        0.96875,
+        0.93750006
+      ],
+      "source_scores": [
+        0.96875,
+        0.9609756469726562,
+        0.96875,
+        0.9375000596046448
+      ]
+    },
+    {
+      "frame": 2,
+      "ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mask_mismatches": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mask_iou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "max_tracker_error": 0.0,
+      "native_scores": [
+        0.96875,
+        0.960975647,
+        0.96875,
+        0.93750006
+      ],
+      "source_scores": [
+        0.96875,
+        0.9609756469726562,
+        0.96875,
+        0.9375000596046448
+      ]
+    }
+  ],
+  "exact": true,
+  "scope": "Original raw frame engine with actual neural detection, propagation and updates versus standalone C++ probe. Original default batching/feature casts retained. Predictor temporal/output filtering and interactive actions are outside this comparison. FP16/FP32 source MLP uses requested precision adaptation; BF16 source neural execution is unchanged. TF32 disabled, one CPU initialization thread. JSON scores tolerate 1e-8 serialization rounding. Cached references, when used, contain the original neural outputs."
+}

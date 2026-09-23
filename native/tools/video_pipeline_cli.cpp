@@ -1,4 +1,5 @@
 #include "sam3/video_frame.h"
+#include "sam3/multiplex_storage.h"
 #include "sam3/text_encoder.h"
 #include "sam3/tokenizer.h"
 #include "sam3/ops.h"
@@ -11,13 +12,14 @@
 #include <type_traits>
 namespace {
 void binary(const std::filesystem::path& path,const at::Tensor& tensor){const auto x=tensor.cpu().contiguous();std::ofstream f(path,std::ios::binary);f.write(static_cast<const char*>(x.const_data_ptr()),x.nbytes());TORCH_CHECK(f,"cannot write tensor output");}
-template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,const std::string& mode,const std::vector<std::filesystem::path>& files,const sam3::GroundingPrompt& prompt,const std::filesystem::path& root){
+template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,const std::string& mode,const std::vector<std::filesystem::path>& files,const sam3::GroundingPrompt& prompt,const std::filesystem::path& root,bool trace){
   const std::string model=Mux?"sam3.1":"sam3";const auto vision=std::make_shared<sam3::VisionEncoder>(store,model,device);const auto detector=std::make_shared<sam3::GroundingDetector>(store,model,device);
   using Core=std::conditional_t<Mux,sam3::Sam31TrackingFrame,sam3::Sam3TrackingFrame>;using Session=std::conditional_t<Mux,sam3::Sam31TrackingSession,sam3::Sam3TrackingSession>;using Options=std::conditional_t<Mux,sam3::MultiplexSessionOptions,sam3::TrackingSessionOptions>;
   const auto core=std::make_shared<Core>(store,device);const sam3::VideoFrameEncoder encoder(vision,detector,core,device);
   auto pixels=sam3::cli::read_ppm(files.front());const auto h=pixels.size(1),w=pixels.size(2);int64_t cached_index=-1,encodes=0;sam3::VideoFrameFeatures cached;
   const auto features=[&](int64_t index)->const sam3::VideoFrameFeatures&{if(cached_index!=index){auto rgb=sam3::cli::read_ppm(files.at(index));TORCH_CHECK(rgb.size(1)==h && rgb.size(2)==w,"video dimensions changed");cached=encoder.encode_rgb(rgb,mode);cached_index=index;++encodes;}return cached;};
   Options session_options;session_options.offload_state=true;
+  if constexpr(!Mux)session_options.frame.temporal.select_by_score=true;
   if constexpr(Mux)session_options.history_directory=root/"history";
   std::vector<std::unique_ptr<Session>> sessions;
   std::function<std::unique_ptr<Session>()> factory=[&]{return std::make_unique<Session>(core,[&](int64_t index){if constexpr(Mux)return features(index).tracking;else return features(index).tracking.propagation;},files.size(),h,w,device,mode,session_options);};
@@ -34,6 +36,11 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
     auto low=at::empty({0,288,288},opts),logits=at::empty({0},opts);
     if(!ids.empty()){const auto rows=sam3::video_memory_rows(ids,{metadata.object_ids()})[0];const auto order=at::tensor(rows,opts.dtype(at::kLong));low=sam3::clean_video_mask_scores(at::cat(masks).index_select(0,order).unsqueeze(1),update.cleanup_area).squeeze(1);logits=at::cat(scores).index_select(0,order);}
     auto plan=sam3::plan_video_update(index,false,detections,low,logits,metadata,update);sam3::execute_video_update(index,0,plan,detections,sessions,factory,update);auto output=sam3::build_video_outputs(plan,detections,h,w,update);sam3::finalize_video_scores(plan.metadata,index,plan.previous_ids,logits);metadata=std::move(plan.metadata);
+    if constexpr(Mux){if(trace)for(size_t si=0;si<sessions.size();++si)for(const auto* history:{&sessions[si]->state().history.conditioning,&sessions[si]->state().history.tracked})for(const auto& stored:*history)if(stored.index==int64_t(index)){
+      const auto frame=sam3::load_multiplex_frame(stored);const auto prefix=std::to_string(index)+".state"+std::to_string(si)+".";
+      std::cout<<"trace frame="<<index<<" conditions="<<frame.conditioning_objects.size()<<" image_dtype="<<frame.image.scalar_type()<<" mask_dtype="<<(frame.memory_masks.defined()?frame.memory_masks.scalar_type():at::kFloat)<<"\n";
+      for(const auto& [name,value]:std::vector<std::pair<std::string,at::Tensor>>{{"memory",frame.memory},{"position",frame.memory_position},{"image",frame.image},{"image_position",frame.image_position},{"pointer",frame.pointer},{"low",frame.masks.low_res_mask},{"high_input",frame.memory_masks},{"proxy",frame.memory_object_logits}})if(value.defined())binary(root/(prefix+name+".f32.bin"),value.to(at::kFloat));
+    }}
     std::vector<at::Tensor> result_masks;std::vector<int64_t> output_ids;for(const auto& [id,mask]:output){output_ids.push_back(id);result_masks.push_back(mask.squeeze(0));}
     const auto stacked=result_masks.empty()?at::empty({0,h,w},opts.dtype(at::kBool)):at::stack(result_masks);const auto stem=std::to_string(index);binary(root/(stem+".masks.bin"),sam3::pack_masks(stacked));binary(root/(stem+".detector_logits.f32.bin"),raw.detection.logits.to(at::kFloat));binary(root/(stem+".tracker_low.f32.bin"),low.to(at::kFloat));
     std::ofstream json(root/(stem+".json"));json<<std::setprecision(9)<<"{\"frame\":"<<index<<",\"height\":"<<h<<",\"width\":"<<w<<",\"queries\":"<<raw.detection.logits.size(1)<<",\"tracked\":"<<metadata.object_ids().size()<<",\"ids\":[";
@@ -44,13 +51,13 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
 }
 }
 int main(int argc,char** argv){try{
-  TORCH_CHECK(argc==9,"usage: sam3_video_pipeline_probe STORE sam3|sam3.1 DEVICE MODE FRAMES.txt BPE.gz PROMPT.txt OUTPUT");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
+  TORCH_CHECK(argc==9 || argc==10,"usage: sam3_video_pipeline_probe STORE sam3|sam3.1 DEVICE MODE FRAMES.txt BPE.gz PROMPT.txt OUTPUT [--trace]");TORCH_CHECK(argc!=10 || std::string(argv[9])=="--trace","unknown probe option");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
   const sam3::WeightStore store(std::filesystem::u8path(argv[1]));const std::string model=argv[2],mode=argv[4];const at::Device device(argv[3]);TORCH_CHECK(model=="sam3" || model=="sam3.1","invalid model");
   const auto manifest=std::filesystem::u8path(argv[5]);std::ifstream input(manifest);TORCH_CHECK(input,"cannot read frame manifest");std::vector<std::filesystem::path> files;std::string line;
   while(std::getline(input,line)){if(!line.empty() && line.back()=='\r')line.pop_back();if(line.empty() || line[0]=='#')continue;auto p=std::filesystem::u8path(line);files.push_back(p.is_absolute()?p:manifest.parent_path()/p);}TORCH_CHECK(!files.empty(),"empty frame manifest");
   std::ifstream textfile(std::filesystem::u8path(argv[7]),std::ios::binary);TORCH_CHECK(textfile,"cannot read prompt");const std::string text((std::istreambuf_iterator<char>(textfile)),{});sam3::Tokenizer tokenizer(std::filesystem::u8path(argv[6]));
   sam3::GroundingPrompt prompt;const auto opts=at::TensorOptions().device(device);prompt.image_ids=prompt.text_ids=at::zeros({1},opts.dtype(at::kLong));
-  {sam3::TextEncoder encoder(store,model,device);const auto encoded=encoder.forward(at::tensor(tokenizer.tokenize({text})[0],opts.dtype(at::kLong)).unsqueeze(0),mode);prompt.text_padding=std::get<0>(encoded);prompt.text_features=std::get<1>(encoded);}
+  {sam3::TextEncoder encoder(store,model,device);const auto encoded=encoder.forward([&]{std::vector<at::Tensor> rows;for(const auto& ids:tokenizer.tokenize(model=="sam3.1"?std::vector<std::string>{text,"visual","geometric"}:std::vector<std::string>{text,"visual"}))rows.push_back(at::tensor(ids,opts.dtype(at::kLong)));return at::stack(rows);}(),mode);prompt.text_padding=std::get<0>(encoded);prompt.text_features=std::get<1>(encoded);}
   const auto labels=at::empty({0,1},opts.dtype(at::kLong)),padding=at::empty({1,0},opts.dtype(at::kBool));prompt.geometry={at::empty({0,1,2},opts),labels,padding,at::empty({0,1,4},opts),labels,padding};
-  if(model=="sam3")run<false>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]));else run<true>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]));return 0;
+  if(model=="sam3")run<false>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),argc==10);else run<true>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),argc==10);return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

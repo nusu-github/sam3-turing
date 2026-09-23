@@ -1033,3 +1033,17 @@ the library accepts batches. It is not the complete video predictor: temporal
 output buffering, prompt/user-action lifecycle and codec input are still pending.
 It writes packed masks, raw tensor files and per-frame JSON for validation, not a
 final application output contract. No new weight variants are required.
+
+The high-level `VideoFrameEncoder::encode_rgb` path now matches the source video
+image-folder loader's Pillow bilinear/F16 normalization. It is deliberately
+separate from the low-level tracker bicubic/F32 preprocessing API. SAM3's probe
+also enables source score-based memory selection and preserves auxiliary text
+batch slots for numerical comparison. `--trace` optionally writes SAM3.1 current
+history tensors; these weight-derived debug outputs belong in private storage.
+
+The coherent source comparison is `native/tests/video_pipeline_parity.py`.
+SAM3 BF16-reference matches all raw masks and low tracking values in the current
+three-frame fixture. SAM3.1 has a captured divergence after the first global
+memory update; it is not yet a passing full-pipeline comparison. See the updated
+[video integration notes](../docs/native/VIDEO_INTEGRATION.md) for measured scope,
+FP16/BF16 comparisons and the remaining investigation.

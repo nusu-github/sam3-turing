@@ -10,5 +10,8 @@ SAM3_NATIVE_EXPORT at::Tensor preprocess_rgb(const at::Tensor& pixels);
 // byte / 255 rounded to F32, then Normalize(.5,.5); contiguous NCHW output.
 // Input is decoded RGB uint8 [3,H,W]. This is distinct from image-mode resize.
 SAM3_NATIVE_EXPORT at::Tensor resize_tracking_rgb(const at::Tensor&,int64_t height,int64_t width);
+// High-level video predictor image-folder path: Pillow byte bilinear, F32 /255,
+// F16 storage and each normalization step, then lossless F32 for neural input.
+SAM3_NATIVE_EXPORT at::Tensor preprocess_video_rgb(const at::Tensor&);
 SAM3_NATIVE_EXPORT at::Tensor preprocess_tracking_rgb(const at::Tensor&);
 }

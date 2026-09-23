@@ -1,0 +1,63 @@
+{
+  "cases": [
+    {
+      "height": 1,
+      "width": 1,
+      "exact": true
+    },
+    {
+      "height": 1,
+      "width": 9,
+      "exact": true
+    },
+    {
+      "height": 17,
+      "width": 1,
+      "exact": true
+    },
+    {
+      "height": 5,
+      "width": 7,
+      "exact": true
+    },
+    {
+      "height": 37,
+      "width": 53,
+      "exact": true
+    },
+    {
+      "height": 1008,
+      "width": 1008,
+      "exact": true
+    },
+    {
+      "height": 1080,
+      "width": 1920,
+      "exact": true
+    },
+    {
+      "height": 2001,
+      "width": 9,
+      "exact": true
+    },
+    {
+      "path": "assets/videos/0001/0.jpg",
+      "height": 720,
+      "width": 1280,
+      "exact": true
+    },
+    {
+      "path": "assets/videos/0001/1.jpg",
+      "height": 720,
+      "width": 1280,
+      "exact": true
+    },
+    {
+      "path": "assets/videos/0001/2.jpg",
+      "height": 720,
+      "width": 1280,
+      "exact": true
+    }
+  ],
+  "scope": "Exact original high-level io_utils image-folder preprocessing: Pillow bilinear byte resize, F32 division, F16 storage/normalization. Native output losslessly widens normalized half values to F32. Separate from low-level Pillow bicubic/F32 tracking path and codec-specific resize paths."
+}

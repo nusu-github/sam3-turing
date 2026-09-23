@@ -7,7 +7,7 @@
 namespace sam3 {
 VideoFrameEncoder::VideoFrameEncoder(std::shared_ptr<const VisionEncoder> v,std::shared_ptr<const GroundingDetector> d,std::shared_ptr<const Sam3TrackingFrame> c,at::Device device):vision_(std::move(v)),detector_(std::move(d)),sam3_(std::move(c)),device_(device){TORCH_CHECK(vision_ && detector_ && sam3_,"frame encoder requires shared vision/detector/tracker modules");}
 VideoFrameEncoder::VideoFrameEncoder(std::shared_ptr<const VisionEncoder> v,std::shared_ptr<const GroundingDetector> d,std::shared_ptr<const Sam31TrackingFrame> c,at::Device device):vision_(std::move(v)),detector_(std::move(d)),sam31_(std::move(c)),device_(device){TORCH_CHECK(vision_ && detector_ && sam31_,"frame encoder requires shared vision/detector/tracker modules");}
-VideoFrameFeatures VideoFrameEncoder::encode_rgb(const at::Tensor& rgb,const std::string& mode)const{return encode_preprocessed(preprocess_tracking_rgb(rgb),mode);}
+VideoFrameFeatures VideoFrameEncoder::encode_rgb(const at::Tensor& rgb,const std::string& mode)const{return encode_preprocessed(preprocess_video_rgb(rgb),mode);}
 VideoFrameFeatures VideoFrameEncoder::encode_preprocessed(const at::Tensor& input,const std::string& mode)const{
   c10::InferenceMode inference;TORCH_CHECK(input.dim()==4 && input.size(0)>0 && input.sizes().slice(1)==at::IntArrayRef({3,1008,1008}) && input.scalar_type()==at::kFloat,"video image requires normalized F32 [B,3,1008,1008]");
   auto visual=vision_->forward(input.to(device_),mode,sam31_?std::vector<std::string>{"convs","interactive_convs","propagation_convs"}:std::vector<std::string>{"convs","sam2_convs"});

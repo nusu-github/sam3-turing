@@ -3,10 +3,12 @@ import argparse,gc,json
 from pathlib import Path
 from types import SimpleNamespace
 import torch
+import numpy as np
+from PIL import Image
 from sam3.model_builder import (_create_vit_backbone,_create_vit_neck,_create_position_encoding,_create_multiplex_tri_backbone,_create_text_encoder,_create_sam3_transformer,_create_geometry_encoder,_create_segmentation_head,_create_dot_product_scoring,_create_sam3_model)
 from sam3.model.vl_combiner import SAM3VLBackbone,SAM3VLBackboneTri
 from sam3.model.geometry_encoders import Prompt
-from sam3.model.utils.sam2_utils import _load_img_as_tensor
+from sam3.model.io_utils import _load_img_as_tensor
 from tracking_frame_parity import reference as sam3_tracker
 from multiplex_frame_parity import reference as sam31_tracker
 
@@ -26,7 +28,7 @@ def main():
    for block,fn in zip(neck.trunk.blocks,original):block.mlp.forward=fn if mode=='bf16_reference' else lambda x,m=block.mlp:m.fc2(m.act(m.fc1(x)))
    with torch.autocast('cuda',enabled=mode!='fp32',dtype=dtype):language=backbone.forward_text(['person','ball'],device='cuda')
    for path in a.frames:
-    print('START',model,mode,path,flush=True);image,_,_=_load_img_as_tensor(str(path),1008);image=image.float().cuda()[None].sub(.5).div(.5)
+    print('START',model,mode,path,flush=True);image,_,_=_load_img_as_tensor(str(path),1008);image=image.half().sub_(.5).div_(.5).float().cuda()[None];rgb=torch.tensor(np.array(Image.open(path).convert("RGB")),device="cuda").permute(2,0,1)
     batch=2;ids=torch.zeros(batch,device='cuda',dtype=torch.long);text_ids=torch.arange(batch,device='cuda');points=torch.tensor([[[.5,.6],[.4,.5]]],device='cuda');pl=torch.ones(1,batch,device='cuda',dtype=torch.long);pm=torch.tensor([[False],[True]],device='cuda');boxes=torch.empty(0,batch,4,device='cuda');bl=torch.empty(0,batch,device='cuda',dtype=torch.long);bm=torch.empty(batch,0,device='cuda',dtype=torch.bool)
     geo=Prompt(point_embeddings=points,point_labels=pl,point_mask=pm,box_embeddings=boxes,box_labels=bl,box_mask=bm);find=SimpleNamespace(img_ids=ids,text_ids=text_ids)
     with torch.autocast('cuda',enabled=mode!='fp32',dtype=dtype):
@@ -39,7 +41,7 @@ def main():
      features['backbone_fpn']=pyramid
      prompt,padding,_=ref._encode_prompt(features,find,geo);_,encoded,_=ref._run_encoder(features,find,prompt,padding)
      detections={'encoder_hidden_states':encoded['encoder_hidden_states']};detections,hs=ref._run_decoder(encoded['pos_embed'],encoded['encoder_hidden_states'],encoded['padding_mask'],detections,prompt,padding,encoded);ref._run_segmentation_heads(detections,features,ids,encoded['vis_feat_sizes'],encoded['encoder_hidden_states'],prompt,padding,hs)
-    actual=torch.ops.sam3_native.video_frame_features(str(a.store),model,image,[ids,text_ids,language['language_features'],language['language_mask'],points,pl,pm,boxes,bl,bm],mode)
+    actual=torch.ops.sam3_native.video_frame_features(str(a.store),model,rgb,[ids,text_ids,language['language_features'],language['language_mask'],points,pl,pm,boxes,bl,bm],mode)
     for key,value in expected.items():torch.testing.assert_close(actual[key],value,rtol=0,atol=0)
     errors={}
     for key,value in actual.items():
@@ -49,5 +51,5 @@ def main():
     del actual,features,expected,detections,encoded,hs
    del language;gc.collect();torch.cuda.empty_cache()
   del ref,backbone,neck,text,tracker,weights;gc.collect();torch.cuda.empty_cache()
- a.report.write_text(json.dumps(dict(cases=rows,torch=torch.__version__,gpu=torch.cuda.get_device_name(),scope='Actual decoded video images through shared full 1008 vision trunk, detector neck and all projected tracker necks, arbitrary text+geometry prompt batches, all 200 detector queries with source video joint-presence scoring. Same-mode source MLP adaptations for FP16/FP32. Does not yet validate high-level prompt lifecycle or complete tracking output.'),indent=2)+'\n')
+ a.report.write_text(json.dumps(dict(cases=rows,torch=torch.__version__,gpu=torch.cuda.get_device_name(),scope='Actual RGB images through native high-level video preprocessing and shared full 1008 vision trunk, detector neck and all projected tracker necks, arbitrary text+geometry prompt batches, all 200 detector queries with source video joint-presence scoring. Same-mode source MLP adaptations for FP16/FP32. Does not yet validate high-level prompt lifecycle or complete tracking output.'),indent=2)+'\n')
 if __name__=='__main__':main()

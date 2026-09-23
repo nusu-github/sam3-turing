@@ -47,6 +47,7 @@ void save_state(Snapshot& out,const std::string& prefix,const sam3::Sam3Tracking
 }
 TORCH_LIBRARY_FRAGMENT(sam3_native,m) {
   m.def("resize_tracking_rgb(Tensor image, int height, int width) -> Tensor",&sam3::resize_tracking_rgb);
+  m.def("preprocess_video_rgb(Tensor image) -> Tensor",&sam3::preprocess_video_rgb);
   m.def("preprocess_tracking_rgb(Tensor image) -> Tensor",&sam3::preprocess_tracking_rgb);
   m.def("tracking_frame_order(int[][] groups, bool dictionary) -> int[]",&sam3::detail::frame_set_order);
   m.def("tracking_postprocess(Tensor masks, int height, int width, bool non_overlap, int area) -> Tensor",&sam3::postprocess_tracking_masks);

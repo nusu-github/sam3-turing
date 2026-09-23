@@ -1800,3 +1800,30 @@ Code/reports are on `codex/native-onboarding`; private artifacts are in
 in `video-pipeline-fixture`. Continue with coherent source video comparisons,
 warmup/temporal filtering, prompt and user-action management, complete C ABI,
 codecs, multi-GPU and portable packaging. The overall goal remains incomplete.
+
+## Validate coherent source video and correct integration inputs
+
+The first source raw-frame comparison found a real integration mismatch: the
+upper-level image-folder loader uses bilinear/F16 normalization, while the
+low-level tracker uses bicubic/F32. Added a distinct native upper-level preprocessing
+API, retained low-level behavior, and matched Pillow's extreme-tall pass ordering.
+Eleven upper-level and 63 low-level resize/normalization checks pass. Shared
+RGB-to-feature/detector comparison passes all 12 model/precision/frame cases exactly.
+
+The standalone probe now uses SAM3 score-based memory selection and the source
+auxiliary text batch slots. SAM3 BF16 raw outputs and low tracking values match
+exactly over three actual frames. FP16 vs adapted source has at most three boundary
+pixel differences per object and minimum mask IoU 0.9999112; FP16 vs original BF16
+is measured separately. This is a small fixture, not a completed quality benchmark.
+
+SAM3.1's matched batch/RoPE diagnostic is exact for the first two frames, then
+shows a memory-update divergence. Intermediate masks/scores, image features,
+positions and pointers match, but encoded memory differs. Captured source/native
+state tensors and standalone memory replay narrow the next investigation. Do not
+claim that isolated memory tests resolve this end-to-end difference. Default source
+batching/RoPE comparisons and failing-state traces are retained separately.
+
+CTest remains 25 CUDA-enabled / 14 custom-CUDA-disabled. No Actions or physical
+Windows/Turing tests were run. Code, reports and private diagnostic artifacts are
+being persisted before continuing this investigation and temporal/prompt lifecycle
+integration. General CPU stability and portable packaging remain open.
