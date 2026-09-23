@@ -1,0 +1,46 @@
+@PACKAGE_INIT@
+include("${CMAKE_CURRENT_LIST_DIR}/Sam3NativeTargets.cmake")
+set(Sam3Native_C_FOUND TRUE)
+set(Sam3Native_RUNTIME_LIBDIR "@CMAKE_INSTALL_LIBDIR@")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  # ld resolves dependencies of shared objects independently of the loader.
+  # Tell the linker where the installed runtime is located. Incompatible
+  # externally injected LibTorch paths must still be removed by the caller.
+  set_property(TARGET sam3::c APPEND PROPERTY INTERFACE_LINK_OPTIONS "LINKER:-rpath-link,$<TARGET_FILE_DIR:sam3::c>")
+endif()
+# C clients only need the installed header, import library/shared object and
+# runtime dependencies. They do not need Torch headers, a C++ compiler or nvcc.
+foreach(component IN LISTS Sam3Native_FIND_COMPONENTS)
+  if(component STREQUAL "CPP")
+    include(CMakeFindDependencyMacro)
+    find_dependency(Torch @Torch_VERSION@ EXACT REQUIRED)
+    if(NOT TARGET sam3::cpp)
+      add_library(sam3::cpp INTERFACE IMPORTED)
+      set_target_properties(sam3::cpp PROPERTIES INTERFACE_LINK_LIBRARIES "sam3::c;${TORCH_LIBRARIES}" INTERFACE_COMPILE_FEATURES cxx_std_17)
+    endif()
+    set(Sam3Native_CPP_FOUND TRUE)
+  elseif(NOT component STREQUAL "C")
+    set(Sam3Native_${component}_FOUND FALSE)
+  endif()
+endforeach()
+check_required_components(Sam3Native)
+
+# A C-only Windows client can stage all runtime DLLs without finding Torch.
+function(sam3_copy_runtime target)
+  if(WIN32)
+    get_target_property(sam3_dll sam3::c IMPORTED_LOCATION_RELEASE)
+    if(NOT sam3_dll)
+      get_target_property(sam3_configs sam3::c IMPORTED_CONFIGURATIONS)
+      foreach(config IN LISTS sam3_configs)
+        if(NOT sam3_dll)
+          get_target_property(sam3_dll sam3::c IMPORTED_LOCATION_${config})
+        endif()
+      endforeach()
+    endif()
+    get_filename_component(sam3_runtime_dir "${sam3_dll}" DIRECTORY)
+    file(GLOB sam3_runtime_dlls "${sam3_runtime_dir}/*.dll")
+    if(sam3_runtime_dlls)
+      add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${sam3_runtime_dlls} $<TARGET_FILE_DIR:${target}>)
+    endif()
+  endif()
+endfunction()

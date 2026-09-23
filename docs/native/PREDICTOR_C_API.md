@@ -109,8 +109,8 @@ CUDA-enabled and 16 custom-CUDA-disabled tests. See
 [predictor-c-validation.json](predictor-c-validation.json) for the recorded scope.
 
 No query/point/object cap or prompt/weight variant is introduced. This is still a
-development library: integrated codecs, multi-GPU transport, portable SDK/CPU
+development library: integrated codecs, multi-GPU transport, CPU
 stability and broader quality/performance remain. The native dependency graph
-contains no `libpython` or `libtorch_python`; current LibTorch paths still refer to
-this environment. Windows/Turing execution remains the user's verification task.
+contains no `libpython` or `libtorch_python`; the standalone development SDK uses official LibTorch and bundled runtime
+libraries; see [SDK.md](SDK.md). Windows/Turing execution remains the user's verification task.
 No GitHub Actions are used.

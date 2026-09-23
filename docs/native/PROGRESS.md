@@ -2103,3 +2103,29 @@ PREDICTOR_C_API.md and predictor-c-validation.json. Native clients run with no
 Python on PATH or Python shared-library linkage. Codecs/multiGPU/portableSDK, CPU
 stability, broader quality/performance and the earlier 120-pixel reverse discrepancy
 remain. No Actions or Windows/Turing physical tests. Goal remains active.
+
+## Standalone LibTorch development SDK
+
+Added install/export metadata, C-only sam3::c and optional ATen-facing sam3::cpp
+CMake targets, an installed C11 text-encoder example and explicit runtime bundling.
+The bundle uses official standalone LibTorch 2.10.0 CPU/CUDA 13.0, rejects Python
+wheel/development dependencies and retains dependency hashes/upstream notices.
+A build option excludes development probes/tests. Model weights remain external
+and shared between image/video and SAM3/SAM3.1.
+
+Official CPU and CUDA builds pass 16/28 CTests. All 36 C predictor image/video
+checkpoints remain exact against retained C++ reference outputs (not a new broad
+upstream parity claim). An external C-only consumer of the relocated bundled CUDA
+SDK passes 10 image/edit checkpoints; loader tracing confirms 23 core runtime
+libraries originate inside that SDK. A relocated CPU client runs real text
+encoding without Python on PATH and in a separate chroot with no Python files.
+C++ installed-package consumption also executes an ATen mask operation.
+
+Linux artifacts require GLIBC 2.38 / GLIBCXX 3.4.32. These are development packages,
+not universal Linux releases. Source CMake supports Windows DLL bundling based
+on the attached cppdocs installation guide; no Windows execution was performed.
+Native and official Torch CUDA libraries contain sm75 code, which is not Turing
+hardware validation. No Actions were used. CPU long-run stability, integrated
+codecs, multi-GPU transport, broader quality/performance and the earlier 120-pixel
+reverse-edit discrepancy remain open. Goal remains active. See SDK.md and
+sdk-validation.json for exact scope and artifact provenance.

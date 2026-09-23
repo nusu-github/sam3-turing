@@ -80,3 +80,11 @@ an explicit `--threads` setting (default remains four). This repeat is retained
 privately with `video-memory-stride-linux-cuda13`; the successful one-thread run
 does not establish general CPU stability or prove a common cause with earlier
 MKL crashes.
+
+## Official standalone LibTorch follow-up
+
+Official LibTorch 2.10.0 CPU has now passed all 16 native CTests and actual text
+encoding through an installed C11 client, including a Python-free chroot. Its
+dynamic dependency tree does not use the development image's MPI/UCX/external
+MKL libraries. This changes the runtime under test; it does not diagnose the
+earlier intermittent crash or establish long-run CPU stability. See SDK.md.

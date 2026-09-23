@@ -131,7 +131,7 @@ does not exercise this owner's new semantic replacements.
 This is a development C++ API, not the finished full-function distribution.
 Explicit image mode, original-mask restoration and SAM3.1 high-level exact-mask
 edits are described in [IMAGE_PREDICTOR.md](IMAGE_PREDICTOR.md). Its owning C ABI is now available; see [PREDICTOR_C_API.md](PREDICTOR_C_API.md). Codecs,
-multi-GPU transport, resumed-session checkpoints, portable SDK packaging and broader
+multi-GPU transport, resumed-session checkpoints, broader
 quality/performance remain. Caller-encoded visual tokens and reverse scheduling
 are available through the owner but are not newly compared by this semantic fixture.
 Single-model cores are shared within an owner. The optional `VideoPredictorModules`
@@ -145,3 +145,6 @@ is left to the user. sm75 cubins and DLL export/copy plumbing are build evidence
 not hardware validation. No GitHub Actions are used. Code is in the development
 branch; weights, reference tensors and Linux build snapshots stay in the private
 Hugging Face bucket named in the project onboarding notes.
+
+Standalone development SDK installation and runtime isolation are documented in
+[SDK.md](SDK.md); Windows execution and older-Linux distribution remain unverified.

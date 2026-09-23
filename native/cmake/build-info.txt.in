@@ -1,0 +1,12 @@
+SAM3 native SDK development version: @PROJECT_VERSION@
+C ABI version: 1
+Producer LibTorch version: @Torch_VERSION@
+Producer compiler: @CMAKE_CXX_COMPILER_ID@ @CMAKE_CXX_COMPILER_VERSION@
+Producer platform: @CMAKE_SYSTEM_NAME@ @CMAKE_SYSTEM_PROCESSOR@
+Custom CUDA kernels: @SAM3_WITH_CUDA@
+CUDA architectures: @CMAKE_CUDA_ARCHITECTURES@
+ICU version: @ICU_VERSION@
+Zlib version: @ZLIB_VERSION_STRING@
+Weights: external shared modular store; not included in this SDK.
+The C++ interface requires matching LibTorch headers and ABI.
+The C interface requires runtime libraries but no Torch headers or Python.

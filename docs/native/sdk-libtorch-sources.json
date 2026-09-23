@@ -1,0 +1,26 @@
+[
+  {
+    "kind": "cpu",
+    "url": "https://download.pytorch.org/libtorch/cpu/libtorch-shared-with-deps-2.10.0%2Bcpu.zip",
+    "bytes": 184175990,
+    "sha256": "c5bf8efda9224a2d971b19d1ef6cf3ba6fee8ab53e69c49427db003d1d300496",
+    "build_hash": "/pytorch /pytorch /\n449b1768410104d3ed79d3bcfe4ba1d65c7f22c0",
+    "build_version": "2.10.0+cpu"
+  },
+  {
+    "kind": "cu130",
+    "url": "https://download.pytorch.org/libtorch/cu130/libtorch-shared-with-deps-2.10.0%2Bcu130.zip",
+    "bytes": 1894631988,
+    "sha256": "7ca9216c5eecc39d61ef550cd50988f651bbe3982a2dcf4fd5982dc5dfce4ca0",
+    "build_hash": "/pytorch /pytorch /\n449b1768410104d3ed79d3bcfe4ba1d65c7f22c0",
+    "build_version": "2.10.0+cu130"
+  },
+  {
+    "kind": "windows-cu130",
+    "url": "https://download.pytorch.org/libtorch/cu130/libtorch-win-shared-with-deps-2.10.0%2Bcu130.zip",
+    "head_status": 200,
+    "bytes": 1947008522,
+    "downloaded": false,
+    "runtime_tested": false
+  }
+]
