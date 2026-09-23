@@ -16,13 +16,15 @@ static void dump(const sam3_result* result,const char* name){
   fputs("}\n",meta);CHECK(fclose(meta)==0);printf("%s\n",name);fflush(stdout);
 }
 int main(int argc,char** argv){
-  CHECK(argc>=4);CHECK(sam3_media_available());output_root=argv[3];sam3_media_options options;OK(sam3_media_options_init(&options));options.image_only=strcmp(argv[2],"image")==0;
+  CHECK(argc>=4);CHECK(sam3_media_available());output_root=argv[3];sam3_media_options options;OK(sam3_media_options_init(&options));options.image_only=strcmp(argv[2],"image")==0;const char* threads=getenv("SAM3_PROBE_THREADS");if(threads)options.threads=atoi(threads);
   sam3_media* media=NULL;OK(sam3_media_open(argv[1],&options,&media));sam3_result* info=NULL;OK(sam3_media_info(media,&info));dump(info,"info");sam3_tensor_view count;OK(sam3_result_get(info,"frames",&count));const int64_t frames=*(const int64_t*)count.data;sam3_result_release(info);
   sam3_result* bad=(sam3_result*)1;CHECK(sam3_media_read_frame(media,-1,&bad)==SAM3_INVALID_ARGUMENT && bad==NULL);CHECK(sam3_media_read_frame(media,frames,&bad)==SAM3_INVALID_ARGUMENT && bad==NULL);
+  const char* budget=getenv("SAM3_PROBE_CACHE_BYTES");if(budget)OK(sam3_media_set_cache_bytes(media,strtoll(budget,NULL,10)));
   sam3_result* retained=NULL;
-  for(int64_t i=0;i<(argc>4?argc-4:frames);++i){const int64_t index=argc>4?strtoll(argv[i+4],NULL,10):i;sam3_result* frame=NULL;OK(sam3_media_read_frame(media,index,&frame));char tag[64];snprintf(tag,sizeof(tag),"frame-%" PRId64,index);dump(frame,tag);
+  for(int64_t i=0;i<(argc>4?argc-4:frames);++i){const int64_t index=argc>4?strtoll(argv[i+4],NULL,10):i;sam3_result* frame=NULL;OK(sam3_media_read_frame(media,index,&frame));char tag[96];if(getenv("SAM3_PROBE_SEQUENCE"))snprintf(tag,sizeof(tag),"read-%" PRId64 "-frame-%" PRId64,i,index);else snprintf(tag,sizeof(tag),"frame-%" PRId64,index);dump(frame,tag);
     if(!retained){OK(sam3_result_retain(frame,&retained));sam3_tensor_view rgb;OK(sam3_result_get(frame,"rgb",&rgb));const int64_t h=rgb.shape[1],w=rgb.shape[2];uint8_t* pixels=(uint8_t*)malloc((size_t)(h*w*3));CHECK(pixels);const uint8_t* planar=(const uint8_t*)rgb.data;for(int64_t n=0;n<h*w;++n)for(int c=0;c<3;++c)pixels[n*3+c]=planar[c*h*w+n];sam3_rgb_view view={pixels,(uint64_t)(h*w*3),h,w,w*3};char path[4096];snprintf(path,sizeof(path),"%s/roundtrip.png",output_root);OK(sam3_media_write_png(path,&view));free(pixels);}
     sam3_result_release(frame);
   }
+  sam3_result* stats=NULL;OK(sam3_media_stats(media,&stats));dump(stats,"stats");sam3_result_release(stats);
   sam3_media_release(media);CHECK(retained);dump(retained,"retained");sam3_result_release(retained);return 0;
 }

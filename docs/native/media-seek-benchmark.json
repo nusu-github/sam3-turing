@@ -1,0 +1,45 @@
+{
+  "cases": [
+    {
+      "order": "forward",
+      "version": "previous",
+      "seconds": [
+        1.0680270455777645,
+        2.1651139426976442,
+        1.6075654048472643
+      ],
+      "median_seconds": 1.6075654048472643
+    },
+    {
+      "order": "forward",
+      "version": "indexed",
+      "seconds": [
+        1.1250416152179241,
+        2.1034115105867386,
+        1.4695615004748106
+      ],
+      "median_seconds": 1.4695615004748106
+    },
+    {
+      "order": "reverse",
+      "version": "previous",
+      "seconds": [
+        15.224550560116768,
+        15.57184175029397,
+        15.012019453570247
+      ],
+      "median_seconds": 15.224550560116768
+    },
+    {
+      "order": "reverse",
+      "version": "indexed",
+      "seconds": [
+        1.18056895211339,
+        2.5340149272233248,
+        1.7975462023168802
+      ],
+      "median_seconds": 1.7975462023168802
+    }
+  ],
+  "scope": "360 frames 128x96 H264, three warm-process runs each; wall time includes process startup, full index scan and per-frame result file output. New cache 589824 bytes. Not inference or long/high-resolution throughput."
+}

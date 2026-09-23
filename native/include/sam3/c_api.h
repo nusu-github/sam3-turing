@@ -193,6 +193,10 @@ SAM3_NATIVE_EXPORT sam3_status sam3_media_options_init(sam3_media_options*) SAM3
 SAM3_NATIVE_EXPORT sam3_status sam3_media_open(const char* path,const sam3_media_options*,sam3_media**) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT void sam3_media_release(sam3_media*) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_media_info(sam3_media*,sam3_result**) SAM3_NOEXCEPT;
+/* Statistics are owning scalar result fields. Budget excludes decoder memory and
+ * the last-frame cache; zero disables the additional RGB window. ABI1 additive. */
+SAM3_NATIVE_EXPORT sam3_status sam3_media_stats(sam3_media*,sam3_result**) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_media_set_cache_bytes(sam3_media*,int64_t bytes) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_media_read_frame(sam3_media*,int64_t frame,sam3_result**) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_media_write_png(const char* path,const sam3_rgb_view*) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_create_from_media(sam3_context*,sam3_media*,const sam3_predictor_options*,sam3_predictor**) SAM3_NOEXCEPT;

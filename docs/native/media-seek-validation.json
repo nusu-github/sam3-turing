@@ -1,0 +1,46 @@
+{
+  "seek_cases": 16,
+  "individual_reads": 3856,
+  "all_pixels_exact": true,
+  "all_timestamps_match": true,
+  "existing_codec_cases": 23,
+  "cpu_ctest_passed": 17,
+  "cuda_ctest_passed": 29,
+  "neural_native_composition_results": 20,
+  "sdk_recovery": [
+    {
+      "kind": "cpu",
+      "complete_sdk_entries": 111,
+      "complete_sdk_hashes_and_symlinks_exact": true,
+      "recovered_client_passed": true
+    },
+    {
+      "kind": "cuda",
+      "complete_sdk_entries": 144,
+      "complete_sdk_hashes_and_symlinks_exact": true,
+      "recovered_client_passed": true,
+      "recovered_sam31_image": "model=31 image=1 exact_result_sets=3 source_and_context_lifetime=passed"
+    }
+  ],
+  "sdk_overlays": [
+    {
+      "file": "seek-overlay-linux-common.tar.gz",
+      "bytes": 5748,
+      "sha256": "03c39b51a408ba06d74603329169f5c5ec8cf0cce68ca420339816d3f0fa44d0",
+      "entries": 2
+    },
+    {
+      "file": "seek-overlay-linux-cpu.tar.gz",
+      "bytes": 1498915,
+      "sha256": "9a9d60d19fe9291508bd4b9358952e7e48c018f4c5c91a3931d81f560d4dcf5e",
+      "entries": 3
+    },
+    {
+      "file": "seek-overlay-linux-cuda.tar.gz",
+      "bytes": 1772487,
+      "sha256": "dda83b37187014fb32438569ee7709922d915ec0a6b49d2837eb242933dc53d2",
+      "entries": 3
+    }
+  ],
+  "scope": "Linux official LibTorch2.10 CPU/cu130, FFmpeg6.1.1; C clients without Python/ffmpeg executables. Windows/Turing user-owned and unexecuted. No Actions. Goal remains active."
+}

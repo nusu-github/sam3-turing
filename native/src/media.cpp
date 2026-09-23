@@ -8,11 +8,14 @@
 #include <cstring>
 #include <cstdlib>
 #include <climits>
+#include <array>
 #ifdef SAM3_WITH_MEDIA
 extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 #include <libavutil/display.h>
+#include <libavutil/imgutils.h>
+#include <libavutil/sha.h>
 #include <libswscale/swscale.h>
 #include <jpeglib.h>
 }
@@ -44,8 +47,9 @@ at::Tensor jpeg_rgb(const std::filesystem::path& path){
   std::free(s->pixels);std::free(s);return output.permute({2,0,1}).contiguous();
 }
 struct Decoder {
+  AVSHA* sha=av_sha_alloc();std::vector<uint8_t> packed;
   std::ifstream input;AVIOContext* io=nullptr;AVFormatContext* format=nullptr;AVCodecContext* codec=nullptr;AVPacket* packet=nullptr;AVFrame* frame=nullptr;SwsContext* scaler=nullptr;int stream=-1,rotation=0;bool draining=false,mirror=false;double fps=0;
-  ~Decoder(){sws_freeContext(scaler);av_frame_free(&frame);av_packet_free(&packet);avcodec_free_context(&codec);avformat_close_input(&format);if(io){av_freep(&io->buffer);avio_context_free(&io);}}
+  ~Decoder(){av_free(sha);sws_freeContext(scaler);av_frame_free(&frame);av_packet_free(&packet);avcodec_free_context(&codec);avformat_close_input(&format);if(io){av_freep(&io->buffer);avio_context_free(&io);}}
   static int read_io(void* opaque,uint8_t* data,int size){auto& f=static_cast<Decoder*>(opaque)->input;f.read(reinterpret_cast<char*>(data),size);const auto n=f.gcount();return n?int(n):(f.eof()?AVERROR_EOF:AVERROR(EIO));}
   static int64_t seek_io(void* opaque,int64_t offset,int whence){auto& f=static_cast<Decoder*>(opaque)->input;f.clear();if(whence==AVSEEK_SIZE){const auto pos=f.tellg();f.seekg(0,std::ios::end);const auto size=f.tellg();f.seekg(pos);return size==std::streampos(-1)?AVERROR(EIO):int64_t(size);}whence&=~AVSEEK_FORCE;const auto dir=whence==SEEK_SET?std::ios::beg:whence==SEEK_CUR?std::ios::cur:std::ios::end;if(whence!=SEEK_SET && whence!=SEEK_CUR && whence!=SEEK_END)return AVERROR(EINVAL);f.seekg(offset,dir);return f?int64_t(f.tellg()):AVERROR(EIO);}
   void open(const std::filesystem::path& path,int threads,bool orient){
@@ -63,6 +67,19 @@ struct Decoder {
       int read;do{av_packet_unref(packet);read=av_read_frame(format,packet);}while(read>=0 && packet->stream_index!=stream);
       if(read==AVERROR_EOF){avcheck(avcodec_send_packet(codec,nullptr),"drain decoder");draining=true;}else{avcheck(read,"read media packet");avcheck(avcodec_send_packet(codec,packet),"send media packet");}
     }
+  }
+  bool seek(int64_t timestamp){
+    if(av_seek_frame(format,stream,timestamp,AVSEEK_FLAG_BACKWARD)<0)return false;
+    avcodec_flush_buffers(codec);av_packet_unref(packet);av_frame_unref(frame);draining=false;return true;
+  }
+  std::array<uint8_t,32> fingerprint(){
+    // Exclude line padding, include palette data and every property used by rgb().
+    const auto fmt=AVPixelFormat(frame->format);const int size=av_image_get_buffer_size(fmt,frame->width,frame->height,1);avcheck(size,"size decoded pixels");
+    packed.resize(size);avcheck(av_image_copy_to_buffer(packed.data(),size,frame->data,frame->linesize,fmt,frame->width,frame->height,1),"pack decoded pixels");
+    TORCH_CHECK(sha,"cannot allocate frame hash");avcheck(av_sha_init(sha,256),"initialize frame hash");
+    const int64_t properties[]={frame->width,frame->height,frame->format,frame->colorspace,frame->color_range};
+    av_sha_update(sha,reinterpret_cast<const uint8_t*>(properties),sizeof(properties));av_sha_update(sha,packed.data(),packed.size());
+    std::array<uint8_t,32> result;av_sha_final(sha,result.data());return result;
   }
   std::pair<int64_t,int64_t> dimensions()const {return rotation%2?std::make_pair(frame->width,frame->height):std::make_pair(frame->height,frame->width);}
   double seconds()const {return frame->best_effort_timestamp==AV_NOPTS_VALUE?std::numeric_limits<double>::quiet_NaN():frame->best_effort_timestamp*av_q2d(format->streams[stream]->time_base);}
@@ -84,6 +101,35 @@ at::Tensor image_rgb(const std::filesystem::path& path,int threads){
 }
 struct MediaSource::Impl {
   std::filesystem::path path;MediaOptions options;MediaInfo metadata;std::vector<std::filesystem::path> images;std::vector<std::pair<double,double>> timestamps;std::unique_ptr<Decoder> decoder;int64_t next_index=0,cached_index=-1;MediaFrame cached;std::mutex mutex;
+  struct IndexedFrame {int64_t pts;std::array<uint8_t,32> digest;};
+  std::vector<IndexedFrame> index;std::vector<int64_t> keyframes;
+  bool seekable=true,verify_decoder=false;
+  MediaStats counters;int64_t cache_limit=64*1024*1024,block=-1;
+  std::map<int64_t,at::Tensor> window;
+  void reopen(){decoder=std::make_unique<Decoder>();decoder->open(path,options.threads,true);next_index=0;verify_decoder=false;}
+  bool next(){const bool okay=decoder->next();if(okay)++counters.read_decoded_frames;return okay;}
+  void clear_window(){window.clear();counters.cache_bytes=0;block=-1;}
+  bool positioned_read(int64_t target,int64_t start,int64_t capacity){
+    while(next_index<=target){
+      if(!next())return false;
+      if(verify_decoder && (decoder->frame->best_effort_timestamp!=index[next_index].pts || decoder->fingerprint()!=index[next_index].digest))return false;
+      if(next_index>=start && capacity>0){auto rgb=decoder->rgb();auto it=window.find(next_index);if(it==window.end()){counters.cache_bytes+=rgb.nbytes();window.emplace(next_index,std::move(rgb));}}
+      ++next_index;
+    }
+    return true;
+  }
+  bool seek_read(int64_t target,int64_t start,int64_t capacity){
+    auto key=std::upper_bound(keyframes.begin(),keyframes.end(),start);if(key==keyframes.begin())return false;--key;
+    ++counters.seek_attempts;
+    if(!decoder->seek(index[*key].pts) || !next())return false;
+    const auto pts=decoder->frame->best_effort_timestamp;
+    auto found=std::lower_bound(index.begin(),index.end(),pts,[](const auto& a,int64_t b){return a.pts<b;});
+    if(found==index.end() || found->pts!=pts || found-index.begin()>start)return false;
+    next_index=found-index.begin();verify_decoder=true;
+    if(decoder->fingerprint()!=found->digest)return false;
+    if(next_index>=start && capacity>0){auto rgb=decoder->rgb();counters.cache_bytes+=rgb.nbytes();window.emplace(next_index,std::move(rgb));}
+    ++next_index;return positioned_read(target,start,capacity);
+  }
   Impl(const std::filesystem::path& p,const MediaOptions& o):path(p),options(o){
     TORCH_CHECK(o.threads>0,"decoder threads must be positive");TORCH_CHECK(std::filesystem::exists(p),"media path does not exist");
     if(std::filesystem::is_directory(p)){
@@ -96,20 +142,51 @@ struct MediaSource::Impl {
     metadata.image_only=o.image_only;
     if(!images.empty()){cached={image_rgb(images.front(),o.threads),0,0};cached_index=0;metadata.frames=images.size();metadata.height=cached.rgb.size(1);metadata.width=cached.rgb.size(2);}
     else {auto scan=std::make_unique<Decoder>();scan->open(path,o.threads,true);metadata.fps=scan->fps;
-      while(scan->next()){const auto [h,w]=scan->dimensions();if(timestamps.empty()){metadata.height=h;metadata.width=w;}TORCH_CHECK(h==metadata.height && w==metadata.width,"video changes dimensions");timestamps.emplace_back(scan->seconds(),scan->duration());}
+      while(scan->next()){const auto [h,w]=scan->dimensions();if(timestamps.empty()){metadata.height=h;metadata.width=w;}TORCH_CHECK(h==metadata.height && w==metadata.width,"video changes dimensions");timestamps.emplace_back(scan->seconds(),scan->duration());
+        const auto pts=scan->frame->best_effort_timestamp;if(pts==AV_NOPTS_VALUE || (!index.empty() && pts<=index.back().pts))seekable=false;
+        if(scan->frame->flags&AV_FRAME_FLAG_KEY)keyframes.push_back(index.size());
+        index.push_back({pts,scan->fingerprint()});++counters.index_decoded_frames;}
       TORCH_CHECK(!timestamps.empty(),"video has no decoded frames");metadata.frames=timestamps.size();
     }
   }
-  MediaFrame read(int64_t index){std::lock_guard<std::mutex> guard(mutex);TORCH_CHECK(index>=0 && index<metadata.frames,"media frame index out of range");if(index==cached_index)return {cached.rgb.clone(),cached.seconds,cached.duration};
-    if(!images.empty())cached={image_rgb(images[index],options.threads),0,0};
-    else {if(!decoder || index<next_index){decoder=std::make_unique<Decoder>();decoder->open(path,options.threads,true);next_index=0;}while(next_index<=index){TORCH_CHECK(decoder->next(),"media changed since index scan");++next_index;}cached={decoder->rgb(),timestamps[index].first,timestamps[index].second};}
-    cached_index=index;return {cached.rgb.clone(),cached.seconds,cached.duration};
+  MediaFrame read(int64_t requested){
+    std::lock_guard<std::mutex> guard(mutex);TORCH_CHECK(requested>=0 && requested<metadata.frames,"media frame index out of range");
+    if(requested==cached_index){++counters.cache_hits;return {cached.rgb.clone(),cached.seconds,cached.duration};}
+    if(!images.empty())cached={image_rgb(images[requested],options.threads),0,0};
+    else {
+      const int64_t frame_bytes=metadata.height*metadata.width*3;
+      const int64_t capacity=cache_limit/frame_bytes;
+      const int64_t start=capacity?(requested/capacity)*capacity:requested;
+      if(block!=start){clear_window();block=start;}
+      const auto hit=window.find(requested);
+      if(hit!=window.end()){++counters.cache_hits;cached={hit->second,timestamps[requested].first,timestamps[requested].second};}
+      else {
+        if(!decoder)reopen();
+        bool okay=false;
+        // Seek only when there is a keyframe beyond the sequential cursor, or
+        // when moving backwards. Never identify frames using rounded seconds.
+        auto key=std::upper_bound(keyframes.begin(),keyframes.end(),start);
+        const bool later_key=key!=keyframes.begin() && *std::prev(key)>next_index;
+        if(seekable && !keyframes.empty() && (requested<next_index || later_key)){
+          try{okay=seek_read(requested,start,capacity);}catch(const c10::Error&){okay=false;}
+          if(!okay){++counters.seek_fallbacks;seekable=false;clear_window();block=start;reopen();}
+        }else {if(requested<next_index)reopen();}
+        if(!okay){try{okay=positioned_read(requested,start,capacity);}catch(const c10::Error&){if(!verify_decoder)throw;okay=false;}
+          if(!okay && verify_decoder){++counters.seek_fallbacks;seekable=false;clear_window();block=start;reopen();okay=positioned_read(requested,start,capacity);}
+        }
+        TORCH_CHECK(okay,"media changed since index scan");
+        auto found=window.find(requested);cached={found==window.end()?decoder->rgb():found->second,timestamps[requested].first,timestamps[requested].second};
+      }
+    }
+    cached_index=requested;return {cached.rgb.clone(),cached.seconds,cached.duration};
   }
 };
 MediaSource::MediaSource(const std::filesystem::path& p,const MediaOptions& o):impl_(std::make_unique<Impl>(p,o)){}
 MediaSource::~MediaSource()=default;
 const MediaInfo& MediaSource::info()const{return impl_->metadata;}
 MediaFrame MediaSource::read(int64_t index){c10::InferenceMode inference(false);return impl_->read(index);}
+MediaStats MediaSource::stats()const{std::lock_guard<std::mutex> guard(impl_->mutex);auto result=impl_->counters;result.cache_limit_bytes=impl_->cache_limit;result.indexed_seek_enabled=impl_->seekable && !impl_->keyframes.empty();return result;}
+void MediaSource::set_cache_bytes(int64_t bytes){TORCH_CHECK(bytes>=0,"cache bytes must be nonnegative");std::lock_guard<std::mutex> guard(impl_->mutex);impl_->clear_window();impl_->cache_limit=bytes;}
 bool media_available()noexcept{return true;}
 void write_rgb_png(const std::filesystem::path& path,const at::Tensor& rgb){
   TORCH_CHECK(rgb.dim()==3 && rgb.size(0)==3 && rgb.scalar_type()==at::kByte && rgb.size(1)>0 && rgb.size(2)>0 && rgb.size(1)<=INT_MAX && rgb.size(2)<=INT_MAX/3,"PNG output requires U8 RGB [3,H,W]");
@@ -124,6 +201,8 @@ MediaSource::MediaSource(const std::filesystem::path&,const MediaOptions&){TORCH
 MediaSource::~MediaSource()=default;
 const MediaInfo& MediaSource::info()const{TORCH_CHECK(false,"native media support disabled");}
 MediaFrame MediaSource::read(int64_t){TORCH_CHECK(false,"native media support disabled");}
+MediaStats MediaSource::stats()const{TORCH_CHECK(false,"native media support disabled");}
+void MediaSource::set_cache_bytes(int64_t){TORCH_CHECK(false,"native media support disabled");}
 bool media_available()noexcept{return false;}
 void write_rgb_png(const std::filesystem::path&,const at::Tensor&){TORCH_CHECK(false,"native media support disabled");}
 }

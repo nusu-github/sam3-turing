@@ -2185,3 +2185,28 @@ Variable dimensions, unusual integer folder names, HDR/ICC/16-bit policies,
 arbitrary-angle display transforms, efficient seeking, video writing, multiGPU,
 CPU long-run stability and broader quality/performance remain. Windows/Turing
 physical tests remain with the user; no Actions. Goal remains active.
+
+## Verified indexed media reads and bounded reverse cache
+
+Media sources now index integer timestamps/keyframes and SHA-256 of packed
+native pixels/color properties during their initial full scan. Seek decoding is
+checked against that index; rejected results disable seeking and replay from the
+beginning. Missing/duplicate timestamps skip seeking. A configurable byte-bounded
+RGB window retains preceding frames for reverse reads without restricting any
+accessible frame or prompt. Additive C APIs expose cache budgeting and counters.
+
+3,856 reads in 16 new cases match sequential FFmpeg pixels/timestamps, including
+an actual MPEG-2 TS seek rejection, open GOPs, VFR, missing/duplicate timestamps,
+inaccurate MP4 indexing, zero/sub-frame budgets and decoder threading. Existing
+23 codec cases and CPU/CUDA CTests17/29 pass;20 real predictor result comparisons
+remain exact. The360-frame H264 reverse fixture decodes544 read frames versus the
+previous64,980, excluding360 initial frames in each. Installed-client median wall
+time is15.225s versus1.798s, including output files; this is a small media test,
+not an inference speed claim. Initial hashing adds work; ambiguous timestamps
+still require prefix replay outside the window. See MEDIA_SEEK.md and reports.
+
+An incremental SDK overlay pins the previous media/base packages and adds no
+LibTorch, FFmpeg or model-weight copies. Recovery hashes and actual C client
+execution are checked before persistence. No Actions, Windows or Turing execution.
+Goal remains active; indexing costs, wider codecs/preprocessing, video writing,
+multiGPU, CPU long-run stability and broad quality/performance remain.

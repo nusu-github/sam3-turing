@@ -98,12 +98,38 @@ while open. The predictor requires uniform frame dimensions; variable-resolution
 video, unusual TIFF/16-bit/HDR/ICC policies and arbitrary-angle display matrices
 still need broader treatment. These are recorded open cases, not claimed coverage.
 
-Video open scans decoded timestamps and drains delayed B-frames to determine the
-actual frame count; it does not trust only container estimates. Pixels are not
-all retained in RAM. Sequential reads continue a decoder; backward/random reads
-currently reopen and replay from the start, retaining one decoded RGB frame.
-There is no frame/detection/object cap, but long reverse traversal can be quadratic.
-Seek indexing and bounded caching remain performance work.
+Video open fully decodes and drains delayed B-frames to determine the actual
+frame count. It records integer timestamps, keyframes and SHA-256 of packed
+native pixels plus the color properties used by RGB conversion. The hash excludes
+line padding. This adds CPU work and one temporary packed frame during indexing;
+it does not retain all pixels in RAM. Metadata is O(frame count).
+
+Sequential reads continue a decoder. For backward/distant reads with strictly
+increasing, present timestamps, the decoder seeks to a preceding keyframe and
+flushes codec state. Every decoded frame from that seek is checked against the
+index before any pixels enter the cache or reach the caller. A failed seek,
+unknown frame, missing intermediate frame or differing fingerprint disables
+seeking for that source and replays from its beginning. Missing/duplicate/nonmonotone
+timestamps disable seeking from the outset. The scan remains the frame-count
+and timing authority. The source file must stay unchanged. See the portable
+[FFmpeg seeking interface](https://ffmpeg.org/doxygen/6.1/group__lavf__decoding.html)
+and [packed image helpers](https://ffmpeg.org/doxygen/6.1/group__lavu__picture.html).
+
+A block-aligned RGB window makes preceding frames reusable during reverse
+traversal. Its default limit is 64 MiB; C `sam3_media_set_cache_bytes` or C++
+`MediaSource::set_cache_bytes` changes that limit without limiting reachable
+frames. Zero disables the extra window; a budget smaller than one RGB frame
+also retains no window. This budget excludes the last-frame cache, returned
+result clones, index and decoder/temporary working memory. No disk frame spool
+or additional model/weight variant is produced. Timestamp-ambiguous streams
+still require repeated prefix decoding outside the window and can remain
+quadratic; a very large GOP can likewise limit seek gains.
+
+`sam3_media_stats(media, &result)` / C++ `stats()` expose index/read decoded-frame
+counts, seek attempts/fallbacks, cache hits/current bytes/limit and whether indexed
+seeking remains enabled. Counters are cumulative per source, serialized with
+reads; constructor indexing is separate from subsequent read decoding. Existing
+C options layouts and ABI 1 are unchanged.
 
 Decoded RGB enters the existing native Pillow-style preprocessing, whose prior
 image-folder references remain applicable. This is **not** bit-exact validation
@@ -140,6 +166,8 @@ and chosen platform overlay into that base SDK directory. This avoids repeating
 LibTorch libraries or weights; image/video use the same assembled SDK and modular
 weight store. Full decode tensors, test inputs and build/recovery logs are private.
 
-The full project goal remains open: wider codec/preprocess coverage, efficient
-seeking, video encoding, multi-GPU transport, CPU long-run stability, broader
+Additional seek tests and measured limits are in `MEDIA_SEEK.md`.
+
+The full project goal remains open: wider codec/preprocess coverage, indexing costs,
+video encoding, multi-GPU transport, CPU long-run stability, broader
 quality/performance and Windows/Turing physical validation remain.
