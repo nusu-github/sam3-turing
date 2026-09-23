@@ -149,3 +149,6 @@ Hugging Face bucket named in the project onboarding notes.
 
 Standalone development SDK installation and runtime isolation are documented in
 [SDK.md](SDK.md); Windows execution and older-Linux distribution remain unverified.
+
+Local image/video/folder sources and their ownership are now available through
+[MEDIA_IO.md](MEDIA_IO.md); full codec/preprocessing parity remains scoped there.

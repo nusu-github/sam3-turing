@@ -110,8 +110,11 @@ CUDA-enabled and 16 custom-CUDA-disabled tests. See
 [predictor-c-validation.json](predictor-c-validation.json) for the recorded scope.
 
 No query/point/object cap or prompt/weight variant is introduced. This is still a
-development library: integrated codecs, multi-GPU transport, CPU
+development library: broader media coverage, multi-GPU transport, CPU
 stability and broader quality/performance remain. The native dependency graph
 contains no `libpython` or `libtorch_python`; the standalone development SDK uses official LibTorch and bundled runtime
 libraries; see [SDK.md](SDK.md). Windows/Turing execution remains the user's verification task.
 No GitHub Actions are used.
+
+Local media sources can now be retained by `sam3_predictor_create_from_media`;
+see [MEDIA_IO.md](MEDIA_IO.md) for decode semantics and validation limits.

@@ -124,7 +124,9 @@ user. sm75 code presence is build evidence only. No GitHub Actions were used.
 The original CPU instability has not been diagnosed by this environment change;
 finite official-runtime tests do not establish long-run CPU stability.
 
-The overall goal remains open: integrated media codecs, multi-GPU transport,
+Native local media support and modular SDK overlays are now described in
+[MEDIA_IO.md](MEDIA_IO.md). The overall goal remains open: broader media/preprocess
+coverage, efficient seeking, video output, multi-GPU transport,
 broader quality/performance and wider platform validation still need work.
 The previously unresolved 120-pixel reverse-edit difference was subsequently
 traced to a stale original pointer; see [REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md). This SDK is a tested development distribution, not a full-function

@@ -97,3 +97,6 @@ see [REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md).
 No GitHub Actions or Windows/Turing physical tests are used.
 
 The standalone development SDK is documented in [SDK.md](SDK.md).
+
+Native file decoding and RGB PNG output are available through
+[MEDIA_IO.md](MEDIA_IO.md), with explicit format/color coverage.

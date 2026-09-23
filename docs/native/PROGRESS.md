@@ -2154,3 +2154,34 @@ This closes the cause investigation for this fixture; it does not prove all
 interactive sequences or broad quality. Codecs, multiGPU, wider-platform SDK/CPU
 stability and quality/performance remain. No Actions or Windows/Turing physical
 execution. Goal remains active.
+
+## Native local media integration
+
+Added optional FFmpeg/libjpeg C++ MediaSource and C media handles, owning RGB
+frame/timestamp results, PNG writing, and sam3_predictor_create_from_media. The
+predictor retains its source/context and keeps explicit image/video policies.
+Existing ABI1 layouts, unrestricted prompts/queries and shared weights remain.
+JPEG uses libjpeg; remaining images/video use direct FFmpeg C calls with portable
+UTF-8 filesystem AVIO. B-frame drain determines exact frame counts; reverse reads
+currently replay from the beginning rather than restricting accessible frames.
+
+23 Pillow/FFmpeg codec cases pass exactly, including eight display orientations,
+VFR, B-frames, CMYK/progressive JPEG, alpha/palette PNG and numeric/Unicode folders.
+An orientation-plus-reflection mismatch was found and fixed. A C++ media test
+found inference-only tensors unsuitable for caller mutation; reads now return
+independent ordinary tensors, with concurrency/lifetime/error cases verified.
+Official CPU/CUDA CTests pass17/29, affected media tests pass after the orientation
+fix, and media-disabled capability behavior passes. Real C predictor image/video
+composition/lifetime checks match20result sets across SAM3/SAM3.1.
+
+The SDK adds a pinned FFmpeg6.1.1 shared build reporting LGPL2.1-or-later, without
+GPL/nonfree/autodetected external dependencies. Bundling stages the selected media
+runtime and coalesces duplicate libraries only after byte-identical hash checks.
+Common media and CPU/CUDA updates are modular overlays on the previous SDK, with
+no repeated LibTorch/weight payload. See MEDIA_IO.md and media-validation.json.
+
+This is not parity with the source default OpenCV preprocessing or all formats.
+Variable dimensions, unusual integer folder names, HDR/ICC/16-bit policies,
+arbitrary-angle display transforms, efficient seeking, video writing, multiGPU,
+CPU long-run stability and broader quality/performance remain. Windows/Turing
+physical tests remain with the user; no Actions. Goal remains active.

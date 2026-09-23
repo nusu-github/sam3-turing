@@ -7,7 +7,8 @@ It does not need Torch headers, C++ source, Python or Triton. The shared library
 still needs its LibTorch/CUDA/ICU/zlib dependencies. A relocatable development
 package is now available; see [SDK.md](SDK.md). The owning semantic API is documented in
 [PREDICTOR_C_API.md](PREDICTOR_C_API.md). The goal of full SAM3/SAM3.1 feature
-parity remains open.
+parity remains open. Native local-file decoding and owning media-backed predictors
+are documented in [MEDIA_IO.md](MEDIA_IO.md).
 
 ## Ownership and errors
 

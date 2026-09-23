@@ -1,0 +1,164 @@
+{
+  "cases": [
+    {
+      "case": "rgb.png",
+      "oracle": "Pillow RGB",
+      "exact": true,
+      "max_abs": 0
+    },
+    {
+      "case": "rgba.png",
+      "oracle": "Pillow RGB",
+      "exact": true,
+      "max_abs": 0
+    },
+    {
+      "case": "palette.png",
+      "oracle": "Pillow RGB",
+      "exact": true,
+      "max_abs": 0
+    },
+    {
+      "case": "gray.png",
+      "oracle": "Pillow RGB",
+      "exact": true,
+      "max_abs": 0
+    },
+    {
+      "case": "rgb.bmp",
+      "oracle": "Pillow RGB",
+      "exact": true,
+      "max_abs": 0
+    },
+    {
+      "case": "rgb.tiff",
+      "oracle": "Pillow RGB",
+      "exact": true,
+      "max_abs": 0
+    },
+    {
+      "case": "rgb.webp",
+      "oracle": "Pillow RGB",
+      "exact": true,
+      "max_abs": 0
+    },
+    {
+      "case": "\u5f69\u8272.jpeg",
+      "oracle": "Pillow RGB",
+      "exact": true,
+      "max_abs": 0
+    },
+    {
+      "case": "progressive.jpg",
+      "oracle": "Pillow RGB",
+      "exact": true,
+      "max_abs": 0
+    },
+    {
+      "case": "gray.jpg",
+      "oracle": "Pillow RGB",
+      "exact": true,
+      "max_abs": 0
+    },
+    {
+      "case": "cmyk.jpg",
+      "oracle": "Pillow RGB",
+      "exact": true,
+      "max_abs": 0
+    },
+    {
+      "case": "numeric_unicode_folder_reverse_repeat",
+      "exact": true
+    },
+    {
+      "case": "lossless.mkv",
+      "oracle": "FFmpeg bilinear RGB24 and ffprobe decoded frame timestamps",
+      "frames": 9,
+      "exact": true,
+      "max_abs": 0,
+      "max_timestamp_error": 1.1102230246251565e-16
+    },
+    {
+      "case": "bframes.mp4",
+      "oracle": "FFmpeg bilinear RGB24 and ffprobe decoded frame timestamps",
+      "frames": 9,
+      "exact": true,
+      "max_abs": 0,
+      "max_timestamp_error": 4.285714285678921e-07
+    },
+    {
+      "case": "bt709.mp4",
+      "oracle": "FFmpeg bilinear RGB24 and ffprobe decoded frame timestamps",
+      "frames": 9,
+      "exact": true,
+      "max_abs": 0,
+      "max_timestamp_error": 4.285714285678921e-07
+    },
+    {
+      "case": "rotated.mp4",
+      "oracle": "FFmpeg bilinear RGB24 and ffprobe decoded frame timestamps",
+      "frames": 9,
+      "exact": true,
+      "max_abs": 0,
+      "max_timestamp_error": 4.285714285678921e-07
+    },
+    {
+      "case": "hflip.mp4",
+      "oracle": "FFmpeg bilinear RGB24 and ffprobe decoded frame timestamps",
+      "frames": 9,
+      "exact": true,
+      "max_abs": 0,
+      "max_timestamp_error": 4.285714285678921e-07
+    },
+    {
+      "case": "vflip.mp4",
+      "oracle": "FFmpeg bilinear RGB24 and ffprobe decoded frame timestamps",
+      "frames": 9,
+      "exact": true,
+      "max_abs": 0,
+      "max_timestamp_error": 4.285714285678921e-07
+    },
+    {
+      "case": "fliprot.mp4",
+      "oracle": "FFmpeg bilinear RGB24 and ffprobe decoded frame timestamps",
+      "frames": 9,
+      "exact": true,
+      "max_abs": 0,
+      "max_timestamp_error": 4.285714285678921e-07
+    },
+    {
+      "case": "rotate180.mp4",
+      "oracle": "FFmpeg bilinear RGB24 and ffprobe decoded frame timestamps",
+      "frames": 9,
+      "exact": true,
+      "max_abs": 0,
+      "max_timestamp_error": 4.285714285678921e-07
+    },
+    {
+      "case": "rotate270.mp4",
+      "oracle": "FFmpeg bilinear RGB24 and ffprobe decoded frame timestamps",
+      "frames": 9,
+      "exact": true,
+      "max_abs": 0,
+      "max_timestamp_error": 4.285714285678921e-07
+    },
+    {
+      "case": "fliprot270.mp4",
+      "oracle": "FFmpeg bilinear RGB24 and ffprobe decoded frame timestamps",
+      "frames": 9,
+      "exact": true,
+      "max_abs": 0,
+      "max_timestamp_error": 4.285714285678921e-07
+    },
+    {
+      "case": "variable.mkv",
+      "oracle": "FFmpeg bilinear RGB24 and ffprobe decoded frame timestamps",
+      "frames": 4,
+      "exact": true,
+      "max_abs": 0,
+      "max_timestamp_error": 0.0
+    }
+  ],
+  "scope": "Decoded U8 RGB, exact frame count/ordering, random/reverse/repeated reads, timestamps, owning C results, PNG writing. No model or all-format/color/HDR claim.",
+  "all_exact": true
+}

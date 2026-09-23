@@ -40,7 +40,7 @@ inline BusyGuard lock(std::atomic_flag& flag){return BusyGuard(flag);}
 at::Tensor tensor(const sam3_tensor_view*);
 at::Tensor rgb(const sam3_rgb_view&);
 int32_t dtype(at::ScalarType);
-void validate_video_options(const sam3_video_options&);
+void validate_video_options(const sam3_video_options&,bool require_provider=true);
 TrackingSessionOptions tracking_options(const sam3_video_options&);
 MultiplexSessionOptions multiplex_options(const sam3_video_options&);
 VideoPredictor::FrameProvider frame_provider(const sam3_video_options&);

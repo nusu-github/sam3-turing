@@ -3,6 +3,7 @@ C ABI version: 1
 Producer LibTorch version: @Torch_VERSION@
 Producer compiler: @CMAKE_CXX_COMPILER_ID@ @CMAKE_CXX_COMPILER_VERSION@
 Producer platform: @CMAKE_SYSTEM_NAME@ @CMAKE_SYSTEM_PROCESSOR@
+Native media support: @SAM3_WITH_MEDIA@
 Custom CUDA kernels: @SAM3_WITH_CUDA@
 CUDA architectures: @CMAKE_CUDA_ARCHITECTURES@
 ICU version: @ICU_VERSION@

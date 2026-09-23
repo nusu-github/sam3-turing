@@ -1,12 +1,12 @@
-#include "c_api_internal.h"
+#include "media_internal.h"
 #include <cmath>
 using namespace sam3::api;
 namespace {
 sam3::AssociationPolicy policy(int32_t model){require(model==SAM3_MODEL_3 || model==SAM3_MODEL_31,"unknown predictor model");return model==SAM3_MODEL_3?sam3::AssociationPolicy::Sam3:sam3::AssociationPolicy::Sam31;}
-sam3::VideoPredictorOptions config(const sam3_predictor_options& o,const Context& context){
+sam3::VideoPredictorOptions config(const sam3_predictor_options& o,const Context& context,bool require_provider=true){
   auto c=sam3::video_predictor_defaults(policy(o.model));c.mode=context.mode;
   require((o.model==SAM3_MODEL_3)==(context.model=="sam3"),"predictor/context model mismatch");
-  validate_video_options(o.tracking);
+  validate_video_options(o.tracking,require_provider);
   require(!o.image_only || o.tracking.frames==1,"image sources require exactly one frame");
   require(o.nms>=0 && o.nms<=2 && o.policy_precision>=SAM3_FP32 && o.policy_precision<=SAM3_BF16_REFERENCE,"invalid predictor arithmetic/NMS mode");
   require(o.output_batch_size>0 && o.confirmation_threshold>0 && o.cleanup_area>=0 && o.bucket_capacity>0 && o.pad_tracks_to>=0 && o.hotstart_delay>=0 && o.unmatched_threshold>=0 && o.duplicate_threshold>=0 && o.min_keep_alive<=o.max_keep_alive,"invalid predictor count options");
@@ -111,6 +111,13 @@ sam3_status sam3_predictor_create(sam3_context* context,const sam3_predictor_opt
   output(out);require(context,"context is required");options(o);auto& c=*context->value;const auto settings=config(*o,c);require(!c.vocabulary.empty(),"predictor vocabulary_path is required");
   auto handle=std::make_unique<sam3_predictor>();handle->context=context->value;sam3::VideoPredictorModules modules;modules.vision=c.vision();modules.detector=c.detector();if(c.model=="sam3")modules.sam3=c.tracking();else modules.sam31=c.multiplex();
   const auto& source=o->tracking;handle->value=std::make_unique<sam3::VideoPredictor>(c.store,c.vocabulary,frame_provider(source),source.frames,source.height,source.width,c.device,settings,modules);*out=handle.release();
+});}
+sam3_status sam3_predictor_create_from_media(sam3_context* context,sam3_media* media,const sam3_predictor_options* o,sam3_predictor** out) noexcept{return protect([&]{
+  output(out);require(context && media,"context and media source are required");options(o);auto& c=*context->value;
+  auto copy=*o;const auto source=media->value;const auto& info=source->info();copy.tracking.frames=info.frames;copy.tracking.height=info.height;copy.tracking.width=info.width;
+  const auto settings=config(copy,c,false);require(!c.vocabulary.empty(),"predictor vocabulary_path is required");
+  auto handle=std::make_unique<sam3_predictor>();handle->context=context->value;sam3::VideoPredictorModules modules;modules.vision=c.vision();modules.detector=c.detector();if(c.model=="sam3")modules.sam3=c.tracking();else modules.sam31=c.multiplex();
+  handle->value=std::make_unique<sam3::VideoPredictor>(c.store,c.vocabulary,[source](int64_t index){return source->read(index).rgb;},info.frames,info.height,info.width,c.device,settings,modules);*out=handle.release();
 });}
 void sam3_predictor_release(sam3_predictor* p) noexcept{delete p;}
 sam3_status sam3_predictor_add_prompt(sam3_predictor* handle,int64_t frame,const sam3_semantic_prompt* input,sam3_result** out) noexcept{return protect([&]{output(out);options(input);predictor(handle,[&](auto& p){

@@ -8,8 +8,8 @@ sam3::TemporalOptions temporal(const sam3_video_options& o){
 }
 }
 namespace sam3::api {
-void validate_video_options(const sam3_video_options& o){
-  options(&o);require(o.frames>0 && o.height>0 && o.width>0 && o.provider,"video dimensions and frame provider are required");
+void validate_video_options(const sam3_video_options& o,bool require_provider){
+  options(&o);require(o.frames>0 && o.height>0 && o.width>0 && (!require_provider || o.provider),"video dimensions and frame provider are required");
   require(o.fill_hole_area>=0 && o.multimask_min_points>=0 && o.multimask_max_points>=o.multimask_min_points && std::isfinite(o.object_threshold),"invalid mask options");temporal(o);
 }
 TrackingSessionOptions tracking_options(const sam3_video_options& input){const auto* o=&input;const auto timing=temporal(input);

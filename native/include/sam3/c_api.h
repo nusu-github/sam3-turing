@@ -26,6 +26,7 @@ typedef struct sam3_context sam3_context;
 typedef struct sam3_image sam3_image;
 typedef struct sam3_video sam3_video;
 typedef struct sam3_predictor sam3_predictor;
+typedef struct sam3_media sam3_media;
 typedef struct sam3_result sam3_result;
 /* Contiguous row-major tensor. Dimensions may be zero. NULL optional view
  * pointers mean absent, not an empty tensor. A nonempty tensor needs data.
@@ -178,6 +179,23 @@ typedef struct sam3_semantic_prompt {
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_options_init(sam3_predictor_options*,int32_t model) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_semantic_prompt_init(sam3_semantic_prompt*) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_create(sam3_context*,const sam3_predictor_options*,sam3_predictor**) SAM3_NOEXCEPT;
+/* Optional native media support; existing ABI 1 structures remain unchanged.
+ * Paths are UTF-8 local files/folders. read_frame returns owning rgb [3,H,W]
+ * plus seconds/duration scalar fields. Results outlive the media handle.
+ * Opening video scans decoded timestamps to count frames exactly, including
+ * delayed frames; random/reverse reads currently replay from the beginning.
+ * create_from_media ignores tracking provider/dimensions and retains the source.
+ * image_only remains an explicit predictor option (one-frame video is distinct).
+ */
+typedef struct sam3_media_options {uint32_t struct_size;int32_t image_only,threads;} sam3_media_options;
+SAM3_NATIVE_EXPORT int32_t sam3_media_available(void) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_media_options_init(sam3_media_options*) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_media_open(const char* path,const sam3_media_options*,sam3_media**) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT void sam3_media_release(sam3_media*) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_media_info(sam3_media*,sam3_result**) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_media_read_frame(sam3_media*,int64_t frame,sam3_result**) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_media_write_png(const char* path,const sam3_rgb_view*) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_create_from_media(sam3_context*,sam3_media*,const sam3_predictor_options*,sam3_predictor**) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT void sam3_predictor_release(sam3_predictor*) SAM3_NOEXCEPT;
 /* Results: frame, ids, probabilities, boxes_xywh, bool masks[N,H,W], optional
  * normalized centers[N,2]; cached_ids and cached_masks/ID retain pre-overlap
