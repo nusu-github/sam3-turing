@@ -10,7 +10,7 @@ MultiplexTrackingFeatures Sam31TrackingVision::encode_rgb(const at::Tensor& pixe
 MultiplexTrackingFeatures Sam31TrackingVision::encode_preprocessed(const at::Tensor& image,const std::string& mode) const {
   c10::InferenceMode inference;
   TORCH_CHECK(image.sizes()==at::IntArrayRef({1,3,1008,1008}) && image.scalar_type()==at::kFloat,"tracking image requires normalized F32 [1,3,1008,1008]");
-  auto out=vision_->forward(image.to(device_),mode,{"interactive_convs","propagation_convs"});
+  auto out=vision_->forward(image.to(device_),mode,{"interactive_convs","propagation_convs"},{2});
   const auto& interactive=out.pyramid.at("interactive_convs");
   const auto& propagation=out.pyramid.at("propagation_convs");
   TORCH_CHECK(interactive.size()==3 && propagation.size()==3 && out.positions.size()==3,"expected SAM3.1 tracking necks with three levels");

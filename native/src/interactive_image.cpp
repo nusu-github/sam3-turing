@@ -32,7 +32,7 @@ void InteractiveImageSession::set_image(const at::Tensor& rgb,const VisionEncode
   c10::InferenceMode inference;
   TORCH_CHECK(rgb.dim()==3 && rgb.size(0)==3,"session image must be RGB [3,H,W]");
   const std::string head=model_=="sam3"?"sam2_convs":"interactive_convs";
-  auto pyramid=vision.forward(preprocess_rgb(rgb.to(device_)),mode,{head}).pyramid.at(head);
+  auto pyramid=vision.forward(preprocess_rgb(rgb.to(device_)),mode,{head},{}).pyramid.at(head);
   if (model_=="sam3") pyramid.pop_back();
   set_features(pyramid,{rgb.size(1)},{rgb.size(2)},mode);
 }
@@ -48,7 +48,7 @@ void InteractiveImageSession::set_images(const std::vector<at::Tensor>& rgb,cons
   // Preserve source set_image_batch stacking, including a one-image batch.
   const auto input=at::stack(normalized,0);
   const std::string head=model_=="sam3"?"sam2_convs":"interactive_convs";
-  const auto output=vision.forward(input,mode,{head});
+  const auto output=vision.forward(input,mode,{head},{});
   auto pyramid=output.pyramid.at(head);
   if (model_=="sam3") pyramid.pop_back();
   set_features(pyramid,heights,widths,mode);

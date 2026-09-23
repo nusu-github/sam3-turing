@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
         h = rgb.size(1);
         w = rgb.size(2);
         auto features = vision.forward(sam3::preprocess_rgb(rgb.to(device)),
-                                       mode, {"convs"});
+                                       mode, {"convs"}, {2});
         pyramid = std::move(features.pyramid.at("convs"));
         if (model == "sam3")
           pyramid.pop_back();

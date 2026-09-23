@@ -8,7 +8,8 @@ void set_images(sam3_image& image,const sam3_rgb_view* inputs,int64_t count,bool
   for(int64_t i=0;i<count;++i){const auto pixels=rgb(inputs[i]);heights.push_back(pixels.size(1));widths.push_back(pixels.size(2));normalized.push_back(sam3::preprocess_rgb(pixels.to(c.device)));}
   const auto input=batch?at::stack(normalized).squeeze(1):normalized.front();std::vector<std::string> heads;
   if(image.flags&SAM3_IMAGE_GROUNDING)heads.push_back("convs");if(image.flags&SAM3_IMAGE_INTERACTIVE)heads.push_back(c.model=="sam3"?"sam2_convs":"interactive_convs");
-  auto features=c.vision()->forward(input,c.mode,heads);
+  const std::vector<int64_t> positions=(image.flags&SAM3_IMAGE_GROUNDING)?std::vector<int64_t>{2}:std::vector<int64_t>{};
+  auto features=c.vision()->forward(input,c.mode,heads,positions);
   if(c.model=="sam3")for(auto& [name,pyramid]:features.pyramid)pyramid.pop_back();
   image.pyramids=std::move(features.pyramid);image.position=features.positions[2];image.heights=std::move(heights);image.widths=std::move(widths);image.interactive.reset();
 }

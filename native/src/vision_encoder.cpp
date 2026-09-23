@@ -106,7 +106,18 @@ at::Tensor VisionEncoder::position(const at::Tensor& x) const {
 }
 VisionFeatures VisionEncoder::forward(const at::Tensor& image, const std::string& mode,
                                       const std::vector<std::string>& heads) const {
+  std::vector<int64_t> positions;
+  for (int64_t level = 0; level < levels_; ++level) positions.push_back(level);
+  return forward(image,mode,heads,positions);
+}
+VisionFeatures VisionEncoder::forward(const at::Tensor& image, const std::string& mode,
+    const std::vector<std::string>& heads, const std::vector<int64_t>& position_levels) const {
   c10::InferenceMode inference;
+  std::set<int64_t> selected_positions;
+  for (auto level : position_levels) {
+    TORCH_CHECK(level >= 0 && level < levels_, "position level outside vision pyramid");
+    TORCH_CHECK(selected_positions.insert(level).second, "duplicate position level");
+  }
   TORCH_CHECK(image.dim() == 4 && image.size(0) > 0 && image.size(1) == 3 &&
     image.size(2) == 1008 && image.size(3) == 1008 && image.is_floating_point(),
     "vision expects normalized floating RGB [B,3,1008,1008]");
@@ -124,12 +135,13 @@ VisionFeatures VisionEncoder::forward(const at::Tensor& image, const std::string
   x = norm(x,"trunk.ln_pre");
   for (int64_t i = 0; i < 32; ++i) x = block(x,i,mode == "bf16_reference");
   VisionFeatures result;
+  result.positions.resize(levels_);
   result.trunk = x.permute({0,3,1,2});
   for (const auto& head : selected) {
     auto& pyramid = result.pyramid[head];
     for (int64_t level = 0; level < levels_; ++level) {
       auto output = neck(result.trunk,head,level);
-      if (result.positions.size() <= static_cast<size_t>(level)) result.positions.push_back(position(output));
+      if (selected_positions.count(level) && !result.positions[level].defined()) result.positions[level] = position(output);
       pyramid.push_back(std::move(output));
     }
   }

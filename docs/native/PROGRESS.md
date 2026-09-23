@@ -2388,3 +2388,21 @@ and video-parallel-validation.json. Dependency/weight layers are reused.
 Same-GPU ranks retain one caller stream; no physical multiGPU speedup is claimed.
 No Actions or Windows/Turing execution. Overall goal remains active, including
 broader quality/performance, CPU long-run stability and the prior FP16 residual.
+
+## Generate only consumed vision positions
+
+Image/video consumers now select the vision position maps they use. All trunk
+and pyramid tensors, queries, prompt routes and existing full-position C++
+behavior are retained; C ABI and model weights are unchanged. Both models pass
+exact feature comparisons in GPU FP32/FP16/BF16 batch 1 and FP16 batch 2, plus
+independent installed-SDK CPU FP32 checks. CPU20/CUDA35 CTests and 19 regression
+cases (774 output files) pass. CPU FP16 timing was stopped without a result.
+
+Three independent FP16 runs measure 1.96–2.38% lower encoder time on Blackwell.
+Peak additional allocation drops about 104MiB/52MiB for SAM3/SAM3.1 video encoding
+and 110MiB for image encoding. These are isolated encoder measurements, not
+complete predictor speed, persistent session memory or Turing performance.
+See VISION_POSITION_SELECTION.md and vision-position-selection-validation.json.
+Incremental CPU/CUDA SDKs and evidence reuse existing dependency/weight layers.
+No Actions or Windows/Turing execution. Goal remains active; prior source FP16
+residual and broader quality/performance work remain open.

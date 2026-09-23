@@ -10,7 +10,7 @@ VideoFrameEncoder::VideoFrameEncoder(std::shared_ptr<const VisionEncoder> v,std:
 VideoFrameFeatures VideoFrameEncoder::encode_rgb(const at::Tensor& rgb,const std::string& mode)const{return encode_preprocessed(preprocess_video_rgb(rgb),mode);}
 VideoFrameFeatures VideoFrameEncoder::encode_preprocessed(const at::Tensor& input,const std::string& mode)const{
   c10::InferenceMode inference;TORCH_CHECK(input.dim()==4 && input.size(0)>0 && input.sizes().slice(1)==at::IntArrayRef({3,1008,1008}) && input.scalar_type()==at::kFloat,"video image requires normalized F32 [B,3,1008,1008]");
-  auto visual=vision_->forward(input.to(device_),mode,sam31_?std::vector<std::string>{"convs","interactive_convs","propagation_convs"}:std::vector<std::string>{"convs","sam2_convs"});
+  auto visual=vision_->forward(input.to(device_),mode,sam31_?std::vector<std::string>{"convs","interactive_convs","propagation_convs"}:std::vector<std::string>{"convs","sam2_convs"},{2});
   VideoFrameFeatures out;out.detection_pyramid=std::move(visual.pyramid.at("convs"));if(sam3_)out.detection_pyramid.pop_back();out.detection_position=visual.positions.at(2);
   if(sam3_){const auto& p=visual.pyramid.at("sam2_convs");out.tracking.interactive={p.at(2),visual.positions.at(2),sam3_->project_pyramid({p.at(0),p.at(1)},mode)};out.tracking.propagation=out.tracking.interactive;}
   else{const auto& i=visual.pyramid.at("interactive_convs");const auto& p=visual.pyramid.at("propagation_convs");out.tracking.interactive={i.at(2),visual.positions.at(2),sam31_->project_interactive({i.at(0),i.at(1)},mode)};out.tracking.propagation={p.at(2),visual.positions.at(2),sam31_->project_propagation({p.at(0),p.at(1)},mode)};}

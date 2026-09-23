@@ -16,6 +16,12 @@ class SAM3_NATIVE_EXPORT VisionEncoder {
   // All available necks are returned by default; selected heads reuse one trunk.
   VisionFeatures forward(const at::Tensor& image, const std::string& mode = "fp32",
                          const std::vector<std::string>& heads = {}) const;
+  // Select only consumed position maps. Result positions retain their level
+  // indices; unrequested entries are undefined. Empty selects none. Feature
+  // pyramids/trunk and the original overload are unchanged.
+  VisionFeatures forward(const at::Tensor& image, const std::string& mode,
+                         const std::vector<std::string>& heads,
+                         const std::vector<int64_t>& position_levels) const;
  private:
   const at::Tensor& weight(const std::string& name) const;
   at::Tensor norm(const at::Tensor& x, const std::string& prefix) const;
