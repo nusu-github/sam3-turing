@@ -2582,3 +2582,24 @@ Blackwell with all heads/positions. These are component timings; new Windows/
 Turing execution and original-source FP16 precision remain unverified. See
 VISION_GELU.md and vision-gelu-validation.json. Custom GELU lookup/vector kernels
 were investigated but not adopted; private source/results retain those decisions.
+
+## Per-axis vision positions and FP32 normalization fusion
+
+CUDA positions now compute compact Float sine/cosine tables per coordinate axis,
+then broadcast/cast into the full requested tensors with unchanged strides. No
+persistent cache, weight variant, prompt/query limit or position selection change
+is introduced. Existing normalization/residual/layout fusion also handles FP32.
+CPU27/CUDA51 pass, with final54-case position checks onCPU/CUDA/nondefaultstream,
+340 actual-weight feature files and1,940 API files exact. Final dispatch checks
+retain another128 files; OFF integration100 files. Recovered SDK C/semantic clients
+retain153/243 files with all runtime workspace libraries inside the SDK and no
+Python/Triton. New sm75 cubins are present; Windows/Turing execution remains open.
+
+Against908e476, all-heads FP16 vision time improves2.00–2.64% at batch1 and
+2.68–2.88% at batch2. SAM3 peak additional allocation falls about55MiB/108MiB;
+SAM3.1 falls about3–4MiB because other intermediates/outputs determine its peak.
+FP32 time improves0.68–1.14%, with unchanged peaks. Direct measurement of all
+vision changes against3a58138 is57.922→50.745ms and59.858→52.606ms,12.39%/12.12%
+shorter on Blackwell FP16batch1. This is component performance, not full-predictor
+or Turing performance. See POSITION_FUSION.md and position-fusion-validation.json.
+Original-source FP16 residuals remain unresolved. No Actions were used.

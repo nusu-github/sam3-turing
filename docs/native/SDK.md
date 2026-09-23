@@ -176,3 +176,7 @@ store and dependency layers.
 MLP GELU. Existing installed C/C++ binary clients are reused and verified against
 the updated core; no new headers or dependencies are needed. See
 [VISION_GELU.md](VISION_GELU.md) for separate and combined performance results.
+
+`position-fusion-sdk-overlay/overlays.json` follows it, adding the exact per-axis
+position operator and FP32 norm fusion. It retains the existing binary clients
+and adds installed-header position tests. See [POSITION_FUSION.md](POSITION_FUSION.md).

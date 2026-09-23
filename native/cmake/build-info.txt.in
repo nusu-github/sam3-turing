@@ -7,6 +7,7 @@ Native media support: @SAM3_WITH_MEDIA@
 OpenCV preprocessing: @SAM3_WITH_OPENCV@ (@OpenCV_VERSION@)
 Vision Q/K fusion: @SAM3_FUSE_VISION_QK@
 Vision normalization fusion: @SAM3_FUSE_VISION_NORM@
+Vision per-axis position fusion: @SAM3_FUSE_VISION_POSITION@
 Custom CUDA kernels: @SAM3_WITH_CUDA@
 CMake CUDA architectures after LibTorch: @CMAKE_CUDA_ARCHITECTURES@
 NVCC flags (LibTorch can supply explicit -gencode flags): @CMAKE_CUDA_FLAGS@

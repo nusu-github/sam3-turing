@@ -1,0 +1,1335 @@
+{
+  "scope": "Exact native regression; original-source FP16 residual remains",
+  "platform": "Linux x86_64 RTX PRO4500 Blackwell sm120, standalone LibTorch2.10 cu130",
+  "ctest": {
+    "cpu": 27,
+    "cuda": 51,
+    "notes": "Full suites before final extra-dtype fallback guard; final position checks repeated54cases CPU/CUDA/nondefaultstream, CPU core hash unchanged"
+  },
+  "operator_cases_per_device_and_stream": 54,
+  "features": [
+    {
+      "case": "sam3-fp16-b1-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp16-b2-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp16-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-bf16_reference-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp32-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp16-b2-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b1-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b2-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp32-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b2-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp32-b2",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp32-b2",
+      "files": 14,
+      "all_bytes_exact": true
+    }
+  ],
+  "feature_files": 340,
+  "final_dispatch_features": [
+    {
+      "case": "sam3-fp16-b1-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp32-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b1-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp32-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    }
+  ],
+  "off_integration": {
+    "files": 100,
+    "exact": true
+  },
+  "owner_api": [
+    {
+      "case": "sam3-fp16-cache0",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-fp16-cache1",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-fp16-cache2",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache0",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache1",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache2",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache0",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache1",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache2",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache0",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache1",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache2",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache2-parallel",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    }
+  ],
+  "c_api": [
+    {
+      "case": "3-video-cache1",
+      "files": 195,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "3-video-cache2",
+      "files": 195,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-video-cache1",
+      "files": 189,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-video-cache2",
+      "files": 189,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-image-cache1",
+      "files": 153,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-image-cache2",
+      "files": 153,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    }
+  ],
+  "benchmarks": [
+    {
+      "core_sha256": {
+        "baseline": "07c7f48f061bd8dbab3172cd13ee3b03c54adc3ad75a612dfae701cab77cf88f",
+        "current": "12e381e9781fb6cec21b45ce85ca34bcc521c6e7a4c0bd5afcfb1cc1a42256ce"
+      },
+      "baseline": "908e476 native in-place GELU, before position/FP32 extension",
+      "current": "per-axis position encoding and FP32 norm fusion",
+      "native_tool": "sam3_vision_fusion_benchmark",
+      "samples_per_process": 10,
+      "warmups": 3,
+      "all_heads_and_positions": true,
+      "no_concurrent_builds_or_gpu_work": true,
+      "summary": [
+        {
+          "model": "sam3",
+          "mode": "fp16",
+          "batch": 1,
+          "process_medians_ms": {
+            "baseline": [
+              51.5662255,
+              51.9120865,
+              51.893201
+            ],
+            "current": [
+              50.523707,
+              50.500440499999996,
+              50.752364
+            ]
+          },
+          "median_ms": {
+            "baseline": 51.893201,
+            "current": 50.523707
+          },
+          "reduction_percent": 2.6390624852762445,
+          "parameter_bytes": {
+            "baseline": [
+              936842240
+            ],
+            "current": [
+              936842240
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              278798848
+            ],
+            "current": [
+              221003776
+            ]
+          }
+        },
+        {
+          "model": "sam3.1",
+          "mode": "fp16",
+          "batch": 1,
+          "process_medians_ms": {
+            "baseline": [
+              53.571235,
+              53.591942,
+              53.5985565
+            ],
+            "current": [
+              52.533711499999995,
+              52.380002,
+              52.519397
+            ]
+          },
+          "median_ms": {
+            "baseline": 53.591942,
+            "current": 52.519397
+          },
+          "reduction_percent": 2.00131766077819,
+          "parameter_bytes": {
+            "baseline": [
+              949690880
+            ],
+            "current": [
+              949690880
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              278798848
+            ],
+            "current": [
+              275644416
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "core_sha256": {
+        "baseline": "07c7f48f061bd8dbab3172cd13ee3b03c54adc3ad75a612dfae701cab77cf88f",
+        "current": "12e381e9781fb6cec21b45ce85ca34bcc521c6e7a4c0bd5afcfb1cc1a42256ce"
+      },
+      "baseline": "908e476 native in-place GELU, before position/FP32 extension",
+      "current": "per-axis position encoding and FP32 norm fusion",
+      "native_tool": "sam3_vision_fusion_benchmark",
+      "samples_per_process": 10,
+      "warmups": 3,
+      "all_heads_and_positions": true,
+      "no_concurrent_builds_or_gpu_work": true,
+      "summary": [
+        {
+          "model": "sam3",
+          "mode": "fp16",
+          "batch": 2,
+          "process_medians_ms": {
+            "baseline": [
+              107.7214005,
+              107.9242415,
+              107.917841
+            ],
+            "current": [
+              104.813996,
+              104.747383,
+              104.886803
+            ]
+          },
+          "median_ms": {
+            "baseline": 107.917841,
+            "current": 104.813996
+          },
+          "reduction_percent": 2.876118509450154,
+          "parameter_bytes": {
+            "baseline": [
+              936842240
+            ],
+            "current": [
+              936842240
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              556548608
+            ],
+            "current": [
+              443154432
+            ]
+          }
+        },
+        {
+          "model": "sam3.1",
+          "mode": "fp16",
+          "batch": 2,
+          "process_medians_ms": {
+            "baseline": [
+              111.736615,
+              111.98965799999999,
+              112.011454
+            ],
+            "current": [
+              108.9360795,
+              108.990291,
+              109.06791899999999
+            ]
+          },
+          "median_ms": {
+            "baseline": 111.98965799999999,
+            "current": 108.990291
+          },
+          "reduction_percent": 2.6782535580205047,
+          "parameter_bytes": {
+            "baseline": [
+              949690880
+            ],
+            "current": [
+              949690880
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              556548608
+            ],
+            "current": [
+              552534016
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "core_sha256": {
+        "baseline": "07c7f48f061bd8dbab3172cd13ee3b03c54adc3ad75a612dfae701cab77cf88f",
+        "current": "12e381e9781fb6cec21b45ce85ca34bcc521c6e7a4c0bd5afcfb1cc1a42256ce"
+      },
+      "baseline": "908e476 native in-place GELU, before position/FP32 extension",
+      "current": "per-axis position encoding and FP32 norm fusion",
+      "native_tool": "sam3_vision_fusion_benchmark",
+      "samples_per_process": 10,
+      "warmups": 3,
+      "all_heads_and_positions": true,
+      "no_concurrent_builds_or_gpu_work": true,
+      "summary": [
+        {
+          "model": "sam3",
+          "mode": "fp32",
+          "batch": 1,
+          "process_medians_ms": {
+            "baseline": [
+              318.6266875,
+              319.47166,
+              319.6826115
+            ],
+            "current": [
+              316.71351500000003,
+              316.99671,
+              317.7429285
+            ]
+          },
+          "median_ms": {
+            "baseline": 319.47166,
+            "current": 316.99671
+          },
+          "reduction_percent": 0.7747009546950068,
+          "parameter_bytes": {
+            "baseline": [
+              1859835904
+            ],
+            "current": [
+              1859835904
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              882508288
+            ],
+            "current": [
+              882508288
+            ]
+          }
+        },
+        {
+          "model": "sam3.1",
+          "mode": "fp32",
+          "batch": 1,
+          "process_medians_ms": {
+            "baseline": [
+              362.8918315,
+              363.605209,
+              363.5626685
+            ],
+            "current": [
+              360.791944,
+              361.104069,
+              361.2776895
+            ]
+          },
+          "median_ms": {
+            "baseline": 363.5626685,
+            "current": 361.104069
+          },
+          "reduction_percent": 0.6762519128115541,
+          "parameter_bytes": {
+            "baseline": [
+              1880601600
+            ],
+            "current": [
+              1880601600
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              991494656
+            ],
+            "current": [
+              991494656
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "core_sha256": {
+        "baseline": "07c7f48f061bd8dbab3172cd13ee3b03c54adc3ad75a612dfae701cab77cf88f",
+        "current": "12e381e9781fb6cec21b45ce85ca34bcc521c6e7a4c0bd5afcfb1cc1a42256ce"
+      },
+      "baseline": "908e476 native in-place GELU, before position/FP32 extension",
+      "current": "per-axis position encoding and FP32 norm fusion",
+      "native_tool": "sam3_vision_fusion_benchmark",
+      "samples_per_process": 10,
+      "warmups": 3,
+      "all_heads_and_positions": true,
+      "no_concurrent_builds_or_gpu_work": true,
+      "summary": [
+        {
+          "model": "sam3",
+          "mode": "fp32",
+          "batch": 2,
+          "process_medians_ms": {
+            "baseline": [
+              589.9476725,
+              591.3126265000001,
+              591.7765065
+            ],
+            "current": [
+              583.9962395,
+              584.5425275,
+              585.112431
+            ]
+          },
+          "median_ms": {
+            "baseline": 591.3126265000001,
+            "current": 584.5425275
+          },
+          "reduction_percent": 1.144927183454969,
+          "parameter_bytes": {
+            "baseline": [
+              1859835904
+            ],
+            "current": [
+              1859835904
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              1472004608
+            ],
+            "current": [
+              1472004608
+            ]
+          }
+        },
+        {
+          "model": "sam3.1",
+          "mode": "fp32",
+          "batch": 2,
+          "process_medians_ms": {
+            "baseline": [
+              647.7938215,
+              648.0409995,
+              648.286867
+            ],
+            "current": [
+              641.9153054999999,
+              641.544299,
+              642.0463545
+            ]
+          },
+          "median_ms": {
+            "baseline": 648.0409995,
+            "current": 641.9153054999999
+          },
+          "reduction_percent": 0.9452633405488853,
+          "parameter_bytes": {
+            "baseline": [
+              1880601600
+            ],
+            "current": [
+              1880601600
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              1689649664
+            ],
+            "current": [
+              1689649664
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "combined_vision_changes": {
+    "core_sha256": {
+      "baseline": "72dacc0a07fbb068388de4ad8368e4a141c1ae19f66ad70d1c0c517962293838",
+      "current": "12e381e9781fb6cec21b45ce85ca34bcc521c6e7a4c0bd5afcfb1cc1a42256ce"
+    },
+    "baseline": "3a58138 before norm/QK/MLP/position fusion",
+    "current": "per-axis position encoding and FP32 norm fusion",
+    "native_tool": "sam3_vision_fusion_benchmark",
+    "samples_per_process": 10,
+    "warmups": 3,
+    "all_heads_and_positions": true,
+    "no_concurrent_builds_or_gpu_work": true,
+    "summary": [
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "batch": 1,
+        "process_medians_ms": {
+          "baseline": [
+            57.797663,
+            57.992664000000005,
+            57.921541500000004
+          ],
+          "current": [
+            50.5814785,
+            50.745369,
+            50.7461045
+          ]
+        },
+        "median_ms": {
+          "baseline": 57.921541500000004,
+          "current": 50.745369
+        },
+        "reduction_percent": 12.389470849977302,
+        "parameter_bytes": {
+          "baseline": [
+            936842240
+          ],
+          "current": [
+            936842240
+          ]
+        },
+        "peak_extra_bytes": {
+          "baseline": [
+            277750272
+          ],
+          "current": [
+            221003776
+          ]
+        }
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "batch": 1,
+        "process_medians_ms": {
+          "baseline": [
+            59.784567,
+            59.8596745,
+            59.85799900000001
+          ],
+          "current": [
+            52.677296999999996,
+            52.4641895,
+            52.605774
+          ]
+        },
+        "median_ms": {
+          "baseline": 59.85799900000001,
+          "current": 52.605774
+        },
+        "reduction_percent": 12.115715729154275,
+        "parameter_bytes": {
+          "baseline": [
+            949690880
+          ],
+          "current": [
+            949690880
+          ]
+        },
+        "peak_extra_bytes": {
+          "baseline": [
+            277750272
+          ],
+          "current": [
+            275644416
+          ]
+        }
+      }
+    ]
+  },
+  "norm_fp32_only": [
+    {
+      "core_sha256": {
+        "baseline": "07c7f48f061bd8dbab3172cd13ee3b03c54adc3ad75a612dfae701cab77cf88f",
+        "current": "6e967d043867710f6323850305d3ea9fb43da5537cf6056d536cee9b84099695"
+      },
+      "baseline": "FP32 before normalization fusion, native in-place GELU",
+      "current": "FP32 normalization/layout/residual fusion, native in-place GELU",
+      "native_tool": "sam3_vision_fusion_benchmark",
+      "samples_per_process": 10,
+      "warmups": 3,
+      "all_heads_and_positions": true,
+      "no_concurrent_builds_or_gpu_work": true,
+      "summary": [
+        {
+          "model": "sam3",
+          "mode": "fp32",
+          "batch": 1,
+          "process_medians_ms": {
+            "baseline": [
+              315.6280235,
+              317.782218,
+              318.07213249999995
+            ],
+            "current": [
+              315.3251235,
+              315.97385499999996,
+              317.201599
+            ]
+          },
+          "median_ms": {
+            "baseline": 317.782218,
+            "current": 315.97385499999996
+          },
+          "reduction_percent": 0.569057328437439,
+          "parameter_bytes": {
+            "baseline": [
+              1859835904
+            ],
+            "current": [
+              1859835904
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              882508288
+            ],
+            "current": [
+              882508288
+            ]
+          }
+        },
+        {
+          "model": "sam3.1",
+          "mode": "fp32",
+          "batch": 1,
+          "process_medians_ms": {
+            "baseline": [
+              361.4715685,
+              362.34765200000004,
+              362.68199849999996
+            ],
+            "current": [
+              360.5854655,
+              361.016309,
+              361.49045
+            ]
+          },
+          "median_ms": {
+            "baseline": 362.34765200000004,
+            "current": 361.016309
+          },
+          "reduction_percent": 0.3674214508226137,
+          "parameter_bytes": {
+            "baseline": [
+              1880601600
+            ],
+            "current": [
+              1880601600
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              991494656
+            ],
+            "current": [
+              991494656
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "core_sha256": {
+        "baseline": "07c7f48f061bd8dbab3172cd13ee3b03c54adc3ad75a612dfae701cab77cf88f",
+        "current": "6e967d043867710f6323850305d3ea9fb43da5537cf6056d536cee9b84099695"
+      },
+      "baseline": "FP32 before normalization fusion, native in-place GELU",
+      "current": "FP32 normalization/layout/residual fusion, native in-place GELU",
+      "native_tool": "sam3_vision_fusion_benchmark",
+      "samples_per_process": 10,
+      "warmups": 3,
+      "all_heads_and_positions": true,
+      "no_concurrent_builds_or_gpu_work": true,
+      "summary": [
+        {
+          "model": "sam3",
+          "mode": "fp32",
+          "batch": 2,
+          "process_medians_ms": {
+            "baseline": [
+              588.7116229999999,
+              590.129504,
+              590.669397
+            ],
+            "current": [
+              585.418651,
+              585.9203075,
+              586.8335475
+            ]
+          },
+          "median_ms": {
+            "baseline": 590.129504,
+            "current": 585.9203075
+          },
+          "reduction_percent": 0.7132665747889733,
+          "parameter_bytes": {
+            "baseline": [
+              1859835904
+            ],
+            "current": [
+              1859835904
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              1472004608
+            ],
+            "current": [
+              1472004608
+            ]
+          }
+        },
+        {
+          "model": "sam3.1",
+          "mode": "fp32",
+          "batch": 2,
+          "process_medians_ms": {
+            "baseline": [
+              646.8106405,
+              647.4325160000001,
+              647.7125854999999
+            ],
+            "current": [
+              643.6009015,
+              644.2968195000001,
+              644.7034375
+            ]
+          },
+          "median_ms": {
+            "baseline": 647.4325160000001,
+            "current": 644.2968195000001
+          },
+          "reduction_percent": 0.4843279295536629,
+          "parameter_bytes": {
+            "baseline": [
+              1880601600
+            ],
+            "current": [
+              1880601600
+            ]
+          },
+          "peak_extra_bytes": {
+            "baseline": [
+              1689649664
+            ],
+            "current": [
+              1689649664
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "prototype": {
+    "exact_cases": 32,
+    "samples": [
+      {
+        "batch": 1,
+        "type": 5,
+        "size": 36,
+        "fast": 0,
+        "median_us": 242.488,
+        "peak_extra": 3329536
+      },
+      {
+        "batch": 1,
+        "type": 5,
+        "size": 36,
+        "fast": 1,
+        "median_us": 49.552,
+        "peak_extra": 700928
+      },
+      {
+        "batch": 1,
+        "type": 5,
+        "size": 72,
+        "fast": 0,
+        "median_us": 239.918,
+        "peak_extra": 13313536
+      },
+      {
+        "batch": 1,
+        "type": 5,
+        "size": 72,
+        "fast": 1,
+        "median_us": 55.411,
+        "peak_extra": 2728448
+      },
+      {
+        "batch": 1,
+        "type": 5,
+        "size": 144,
+        "fast": 0,
+        "median_us": 256.618,
+        "peak_extra": 53250560
+      },
+      {
+        "batch": 1,
+        "type": 5,
+        "size": 144,
+        "fast": 1,
+        "median_us": 68.602,
+        "peak_extra": 10764800
+      },
+      {
+        "batch": 1,
+        "type": 5,
+        "size": 288,
+        "fast": 0,
+        "median_us": 1267.29,
+        "peak_extra": 215097856
+      },
+      {
+        "batch": 1,
+        "type": 5,
+        "size": 288,
+        "fast": 1,
+        "median_us": 124.504,
+        "peak_extra": 42762752
+      },
+      {
+        "batch": 1,
+        "type": 6,
+        "size": 36,
+        "fast": 0,
+        "median_us": 236.288,
+        "peak_extra": 2665984
+      },
+      {
+        "batch": 1,
+        "type": 6,
+        "size": 36,
+        "fast": 1,
+        "median_us": 56.242,
+        "peak_extra": 1364480
+      },
+      {
+        "batch": 1,
+        "type": 6,
+        "size": 72,
+        "fast": 0,
+        "median_us": 242.488,
+        "peak_extra": 10659328
+      },
+      {
+        "batch": 1,
+        "type": 6,
+        "size": 72,
+        "fast": 1,
+        "median_us": 61.082,
+        "peak_extra": 5382656
+      },
+      {
+        "batch": 1,
+        "type": 6,
+        "size": 144,
+        "fast": 0,
+        "median_us": 269.869,
+        "peak_extra": 42633728
+      },
+      {
+        "batch": 1,
+        "type": 6,
+        "size": 144,
+        "fast": 1,
+        "median_us": 69.262,
+        "peak_extra": 21381632
+      },
+      {
+        "batch": 1,
+        "type": 6,
+        "size": 288,
+        "fast": 0,
+        "median_us": 1127.18,
+        "peak_extra": 171581952
+      },
+      {
+        "batch": 1,
+        "type": 6,
+        "size": 288,
+        "fast": 1,
+        "median_us": 155.145,
+        "peak_extra": 86278656
+      },
+      {
+        "batch": 2,
+        "type": 5,
+        "size": 36,
+        "fast": 0,
+        "median_us": 238.647,
+        "peak_extra": 6657536
+      },
+      {
+        "batch": 2,
+        "type": 5,
+        "size": 36,
+        "fast": 1,
+        "median_us": 51.952,
+        "peak_extra": 1364480
+      },
+      {
+        "batch": 2,
+        "type": 5,
+        "size": 72,
+        "fast": 0,
+        "median_us": 246.828,
+        "peak_extra": 26625536
+      },
+      {
+        "batch": 2,
+        "type": 5,
+        "size": 72,
+        "fast": 1,
+        "median_us": 59.922,
+        "peak_extra": 5382656
+      },
+      {
+        "batch": 2,
+        "type": 5,
+        "size": 144,
+        "fast": 0,
+        "median_us": 490.796,
+        "peak_extra": 106500608
+      },
+      {
+        "batch": 2,
+        "type": 5,
+        "size": 144,
+        "fast": 1,
+        "median_us": 85.543,
+        "peak_extra": 21381632
+      },
+      {
+        "batch": 2,
+        "type": 5,
+        "size": 288,
+        "fast": 0,
+        "median_us": 3119.6,
+        "peak_extra": 429146624
+      },
+      {
+        "batch": 2,
+        "type": 5,
+        "size": 288,
+        "fast": 1,
+        "median_us": 198.947,
+        "peak_extra": 86278656
+      },
+      {
+        "batch": 2,
+        "type": 6,
+        "size": 36,
+        "fast": 0,
+        "median_us": 230.228,
+        "peak_extra": 5330432
+      },
+      {
+        "batch": 2,
+        "type": 6,
+        "size": 36,
+        "fast": 1,
+        "median_us": 52.272,
+        "peak_extra": 2691584
+      },
+      {
+        "batch": 2,
+        "type": 6,
+        "size": 72,
+        "fast": 0,
+        "median_us": 236.038,
+        "peak_extra": 21317120
+      },
+      {
+        "batch": 2,
+        "type": 6,
+        "size": 72,
+        "fast": 1,
+        "median_us": 61.232,
+        "peak_extra": 10691072
+      },
+      {
+        "batch": 2,
+        "type": 6,
+        "size": 144,
+        "fast": 0,
+        "median_us": 502.687,
+        "peak_extra": 85266944
+      },
+      {
+        "batch": 2,
+        "type": 6,
+        "size": 144,
+        "fast": 1,
+        "median_us": 90.063,
+        "peak_extra": 42615296
+      },
+      {
+        "batch": 2,
+        "type": 6,
+        "size": 288,
+        "fast": 0,
+        "median_us": 2803.42,
+        "peak_extra": 344211968
+      },
+      {
+        "batch": 2,
+        "type": 6,
+        "size": 288,
+        "fast": 1,
+        "median_us": 262.739,
+        "peak_extra": 170164736
+      }
+    ]
+  },
+  "symbols": [
+    {
+      "variant": "cpu",
+      "old": 474,
+      "new": 475,
+      "removed": [],
+      "added": [
+        "_ZN4sam324vision_position_encodingERKN2at6TensorE"
+      ]
+    },
+    {
+      "variant": "cuda",
+      "old": 481,
+      "new": 483,
+      "removed": [],
+      "added": [
+        "_ZN4sam320vision_position_cudaERKN2at6TensorE",
+        "_ZN4sam324vision_position_encodingERKN2at6TensorE"
+      ]
+    }
+  ],
+  "symbol_definition": "nm dynamic defined strong T,D,B,R symbols",
+  "restored_on": {
+    "sha256": "12e381e9781fb6cec21b45ce85ca34bcc521c6e7a4c0bd5afcfb1cc1a42256ce",
+    "identical_to_pre_ablation_core": true,
+    "position_flag": "ON"
+  },
+  "new_sm75_kernels": 5,
+  "recovered_sdk": {
+    "recovered_operator_checks": [
+      {
+        "sdk": "cpu",
+        "tool": "sam3_vision_position_test",
+        "passed": true
+      },
+      {
+        "sdk": "cuda",
+        "tool": "sam3_vision_position_test",
+        "passed": true
+      },
+      {
+        "sdk": "cuda",
+        "tool": "sam3_vision_position_stream_test",
+        "passed": true
+      }
+    ],
+    "c_api_exact_output_files": 153,
+    "c_api_model": "sam3.1",
+    "c_api_precision": "fp16",
+    "c_api_source": "image",
+    "c_api_tracking_ranks": 2,
+    "c_api_parallel": true,
+    "workspace_runtime_libraries": [
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libavcodec.so.60",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libavformat.so.60",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libavutil.so.58",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libbz2.so.1.0",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libc10.so",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libc10_cuda.so",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcublas-e70f38ef.so.13",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcublasLt-656298c8.so.13",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcudart-96c42e41.so.13",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcudart.so.13",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcudnn.so.9",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcudnn_engines_precompiled.so.9",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcudnn_engines_runtime_compiled.so.9",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcudnn_graph.so.9",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcudnn_heuristic.so.9",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcufft.so.12",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcupti-e2f9ed86.so.13",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcurand.so.10",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libcusparse.so.12",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libgomp-98b21ff3.so.1",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libicudata.so.74",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libicui18n.so.74",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libicuuc.so.74",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libjpeg.so.8",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/liblzma.so.5",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libnvJitLink.so.13",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libopencv_core.so.410",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libopencv_imgproc.so.410",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libsam3_native.so",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libswresample.so.4",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libswscale.so.7",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libtorch.so",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libtorch_cpu.so",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libtorch_cuda.so",
+      "/workspace/position-fusion-recovered-cuda/bin/../lib/libz.so.1"
+    ],
+    "no_python_or_triton": true,
+    "storage": "packed_disk",
+    "temporary_files_cleaned": true,
+    "semantic_text_probe_exact_files": 243,
+    "semantic_text_probe": {
+      "reuse_hits_with_hidden_shards": 6,
+      "required_misses": 15,
+      "settings_invalidations": 3,
+      "samples_ms": [
+        225.558647,
+        221.167436,
+        241.946389,
+        270.479703,
+        243.403356
+      ],
+      "visual_encodes": 34,
+      "provider_calls": 34
+    },
+    "installed_benchmark_runs": true
+  },
+  "sdk_overlay": {
+    "prerequisite": "vision-gelu-sdk-overlay/overlays.json (includes base/media/seek/preprocess recipe)",
+    "prerequisite_sha256": "cc91aea96520aa3a93d2b06305357b51db09b68600d947229c3ec3f10b81181b",
+    "notes": "Apply after the vision-gelu SDK. Computes exact per-axis sine/cosine tables then broadcasts/casts positions, without a persistent cache. Existing normalization fusion now also handles FP32. No new weights, dependencies, input limits or class-layout/C ABI changes. Existing binary clients retained; new position operator consumers added. New Windows/Turing execution remains user-owned.",
+    "overlays": [
+      {
+        "variant": "cpu",
+        "archive": "cpu.tar.gz",
+        "bytes": 1621212,
+        "sha256": "a88b98ab2da54d6525327aece29226899fabff08e08005b3692a0f30cfff7d03",
+        "files": [
+          {
+            "path": "bin/sam3_vision_position_test",
+            "bytes": 70704,
+            "sha256": "326ca85b57c42cb5d0dd04465bd9b7f6b3147dd8613568be4f9ac9bc83fe46f4"
+          },
+          {
+            "path": "include/sam3/vision_position.h",
+            "bytes": 636,
+            "sha256": "9b6da9e77001f08f889c21a7903dac860efc9473cae2d089bc2b9418dee7a0da"
+          },
+          {
+            "path": "lib/libsam3_native.so",
+            "bytes": 4583144,
+            "sha256": "bf2b967b05a54b3ee08886715dc74e652bca2267ec41cfb7d7366ab042fd301f"
+          },
+          {
+            "path": "share/sam3-native/sam3-build-info.txt",
+            "bytes": 670,
+            "sha256": "f5123a4c25838b81bf8cef501d9b2a287e8ee4a74f501af068932ed15d9bb7c9"
+          }
+        ],
+        "complete_recovery_entries_verified": 168
+      },
+      {
+        "variant": "cuda",
+        "archive": "cuda.tar.gz",
+        "bytes": 2297558,
+        "sha256": "2e0b63e3f07c468f15b756ef9c673a6c0854d8f2bc1488024ab55236e5729766",
+        "files": [
+          {
+            "path": "bin/sam3_vision_position_stream_test",
+            "bytes": 107344,
+            "sha256": "fa2de2f6d883e684f0f4b3ea09f21e28fda8f9e259e695614ae45052b61c6ed9"
+          },
+          {
+            "path": "bin/sam3_vision_position_test",
+            "bytes": 70704,
+            "sha256": "b6dfb24aee354a5a4200e24ce63b198be4a7034edd0da40e88f0f9f637b08dbd"
+          },
+          {
+            "path": "include/sam3/vision_position.h",
+            "bytes": 636,
+            "sha256": "9b6da9e77001f08f889c21a7903dac860efc9473cae2d089bc2b9418dee7a0da"
+          },
+          {
+            "path": "lib/libsam3_native.so",
+            "bytes": 8335560,
+            "sha256": "ac30044f09e424a405728fc7bdc9a4d021c9dc6c7a04da0693fd11c498063e8e"
+          },
+          {
+            "path": "share/sam3-native/sam3-build-info.txt",
+            "bytes": 1292,
+            "sha256": "270507423232d160cd6dc98f3fadff587918365473296286333344df940e7449"
+          }
+        ],
+        "complete_recovery_entries_verified": 207
+      }
+    ]
+  },
+  "private_evidence": "native-foundation/position-fusion-linux",
+  "remaining_limits": [
+    "New Windows/Turing kernel execution user-owned",
+    "Original-source FP16 residual unresolved",
+    "Component performance does not establish full predictor speedup",
+    "No GitHub Actions",
+    "No full-function completion claim"
+  ]
+}

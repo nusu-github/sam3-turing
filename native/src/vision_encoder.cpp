@@ -3,6 +3,7 @@
 #include "sam3/rotary.h"
 #include "sam3/rotary_pair.h"
 #include "sam3/vision_fusion.h"
+#include "sam3/vision_position.h"
 #include <c10/core/InferenceMode.h>
 #include <cmath>
 #include <set>
@@ -82,11 +83,12 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
   const bool windowed = (layer + 1) % 8 != 0;
 #ifdef SAM3_FUSE_VISION_NORM
   const bool fuse_norm = input.is_cuda() && input.scalar_type() == at::kFloat &&
-      at::autocast::is_autocast_enabled(at::kCUDA) && h % 24 == 0 && w % 24 == 0;
+      h % 24 == 0 && w % 24 == 0;
 #else
   const bool fuse_norm = false;
 #endif
-  const auto projection_type = fused_bf16 ? at::kBFloat16 : at::kHalf;
+  const auto projection_type = at::autocast::is_autocast_enabled(at::kCUDA)
+      ? (fused_bf16 ? at::kBFloat16 : at::kHalf) : at::kFloat;
   auto x = fuse_norm && prepared && prepared->defined() ? std::move(*prepared)
       : fuse_norm ? vision_norm_projection(input, weight(prefix + ".norm1.weight"),
       weight(prefix + ".norm1.bias"), projection_type, windowed) : norm(input, prefix + ".norm1");
@@ -155,6 +157,9 @@ at::Tensor VisionEncoder::neck(const at::Tensor& input, const std::string& head,
   return at::conv2d(x, weight(prefix + ".conv_3x3.weight"), weight(prefix + ".conv_3x3.bias"), {1,1}, {1,1});
 }
 at::Tensor VisionEncoder::position(const at::Tensor& x) const {
+#ifdef SAM3_FUSE_VISION_POSITION
+  return vision_position_encoding(x);
+#else
   const auto b = x.size(0), h = x.size(2), w = x.size(3);
   const auto options = x.options().dtype(at::kFloat);
   auto y = at::arange(1,h+1,options).view({1,h,1}).repeat({b,1,w});
@@ -168,6 +173,8 @@ at::Tensor VisionEncoder::position(const at::Tensor& x) const {
     return at::stack({angle.slice(3,0,128,2).sin(), angle.slice(3,1,128,2).cos()},4).flatten(3);
   };
   return at::cat({encode(y),encode(xx)},3).permute({0,3,1,2}).to(x.scalar_type());
+
+#endif
 }
 VisionFeatures VisionEncoder::forward(const at::Tensor& image, const std::string& mode,
                                       const std::vector<std::string>& heads) const {
