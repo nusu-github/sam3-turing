@@ -1,6 +1,10 @@
 # Standalone LibTorch SDK (development release 0.1.0)
 
-Latest compute-storage increment: [COMPUTE_STORAGE.md](COMPUTE_STORAGE.md), with
+Latest semantic-replacement increment: [SEMANTIC_TEXT_REUSE.md](SEMANTIC_TEXT_REUSE.md),
+with private recipe `semantic-text-sdk-overlay/overlays.json` after compute-storage.
+It installs `sam3_semantic_text_probe` for reuse, invalidation and recovery checks.
+
+Compute-storage increment: [COMPUTE_STORAGE.md](COMPUTE_STORAGE.md), with
 private recipe `compute-storage-sdk-overlay/overlays.json` after the weight-CRC
 layer. CUDA SDK includes `sam3_compute_storage_probe` for real-weight comparison.
 

@@ -2520,3 +2520,25 @@ saving is the vision portion. See COMPUTE_STORAGE.md and
 compute-storage-validation.json. SDK increments reuse all source-weight and
 dependency layers. No Actions, Windows/Turing execution or broader source
 exactness/full-function completion claim. Deadline remains unchanged.
+
+## Reuse same-text encodings on semantic replacement
+
+Owners now retain their existing completed text-input tensors across the internal
+reset in add_prompt when optional UTF-8 text and Torch inference settings match.
+Changed text, explicit reset or changed execution policy re-encodes. Geometry,
+visual prompts, input images and observations still update normally. No extra
+text model, cache entry, input restriction, distribution variant or ABI change.
+
+The final20-process matrix covers both models FP16/BF16/FP32 and retains2,440
+compared output files. Temporary local shard-link hiding proves six successful
+same-text reuses and15 required misses per current process, including settings
+invalidation. Source weights are untouched. CPU24/CUDA42 tests pass, including
+ten execution-policy changes/restorations. Earlier pre-guard comparisons are
+superseded by the final policy-aware matrix.
+
+Three alternating FP16 pairs/model measure full same-text semantic replacement
+at804.563→133.461ms (SAM3) and877.822→227.182ms (SAM3.1) on Blackwell. Scope includes
+preprocessing/vision/detection/tracking; excludes construction, output dumps and
+C result packing. It is not changed-text, full-video or Turing performance.
+See SEMANTIC_TEXT_REUSE.md and semantic-text-validation.json. No Actions or
+Windows/Turing execution; source precision and broader validation limits remain.

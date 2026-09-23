@@ -1,5 +1,6 @@
 #include "sam3/video_predictor.h"
 #include "rank_executor.h"
+#include "inference_settings.h"
 #include "sam3/text_encoder.h"
 #include "sam3/tokenizer.h"
 #include "sam3/video_collective.h"
@@ -106,6 +107,7 @@ struct VideoPredictor::Impl {
   std::map<int64_t, at::Tensor> image_masks;
   VideoSemanticPrompt semantic;
   GroundingPrompt encoded;
+  std::optional<detail::InferenceSettings> text_settings;
   bool has_text = false;
   std::atomic<bool> cancelled{false};
   Impl(const WeightStore &s, const std::filesystem::path &vocabulary,
@@ -318,6 +320,7 @@ struct VideoPredictor::Impl {
   }
   void encode_text() {
     c10::DeviceGuard guard(device);
+    auto settings = detail::inference_settings();
     const auto model = mux ? "sam3.1" : "sam3";
     const auto text = has_text ? *semantic.text : "<text placeholder>";
     const auto texts =
@@ -337,6 +340,7 @@ struct VideoPredictor::Impl {
     encoded.image_ids = at::zeros({1}, o.dtype(at::kLong));
     encoded.text_ids =
         at::full({1}, !mux && !has_text ? 1 : 0, o.dtype(at::kLong));
+    text_settings = std::move(settings);
   }
   GroundingPrompt prompt(int64_t frame) {
     if (!encoded.text_features.defined())
@@ -375,6 +379,7 @@ struct VideoPredictor::Impl {
     image_masks.clear();
     semantic = {};
     encoded = {};
+    text_settings.reset();
     has_text = false;
     cached = {};
     cached_index = -1;
@@ -609,6 +614,23 @@ VideoOutput VideoPredictor::add_prompt(int64_t frame,
                     p.visual_padding.sizes() ==
                         at::IntArrayRef({1, p.visual_features.size(0)}),
                 "visual tokens must be [N,1,256] with bool [1,N] padding");
+  // Semantic replacement clears observations, but identical optional text has
+  // identical token batches for this fixed model/device/mode. Keep only the
+  // neural text inputs across this internal reset. Geometry/visual prompts and
+  // image features still come from the replacement input. Public reset() clears
+  // encoded text as before; no extra cache entries are created.
+  GroundingPrompt reusable_text;
+  std::optional<detail::InferenceSettings> reusable_settings;
+  if (p.text == s.semantic.text && s.encoded.text_features.defined() &&
+      s.encoded.text_padding.defined() && s.encoded.image_ids.defined() &&
+      s.encoded.text_ids.defined() && s.text_settings &&
+      *s.text_settings == detail::inference_settings()) {
+    reusable_text.text_features = s.encoded.text_features;
+    reusable_text.text_padding = s.encoded.text_padding;
+    reusable_text.image_ids = s.encoded.image_ids;
+    reusable_text.text_ids = s.encoded.text_ids;
+    reusable_settings = s.text_settings;
+  }
   s.reset();
   s.semantic = p;
   for (auto *x : {&s.semantic.boxes_xywh, &s.semantic.box_labels,
@@ -617,7 +639,10 @@ VideoOutput VideoPredictor::add_prompt(int64_t frame,
       *x = x->clone();
   s.has_text = p.text && (s.mux || *p.text != "visual");
   s.prompt_frame = frame;
-  s.encode_text();
+  s.encoded = std::move(reusable_text);
+  s.text_settings = std::move(reusable_settings);
+  if (!s.encoded.text_features.defined())
+    s.encode_text();
   auto raw = s.full(frame, false, true);
   auto out = postprocess_video_output(raw, s.h, s.w, {}, {}, s.options.centers);
   s.interaction.record(frame, out);
