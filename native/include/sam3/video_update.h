@@ -13,7 +13,7 @@ struct VideoMetadata {
   HostHotstartState host;
   DeviceHotstartState device;
   ConfirmationState confirmation;
-  std::vector<int64_t> object_ids() const;
+  SAM3_NATIVE_EXPORT std::vector<int64_t> object_ids() const;
 };
 struct VideoUpdateOptions {
   AssociationOptions association;

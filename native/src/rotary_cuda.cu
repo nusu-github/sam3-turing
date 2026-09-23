@@ -25,13 +25,21 @@ __global__ void rotary_kernel(const scalar_t* input,
       if (k == 3) frequency = coordinate;
       if (k == 2) frequency += coordinate * layout.sizes[3] / 2;
     }
-    // Use the same c10 complex operator as ATen. Explicitly disabling FMA or
-    // rewriting its expression changes rounding, including after FP16 casting.
+    // Preserve the reference complex arithmetic (including FMA rounding).
     const auto value = c10::complex<float>(float(input[source]),
                                          float(input[source + layout.input[3]]));
-    const auto rotated = value * frequencies[frequency];
+    const auto freq = frequencies[frequency];
+    const auto rotated = value * freq;
     output[destination] = scalar_t(rotated.real());
+#ifdef _WIN32
+    // Windows LibTorch 2.10 cu130 contracts a*d + b*c as fma(a,d,round(b*c)).
+    // NVCC can instead contract b*c in this fused kernel. Specify the rounding
+    // points so its imaginary component stays bitwise equal to the reference.
+    output[destination + layout.output[3]] = scalar_t(__fmaf_rn(
+        value.real(), freq.imag(), __fmul_rn(value.imag(), freq.real())));
+#else
     output[destination + layout.output[3]] = scalar_t(rotated.imag());
+#endif
   }
 }
 }

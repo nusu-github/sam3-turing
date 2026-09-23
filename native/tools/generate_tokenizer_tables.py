@@ -15,7 +15,12 @@ from ftfy import chardata, fixes, badness
 
 def literal(s):
     data = s.encode('utf-8')
-    return '"' + ''.join(chr(x) if 32 <= x < 127 and x not in (34, 92) else '\\%03o' % x for x in data) + '"'
+    # MSVC limits individual string literals, including their escape spelling.
+    # Adjacent literals retain one array and one trailing NUL without runtime work.
+    chunks = [data[i:i + 512] for i in range(0, len(data), 512)] or [b'']
+    return '\n'.join('"' + ''.join(
+        chr(x) if 32 <= x < 127 and x not in (34, 92) else '\\%03o' % x
+        for x in chunk) + '"' for chunk in chunks)
 
 
 def ranges(predicate):

@@ -69,6 +69,18 @@ int main(int argc, char** argv) {
     auto wide=x.to(at::kDouble);
     TORCH_CHECK(at::equal(reference(wide,f),sam3::rotary_embedding(wide,f)),"FP64 fallback");
     cases+=2;
+    // Cancellation exposes which product was rounded before FMA contraction.
+    // Compare with this LibTorch's reference rather than imposing one platform's
+    // contraction order on all supported builds.
+    auto cancellation=at::tensor({0x1.000002p0f,-1.f}).to(device).view({1,1,1,2});
+    auto cancellation_freq=at::view_as_complex(
+        at::tensor({1.f,0x1.fffffep-1f}).to(device).view({1,1,2}));
+    auto cancellation_expected=reference(cancellation,cancellation_freq);
+    auto cancellation_actual=sam3::rotary_embedding(cancellation,cancellation_freq);
+    TORCH_CHECK(at::equal(cancellation_expected.contiguous().view(at::kByte),
+                         cancellation_actual.contiguous().view(at::kByte)),
+                "rotary cancellation/FMA mismatch");
+    ++cases;
     int rejected=0;
     for(const auto& bad:std::vector<at::Tensor>{at::real(f),f.slice(0,0,1)}){
       try{sam3::rotary_embedding(x,bad);}catch(const c10::Error&){++rejected;}

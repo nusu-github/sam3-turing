@@ -5,7 +5,8 @@ namespace sam3 {
 class SAM3_NATIVE_EXPORT MultiplexState {
  public:
   using Assignments=std::vector<std::vector<int64_t>>;
-  static constexpr int64_t padding=-1,removed=-1116;
+  static constexpr int64_t padding=-1;
+  static constexpr int64_t removed=-1116;
   MultiplexState(Assignments,at::Device device,at::ScalarType dtype,int64_t capacity,
       std::optional<std::vector<int64_t>> object_ids=std::nullopt);
   bool valid() const {return valid_;}
