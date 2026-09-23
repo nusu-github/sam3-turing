@@ -1,0 +1,13 @@
+{
+  "device": "cuda",
+  "mode": "bf16_reference",
+  "operations": 7,
+  "checks": [
+    "tracked frame becomes point conditioning with all_edits_conditioning false",
+    "appended click retained",
+    "latest low mask changes",
+    "encoded memory changes with latest point",
+    "prior frame memory unchanged"
+  ],
+  "scope": "Full-grid synthetic features with actual native frame and memory cores. No upstream neural parity claim."
+}

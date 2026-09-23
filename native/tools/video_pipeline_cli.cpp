@@ -15,7 +15,7 @@
 #include <type_traits>
 namespace {
 void binary(const std::filesystem::path& path,const at::Tensor& tensor){const auto x=tensor.cpu().contiguous();std::ofstream f(path,std::ios::binary);f.write(static_cast<const char*>(x.const_data_ptr()),x.nbytes());TORCH_CHECK(f,"cannot write tensor output");}
-template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,const std::string& mode,const std::vector<std::filesystem::path>& files,const sam3::GroundingPrompt& prompt,const std::filesystem::path& root,bool trace,bool partial_probe,bool edit_probe){
+template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,const std::string& mode,const std::vector<std::filesystem::path>& files,const sam3::GroundingPrompt& prompt,const std::filesystem::path& root,bool trace,bool partial_probe,bool edit_probe,bool edit_sequence){
   const std::string model=Mux?"sam3.1":"sam3";const auto vision=std::make_shared<sam3::VisionEncoder>(store,model,device);const auto detector=std::make_shared<sam3::GroundingDetector>(store,model,device);
   using Core=std::conditional_t<Mux,sam3::Sam31TrackingFrame,sam3::Sam3TrackingFrame>;using Session=std::conditional_t<Mux,sam3::Sam31TrackingSession,sam3::Sam3TrackingSession>;using Options=std::conditional_t<Mux,sam3::MultiplexSessionOptions,sam3::TrackingSessionOptions>;
   const auto core=std::make_shared<Core>(store,device);const sam3::VideoFrameEncoder encoder(vision,detector,core,device);
@@ -83,11 +83,24 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
   if(edit_probe){
     if constexpr(Mux){
       TORCH_CHECK(files.size()>20 && metadata.object_ids().size()>1,"SAM3.1 edit regression requires21frames and two existing objects");const auto selected=metadata.object_ids()[0];
-      const auto save=[&](const std::string& tag,const sam3::VideoOutput& value){binary(root/(tag+".ids.i64.bin"),value.ids);binary(root/(tag+".scores.f32.bin"),value.probabilities);binary(root/(tag+".boxes.f32.bin"),value.boxes_xywh);binary(root/(tag+".masks.bin"),sam3::pack_masks(value.masks));};
+      const auto save=[&](const std::string& tag,const sam3::VideoOutput& value){binary(root/(tag+".ids.i64.bin"),value.ids);binary(root/(tag+".scores.f32.bin"),value.probabilities);binary(root/(tag+".boxes.f32.bin"),value.boxes_xywh);binary(root/(tag+".masks.bin"),sam3::pack_masks(value.masks));if(edit_sequence && (tag=="19.repeat1" || tag=="19.repeat2"))for(const auto& session:sessions)if(session->object_ids()==std::vector<int64_t>{selected})for(const bool cond:{true,false})for(const auto& stored:cond?session->state().history.conditioning:session->state().history.tracked)if(stored.index==0 || stored.index==18 || stored.index==19){const auto f=sam3::load_multiplex_frame(stored);const auto stem=tag+"."+(cond?"cond":"tracked")+std::to_string(f.index);binary(root/(stem+".low.f32.bin"),f.masks.low_res_mask.to(at::kFloat));if(f.memory.defined())binary(root/(stem+".memory.f32.bin"),f.memory.to(at::kFloat));}};
       sam3::Sam31VideoEditOptions edit;sam3::TrackingPoints points;points.points=at::tensor({.45,.55,.8,.15},opts).view({2,2});points.labels=at::tensor({1,0},opts.dtype(at::kInt));
       save("18.point",sam3::edit_video_points(18,selected,points,sessions,factory,metadata,interaction,suppressed_per_frame,edit));
       const auto route=interaction.route();TORCH_CHECK(route.type==sam3::VideoActionType::Partial && route.ids,"edited IDs did not select partial propagation");interaction.append({route.type,18,route.ids});std::vector<Session*> local;for(auto& session:sessions)local.push_back(session.get());
       for(int64_t frame=18;frame<=20;++frame){const auto refined=sam3::propagate_video_refinements(frame,false,*route.ids,local,update.cleanup_area);save(std::to_string(frame)+".track",interaction.merge_refined(frame,refined,metadata,suppressed_per_frame[frame]));}
+      if(edit_sequence){
+        TORCH_CHECK(files.size()>22,"extended edit regression requires23frames");
+        const auto propagate=[&](int64_t start,int64_t steps,bool reverse,const std::string& tag){const auto route=interaction.route();TORCH_CHECK(route.type==sam3::VideoActionType::Partial && route.ids,"expected partial action");interaction.append({route.type,start,route.ids});std::vector<Session*> owners;for(auto& session:sessions)owners.push_back(session.get());const auto range=sam3::video_processing_range(files.size(),{},start,steps,reverse);for(int64_t f=range.first;!range.empty && (reverse?f>=range.end:f<=range.end);f+=range.step){const auto refined=sam3::propagate_video_refinements(f,reverse,*route.ids,owners,update.cleanup_area);save(std::to_string(f)+tag,interaction.merge_refined(f,refined,metadata,suppressed_per_frame[f]));}};
+        save("19.repeat1",sam3::edit_video_points(19,selected,points,sessions,factory,metadata,interaction,suppressed_per_frame,edit));
+        sam3::TrackingPoints extra;extra.points=at::tensor({.5,.65},opts).view({1,2});extra.labels=at::tensor({1},opts.dtype(at::kInt));edit.clear_old_points=false;
+        save("19.repeat2",sam3::edit_video_points(19,selected,extra,sessions,factory,metadata,interaction,suppressed_per_frame,edit));edit.clear_old_points=true;
+        propagate(19,2,true,".reverse");
+        save("20.new",sam3::edit_video_points(20,9000,extra,sessions,factory,metadata,interaction,suppressed_per_frame,edit));
+        propagate(20,2,false,".multi");
+        sam3::remove_video_user_object(9000,sessions,metadata,interaction);TORCH_CHECK(interaction.route().type==sam3::VideoActionType::Fetch,"removal should select fetch");save("20.remove",interaction.fetch(20,metadata,suppressed_per_frame[20]));
+        sam3::remove_video_user_object(9000,sessions,metadata,interaction);save("20.remove_again",interaction.fetch(20,metadata,suppressed_per_frame[20]));
+        edit.stateless_refinement=true;const auto other=metadata.object_ids()[1];save("22.stateless",sam3::edit_video_points(22,other,points,sessions,factory,metadata,interaction,suppressed_per_frame,edit));
+      }
       std::cout<<"SAM3.1 singleton point edit and partial propagation completed; buckets="<<metadata.buckets_per_rank[0]<<"\n";
     }
     else {
@@ -113,7 +126,7 @@ std::cout<<"shared-trunk detector/tracker pipeline completed; raw outputs, no Py
 }
 }
 int main(int argc,char** argv){try{
-  TORCH_CHECK(argc==9 || argc==10,"usage: sam3_video_pipeline_probe STORE sam3|sam3.1 DEVICE MODE FRAMES.txt BPE.gz PROMPT.txt OUTPUT [--trace|--partial-probe|--edit-probe]");const std::string option=argc==10?argv[9]:"";TORCH_CHECK(option.empty() || option=="--trace" || option=="--partial-probe" || option=="--edit-probe","unknown probe option");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
+  TORCH_CHECK(argc==9 || argc==10,"usage: sam3_video_pipeline_probe STORE sam3|sam3.1 DEVICE MODE FRAMES.txt BPE.gz PROMPT.txt OUTPUT [--trace|--partial-probe|--edit-probe|--edit-sequence-probe]");const std::string option=argc==10?argv[9]:"";TORCH_CHECK(option.empty() || option=="--trace" || option=="--partial-probe" || option=="--edit-probe" || option=="--edit-sequence-probe","unknown probe option");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
   const sam3::WeightStore store(std::filesystem::u8path(argv[1]));const std::string model=argv[2],mode=argv[4];const at::Device device(argv[3]);TORCH_CHECK(model=="sam3" || model=="sam3.1","invalid model");
   const auto manifest=std::filesystem::u8path(argv[5]);std::ifstream input(manifest);TORCH_CHECK(input,"cannot read frame manifest");std::vector<std::filesystem::path> files;std::string line;
   while(std::getline(input,line)){if(!line.empty() && line.back()=='\r')line.pop_back();if(line.empty() || line[0]=='#')continue;auto p=std::filesystem::u8path(line);files.push_back(p.is_absolute()?p:manifest.parent_path()/p);}TORCH_CHECK(!files.empty(),"empty frame manifest");
@@ -121,5 +134,5 @@ int main(int argc,char** argv){try{
   sam3::GroundingPrompt prompt;const auto opts=at::TensorOptions().device(device);prompt.image_ids=prompt.text_ids=at::zeros({1},opts.dtype(at::kLong));
   {sam3::TextEncoder encoder(store,model,device);const auto encoded=encoder.forward([&]{std::vector<at::Tensor> rows;for(const auto& ids:tokenizer.tokenize(model=="sam3.1"?std::vector<std::string>{text,"visual","geometric"}:std::vector<std::string>{text,"visual"}))rows.push_back(at::tensor(ids,opts.dtype(at::kLong)));return at::stack(rows);}(),mode);prompt.text_padding=std::get<0>(encoded);prompt.text_features=std::get<1>(encoded);}
   const auto labels=at::empty({0,1},opts.dtype(at::kLong)),padding=at::empty({1,0},opts.dtype(at::kBool));prompt.geometry={at::empty({0,1,2},opts),labels,padding,at::empty({0,1,4},opts),labels,padding};
-  if(model=="sam3")run<false>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),option=="--trace",option=="--partial-probe",option=="--edit-probe");else run<true>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),option=="--trace",option=="--partial-probe",option=="--edit-probe");return 0;
+  if(model=="sam3")run<false>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),option=="--trace",option=="--partial-probe",option=="--edit-probe" || option=="--edit-sequence-probe",option=="--edit-sequence-probe");else run<true>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),option=="--trace",option=="--partial-probe",option=="--edit-probe" || option=="--edit-sequence-probe",option=="--edit-sequence-probe");return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

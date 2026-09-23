@@ -22,6 +22,8 @@ struct MultiplexSessionOptions {
   // Session retention overrides frame.offload_output/trim_history/save_image;
   // use offload_state below to retain reconstruction inputs in CPU memory.
   MultiplexFrameOptions frame;
+  // all_edits_conditioning controls mask/detector corrections. Point interaction
+  // establishes conditioning, and repeated clicks refresh that conditioning.
   bool offload_state=false,non_overlap_output=true,all_edits_conditioning=true;
   bool always_start_at_first_annotation=false;
   int64_t fill_hole_area=0;
@@ -72,7 +74,7 @@ class SAM3_NATIVE_EXPORT Sam31TrackingSession {
   MultiplexFrame* find(int64_t);
   void store(MultiplexFrame&,bool compress=true);
   void put(MultiplexFrame,bool conditioning);
-  void merge_edit(int64_t,size_t,const MultiplexFrame&,const at::Tensor& video);
+  void merge_edit(int64_t,size_t,const MultiplexFrame&,const at::Tensor& video,bool point_edit=false);
   void classify_inputs();
   TrackingSessionOutput output(const MultiplexFrame&,bool preview=false) const;
   void remap(const MultiplexState& next);

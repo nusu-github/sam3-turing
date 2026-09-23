@@ -1965,3 +1965,24 @@ CTest28/16 passes; native PATH=/nonexistent, no Python linkage, sm75cubins prese
 See [VIDEO_EDIT.md](VIDEO_EDIT.md). No Actions or Windows/Turing hardware tests.
 Further SAM3.1 editing combinations, semantic prompt lifecycle, full C ABI,
 codecs/multi-GPU, portable SDK, CPU stability and broad quality/performance remain.
+
+## Preserve point conditioning during repeated SAM3.1 edits
+
+Point edits now establish/refresh conditioning even when periodic detector
+corrections stay non-conditioning. Unknown/already removed SAM3.1 user IDs are
+accepted while cached masks are forgotten and removal actions are recorded.
+Dedicated full-grid point/memory invariants and repeated-removal cache tests
+cover both changes;153adapted original low-level tensor comparisons stay exact.
+
+Extended the real34-frame regression to15edit/propagation/fetch checkpoints,
+including repeated points, reverse propagation, new ID, removal/repeated removal,
+and stateless refinement. Original default repeated clicks assert; its stateless
+removal call omits a required argument. Explicit reference options record those
+repairs, dense extraction reconstruction, stale edit-memory replacement and
+preservation of untouched singleton history. No native predictions replace the
+original neural outputs. Full34raw/final outputs remain exact;14of15post-edit
+output sets match, while reverse frame17still differs by120binary-mask pixels.
+IDs, probabilities and boxes remain exact. This discrepancy is unresolved and
+reports retain exact=false. See [VIDEO_EDIT_SEQUENCE.md](VIDEO_EDIT_SEQUENCE.md).
+No Actions/physical Windows/Turing tests. Full predictor integration/packaging and
+quality/performance work remain; these results do not establish completion.

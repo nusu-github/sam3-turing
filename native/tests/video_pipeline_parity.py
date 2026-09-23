@@ -23,7 +23,7 @@ def save_report(a,rows):
 
 @torch.inference_mode()
 def main():
- p=argparse.ArgumentParser();p.add_argument('--model',choices=['sam3','sam3.1'],required=True);p.add_argument('--checkpoint');p.add_argument('--native-output',type=Path,required=True);p.add_argument('--frames',nargs='+',type=Path,required=True);p.add_argument('--prompt',default='person');p.add_argument('--mode',choices=['fp16','fp32','bf16_reference'],default='fp16');p.add_argument('--reference-output',type=Path);p.add_argument('--edit-output',action='store_true');p.add_argument('--sam31-rebuild-extracted-memory',action='store_true',help='Explicit corrected-source comparison: re-encode dense singleton history lost by upstream slot demux');p.add_argument('--partial-output',action='store_true');p.add_argument('--final-output',action='store_true',help='Replay actual raw source results through its original output generator and compare native final output');p.add_argument('--trace-state',action='store_true');p.add_argument('--trace-frames',nargs='+',type=int,help='Save internal traces only for these frame indices; all frames still run');p.add_argument('--reference-cache',type=Path);p.add_argument('--reference-mode',choices=['fp16','fp32','bf16_reference']);p.add_argument('--require-exact',action='store_true');p.add_argument('--source-grounding-batch',type=int,default=16);p.add_argument('--source-complex-rope',action='store_true');p.add_argument('--report',type=Path,required=True);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--model',choices=['sam3','sam3.1'],required=True);p.add_argument('--checkpoint');p.add_argument('--native-output',type=Path,required=True);p.add_argument('--frames',nargs='+',type=Path,required=True);p.add_argument('--prompt',default='person');p.add_argument('--mode',choices=['fp16','fp32','bf16_reference'],default='fp16');p.add_argument('--reference-output',type=Path);p.add_argument('--edit-output',action='store_true');p.add_argument('--extended-edit-output',action='store_true');p.add_argument('--sam31-preserve-singleton-history',action='store_true');p.add_argument('--sam31-refresh-refined-memory',action='store_true');p.add_argument('--sam31-default-remove-frame',action='store_true');p.add_argument('--sam31-enable-repeat-refinement',action='store_true',help='Explicitly enable original iter_use_prev_mask_pred, required by its repeated-point path');p.add_argument('--sam31-rebuild-extracted-memory',action='store_true',help='Explicit corrected-source comparison: re-encode dense singleton history lost by upstream slot demux');p.add_argument('--partial-output',action='store_true');p.add_argument('--final-output',action='store_true',help='Replay actual raw source results through its original output generator and compare native final output');p.add_argument('--trace-state',action='store_true');p.add_argument('--trace-frames',nargs='+',type=int,help='Save internal traces only for these frame indices; all frames still run');p.add_argument('--reference-cache',type=Path);p.add_argument('--reference-mode',choices=['fp16','fp32','bf16_reference']);p.add_argument('--require-exact',action='store_true');p.add_argument('--source-grounding-batch',type=int,default=16);p.add_argument('--source-complex-rope',action='store_true');p.add_argument('--report',type=Path,required=True);a=p.parse_args();a.edit_output=a.edit_output or a.extended_edit_output
  if a.reference_cache:
   rows=[]
   for i in range(len(a.frames)):
@@ -32,7 +32,9 @@ def main():
   tasks=[]
   if a.final_output:tasks.append(('final',[f'{i}.final' for i in range(len(a.frames))]))
   if a.partial_output:tasks.append(('partial',[f'{i}.partial' for i in (17,16,15)]))
-  if a.edit_output and a.model=='sam3.1':tasks.append(('edit',['18.point','18.track','19.track','20.track']))
+  if a.edit_output and a.model=='sam3.1':
+   from sam31_extraction_reference import edit_tags
+   tasks.append(('edit',edit_tags(a.extended_edit_output)))
   if a.edit_output and a.model=='sam3':tasks.append(('edit',['18.edit_point','20.edit_mask_new','21.edit_mask_existing']+[f'{i}.edit_track' for i in range(18,23)]+['20.edit_remove','22.edit_stateless']))
   for kind,tags in tasks:
    checked=[]
@@ -62,6 +64,21 @@ def main():
  def capture(*args,**kwargs):
   result=original(*args,**kwargs);captured['low']=result[0].detach().clone();return result
  model.run_tracker_propagation=capture
+ if a.sam31_preserve_singleton_history:
+  assert tri and a.extended_edit_output
+  from sam31_extraction_reference import preserve_singleton_history
+  a.singleton_history_differences=preserve_singleton_history(model)
+ if a.sam31_refresh_refined_memory:
+  assert tri and a.extended_edit_output
+  from sam31_extraction_reference import refresh_refined_memory
+  refresh_refined_memory(model)
+ if a.sam31_default_remove_frame:
+  assert tri and a.extended_edit_output
+  original_remove=model.remove_object
+  model.remove_object=lambda state,obj_id,frame_idx=None,is_user_action=False:original_remove(state,obj_id,frame_idx,is_user_action)
+ if a.sam31_enable_repeat_refinement:
+  assert tri and a.extended_edit_output
+  model.tracker.model.iter_use_prev_mask_pred=True
  if a.sam31_rebuild_extracted_memory:
   assert tri and a.edit_output
   from sam31_extraction_reference import preserve_extracted_memory

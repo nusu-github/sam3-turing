@@ -47,8 +47,12 @@ VideoOutput edit_video_points(int64_t frame,int64_t id,const TrackingPoints& poi
  return edit(frame,id,false,[&](auto& s){return s.add_points(frame,id,points,true,options.use_previous_memory);},sessions,factory,metadata,interaction,suppressions,options);}
 VideoOutput edit_video_mask(int64_t frame,int64_t id,const at::Tensor& mask,Sam3VideoSessions& sessions,const Sam3SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const VideoEditOptions& options){TORCH_CHECK(mask.defined() && mask.dim()==2 && mask.numel()>0,"mask must be nonempty [H,W]");return edit(frame,id,true,[&](auto& s){return s.add_mask(frame,id,mask);},sessions,factory,metadata,interaction,suppressions,options);}
 void remove_video_user_object(int64_t id,Sam31VideoSessions& sessions,VideoMetadata& metadata,VideoInteractionState& interaction,bool record){
- const auto rank=owner(metadata,id);TORCH_CHECK(rank,"unknown video object");const auto old=metadata.object_ids();remove_video_objects({id},sessions);for(auto& ids:metadata.ids_per_rank)ids.erase(std::remove(ids.begin(),ids.end(),id),ids.end());metadata.object_scores.erase(id);realign_confirmation(metadata,old);interaction.forget_object(id);
- int64_t buckets=0;for(const auto& s:sessions)if(s->state().buckets)buckets+=s->state().buckets->bucket_count();metadata.buckets_per_rank[*rank]=buckets;
+ const auto rank=owner(metadata,id);
+ if(rank){const auto old=metadata.object_ids();remove_video_objects({id},sessions);for(auto& ids:metadata.ids_per_rank)ids.erase(std::remove(ids.begin(),ids.end(),id),ids.end());metadata.object_scores.erase(id);realign_confirmation(metadata,old);
+   int64_t buckets=0;for(const auto& s:sessions)if(s->state().buckets)buckets+=s->state().buckets->bucket_count();metadata.buckets_per_rank[*rank]=buckets;}
+ // The source accepts objects already removed by an earlier user action or
+ // hotstart: still forget cached masks and record the requested remove action.
+ interaction.forget_object(id);
  if(record)interaction.append({VideoActionType::Remove,{},std::vector<int64_t>{id}});
 }
 VideoOutput edit_video_points(int64_t frame,int64_t id,const TrackingPoints& points,Sam31VideoSessions& sessions,const Sam31SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const Sam31VideoEditOptions& options){

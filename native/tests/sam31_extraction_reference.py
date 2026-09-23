@@ -55,6 +55,76 @@ def preserve_extracted_memory(model):
     model._extract_object_to_singleton_state=extract
 
 
+def preserve_singleton_history(model):
+    """Avoid an unnecessary mux/demux of already-singleton dense history.
+
+    Original interaction extraction removes and re-adds the only object, then
+    muxes dense spatial tensors as slot data. Preserve untouched frame tensors
+    across that bookkeeping operation. Current-frame neural output stays intact.
+    """
+    tracker=model.tracker.model;snapshots={};differences=[]
+    extract=tracker._extract_object_for_interaction
+    merge=tracker._merge_singleton_interaction_result
+    def capture(state,obj_id,frame_idx):
+        assert state['obj_ids']==[obj_id],'this adapter only covers existing singleton sessions'
+        snapshots[id(state)]=(frame_idx,{(group,f):{key:x.get(key) for key in ('maskmem_features','maskmem_pos_enc','obj_ptr')} for group,frames in state['output_dict'].items() for f,x in frames.items() if f!=frame_idx})
+        return extract(state,obj_id,frame_idx)
+    def restore(state,*args,**kwargs):
+        result=merge(state,*args,**kwargs)
+        frame_idx,old=snapshots.pop(id(state))
+        for (group,f),fields in old.items():
+            current=state['output_dict'][group][f]
+            for key,original in fields.items():
+                if original is None:continue
+                value=current.get(key)
+                if key=='maskmem_pos_enc' and value and original:
+                    a,b=value[-1],original[-1]
+                    if a is not None and b is not None:
+                        if a.ndim==5:a=a[:,0]
+                        if a.shape==b.shape: differences.append(dict(frame=f,edit_frame=frame_idx,max_position_error=float((a.float()-b.float()).abs().max()),before_dtype=str(b.dtype),after_dtype=str(a.dtype)))
+                current[key]=original
+        return result
+    tracker._extract_object_for_interaction=capture;tracker._merge_singleton_interaction_result=restore
+    return differences
+
+
+def refresh_refined_memory(model):
+    """Retain the latest encoded point edit when source cond/non-cond keys collide.
+
+    Source computes new memory in non-cond output and then deletes that output
+    because an older cond key exists. Its low masks have already been updated
+    through aliases, so masks and memory disagree. Capture the *original* newly
+    consolidated neural output and retain it under the conditioning key.
+    """
+    tracker=model.tracker.model;pending={}
+    consolidate=tracker._consolidate_temp_output_across_obj
+    signature=inspect.signature(consolidate)
+    def capture(*args,**kwargs):
+        values=signature.bind(*args,**kwargs).arguments
+        result=consolidate(*args,**kwargs)
+        pending[id(values['inference_state']),values['frame_idx'],values['is_cond']]=result
+        return result
+    tracker._consolidate_temp_output_across_obj=capture
+    preflight=tracker.propagate_in_video_preflight
+    def repair(state,*args,**kwargs):
+        collisions={f for output in state['temp_output_dict_per_obj'].values() for f in output['non_cond_frame_outputs'] if f in state['output_dict']['cond_frame_outputs']}
+        result=preflight(state,*args,**kwargs)
+        for frame in collisions:
+            latest=pending[id(state),frame,False]
+            state['output_dict']['cond_frame_outputs'][frame]=latest
+            tracker._add_output_per_object(state,frame,latest,'cond_frame_outputs')
+            state['consolidated_frame_inds']['non_cond_frame_outputs'].discard(frame)
+            state['consolidated_frame_inds']['cond_frame_outputs'].add(frame)
+        pending.clear()
+        return result
+    tracker.propagate_in_video_preflight=repair
+
+
+def edit_tags(extended=False):
+    first=['18.point','18.track','19.track','20.track']
+    return first+(['19.repeat1','19.repeat2','18.reverse','17.reverse','20.new','20.multi','21.multi','22.multi','20.remove','20.remove_again','22.stateless'] if extended else [])
+
+
 def compare_edits(a,model,state,dtype):
     selected=int(state['tracker_metadata']['obj_ids_all_gpu'][0]);rows=[]
     def check(tag,value):
@@ -65,12 +135,37 @@ def compare_edits(a,model,state,dtype):
         same=masks.shape==expected.shape;union=np.count_nonzero(masks|expected,axis=(1,2)) if same else None
         row=dict(tag=tag,exact=equal,mask_mismatches=int(np.count_nonzero(masks!=expected)) if same else -1,mask_iou=np.divide(np.count_nonzero(masks&expected,axis=(1,2)),union,out=np.ones(n),where=union>0).tolist() if same else None)
         rows.append(row);print(row,flush=True)
+        if a.reference_output and tag in ('19.repeat1','19.repeat2'):
+            session=next(s for s in state['sam2_inference_states'] if s['obj_ids']==[selected]);fields={}
+            for group,frames in session['output_dict'].items():
+                for frame,x in frames.items():
+                    if frame not in (0,18,19):continue
+                    for name in ('pred_masks','maskmem_features'):
+                        if x.get(name) is not None:fields[f'{group}/{frame}/{name}']=x[name].float().cpu().numpy()
+            np.savez_compressed(a.reference_output/f'{tag}.state.npz',**fields)
+
         if a.reference_output:np.savez_compressed(a.reference_output/f'{tag}.npz',**{k:np.asarray(v) for k,v in value.items() if k!='frame_stats'})
     with torch.autocast('cuda',enabled=a.mode!='fp32',dtype=dtype):
         points=torch.tensor([[.45,.55],[.8,.15]],device='cuda');labels=torch.tensor([1,0],device='cuda')
         _,value=model.add_prompt(state,18,points=points,point_labels=labels,obj_id=selected);check('18.point',value)
         for index,value in model.propagate_in_video(state,start_frame_idx=18,max_frame_num_to_track=2,reverse=False):check(f'{index}.track',value)
-    if a.reference_output:(a.reference_output/'edit-reference.json').write_text(json.dumps(dict(corrected_dense_extraction=a.sam31_rebuild_extracted_memory))+'\n')
+        if a.extended_edit_output:
+            assert len(a.frames)>22
+            _,value=model.add_prompt(state,19,points=points,point_labels=labels,obj_id=selected);check('19.repeat1',value)
+            extra=torch.tensor([[.5,.65]],device='cuda');positive=torch.tensor([1],device='cuda')
+            _,value=model.add_prompt(state,19,points=extra,point_labels=positive,obj_id=selected,clear_old_points=False);check('19.repeat2',value)
+            for index,value in model.propagate_in_video(state,start_frame_idx=19,max_frame_num_to_track=2,reverse=True):check(f'{index}.reverse',value)
+            _,value=model.add_prompt(state,20,points=extra,point_labels=positive,obj_id=9000);check('20.new',value)
+            for index,value in model.propagate_in_video(state,start_frame_idx=20,max_frame_num_to_track=2,reverse=False):check(f'{index}.multi',value)
+            model.remove_object(state,9000,frame_idx=None,is_user_action=True)
+            for index,value in model.propagate_in_video(state,start_frame_idx=20,max_frame_num_to_track=0,reverse=False):check('20.remove',value)
+            model.remove_object(state,9000,frame_idx=None,is_user_action=True)
+            for index,value in model.propagate_in_video(state,start_frame_idx=20,max_frame_num_to_track=0,reverse=False):check('20.remove_again',value)
+            model.use_stateless_refinement=True;other=int(state['tracker_metadata']['obj_ids_all_gpu'][1])
+            _,value=model.add_prompt(state,22,points=points,point_labels=labels,obj_id=other);check('22.stateless',value)
+
+    if a.reference_output:(a.reference_output/'edit-reference.json').write_text(json.dumps(dict(corrected_dense_extraction=a.sam31_rebuild_extracted_memory,iteration_mask_enabled=a.sam31_enable_repeat_refinement,default_remove_frame=a.sam31_default_remove_frame,refresh_refined_memory=a.sam31_refresh_refined_memory,preserve_singleton_history=a.sam31_preserve_singleton_history))+'\n')
     exact=all(all(r['exact'].values()) for r in rows)
-    a.report.with_suffix('.edit.json').write_text(json.dumps(dict(model=a.model,mode=a.mode,corrected_dense_extraction=a.sam31_rebuild_extracted_memory,scope='Original high-level first point refinement of a grouped object, singleton extraction, and three-frame partial propagation after full neural forward. Optional adapter explicitly re-encodes historical dense memories upstream loses; no neural computation mocked. This is not a quality benchmark.',cases=rows,exact=exact),indent=2)+'\n')
+    a.report.with_suffix('.edit.json').write_text(json.dumps(dict(model=a.model,mode=a.mode,corrected_dense_extraction=a.sam31_rebuild_extracted_memory,iteration_mask_enabled=a.sam31_enable_repeat_refinement,default_remove_frame=a.sam31_default_remove_frame,refresh_refined_memory=a.sam31_refresh_refined_memory,preserve_singleton_history=a.sam31_preserve_singleton_history,extended_sequence=a.extended_edit_output,scope='Original high-level first point refinement of a grouped object, singleton extraction, and three-frame partial propagation after full neural forward. Optional adapter explicitly re-encodes historical dense memories upstream loses; no neural computation mocked. Extended sequence, when selected, adds repeated/accumulated points, reverse propagation, new ID, forward propagation, removal/fetch and stateless first refinement. This is not a quality benchmark.',cases=rows,exact=exact),indent=2)+'\n')
+    if getattr(a,'singleton_history_differences',None):a.report.with_suffix('.history-casts.json').write_text(json.dumps(a.singleton_history_differences,indent=2)+'\n')
     if a.require_exact:assert exact,'SAM3.1 edited video differs; see report'

@@ -138,9 +138,11 @@ are under `native-foundation/video-sam31-edit-linux-cuda13`.
 
 ## Remaining work
 
-Broaden SAM3.1 edit sequences (repeated/new/stateless points, removal, cancellation
-and previous-memory options), then integrate semantic text/geometric/visual prompt
-replacement/reset. Image-only fallback, distributed ownership and
+Repeated/new/stateless points, removal/repeated removal and reverse propagation
+now have a real-video sequence; see [VIDEO_EDIT_SEQUENCE.md](VIDEO_EDIT_SEQUENCE.md)
+for source repairs and the unresolved120pixel reverse-frame difference. Broaden
+remaining cancellation/previous-memory/image-only paths, then integrate semantic
+text/geometric/visual prompt replacement/reset. Image-only fallback, distributed ownership and
 transport, complete C ABI, codecs, portable SDK, CPU runtime stability and broad
 quality/performance work remain. These SAM3 edit results do not establish complete
 SAM3/SAM3.1 predictor functionality.
