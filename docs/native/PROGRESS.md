@@ -2014,3 +2014,33 @@ This remains a development API. Full video C ABI, SAM3.1 high-level mask editing
 image-only fallback, codecs, multi-GPU transport, portable SDK/CPU stability and
 broad quality/performance remain. No Actions or Windows/Turing physical tests.
 The previous34-frame SAM3.1 raw/final baseline remains exact after this change.
+
+## Correct SAM3.1 predictor visibility and reference precision
+
+The owning predictor and coherent probe now filter only the original published
+host suppression IDs. SAM3.1 GPU hotstart computes an additional suppression
+candidate but its original planning path does not publish/use it for display.
+Applying it in native orchestration wrongly hid a tracked box object. The fixed
+frame retains ID0 with23058mask pixels even with a native keep-alive counter of0.
+
+The new semantic reference also now disables TF32 AFTER construction, records
+both effective flags and asserts them before frame inference. The original wrapper
+had unconditionally re-enabled TF32 after the old test's initial configuration.
+Decoder traces localized the first divergence to the FP32 FFN. The previous claim
+that both sides had TF32 disabled was incorrect for this SAM3.1 semantic test;
+historical reports now carry a precision audit. Earlier pipeline tests already
+configured TF32 after construction and are unaffected by this test-driver error.
+
+All11SAM3.1 semantic lifecycle outputs now match exactly, including emission
+timing, versus the recorded forward-bound-adapted source with TF32 disabled.
+Primary comparison does not repair source batched geometry. Native honors stored
+geometry while source drops it on that path; counters differ despite identical
+outputs in this short fixture. An optional explicit geometry reference adapter
+is retained for investigation. Full state/long box-trajectory equivalence and the
+prior120-pixel reverse discrepancy remain unproven. The overall goal is not complete.
+
+The extended box fixture (six propagated frames,15total checkpoints) also matches
+exactly with both endpoint and stored-geometry source adapters explicitly enabled.
+Controlled replay with TF32 enabled matches84recorded decoder-layer tensors;
+disabling it reproduces the earlier FFN divergence. CTest28/16 and the existing
+34-frame raw/final SAM3.1 baseline pass after the output policy correction.

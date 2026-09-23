@@ -34,6 +34,8 @@ struct VideoUpdatePlan {
   std::set<int64_t> removed,reconditioned;
   ReconditionMasks corrections;
   ReconditionDecision correction_decision;
+  // suppressed is a GPU hotstart candidate. SAM3.1 source computes it but
+  // does not publish it as a predictor output hide list; use host.suppressed.
   at::Tensor tracking_masks,suppressed;
 };
 SAM3_NATIVE_EXPORT VideoMetadata initialize_video_metadata(int64_t ranks,at::Device device=at::kCPU);

@@ -1,0 +1,384 @@
+{
+  "model": "sam3.1",
+  "mode": "bf16_reference",
+  "reference_mode": "bf16_reference",
+  "scope": "Compare latest standalone outputs with retained neural/predictor reference tensors. No reference tensors regenerated in this cached check. Any corrected-source extraction adapter is recorded separately.",
+  "reference_metadata": {},
+  "cases": [
+    {
+      "tag": "0.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "1.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "2.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "3.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "4.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "5.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "6.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "7.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "8.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "9.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "10.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "11.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "12.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "13.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "14.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "15.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "16.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "17.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "18.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "19.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "20.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "21.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "22.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "23.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "24.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "25.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "26.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "27.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "28.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "29.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "30.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "31.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "32.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "33.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    }
+  ],
+  "exact": true
+}

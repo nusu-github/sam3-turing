@@ -7,7 +7,7 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false
+        "out_binary_masks": true
       }
     },
     {
@@ -16,7 +16,7 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false,
+        "out_binary_masks": true,
         "emission": true
       }
     },
@@ -26,7 +26,7 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false
+        "out_binary_masks": true
       }
     },
     {
@@ -35,7 +35,7 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false
+        "out_binary_masks": true
       }
     },
     {
@@ -44,7 +44,7 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false,
+        "out_binary_masks": true,
         "emission": true
       }
     },
@@ -54,17 +54,17 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false,
+        "out_binary_masks": true,
         "emission": true
       }
     },
     {
       "tag": "2.box_track",
       "exact": {
-        "out_obj_ids": false,
-        "out_probs": false,
-        "out_boxes_xywh": false,
-        "out_binary_masks": false,
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
         "emission": true
       }
     },
@@ -74,7 +74,7 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false
+        "out_binary_masks": true
       }
     },
     {
@@ -83,7 +83,7 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false,
+        "out_binary_masks": true,
         "emission": true
       }
     },
@@ -93,7 +93,17 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false
+        "out_binary_masks": true
+      }
+    },
+    {
+      "tag": "3.box_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
       }
     },
     {
@@ -102,29 +112,54 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "4.box_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "5.box_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "6.box_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
         "emission": true
       }
     }
   ],
-  "exact": false,
+  "exact": true,
   "reference_metadata": {
     "model": "sam3.1",
     "mode": "bf16_reference",
     "source_grounding_batch": 1,
     "source_complex_rope": true,
+    "box_steps": 5,
     "source_inclusive_grounding_bound_adapter": true,
-    "metadata_backfilled_from_live_command": true
-  },
-  "scope": "Cached original semantic lifecycle tensors versus latest standalone outputs. Emission timing is checked only when retained reference metadata includes it. No reference tensors regenerated.",
-  "precision_audit": {
-    "source_flags_inferred_from_constructor": {
-      "matmul_tf32": true,
-      "cudnn_tf32": true
+    "effective_precision": {
+      "matmul_tf32": false,
+      "cudnn_tf32": false
     },
-    "native_tf32": false,
-    "flags_recorded_during_original_run": false,
-    "evidence": "Sam3MultiplexVideoPredictor.__init__ unconditionally enables both flags after this driver set them false; decoder trace first diverges at its FP32 FFN. A new run enforces/records flags after construction and removes all ten mask-only mismatches.",
-    "superseded_by": "video-predictor-sam31-visible.json"
-  }
+    "source_preserve_batched_geometry_adapter": true
+  },
+  "scope": "Cached original semantic lifecycle tensors versus latest standalone outputs. Emission timing is checked only when retained reference metadata includes it. No reference tensors regenerated."
 }

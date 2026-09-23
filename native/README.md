@@ -1051,7 +1051,8 @@ FP16/BF16 comparisons and the remaining investigation.
 `sam3::VideoPredictor` now owns semantic replacement/reset, shared cores and frame
 features, neural sessions, metadata/action routing and output scheduling for a
 local video. `sam3_video_predictor_probe` demonstrates the owning API without a
-Python runtime. SAM3's11semantic lifecycle output sets match the original; SAM3.1
-has explicitly recorded endpoint/reference and output discrepancies. This is a
+Python runtime. SAM3's11semantic lifecycle output sets match the original; SAM3.1's11now match
+an explicitly endpoint-repaired reference with verified TF32 settings. Historical
+precision claims are corrected and broader state/trajectory parity remains. This is a
 development interface with remaining high-level/API/packaging work. See
 [the owning video API notes](../docs/native/VIDEO_PREDICTOR.md).

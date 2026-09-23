@@ -4,6 +4,12 @@
   "source_grounding_batch": 1,
   "source_complex_rope": true,
   "source_inclusive_grounding_bound_adapter": true,
+  "effective_precision": {
+    "matmul_tf32": false,
+    "cudnn_tf32": false
+  },
+  "source_preserve_batched_geometry_adapter": false,
+  "source_geometry_adapter_uses": [],
   "cases": [
     {
       "tag": "0.person",
@@ -23,9 +29,9 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false
+        "out_binary_masks": true
       },
-      "mask_mismatches": 10
+      "mask_mismatches": 0
     },
     {
       "tag": "0.person_track",
@@ -45,10 +51,10 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false,
+        "out_binary_masks": true,
         "emission": true
       },
-      "mask_mismatches": 7
+      "mask_mismatches": 0
     },
     {
       "tag": "1.person_track",
@@ -68,10 +74,10 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false,
+        "out_binary_masks": true,
         "emission": true
       },
-      "mask_mismatches": 31
+      "mask_mismatches": 0
     },
     {
       "tag": "2.person_track",
@@ -91,10 +97,10 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false,
+        "out_binary_masks": true,
         "emission": true
       },
-      "mask_mismatches": 54
+      "mask_mismatches": 0
     },
     {
       "tag": "3.person_track",
@@ -114,10 +120,10 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false,
+        "out_binary_masks": true,
         "emission": true
       },
-      "mask_mismatches": 47
+      "mask_mismatches": 0
     },
     {
       "tag": "1.box",
@@ -131,9 +137,9 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false
+        "out_binary_masks": true
       },
-      "mask_mismatches": 433
+      "mask_mismatches": 0
     },
     {
       "tag": "1.box_track",
@@ -147,10 +153,10 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false,
+        "out_binary_masks": true,
         "emission": true
       },
-      "mask_mismatches": 467
+      "mask_mismatches": 0
     },
     {
       "tag": "2.box_track",
@@ -165,7 +171,13 @@
         "out_binary_masks": false,
         "emission": true
       },
-      "mask_mismatches": -1
+      "mask_mismatches": -1,
+      "source_keep_alive": [
+        -2
+      ],
+      "source_cache_areas": {
+        "0": 23058
+      }
     },
     {
       "tag": "2.text_box",
@@ -185,9 +197,9 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false
+        "out_binary_masks": true
       },
-      "mask_mismatches": 8
+      "mask_mismatches": 0
     },
     {
       "tag": "2.fetch",
@@ -207,9 +219,9 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false
+        "out_binary_masks": true
       },
-      "mask_mismatches": 8
+      "mask_mismatches": 0
     },
     {
       "tag": "0.reset_person",
@@ -229,21 +241,11 @@
         "out_obj_ids": true,
         "out_probs": true,
         "out_boxes_xywh": true,
-        "out_binary_masks": false
+        "out_binary_masks": true
       },
-      "mask_mismatches": 10
+      "mask_mismatches": 0
     }
   ],
   "exact": false,
-  "scope": "Original high-level semantic add_prompt, full propagation with output scheduling, text/box-only/combined replacement, fetch and reset versus owning C++ API. No neural phases mocked. Optional SAM3.1 forward grounding-bound adapter is recorded separately; the source generator range/output scheduling is unchanged. Fixed sequence is a fixture, not API input limits. Native additionally checks invalid-input state preservation, point-only cache initialization and callback cancellation; those extra native invariants are not compared here.",
-  "precision_audit": {
-    "source_flags_inferred_from_constructor": {
-      "matmul_tf32": true,
-      "cudnn_tf32": true
-    },
-    "native_tf32": false,
-    "flags_recorded_during_original_run": false,
-    "evidence": "Sam3MultiplexVideoPredictor.__init__ unconditionally enables both flags after this driver set them false; decoder trace first diverges at its FP32 FFN. A new run enforces/records flags after construction and removes all ten mask-only mismatches.",
-    "superseded_by": "video-predictor-sam31-visible.json"
-  }
+  "scope": "Original high-level semantic add_prompt, full propagation with output scheduling, text/box-only/combined replacement, fetch and reset versus owning C++ API. No neural phases mocked. Optional SAM3.1 forward grounding-bound and stored-geometry adapters are recorded separately; the source generator range/output scheduling is unchanged. Fixed sequence is a fixture, not API input limits. Native additionally checks invalid-input state preservation, point-only cache initialization and callback cancellation; those extra native invariants are not compared here."
 }

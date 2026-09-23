@@ -47,8 +47,8 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
     auto plan=sam3::plan_video_update(index,false,detections,low,logits,metadata,update);sam3::execute_video_update(index,0,plan,detections,sessions,factory,update);auto output=sam3::build_video_outputs(plan,detections,h,w,update);sam3::finalize_video_scores(plan.metadata,index,plan.previous_ids,logits);metadata=std::move(plan.metadata);
     sam3::VideoRawOutput final_raw;final_raw.frame=index;final_raw.masks=output;final_raw.scores=metadata.object_scores;final_raw.tracker_scores=metadata.frame_scores[index];final_raw.removed=plan.removed;
     final_raw.frame_stats={{"num_obj_tracked",int64_t(metadata.object_ids().size())},{"num_obj_dropped",0}};
-    if constexpr(Mux){const auto suppressed=plan.suppressed.cpu();for(size_t i=0;i<plan.previous_ids.size();++i)if(suppressed[i].template item<bool>())final_raw.suppressed.insert(plan.previous_ids[i]);}
-    else if(metadata.host.suppressed.count(index))final_raw.suppressed=metadata.host.suppressed.at(index);
+    // GPU hotstart candidates are not source predictor output hide lists.
+    if(metadata.host.suppressed.count(index))final_raw.suppressed=metadata.host.suppressed.at(index);
     final_raw.unconfirmed=std::set<int64_t>{};if(update.confirmation_enabled){const auto all_ids=metadata.object_ids();for(size_t i=0;i<all_ids.size();++i)if(metadata.confirmation.status[i]==1)final_raw.unconfirmed->insert(all_ids[i]);}
     suppressed_per_frame[index]=final_raw.suppressed;
     for(const auto& emitted:output_buffer.push(final_raw)){

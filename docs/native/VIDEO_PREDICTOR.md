@@ -75,25 +75,51 @@ This is not the original default batch16/real-RoPE configuration.
   emission timing. The latest native build matches retained original tensors;
   older SAM3 cache files lack timing metadata, so that cached rerun does not
   independently recheck timing. Center shape and point-only/cancel invariants pass.
-- **SAM3.1:** native lifecycle execution completes, but parity is **not established**.
-  The unmodified original raises `IndexError` in `_batch_find_inputs`: its generator
-  includes `start+max_steps`, while the batched detector excludes that endpoint.
-  `--sam31-inclusive-grounding-bound` explicitly repairs only the test reference's
-  forward detector bound by adding one; generator range and scheduling stay intact.
-  With this adapter, emission timing matches, but all11 output sets have some mask
-  differences. Ten sets retain exact IDs/probabilities/boxes. At `2.box_track`, the
-  original displays ID0 and native displays no object. Other mask differences are
-  8–467 pixels per output set. Reports retain `exact:false`.
+- **SAM3.1:** all11 output sets now match exactly in IDs, probabilities, boxes,
+  binary masks and emission timing against a reference with an explicitly repaired
+  forward detector bound. The original generator includes `start+max_steps`, while
+  its batched detector excludes that endpoint and raises `IndexError` in
+  `_batch_find_inputs`. `--sam31-inclusive-grounding-bound` adds one only to the
+  detector bound; generator range and output scheduling stay unchanged. This is
+  an adapted-reference result, not unmodified default-configuration parity.
 
-Intermediate investigation verifies the chosen text batches agree exactly. A
-source-image diagnostic also has identical native/source detector-neck features,
-positions and encoder memory, but differing downstream detection tensors. This
-localizes part of the numerical investigation; it does not prove the cause of the
-lifecycle/output differences. The original batched detector also constructs box
-prompts from `find_inputs`, whereas semantic add_prompt stores them in a separate
-per-frame map. That source behavior is a further investigation item, not silently
-patched by this reference. The prior120-pixel reverse-edit discrepancy remains
-unresolved and is separate from these new semantic lifecycle results.
+### Precision audit and output visibility correction
+
+The earlier SAM3.1 reports incorrectly described both sides as TF32-disabled.
+`Sam3MultiplexVideoPredictor.__init__` enables TF32 after the previous test driver's
+initial configuration. Layer traces showed identical first-layer attention and
+normalization up to the FP32 FFN, where the results diverged. A controlled replay
+with native TF32 enabled matches all84captured decoder-layer tensors from two
+frames exactly; disabling it reproduces that first divergence. Configuring both
+TF32 flags **after construction**, recording them, and asserting them before each
+frame makes ten previously differing output sets exact without changing native
+neural code. Historical non-exact reports are retained with `precision_audit`;
+they must not be interpreted as equal-precision comparisons. New cached-reference
+metadata records the actual post-construction flags.
+
+The remaining box-track frame was hidden only by native output orchestration.
+The original computes a GPU `to_suppress_mask` candidate, but its planning code
+never publishes that candidate into `rank0_metadata["suppressed_obj_ids"]`. Its
+predictor filters by that published host set. The native owner and coherent probe
+now follow this output policy; the low-level GPU candidate calculation remains
+available separately. On the regression frame, a native keep-alive counter of0
+no longer hides ID0; its23058mask pixels match the source exactly. This also keeps
+its cached output available for subsequent fetch/refinement.
+
+A separate original behavior remains relevant: batched detection reconstructs
+geometry from `find_inputs`, while semantic add_prompt stores boxes in a per-frame
+map. Native retains that geometry. The optional test-only
+`--sam31-preserve-batched-geometry` passes stored geometry to the original prompt
+builder for investigation. **It is not enabled in the primary11-output exact
+comparison.** Internal keep-alive counters can consequently differ (native0 versus
+original-2 in this fixture) even though displayed outputs match. The11-output
+result does not establish state equivalence. A separate extended fixture supplies
+`BOX_STEPS=5` to the native probe and `--box-steps 5` to the reference, tracking the
+box from frame1through6. With both explicit source adapters enabled, all15output
+sets match exactly, including masks and emission timing. The geometry adapter's
+actual use is recorded and asserted. This remains a finite fixture, not proof of
+arbitrary trajectories, all states or dataset-wide quality.
+The prior120-pixel reverse-edit discrepancy is separate and remains unresolved.
 
 The existing34-frame SAM3.1 pipeline also remains exact in raw masks, tracker
 values, scores, final displayed outputs and emission timing against retained

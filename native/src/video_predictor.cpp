@@ -59,7 +59,9 @@ struct VideoPredictor::Impl {
   if(!ids.empty()){const auto order=at::tensor(video_memory_rows(ids,{metadata.object_ids()})[0],o.dtype(at::kLong));low=clean_video_mask_scores(at::cat(masks).index_select(0,order).unsqueeze(1),options.update.cleanup_area).squeeze(1);logits=at::cat(scores).index_select(0,order);}
   auto plan=plan_video_update(frame,reverse,d,low,logits,metadata,options.update);execute_video_update(frame,0,plan,d,sessions,factory,options.update);auto masks_out=build_video_outputs(plan,d,h,w,options.update);finalize_video_scores(plan.metadata,frame,plan.previous_ids,logits);metadata=std::move(plan.metadata);metadata.host.removed.insert(plan.removed.begin(),plan.removed.end());
   VideoRawOutput out;out.frame=frame;out.masks=std::move(masks_out);out.scores=metadata.object_scores;out.tracker_scores=metadata.frame_scores[frame];out.removed=metadata.host.removed;out.frame_stats={{"num_obj_tracked",int64_t(metadata.object_ids().size())},{"num_obj_dropped",0}};
-  if(mux){const auto suppressed=plan.suppressed.cpu();for(size_t i=0;i<plan.previous_ids.size();++i)if(suppressed[i].template item<bool>())out.suppressed.insert(plan.previous_ids[i]);}else if(metadata.host.suppressed.count(frame))out.suppressed=metadata.host.suppressed.at(frame);
+  // Source SAM3.1 computes a GPU suppression candidate but does not publish it
+  // to rank0 suppressed_obj_ids. Only the published host set filters outputs.
+  if(metadata.host.suppressed.count(frame))out.suppressed=metadata.host.suppressed.at(frame);
   out.unconfirmed=std::set<int64_t>{};if(options.update.confirmation_enabled){const auto all=metadata.object_ids();for(size_t i=0;i<all.size();++i)if(metadata.confirmation.status[i]==1)out.unconfirmed->insert(all[i]);}
   suppressions[frame]=out.suppressed;initialized.insert(frame);cache_raw(out);return out;
  }
