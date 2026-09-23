@@ -5,8 +5,11 @@ Producer compiler: @CMAKE_CXX_COMPILER_ID@ @CMAKE_CXX_COMPILER_VERSION@
 Producer platform: @CMAKE_SYSTEM_NAME@ @CMAKE_SYSTEM_PROCESSOR@
 Native media support: @SAM3_WITH_MEDIA@
 OpenCV preprocessing: @SAM3_WITH_OPENCV@ (@OpenCV_VERSION@)
+Vision Q/K fusion: @SAM3_FUSE_VISION_QK@
+Vision normalization fusion: @SAM3_FUSE_VISION_NORM@
 Custom CUDA kernels: @SAM3_WITH_CUDA@
-CUDA architectures: @CMAKE_CUDA_ARCHITECTURES@
+CMake CUDA architectures after LibTorch: @CMAKE_CUDA_ARCHITECTURES@
+NVCC flags (LibTorch can supply explicit -gencode flags): @CMAKE_CUDA_FLAGS@
 ICU version: @ICU_VERSION@
 Zlib version: @ZLIB_VERSION_STRING@
 Weights: external shared modular store; not included in this SDK.

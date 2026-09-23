@@ -29,3 +29,5 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/build-info.txt.in" "${CMAKE_CU
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sam3-build-info.txt" DESTINATION ${CMAKE_INSTALL_DATADIR}/sam3-native)
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/BundleRuntime.cmake" DESTINATION ${CMAKE_INSTALL_DATADIR}/sam3-native/cmake)
+
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/third_party/LICENSE-PyTorch" DESTINATION ${CMAKE_INSTALL_DATADIR}/sam3-native)

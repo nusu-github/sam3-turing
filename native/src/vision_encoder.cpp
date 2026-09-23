@@ -1,6 +1,8 @@
 #include "sam3/vision_encoder.h"
 #include "sam3/autocast.h"
 #include "sam3/rotary.h"
+#include "sam3/rotary_pair.h"
+#include "sam3/vision_fusion.h"
 #include <c10/core/InferenceMode.h>
 #include <cmath>
 #include <set>
@@ -61,31 +63,52 @@ at::Tensor VisionEncoder::attention(const at::Tensor& x, const std::string& pref
   const auto qkv = linear(x, prefix + ".qkv").reshape({b,length,3,16,64}).permute({2,0,3,1,4});
   const auto& frequencies = weight(prefix + ".freqs_cis");
   TORCH_CHECK(frequencies.sizes() == at::IntArrayRef({length,32}), "RoPE token grid mismatch");
-  const auto rotate = [&](const at::Tensor& value) {
-    return rotary_embedding(value, frequencies);
-  };
-  const auto q = rotate(qkv[0]), k = rotate(qkv[1]);
+#ifdef SAM3_FUSE_VISION_QK
+  const auto [q, k] = rotary_embedding_pair(qkv[0], qkv[1], frequencies);
+#else
+  const auto q = rotary_embedding(qkv[0], frequencies);
+  const auto k = rotary_embedding(qkv[1], frequencies);
+#endif
   const auto attended = at::scaled_dot_product_attention(q, k, qkv[2]);
   const auto output = attended.view({b,16,h,w,64}).permute({0,2,3,1,4}).reshape({b,h,w,1024});
   return linear(output, prefix + ".proj");
 }
 at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fused_bf16) const {
+  return block(input, layer, fused_bf16, nullptr);
+}
+at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fused_bf16, at::Tensor* prepared) const {
   const auto prefix = "trunk.blocks." + std::to_string(layer);
-  auto x = norm(input, prefix + ".norm1");
-  const auto b = x.size(0), h = x.size(1), w = x.size(2);
+  const auto b = input.size(0), h = input.size(1), w = input.size(2);
   const bool windowed = (layer + 1) % 8 != 0;
+#ifdef SAM3_FUSE_VISION_NORM
+  const bool fuse_norm = input.is_cuda() && input.scalar_type() == at::kFloat &&
+      at::autocast::is_autocast_enabled(at::kCUDA) && h % 24 == 0 && w % 24 == 0;
+#else
+  const bool fuse_norm = false;
+#endif
+  const auto projection_type = fused_bf16 ? at::kBFloat16 : at::kHalf;
+  auto x = fuse_norm && prepared && prepared->defined() ? std::move(*prepared)
+      : fuse_norm ? vision_norm_projection(input, weight(prefix + ".norm1.weight"),
+      weight(prefix + ".norm1.bias"), projection_type, windowed) : norm(input, prefix + ".norm1");
   const auto hp = ((h + 23) / 24) * 24, wp = ((w + 23) / 24) * 24;
-  if (windowed) {
+  if (windowed && !fuse_norm) {
     if (hp != h || wp != w) x = at::constant_pad_nd(x, {0,0,0,wp-w,0,hp-h}, 0);
     x = x.view({b,hp/24,24,wp/24,24,1024}).permute({0,1,3,2,4,5}).reshape({-1,24,24,1024});
   }
   x = attention(x, prefix + ".attn");
-  if (windowed) {
-    x = x.reshape({b,hp/24,wp/24,24,24,1024}).permute({0,1,3,2,4,5}).reshape({b,hp,wp,1024});
-    x = x.slice(1,0,h).slice(2,0,w);
+  at::Tensor normalized;
+  if (fuse_norm) {
+    std::tie(x, normalized) = vision_residual_norm(input, x,
+        weight(prefix + ".norm2.weight"), weight(prefix + ".norm2.bias"),
+        projection_type, windowed);
+  } else {
+    if (windowed) {
+      x = x.reshape({b,hp/24,wp/24,24,24,1024}).permute({0,1,3,2,4,5}).reshape({b,hp,wp,1024});
+      x = x.slice(1,0,h).slice(2,0,w);
+    }
+    x = input + x;
+    normalized = norm(x, prefix + ".norm2");
   }
-  x = input + x;
-  const auto normalized = norm(x, prefix + ".norm2");
   at::Tensor hidden;
   if (fused_bf16) {
     // Reference-only path: exactly reproduce upstream's forced BF16 epilogue.
@@ -95,7 +118,21 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
   } else {
     hidden = at::gelu(linear(normalized, prefix + ".mlp.fc1"), "none");
   }
-  return x + linear(hidden, prefix + ".mlp.fc2");
+  auto projection = linear(hidden, prefix + ".mlp.fc2");
+  if (fuse_norm && prepared && layer < 31) {
+    // Complete this block's residual and prepare the next QKV input in one
+    // pass. Release consumed MLP intermediates before allocating the pair.
+    hidden = at::Tensor();
+    normalized = at::Tensor();
+    const auto next = "trunk.blocks." + std::to_string(layer + 1) + ".norm1";
+    at::Tensor result;
+    std::tie(result, *prepared) = vision_residual_norm_projection(x, projection,
+        weight(next + ".weight"), weight(next + ".bias"), projection_type,
+        (layer + 2) % 8 != 0);
+    return result;
+  }
+  if (prepared) *prepared = at::Tensor();
+  return x + projection;
 }
 at::Tensor VisionEncoder::neck(const at::Tensor& input, const std::string& head, int64_t level) const {
   const auto prefix = head + "." + std::to_string(level);
@@ -160,7 +197,9 @@ VisionFeatures VisionEncoder::forward(const at::Tensor& image, const std::string
   const auto pos = weight("trunk.pos_embed").slice(1,1).reshape({1,24,24,1024}).permute({0,3,1,2});
   x = x + pos.repeat({1,1,4,4}).slice(2,0,72).slice(3,0,72).permute({0,2,3,1});
   x = norm(x,"trunk.ln_pre");
-  for (int64_t i = 0; i < 32; ++i) x = block(x,i,mode == "bf16_reference");
+  at::Tensor prepared_projection;
+  for (int64_t i = 0; i < 32; ++i)
+    x = block(x,i,mode == "bf16_reference", &prepared_projection);
   VisionFeatures result;
   result.positions.resize(levels_);
   result.trunk = x.permute({0,3,1,2});

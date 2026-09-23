@@ -160,3 +160,14 @@ dependency and shared-weight layers are reused. Validation details are in
 The next increment, `cache-fetch-sdk-overlay/overlays.json`, is based on that
 output-cache SDK and removes repeated packed-cache writes during reads. See
 [CACHE_FETCH.md](CACHE_FETCH.md) for exact regression and measurement scope.
+
+The subsequent increments are `weight-crc-sdk-overlay`,
+`compute-storage-sdk-overlay`, `semantic-text-sdk-overlay`, and
+`vision-fusion-sdk-overlay`, each with a prerequisite-hashed `overlays.json`.
+See [WEIGHT_CRC.md](WEIGHT_CRC.md), [COMPUTE_STORAGE.md](COMPUTE_STORAGE.md),
+[SEMANTIC_TEXT_REUSE.md](SEMANTIC_TEXT_REUSE.md) and
+[VISION_FUSION.md](VISION_FUSION.md). The latest fusion SDK includes the native
+whole-vision benchmark, CPU26/CUDA48 validation, and the supplied Windows
+compatibility headers. Build Windows using [WINDOWS_TURING.md](WINDOWS_TURING.md);
+the included binaries are Linux builds. All increments reuse the same weight
+store and dependency layers.

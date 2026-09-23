@@ -1,0 +1,686 @@
+{
+  "scope": "Native-to-native exact regression, not complete source parity",
+  "platform": "Linux x86_64, RTX PRO 4500 Blackwell sm120, standalone LibTorch 2.10.0 cu130",
+  "ctest": {
+    "cpu": 26,
+    "cuda": 48
+  },
+  "operator_cases_per_device_and_stream": {
+    "norm": 240,
+    "residual_norm": 360,
+    "residual_next_projection": 360,
+    "paired_rotary": 82
+  },
+  "features": [
+    {
+      "case": "sam3-fp16-b1-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp16-b2-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp16-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-bf16_reference-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp32-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp16-b2-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b1-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b2-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp32-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b2-float",
+      "files": 14,
+      "all_bytes_exact": true
+    }
+  ],
+  "feature_files": 312,
+  "api": {
+    "owner_cases": 13,
+    "owner_files": 866,
+    "c_cases": 6,
+    "c_files": 1074,
+    "all_bytes_exact": true
+  },
+  "off_integration": {
+    "feature_files": 100,
+    "all_bytes_exact": true
+  },
+  "benchmark": {
+    "core_sha256": {
+      "baseline": "7a9f13824c72e9e3994ad179c4f569e25b537af107b3f324bf9b831a8a96d541",
+      "current": "4a1194fb2796d29deec9c6afa40a7b7682e1b6bb2333c8efaf0278ebf4992500"
+    },
+    "baseline_switches": "both OFF",
+    "current_switches": "both ON",
+    "native_tool": "sam3_vision_fusion_benchmark",
+    "samples_per_process": 10,
+    "warmups": 3,
+    "all_heads_and_positions": true,
+    "no_concurrent_builds_or_gpu_work": true,
+    "summary": [
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "batch": 1,
+        "process_medians_ms": {
+          "baseline": [
+            57.5812135,
+            57.7778595,
+            57.8747185
+          ],
+          "current": [
+            53.3162705,
+            53.260914,
+            53.4504055
+          ]
+        },
+        "median_ms": {
+          "baseline": 57.7778595,
+          "current": 53.3162705
+        },
+        "reduction_percent": 7.721970039405834,
+        "parameter_bytes": {
+          "baseline": [
+            936842240
+          ],
+          "current": [
+            936842240
+          ]
+        },
+        "peak_extra_bytes": {
+          "baseline": [
+            277750272
+          ],
+          "current": [
+            278798848
+          ]
+        }
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "batch": 1,
+        "process_medians_ms": {
+          "baseline": [
+            59.7224175,
+            59.7479335,
+            59.8468215
+          ],
+          "current": [
+            55.046717,
+            55.230897999999996,
+            55.0738075
+          ]
+        },
+        "median_ms": {
+          "baseline": 59.7479335,
+          "current": 55.0738075
+        },
+        "reduction_percent": 7.823075588045237,
+        "parameter_bytes": {
+          "baseline": [
+            949690880
+          ],
+          "current": [
+            949690880
+          ]
+        },
+        "peak_extra_bytes": {
+          "baseline": [
+            277750272
+          ],
+          "current": [
+            278798848
+          ]
+        }
+      }
+    ]
+  },
+  "supplementary_owner_benchmark": {
+    "core_sha256": {
+      "baseline": "7a9f13824c72e9e3994ad179c4f569e25b537af107b3f324bf9b831a8a96d541",
+      "current": "4a1194fb2796d29deec9c6afa40a7b7682e1b6bb2333c8efaf0278ebf4992500"
+    },
+    "baseline_switches": "both OFF",
+    "current_switches": "both ON",
+    "samples_per_process": 10,
+    "warmups": 3,
+    "fresh_vision_each_call": true,
+    "no_concurrent_builds_or_gpu_work": true,
+    "summary": [
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "process_medians_ms": {
+          "baseline": [
+            136.548257,
+            127.7037315,
+            130.737935
+          ],
+          "current": [
+            126.1031255,
+            123.3636815,
+            123.7675855
+          ]
+        },
+        "median_ms": {
+          "baseline": 130.737935,
+          "current": 123.7675855
+        },
+        "reduction_percent": 5.331543212763757
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "process_medians_ms": {
+          "baseline": [
+            149.97384499999998,
+            151.165009,
+            126.73855549999999
+          ],
+          "current": [
+            151.75008250000002,
+            149.209336,
+            150.678363
+          ]
+        },
+        "median_ms": {
+          "baseline": 149.97384499999998,
+          "current": 150.678363
+        },
+        "reduction_percent": -0.46976057725265363
+      }
+    ]
+  },
+  "restored_on": {
+    "raw_core_sha256": "2a1541465d19d5bf6899dc3e47a7f856e87249365f9c8dbabff581b34d553ea4",
+    "identical_to_pre_ablation_on_core": true,
+    "both_flags": "ON"
+  },
+  "symbols": [
+    {
+      "variant": "cpu",
+      "old": 466,
+      "new": 471,
+      "removed": [],
+      "added": [
+        "_ZN4sam320vision_residual_normERKN2at6TensorES3_S3_S3_N3c1010ScalarTypeEb",
+        "_ZN4sam321rotary_embedding_pairERKN2at6TensorES3_S3_",
+        "_ZN4sam322vision_norm_projectionERKN2at6TensorES3_S3_N3c1010ScalarTypeEb",
+        "_ZN4sam331vision_residual_norm_projectionERKN2at6TensorES3_S3_S3_N3c1010ScalarTypeEb",
+        "_ZNK4sam313VisionEncoder5blockERKN2at6TensorElbPS2_"
+      ]
+    },
+    {
+      "variant": "cuda",
+      "old": 473,
+      "new": 481,
+      "removed": [],
+      "added": [
+        "_ZN4sam316rotary_pair_cudaERKN2at6TensorES3_S3_RS1_S4_",
+        "_ZN4sam320vision_residual_normERKN2at6TensorES3_S3_S3_N3c1010ScalarTypeEb",
+        "_ZN4sam321rotary_embedding_pairERKN2at6TensorES3_S3_",
+        "_ZN4sam322vision_norm_projectionERKN2at6TensorES3_S3_N3c1010ScalarTypeEb",
+        "_ZN4sam325vision_residual_norm_cudaERKN2at6TensorES3_S3_S3_RS1_S4_bb",
+        "_ZN4sam327vision_norm_projection_cudaERKN2at6TensorES3_S3_RS1_b",
+        "_ZN4sam331vision_residual_norm_projectionERKN2at6TensorES3_S3_S3_N3c1010ScalarTypeEb",
+        "_ZNK4sam313VisionEncoder5blockERKN2at6TensorElbPS2_"
+      ]
+    }
+  ],
+  "recovered_sdk": {
+    "recovered_operator_checks": [
+      {
+        "sdk": "cpu",
+        "tool": "sam3_weights_large_test",
+        "device": "cpu",
+        "passed": true
+      },
+      {
+        "sdk": "cuda",
+        "tool": "sam3_weights_large_test",
+        "device": "cpu",
+        "passed": true
+      },
+      {
+        "sdk": "cpu",
+        "tool": "sam3_rotary_pair_test",
+        "passed": true
+      },
+      {
+        "sdk": "cuda",
+        "tool": "sam3_rotary_pair_stream_test",
+        "passed": true
+      },
+      {
+        "sdk": "cuda",
+        "tool": "sam3_vision_fusion_stream_test",
+        "passed": true
+      }
+    ],
+    "c_api_exact_output_files": 153,
+    "c_api_model": "sam3.1",
+    "c_api_precision": "fp16",
+    "c_api_source": "image",
+    "c_api_tracking_ranks": 2,
+    "c_api_parallel": true,
+    "workspace_runtime_libraries": [
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libavcodec.so.60",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libavformat.so.60",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libavutil.so.58",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libbz2.so.1.0",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libc10.so",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libc10_cuda.so",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcublas-e70f38ef.so.13",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcublasLt-656298c8.so.13",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcudart-96c42e41.so.13",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcudart.so.13",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcudnn.so.9",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcudnn_engines_precompiled.so.9",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcudnn_engines_runtime_compiled.so.9",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcudnn_graph.so.9",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcudnn_heuristic.so.9",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcufft.so.12",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcupti-e2f9ed86.so.13",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcurand.so.10",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libcusparse.so.12",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libgomp-98b21ff3.so.1",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libicudata.so.74",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libicui18n.so.74",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libicuuc.so.74",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libjpeg.so.8",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/liblzma.so.5",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libnvJitLink.so.13",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libopencv_core.so.410",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libopencv_imgproc.so.410",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libsam3_native.so",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libswresample.so.4",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libswscale.so.7",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libtorch.so",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libtorch_cpu.so",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libtorch_cuda.so",
+      "/workspace/vision-fusion-recovered-cuda/bin/../lib/libz.so.1"
+    ],
+    "no_python_or_triton": true,
+    "storage": "packed_disk",
+    "temporary_files_cleaned": true,
+    "semantic_text_probe_exact_files": 243,
+    "semantic_text_probe": {
+      "reuse_hits_with_hidden_shards": 6,
+      "required_misses": 15,
+      "settings_invalidations": 3,
+      "samples_ms": [
+        241.772314,
+        239.423749,
+        241.419073,
+        237.121885,
+        239.090098
+      ],
+      "visual_encodes": 34,
+      "provider_calls": 34
+    },
+    "installed_benchmark_runs": true
+  },
+  "sdk_overlay": {
+    "prerequisite": "semantic-text-sdk-overlay/overlays.json (includes base/media/seek/preprocess recipe)",
+    "prerequisite_sha256": "5369d4175ad12e7a75bb95c34a13ae94c5c57f27e52b6ae92f05420383a56cf3",
+    "notes": "Apply the matching archive at the preceding complete SDK root. Includes the user-validated Windows compatibility source headers and precompiled Linux CUDA norm/layout/cast/residual and paired RoPE fusion. No new weights or runtime dependencies; shared modular store unchanged. C ABI1 and existing C++ class layouts preserved. Windows/Turing execution of these new fusion kernels is not included in the Linux validation.",
+    "overlays": [
+      {
+        "variant": "cpu",
+        "archive": "cpu.tar.gz",
+        "bytes": 2092639,
+        "sha256": "ea6fd97625555c55f8ea0b59841414011a4dd98f705b7e1269dc70a68c4b0e52",
+        "files": [
+          {
+            "path": "bin/sam3_image_benchmark",
+            "bytes": 124168,
+            "sha256": "b43c2f74e7209edcd7cf89d44e2e74beaa6d8b1bcc683eac34dcbaa05ade77f9"
+          },
+          {
+            "path": "bin/sam3_image_results_test",
+            "bytes": 88392,
+            "sha256": "0168c05b8b5340f87d4d12a0f9f6e425871b0710cd1b15fb82d5a6bad3775c79"
+          },
+          {
+            "path": "bin/sam3_predictor_c_probe",
+            "bytes": 39584,
+            "sha256": "c2a8e3ecab6c30598749797de8b2b95c19138ecb28bc8c3c9748383d2086bbd7"
+          },
+          {
+            "path": "bin/sam3_rank_executor_test",
+            "bytes": 98504,
+            "sha256": "a3ecb98bb1ba3317c1dc62d2bde1dbd4d4aff8a186de5c9ce3dabc0ba9326022"
+          },
+          {
+            "path": "bin/sam3_rotary_pair_test",
+            "bytes": 68280,
+            "sha256": "cbc708ea6644b48d32da1baca1cf822c70ac4e96128c883e3cee79f9df314746"
+          },
+          {
+            "path": "bin/sam3_rotary_test",
+            "bytes": 76592,
+            "sha256": "a3d2d84aade987577658cb72236d961f7f1429e470c5ba567801bf1261493a2f"
+          },
+          {
+            "path": "bin/sam3_semantic_text_probe",
+            "bytes": 132632,
+            "sha256": "1b60548748987515f4c015a68a29d37c29fd0473e4419ced7b5f967599260881"
+          },
+          {
+            "path": "bin/sam3_video_cache_fetch_probe",
+            "bytes": 137624,
+            "sha256": "f2d3aaf364fbf02687bad5e30e7186e689bdb841b4bee8c7196c08158955af60"
+          },
+          {
+            "path": "bin/sam3_video_collective_probe",
+            "bytes": 191112,
+            "sha256": "90f0f52b57f69e8b6a1267646ffca031c30c2379ea7cb2d19de754b209c43bc4"
+          },
+          {
+            "path": "bin/sam3_video_collective_test",
+            "bytes": 82664,
+            "sha256": "627d0010793dec120407a7f0e5dcba44a88c547c1a7b298c6460a3bf1674fb50"
+          },
+          {
+            "path": "bin/sam3_video_mask_cache_benchmark",
+            "bytes": 50264,
+            "sha256": "b4b3553b87e65d67ce3d9f7462db717b44cddb0a3e5a4cf4d836859f63c9ca58"
+          },
+          {
+            "path": "bin/sam3_video_mask_cache_test",
+            "bytes": 64296,
+            "sha256": "0fb36dc6d5503cce5a0f0c2de2807e2ede8c00d0c1d3b896e9a95f7d770a8feb"
+          },
+          {
+            "path": "bin/sam3_video_multidevice_probe",
+            "bytes": 96304,
+            "sha256": "ad04a833d301443be1dcb8f0a2e2dafabb7d55fb41cf1f4fe8f1c231176bfe16"
+          },
+          {
+            "path": "bin/sam3_vision_fusion_test",
+            "bytes": 73272,
+            "sha256": "a3746caf9182311d8eeb3a3c400f35f94c7a19ac2c9dd433d13ab0a43a360d03"
+          },
+          {
+            "path": "bin/sam3_vision_positions_benchmark",
+            "bytes": 83712,
+            "sha256": "e9094d7b3caa697f8e94d07f0cc746e8de7952898facc078246c9687f8745df7"
+          },
+          {
+            "path": "bin/sam3_weights",
+            "bytes": 28392,
+            "sha256": "d0f1d03bb21dd97fa8ae6f1dd814b14db793a617507ca41a994517729d08ca2c"
+          },
+          {
+            "path": "bin/sam3_weights_large_test",
+            "bytes": 43256,
+            "sha256": "872e3062c94f4b18b0588e50d3f3cd00b838bf314bd0307a5cf3d3a2192bbbb0"
+          },
+          {
+            "path": "include/sam3/multiplex.h",
+            "bytes": 2293,
+            "sha256": "ab9da70e297fc887409726e448fcee1094683060bd6cb8bfbe45fcdd0fe552c8"
+          },
+          {
+            "path": "include/sam3/rotary_pair.h",
+            "bytes": 478,
+            "sha256": "87ac5da6f3be6a9443c6381e32d87f48790fb1c3c735dde535223ebfbe1cb1ac"
+          },
+          {
+            "path": "include/sam3/video_update.h",
+            "bytes": 3472,
+            "sha256": "51d4dd69613adaf9c5f6d288b010e92e095e01e0303c91e2783e8bc5b356b77b"
+          },
+          {
+            "path": "include/sam3/vision_encoder.h",
+            "bytes": 2311,
+            "sha256": "9db5727822a60f9896be40a29191324dcb24c64f00a64acf4940756495701ef2"
+          },
+          {
+            "path": "include/sam3/vision_fusion.h",
+            "bytes": 1747,
+            "sha256": "9fdf077e469884937d12b96f635533f02c657db2f691ea0c5b5e87880d4252db"
+          },
+          {
+            "path": "lib/libsam3_native.so",
+            "bytes": 4570808,
+            "sha256": "a705855acbdea775ca9588656181083ecc6968f06b58c604a9e801c34ff709ac"
+          },
+          {
+            "path": "share/sam3-native/LICENSE-PyTorch",
+            "bytes": 3464,
+            "sha256": "a8a2c6b67cf8a597ffaa5c82380a6bd1b82629c0417e00673d8013d662eb500a"
+          },
+          {
+            "path": "share/sam3-native/sam3-build-info.txt",
+            "bytes": 634,
+            "sha256": "e3b3cdfe13c2987dba8c62336af7a36ae59971d11b4662d3cfedeeebbf942cb7"
+          }
+        ],
+        "complete_recovery_entries_verified": 166
+      },
+      {
+        "variant": "cuda",
+        "archive": "cuda.tar.gz",
+        "bytes": 2834031,
+        "sha256": "4b7efa83e3905cac5a3cc7b09bf498bb2443b982fd760aa95875c3fc41d2eb42",
+        "files": [
+          {
+            "path": "bin/sam3_compute_storage_probe",
+            "bytes": 99232,
+            "sha256": "59a60c642394dbb386bf5be8a5eca1daf6399a939848d91d862798828a898825"
+          },
+          {
+            "path": "bin/sam3_image_benchmark",
+            "bytes": 129048,
+            "sha256": "629de98f7001e7612e7d65e1f691c6b06d142a4f3e6ebce98fad8d430a6891a3"
+          },
+          {
+            "path": "bin/sam3_image_results_test",
+            "bytes": 98664,
+            "sha256": "44d3f7c995bd49b41089b0112121bff686882abdaeddc55d681623eed5c89c91"
+          },
+          {
+            "path": "bin/sam3_predictor_c_probe",
+            "bytes": 39584,
+            "sha256": "a2e8265700b1e0f5bee66fb15be01f746d8faa8824b6e75d11c05335b5261883"
+          },
+          {
+            "path": "bin/sam3_rank_executor_test",
+            "bytes": 98504,
+            "sha256": "d5e45e4cd202686234e6d542b1dd4bc75d96eeb5da99ae747e8701a29cade1e6"
+          },
+          {
+            "path": "bin/sam3_rotary_pair_stream_test",
+            "bytes": 108888,
+            "sha256": "ced2bfb71812636d6ba6f8f814985368be73b32bfef4370e41d9fcf79da33132"
+          },
+          {
+            "path": "bin/sam3_rotary_pair_test",
+            "bytes": 68280,
+            "sha256": "61694ae23c88fe6604f545afa01e338da184b418d4a8c61347ef15bf488f2716"
+          },
+          {
+            "path": "bin/sam3_rotary_stream_test",
+            "bytes": 117152,
+            "sha256": "6825ff59b04844db7f52f8f6a3e0ea8ca3a2d93408fc2dd2796ff8e90e10986a"
+          },
+          {
+            "path": "bin/sam3_rotary_test",
+            "bytes": 76592,
+            "sha256": "a1ec611824cc827775d8c3e2b4d7c87e2f0678277bbbfadaf3595addaedbf936"
+          },
+          {
+            "path": "bin/sam3_semantic_text_probe",
+            "bytes": 132696,
+            "sha256": "87265c12c9c7cf12d7a0f67fa40792dd2cf9fc925eafae7f8199c4ec37de3c64"
+          },
+          {
+            "path": "bin/sam3_video_cache_fetch_probe",
+            "bytes": 138328,
+            "sha256": "2ec59b2466986798d7a2b6bd8c869fbb5c7bc2ad0d1796873870e3beee9857ba"
+          },
+          {
+            "path": "bin/sam3_video_collective_probe",
+            "bytes": 191112,
+            "sha256": "826dbd3973eb255123d81c3737fdabaa7c6c64f8cffc9209b8acff41143ef0ce"
+          },
+          {
+            "path": "bin/sam3_video_collective_test",
+            "bytes": 82664,
+            "sha256": "d139d20f3681cd042ee26fd6d1de50d20ec6b9b72bf555e075814b773c12c7a3"
+          },
+          {
+            "path": "bin/sam3_video_mask_cache_benchmark",
+            "bytes": 55088,
+            "sha256": "a05e7ff7afe138fe21cdcdce0734c3c837e3328b86536a962358c418aa2d2fb7"
+          },
+          {
+            "path": "bin/sam3_video_mask_cache_test",
+            "bytes": 64296,
+            "sha256": "f304058587514c8bf0104c45f5e296b4aa86b00a45f2c6951eb3be70d096ac40"
+          },
+          {
+            "path": "bin/sam3_video_multidevice_probe",
+            "bytes": 96304,
+            "sha256": "4cad7841eaad38e73d8d4269cf37e626b764eb8ad6000d8923ab6f2daf850850"
+          },
+          {
+            "path": "bin/sam3_vision_fusion_benchmark",
+            "bytes": 69704,
+            "sha256": "7e5b755ec088ceccccedbc8c9ced1783bcaa2a30b195a7a0a37c4ab65da6693a"
+          },
+          {
+            "path": "bin/sam3_vision_fusion_stream_test",
+            "bytes": 117776,
+            "sha256": "9a12d654250397dbbe9f7e27658a68c2708fb62a84945ea0b3e814b16b26a481"
+          },
+          {
+            "path": "bin/sam3_vision_fusion_test",
+            "bytes": 73272,
+            "sha256": "d2e6333953820b237610b236b4476c69977118b12a6bd333407a57d4f92cfede"
+          },
+          {
+            "path": "bin/sam3_vision_positions_benchmark",
+            "bytes": 84440,
+            "sha256": "b9b1f7518e75f4b6dc17750fc9d6cedc4b133f8c67210f86f0f5c6b3aa104d82"
+          },
+          {
+            "path": "bin/sam3_weights",
+            "bytes": 28392,
+            "sha256": "eb2fd0ff58655051e5401e2f747030af2f2ac61fdf5673e61e492c2b12d23a79"
+          },
+          {
+            "path": "bin/sam3_weights_large_test",
+            "bytes": 43256,
+            "sha256": "ce42acc0f70d2b319b5a5120589347a2764535ad7a57c1267ced700d9d594d0d"
+          },
+          {
+            "path": "include/sam3/multiplex.h",
+            "bytes": 2293,
+            "sha256": "ab9da70e297fc887409726e448fcee1094683060bd6cb8bfbe45fcdd0fe552c8"
+          },
+          {
+            "path": "include/sam3/rotary_pair.h",
+            "bytes": 478,
+            "sha256": "87ac5da6f3be6a9443c6381e32d87f48790fb1c3c735dde535223ebfbe1cb1ac"
+          },
+          {
+            "path": "include/sam3/video_update.h",
+            "bytes": 3472,
+            "sha256": "51d4dd69613adaf9c5f6d288b010e92e095e01e0303c91e2783e8bc5b356b77b"
+          },
+          {
+            "path": "include/sam3/vision_encoder.h",
+            "bytes": 2311,
+            "sha256": "9db5727822a60f9896be40a29191324dcb24c64f00a64acf4940756495701ef2"
+          },
+          {
+            "path": "include/sam3/vision_fusion.h",
+            "bytes": 1747,
+            "sha256": "9fdf077e469884937d12b96f635533f02c657db2f691ea0c5b5e87880d4252db"
+          },
+          {
+            "path": "lib/libsam3_native.so",
+            "bytes": 7847720,
+            "sha256": "4a1194fb2796d29deec9c6afa40a7b7682e1b6bb2333c8efaf0278ebf4992500"
+          },
+          {
+            "path": "share/sam3-native/LICENSE-PyTorch",
+            "bytes": 3464,
+            "sha256": "a8a2c6b67cf8a597ffaa5c82380a6bd1b82629c0417e00673d8013d662eb500a"
+          },
+          {
+            "path": "share/sam3-native/sam3-build-info.txt",
+            "bytes": 1256,
+            "sha256": "3947a0f29aa97b47163b6f410c3756ec154ab41fb98b2755953ab5e5a15af78c"
+          }
+        ],
+        "complete_recovery_entries_verified": 204
+      }
+    ]
+  },
+  "cuda_cubins": {
+    "architectures": [
+      75,
+      80,
+      86,
+      90,
+      100,
+      120
+    ],
+    "ptx": [
+      120
+    ],
+    "new_sm75_kernel_instantiations": 16
+  },
+  "private_evidence": "native-foundation/vision-fusion-linux",
+  "remaining_limits": [
+    "New fusion Windows/Turing execution remains user-owned; supplied 41/41 covers prior checkpoint plus compatibility patch",
+    "Original-source FP16 pixel residual unresolved",
+    "Supplementary owner benchmark does not establish consistent SAM3.1 whole-predictor speedup",
+    "No GitHub Actions",
+    "No full-function completion claim"
+  ]
+}

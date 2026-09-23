@@ -2542,3 +2542,26 @@ preprocessing/vision/detection/tracking; excludes construction, output dumps and
 C result packing. It is not changed-text, full-video or Turing performance.
 See SEMANTIC_TEXT_REUSE.md and semantic-text-validation.json. No Actions or
 Windows/Turing execution; source precision and broader validation limits remain.
+
+## Vision normalization/layout and paired rotary fusion
+
+The user's Windows/Turing compatibility patch is imported unchanged, including
+frozen tokenizer strings, DLL exports, Windows complex-product rounding and
+pinned vcpkg dependencies. Their physical 41/41 result covers the earlier
+19f8bf9 checkpoint plus that patch; see WINDOWS_TURING.md.
+
+New CUDA fusion combines normalization, window layout, dtype conversion and
+residual operations around attention/MLP, including preparation of the next
+block's QKV input. Q/K rotary work shares one launch. This runs on every image,
+with no image reuse, weight variants or input/query restrictions. CPU26/CUDA48,
+312 actual-weight feature files and1,940 API files pass exact regression checks.
+The recovered SDK retains153 C lifecycle and243 semantic probe files with no
+Python/Triton runtime loading. Existing exported symbols/class layouts remain.
+
+The installed whole-vision benchmark measures57.778→53.316ms (SAM3) and
+59.748→55.074ms (SAM3.1), 7.72%/7.82% shorter on Blackwell FP16 batch1 with all
+heads/positions. Peak additional CUDA allocation increases1MiB; parameters and
+the shared weight store are unchanged. Supplementary complete-prompt timings are
+noisier and do not establish a SAM3.1 whole-predictor speedup. See VISION_FUSION.md
+and vision-fusion-validation.json. New fusion Windows/Turing execution and the
+original-source FP16 residual remain open. No Actions were used.

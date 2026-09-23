@@ -33,6 +33,8 @@ class SAM3_NATIVE_EXPORT VisionEncoder {
   at::Tensor linear(const at::Tensor& x, const std::string& prefix) const;
   at::Tensor attention(const at::Tensor& x, const std::string& prefix) const;
   at::Tensor block(const at::Tensor& x, int64_t layer, bool fused_bf16) const;
+  at::Tensor block(const at::Tensor& x, int64_t layer, bool fused_bf16,
+                   at::Tensor* prepared_projection) const;
   at::Tensor neck(const at::Tensor& x, const std::string& head, int64_t level) const;
   at::Tensor position(const at::Tensor& x) const;
   std::map<std::string, at::Tensor> weights_;
