@@ -81,7 +81,15 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
     }
   }
   if(edit_probe){
-    if constexpr(Mux){TORCH_CHECK(false,"edit regression currently targets SAM3; SAM3.1 edit orchestration is still being integrated");}
+    if constexpr(Mux){
+      TORCH_CHECK(files.size()>20 && metadata.object_ids().size()>1,"SAM3.1 edit regression requires21frames and two existing objects");const auto selected=metadata.object_ids()[0];
+      const auto save=[&](const std::string& tag,const sam3::VideoOutput& value){binary(root/(tag+".ids.i64.bin"),value.ids);binary(root/(tag+".scores.f32.bin"),value.probabilities);binary(root/(tag+".boxes.f32.bin"),value.boxes_xywh);binary(root/(tag+".masks.bin"),sam3::pack_masks(value.masks));};
+      sam3::Sam31VideoEditOptions edit;sam3::TrackingPoints points;points.points=at::tensor({.45,.55,.8,.15},opts).view({2,2});points.labels=at::tensor({1,0},opts.dtype(at::kInt));
+      save("18.point",sam3::edit_video_points(18,selected,points,sessions,factory,metadata,interaction,suppressed_per_frame,edit));
+      const auto route=interaction.route();TORCH_CHECK(route.type==sam3::VideoActionType::Partial && route.ids,"edited IDs did not select partial propagation");interaction.append({route.type,18,route.ids});std::vector<Session*> local;for(auto& session:sessions)local.push_back(session.get());
+      for(int64_t frame=18;frame<=20;++frame){const auto refined=sam3::propagate_video_refinements(frame,false,*route.ids,local,update.cleanup_area);save(std::to_string(frame)+".track",interaction.merge_refined(frame,refined,metadata,suppressed_per_frame[frame]));}
+      std::cout<<"SAM3.1 singleton point edit and partial propagation completed; buckets="<<metadata.buckets_per_rank[0]<<"\n";
+    }
     else {
       TORCH_CHECK(files.size()>22 && metadata.object_ids().size()>1,"edit regression requires23frames and two existing objects");const auto selected=metadata.object_ids()[0],other=metadata.object_ids()[1];
       const auto save=[&](const std::string& tag,const sam3::VideoOutput& value){binary(root/(tag+".ids.i64.bin"),value.ids);binary(root/(tag+".scores.f32.bin"),value.probabilities);binary(root/(tag+".boxes.f32.bin"),value.boxes_xywh);binary(root/(tag+".masks.bin"),sam3::pack_masks(value.masks));};

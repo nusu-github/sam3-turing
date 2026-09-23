@@ -1,10 +1,10 @@
-# SAM3 high-level point and exact-mask edits
+# High-level video instance edits
 
 `sam3/video_edit.h` connects arbitrary point/exact-mask inputs to SAM3 tracking
 sessions, metadata, action history and the displayed-frame cache. It uses shared
 session factories/cores and introduces no new model weights or object cap.
-SAM3.1 singleton extraction and its distinct edit-history rules are not yet
-integrated by these entry points; its low-level edit API remains available.
+SAM3.1 has a separate point-edit overload and singleton extraction policy,
+described below. Exact-mask high-level edits in this file currently target SAM3.
 
 ## Behavior
 
@@ -80,11 +80,67 @@ LibTorch and is not a portable CPU distribution. The executable has no libpython
 or libtorch_python linkage. sm_75 cubins are compile evidence only; no physical
 Windows/Turing testing or GitHub Actions was used.
 
+## SAM3.1 first refinement and dense history
+
+The `Sam31VideoEditOptions` point overload uses zero cleanup area by default and
+supports replacing or appending points. On the first refinement of an existing
+object in a grouped session, it moves that object into a singleton session before
+running the interactive head. Shared neural cores and feature providers retain
+one copy of the weights. Metadata keeps its global ID order, while rank workload
+is recalculated from actual bucket counts. Stateless first refinement instead
+removes/recreates the object. User removal has a SAM3.1 overload as well.
+
+`Sam31TrackingSession::extract_object` reconstructs changed dense-memory buckets
+from retained image features, effective masks and object-score inputs. It remaps
+object rows and slot pointers, restarts tracked-direction flags, and removes the
+source object only after the singleton rebuild succeeds. History can remain on
+CPU or in lossless disk archives. Point edits discard detector-only mask inputs
+without deleting their encoded history, then preflight the new point output.
+These are per-operation/session guarantees, not an all-session transaction.
+
+There is a deliberate difference from the current original implementation:
+`Sam3MultiplexTracking._extract_object_to_singleton_state` attempts to demux dense
+`[buckets,256,72,72]` memory as slot data. Its exception handler replaces memory
+with `None`. This occurs in the real four-object video; old frames0,16,32 lose
+spatial memory in the extracted singleton. Native extraction retains those
+observations by re-encoding them. It does not drop history to obtain parity.
+
+The unmodified-source regression matches the point preview and frame18 output.
+Frames19 and20 have140,939 and129,160 binary-mask differences respectively, while
+IDs and probabilities remain identical. These are behavior differences, not
+accuracy improvements: no annotated quality benchmark has been run for this
+policy. The full34-frame pre-edit raw/final results remain exact.
+
+`--sam31-rebuild-extracted-memory` is an explicit **test-only** reference adapter.
+It retains original memory-encoder inputs and uses the original neural encoder to
+rebuild the singleton memories that the original extraction lost. It does not
+replace neural outputs with native tensors. Reports distinguish this comparison
+from unmodified-source parity; cached edit references retain the adapter flag.
+All four output sets (point preview and frames18,19,20) match this explicitly
+corrected source exactly in IDs, probabilities, boxes and binary masks. It
+rebuilds34historical memories for this fixture. The adapter operates on the actual tracker module beneath its attribute-proxy
+wrapper and accepts both positional and keyword calls from the source engine.
+
+The extraction invariant fixture selects an object from slot1 and checks pointer
+movement into singleton slot0, unchanged source-bucket memory, preserved masks,
+retained spatial history, restarted direction flags and mask-only annotation
+removal. Resident, offloaded and paged executions pass105exact tensor comparisons
+with actual memory/frame cores and full-grid synthetic features.
+
+Reports: `video-sam31-edit-unmodified-cached{,.final,.edit}.json`,
+`video-sam31-edit-corrected{,.final,.edit}.json`,
+`video-sam31-edit-corrected-cached{,.final,.edit}.json`,
+`video-sam31-extraction-invariants.json` and
+`video-sam31-sam3-regression{,.final,.edit}.json`. The SAM3 regression still matches
+all34raw/final and10edit outputs after this integration. CTest remains28/16.
+Private tensors are under `video-sam31-edit-investigation`; development snapshots
+are under `native-foundation/video-sam31-edit-linux-cuda13`.
+
 ## Remaining work
 
-Next integrate SAM3.1 first-refinement singleton extraction, multiplex history
-reconstruction and its input/consolidation rules, then semantic text/geometric/
-visual prompt replacement/reset. Image-only fallback, distributed ownership and
+Broaden SAM3.1 edit sequences (repeated/new/stateless points, removal, cancellation
+and previous-memory options), then integrate semantic text/geometric/visual prompt
+replacement/reset. Image-only fallback, distributed ownership and
 transport, complete C ABI, codecs, portable SDK, CPU runtime stability and broad
 quality/performance work remain. These SAM3 edit results do not establish complete
 SAM3/SAM3.1 predictor functionality.

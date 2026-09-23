@@ -1944,3 +1944,24 @@ See [VIDEO_EDIT.md](VIDEO_EDIT.md). SAM3.1 needs separate singleton extraction a
 history/input consolidation work; these helpers do not claim that integration.
 Semantic prompt lifecycle, full C ABI, codecs, multi-GPU, portable SDK, CPU stability
 and broad quality/performance remain. No Actions or physical Windows/Turing tests.
+
+## Integrate SAM3.1 first point refinement and preserve dense history
+
+Added grouped-object singleton extraction, mask-only input cleanup without history
+loss, high-level point edits and user removal with updated bucket workloads. Cores
+and features remain shared. Resident/offloaded/paged extraction preserves masks,
+slot pointers and source-bucket memories;105exact tensor comparisons pass.
+
+The real34-frame/four-person fixture exposed an original extraction bug: slot
+demux on dense spatial memory throws and leaves historical memories unset. Native
+re-encodes changed buckets. Point preview/frame18 match the unmodified source;
+frames19/20 differ by140,939/129,160 mask pixels (IDs/probabilities still match).
+An explicitly labeled test-only original-encoder adapter reconstructs34singleton
+memories; all four point/propagation output sets then match exactly. Reports keep
+unmodified and corrected references separate. This is not a quality-improvement
+claim. Pre-edit raw/final34frames remain exact, as do all10SAM3 edit regressions.
+
+CTest28/16 passes; native PATH=/nonexistent, no Python linkage, sm75cubins present.
+See [VIDEO_EDIT.md](VIDEO_EDIT.md). No Actions or Windows/Turing hardware tests.
+Further SAM3.1 editing combinations, semantic prompt lifecycle, full C ABI,
+codecs/multi-GPU, portable SDK, CPU stability and broad quality/performance remain.

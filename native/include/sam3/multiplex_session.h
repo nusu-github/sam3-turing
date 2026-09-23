@@ -53,6 +53,14 @@ class SAM3_NATIVE_EXPORT Sam31TrackingSession {
   void remove_object(int64_t object,bool strict=false);
   // Deduplicated batch removal remaps/re-encodes each affected history once.
   void remove_objects(const std::vector<int64_t>& objects,bool strict=false);
+  // Move one object to a fresh singleton layout. Dense spatial history is
+  // reconstructed from retained image/mask inputs, never demuxed as slot data.
+  // Both sessions share their immutable core/provider. Historical output is
+  // retained, while tracked-direction flags restart for first point refinement.
+  std::unique_ptr<Sam31TrackingSession> extract_object(int64_t object);
+  // High-level SAM3.1 point edits remove mask-only input annotations without
+  // deleting already encoded history, matching the source consolidation repair.
+  void discard_mask_only_inputs();
   void reset();
   std::vector<int64_t> object_ids() const;
   const MultiplexSessionState& state() const {return state_;}

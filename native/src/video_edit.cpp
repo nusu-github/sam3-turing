@@ -4,7 +4,12 @@
 namespace sam3 {
 namespace {
 std::optional<int64_t> owner(const VideoMetadata& metadata,int64_t id){std::optional<int64_t> out;for(size_t r=0;r<metadata.ids_per_rank.size();++r)for(auto value:metadata.ids_per_rank[r])if(value==id){TORCH_CHECK(!out,"duplicate metadata ID");out=r;}return out;}
-Sam3TrackingSession* local_session(const Sam3VideoSessions& sessions,int64_t id){Sam3TrackingSession* out=nullptr;for(const auto& s:sessions){TORCH_CHECK(s,"null tracking session");const auto ids=s->object_ids();if(std::find(ids.begin(),ids.end(),id)!=ids.end()){TORCH_CHECK(!out,"multiple local owners");out=s.get();}}return out;}
+template<class Session> Session* local_session(const std::vector<std::unique_ptr<Session>>& sessions,int64_t id){Session* out=nullptr;for(const auto& s:sessions){TORCH_CHECK(s,"null tracking session");const auto ids=s->object_ids();if(std::find(ids.begin(),ids.end(),id)!=ids.end()){TORCH_CHECK(!out,"multiple local owners");out=s.get();}}return out;}
+void validate_points(const TrackingPoints& points){
+ TORCH_CHECK(points.points.defined()==points.labels.defined() && (points.points.defined() || points.box.defined()),"points require labels or a box");
+ if(points.points.defined()){const auto& p=points.points;const auto& l=points.labels;TORCH_CHECK((p.dim()==2 || (p.dim()==3 && p.size(0)==1)) && p.size(-1)==2 && ((l.dim()==1 && l.size(0)==p.size(-2)) || (l.dim()==2 && l.size(0)==1 && l.size(1)==p.size(-2))),"invalid point/label shape");}
+ TORCH_CHECK(!points.box.defined() || points.box.numel()==4,"box must contain four coordinates");
+}
 void realign_confirmation(VideoMetadata& metadata,const std::vector<int64_t>& old){
  if(metadata.confirmation.status.empty())return;
  TORCH_CHECK(metadata.confirmation.status.size()==old.size() && metadata.confirmation.consecutive_detections.size()==old.size(),"misaligned confirmation metadata");ConfirmationState next;
@@ -38,9 +43,28 @@ void remove_video_user_object(int64_t id,Sam3VideoSessions& sessions,VideoMetada
  TORCH_CHECK(owner(metadata,id),"unknown video object");const auto old=metadata.object_ids();remove_video_objects({id},sessions);for(auto& ids:metadata.ids_per_rank)ids.erase(std::remove(ids.begin(),ids.end(),id),ids.end());metadata.object_scores.erase(id);realign_confirmation(metadata,old);interaction.forget_object(id);if(record)interaction.append({VideoActionType::Remove,{},std::vector<int64_t>{id}});
 }
 VideoOutput edit_video_points(int64_t frame,int64_t id,const TrackingPoints& points,Sam3VideoSessions& sessions,const Sam3SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const VideoEditOptions& options){
- TORCH_CHECK(points.points.defined()==points.labels.defined() && (points.points.defined() || points.box.defined()),"points require labels or a box");
- if(points.points.defined()){const auto& p=points.points;const auto& l=points.labels;TORCH_CHECK((p.dim()==2 || (p.dim()==3 && p.size(0)==1)) && p.size(-1)==2 && ((l.dim()==1 && l.size(0)==p.size(-2)) || (l.dim()==2 && l.size(0)==1 && l.size(1)==p.size(-2))),"invalid point/label shape");}
- TORCH_CHECK(!points.box.defined() || points.box.numel()==4,"box must contain four coordinates");
+ validate_points(points);
  return edit(frame,id,false,[&](auto& s){return s.add_points(frame,id,points,true,options.use_previous_memory);},sessions,factory,metadata,interaction,suppressions,options);}
 VideoOutput edit_video_mask(int64_t frame,int64_t id,const at::Tensor& mask,Sam3VideoSessions& sessions,const Sam3SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const VideoEditOptions& options){TORCH_CHECK(mask.defined() && mask.dim()==2 && mask.numel()>0,"mask must be nonempty [H,W]");return edit(frame,id,true,[&](auto& s){return s.add_mask(frame,id,mask);},sessions,factory,metadata,interaction,suppressions,options);}
+void remove_video_user_object(int64_t id,Sam31VideoSessions& sessions,VideoMetadata& metadata,VideoInteractionState& interaction,bool record){
+ const auto rank=owner(metadata,id);TORCH_CHECK(rank,"unknown video object");const auto old=metadata.object_ids();remove_video_objects({id},sessions);for(auto& ids:metadata.ids_per_rank)ids.erase(std::remove(ids.begin(),ids.end(),id),ids.end());metadata.object_scores.erase(id);realign_confirmation(metadata,old);interaction.forget_object(id);
+ int64_t buckets=0;for(const auto& s:sessions)if(s->state().buckets)buckets+=s->state().buckets->bucket_count();metadata.buckets_per_rank[*rank]=buckets;
+ if(record)interaction.append({VideoActionType::Remove,{},std::vector<int64_t>{id}});
+}
+VideoOutput edit_video_points(int64_t frame,int64_t id,const TrackingPoints& points,Sam31VideoSessions& sessions,const Sam31SessionFactory& factory,VideoMetadata& metadata,VideoInteractionState& interaction,VideoSuppressionHistory& suppressions,const Sam31VideoEditOptions& options){
+ c10::InferenceMode inference;validate_points(points);
+ TORCH_CHECK(interaction.policy()==AssociationPolicy::Sam31 && frame>=0 && frame<interaction.frame_count() && options.rank>=0 && options.rank<int64_t(metadata.ids_per_rank.size()) && options.cleanup_area>=0 && options.confirmation_threshold>0 && factory,"invalid SAM3.1 video edit options");
+ auto rank=owner(metadata,id);TORCH_CHECK(!rank || *rank==options.rank,"edit must execute on the object's owning rank");
+ if(rank && options.stateless_refinement && !video_object_was_refined(interaction.actions(),id)){remove_video_user_object(id,sessions,metadata,interaction,false);rank.reset();}
+ auto* session=local_session(sessions,id);TORCH_CHECK(bool(session)==bool(rank),"session and metadata ownership disagree");
+ if(session && !video_object_was_refined(interaction.actions(),id) && session->object_ids().size()>1){auto extracted=session->extract_object(id);session=extracted.get();sessions.push_back(std::move(extracted));}
+ std::unique_ptr<Sam31TrackingSession> created;if(!session){created=factory();TORCH_CHECK(created && created->object_ids().empty(),"factory must return an empty session");session=created.get();}
+ const auto preview=session->add_points(frame,id,points,options.clear_old_points,options.use_previous_memory);session->discard_mask_only_inputs();session->preflight(true);
+ const auto position=std::find(preview.object_ids.begin(),preview.object_ids.end(),id);TORCH_CHECK(position!=preview.object_ids.end(),"edit preview omitted requested ID");
+ const auto selected=clean_video_mask_scores(preview.masks,options.cleanup_area)[position-preview.object_ids.begin()].squeeze(0).gt(0).to(at::kFloat);
+ if(created){const auto old=metadata.object_ids();metadata.ids_per_rank[options.rank].push_back(id);metadata.max_id=std::max(metadata.max_id,id);realign_confirmation(metadata,old);sessions.push_back(std::move(created));}
+ int64_t buckets=0;for(const auto& s:sessions)if(s->state().buckets)buckets+=s->state().buckets->bucket_count();metadata.buckets_per_rank[options.rank]=buckets;
+ assert_object(metadata,suppressions,id,frame,false,options.confirmation_threshold);interaction.append({rank?VideoActionType::Refine:VideoActionType::Add,frame,std::vector<int64_t>{id}});
+ return interaction.merge_refined(frame,{{id,{at::scalar_tensor(1.,selected.options()),selected}}},metadata,suppressions[frame]);
+}
 }

@@ -23,7 +23,7 @@ def save_report(a,rows):
 
 @torch.inference_mode()
 def main():
- p=argparse.ArgumentParser();p.add_argument('--model',choices=['sam3','sam3.1'],required=True);p.add_argument('--checkpoint');p.add_argument('--native-output',type=Path,required=True);p.add_argument('--frames',nargs='+',type=Path,required=True);p.add_argument('--prompt',default='person');p.add_argument('--mode',choices=['fp16','fp32','bf16_reference'],default='fp16');p.add_argument('--reference-output',type=Path);p.add_argument('--edit-output',action='store_true');p.add_argument('--partial-output',action='store_true');p.add_argument('--final-output',action='store_true',help='Replay actual raw source results through its original output generator and compare native final output');p.add_argument('--trace-state',action='store_true');p.add_argument('--trace-frames',nargs='+',type=int,help='Save internal traces only for these frame indices; all frames still run');p.add_argument('--reference-cache',type=Path);p.add_argument('--reference-mode',choices=['fp16','fp32','bf16_reference']);p.add_argument('--require-exact',action='store_true');p.add_argument('--source-grounding-batch',type=int,default=16);p.add_argument('--source-complex-rope',action='store_true');p.add_argument('--report',type=Path,required=True);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--model',choices=['sam3','sam3.1'],required=True);p.add_argument('--checkpoint');p.add_argument('--native-output',type=Path,required=True);p.add_argument('--frames',nargs='+',type=Path,required=True);p.add_argument('--prompt',default='person');p.add_argument('--mode',choices=['fp16','fp32','bf16_reference'],default='fp16');p.add_argument('--reference-output',type=Path);p.add_argument('--edit-output',action='store_true');p.add_argument('--sam31-rebuild-extracted-memory',action='store_true',help='Explicit corrected-source comparison: re-encode dense singleton history lost by upstream slot demux');p.add_argument('--partial-output',action='store_true');p.add_argument('--final-output',action='store_true',help='Replay actual raw source results through its original output generator and compare native final output');p.add_argument('--trace-state',action='store_true');p.add_argument('--trace-frames',nargs='+',type=int,help='Save internal traces only for these frame indices; all frames still run');p.add_argument('--reference-cache',type=Path);p.add_argument('--reference-mode',choices=['fp16','fp32','bf16_reference']);p.add_argument('--require-exact',action='store_true');p.add_argument('--source-grounding-batch',type=int,default=16);p.add_argument('--source-complex-rope',action='store_true');p.add_argument('--report',type=Path,required=True);a=p.parse_args()
  if a.reference_cache:
   rows=[]
   for i in range(len(a.frames)):
@@ -32,7 +32,8 @@ def main():
   tasks=[]
   if a.final_output:tasks.append(('final',[f'{i}.final' for i in range(len(a.frames))]))
   if a.partial_output:tasks.append(('partial',[f'{i}.partial' for i in (17,16,15)]))
-  if a.edit_output:tasks.append(('edit',['18.edit_point','20.edit_mask_new','21.edit_mask_existing']+[f'{i}.edit_track' for i in range(18,23)]+['20.edit_remove','22.edit_stateless']))
+  if a.edit_output and a.model=='sam3.1':tasks.append(('edit',['18.point','18.track','19.track','20.track']))
+  if a.edit_output and a.model=='sam3':tasks.append(('edit',['18.edit_point','20.edit_mask_new','21.edit_mask_existing']+[f'{i}.edit_track' for i in range(18,23)]+['20.edit_remove','22.edit_stateless']))
   for kind,tags in tasks:
    checked=[]
    for tag in tags:
@@ -41,8 +42,9 @@ def main():
      actual=dict(out_obj_ids=ids,out_probs=np.fromfile(a.native_output/f'{tag}.scores.f32.bin',np.float32),out_boxes_xywh=np.fromfile(a.native_output/f'{tag}.boxes.f32.bin',np.float32).reshape(n,4));packed=np.fromfile(a.native_output/f'{tag}.masks.bin',np.uint8).reshape(n,h,(w+7)//8);actual['out_binary_masks']=np.unpackbits(packed,axis=-1,bitorder='little')[...,:w].astype(bool)
      equal={key:bool(np.array_equal(value,ref[key])) for key,value in actual.items()}
      if kind=='final':equal['emission']=json.loads((a.native_output/f'{tag}.json').read_text())['emitted_at']==int(ref['emitted_at'])
-     checked.append(dict(tag=tag,exact=equal))
-   exact=all(all(row['exact'].values()) for row in checked);a.report.with_suffix(f'.{kind}.json').write_text(json.dumps(dict(model=a.model,mode=a.mode,reference_mode=a.reference_mode or a.mode,scope='Compare latest standalone outputs with retained actual original neural/predictor reference tensors. No reference tensors regenerated in this cached check.',cases=checked,exact=exact),indent=2)+'\n')
+     checked.append(dict(tag=tag,exact=equal,mask_mismatches=int(np.count_nonzero(actual['out_binary_masks']!=masks)) if actual['out_binary_masks'].shape==masks.shape else -1))
+   reference_metadata=json.loads((a.reference_cache/'edit-reference.json').read_text()) if kind=='edit' and (a.reference_cache/'edit-reference.json').exists() else {}
+   exact=all(all(row['exact'].values()) for row in checked);a.report.with_suffix(f'.{kind}.json').write_text(json.dumps(dict(model=a.model,mode=a.mode,reference_mode=a.reference_mode or a.mode,scope='Compare latest standalone outputs with retained neural/predictor reference tensors. No reference tensors regenerated in this cached check. Any corrected-source extraction adapter is recorded separately.',reference_metadata=reference_metadata,cases=checked,exact=exact),indent=2)+'\n')
    if a.require_exact:assert exact,f'{kind} cached outputs differ'
   return
  assert not a.reference_mode or a.reference_mode==a.mode,'reference mode override only applies to cached comparisons'
@@ -60,6 +62,10 @@ def main():
  def capture(*args,**kwargs):
   result=original(*args,**kwargs);captured['low']=result[0].detach().clone();return result
  model.run_tracker_propagation=capture
+ if a.sam31_rebuild_extracted_memory:
+  assert tri and a.edit_output
+  from sam31_extraction_reference import preserve_extracted_memory
+  preserve_extracted_memory(model)
  if tri and a.trace_state:
   memory_encoder=model.tracker._run_memory_encoder
   def capture_memory(state,index,batch,high,scores,*args,**kwargs):
@@ -130,7 +136,11 @@ def main():
     if a.reference_output:np.savez_compressed(a.reference_output/f'{index}.partial.npz',**{k:np.asarray(v) for k,v in value.items() if k!='frame_stats'})
   a.report.with_suffix('.partial.json').write_text(json.dumps(dict(model=a.model,mode=a.mode,scope='Full real-neural forward pass and original base output stage, followed by a refine action selecting the first tracked ID and original high-level partial reverse propagation over17,16,15. No new point/mask edit is applied in this regression. Standalone C++ selects actual sessions, encodes memories and merges only selected IDs into prior cached outputs.',cases=partial_rows,exact=all(all(r['exact'].values()) for r in partial_rows)),indent=2)+'\n')
   if a.require_exact:assert len(partial_rows)==3 and all(all(r['exact'].values()) for r in partial_rows),'partial outputs differ'
- if a.edit_output:
+ if a.edit_output and tri:
+  assert a.final_output and not a.partial_output and len(a.frames)>20
+  from sam31_extraction_reference import compare_edits
+  compare_edits(a,model,state,dtype)
+ if a.edit_output and not tri:
   assert a.final_output and not tri and not a.partial_output and len(a.frames)>22,'edit regression requires SAM3 final-output,23frames and no preceding partial regression'
   selected,other=map(int,state['tracker_metadata']['obj_ids_all_gpu'][:2]);edit_rows=[];h,w=state['orig_height'],state['orig_width']
   def compare_edit(tag,value):

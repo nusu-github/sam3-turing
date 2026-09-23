@@ -18,6 +18,12 @@ TORCH_LIBRARY_FRAGMENT(sam3_native,m) {
         else if(op[0]==9)emit(session.recondition_masks(op[1],std::vector<int64_t>(op.begin()+2,op.end()),payloads[i]));
         else if(op[0]==10){sam3::ReconditionMasks prepared;prepared.ids={op.begin()+2,op.end()};prepared.binary_masks=payloads[i].gt(0);const auto executed=sam3::execute_reconditioning(op[1],prepared,std::vector<sam3::Sam31TrackingSession*>{&session});save(prefix+"affected",at::tensor(std::vector<int64_t>(executed.affected_ids.begin(),executed.affected_ids.end()),at::kLong));}
         else if(op[0]==11)sam3::update_video_memories(op[1],payloads[i].to(device),session.object_ids(),std::vector<sam3::Sam31TrackingSession*>{&session},bool(op[3]));
+        else if(op[0]==12){
+          auto extracted=session.extract_object(op[2]);const auto& state=extracted->state();
+          save(prefix+"extracted/ids",at::tensor(extracted->object_ids(),at::kLong));save(prefix+"extracted/tracked_count",at::scalar_tensor(int64_t(state.tracked_direction.size()),at::kLong));
+          for(const bool cond:{true,false})for(const auto& stored:cond?state.history.conditioning:state.history.tracked){const auto frame=sam3::load_multiplex_frame(stored);const auto key=prefix+"extracted/"+(cond?"cond/":"tracked/")+std::to_string(frame.index)+"/";save(key+"memory",frame.memory);save(key+"position",frame.memory_position);save(key+"low",frame.masks.low_res_mask);save(key+"pointer",frame.pointer);save(key+"conditions",at::tensor(frame.conditioning_objects,at::kLong));}
+          extracted->discard_mask_only_inputs();save(prefix+"extracted/annotations_after_discard",at::scalar_tensor(int64_t(extracted->state().annotated.size()),at::kLong));
+        }
         else if(op[0]==3)session.preflight(op[3]);
         else if(op[0]==4){sam3::TrackingPropagation request;if(op[1]>=0)request.start=op[1];if(op[2]>=0)request.max_steps=op[2];request.reverse=op[3];request.encode_memory=op[4];request.preflight=op[5];session.propagate(request,[&](const auto& value){emit(value);if(op[6]>0 && count>=op[6]){if(op[7])session.cancel();else return false;}return true;});}
         else if(op[0]==5)emit(session.clear_input(op[1],op[2]));else if(op[0]==6)session.remove_object(op[2],op[3]);else if(op[0]==7)session.reset();else TORCH_CHECK(false,"unknown operation");

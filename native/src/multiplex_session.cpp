@@ -215,5 +215,20 @@ void Sam31TrackingSession::remove_objects(const std::vector<int64_t>& ids,bool s
     for(auto it=indices.rbegin();it!=indices.rend();++it)state_.objects.erase(state_.objects.begin()+*it);classify_inputs();
   }catch(...){state_=std::move(previous);throw;}
 }
+std::unique_ptr<Sam31TrackingSession> Sam31TrackingSession::extract_object(int64_t id){
+  c10::InferenceMode inference;const auto found=std::find_if(state_.objects.begin(),state_.objects.end(),[&](const auto& object){return object.id==id;});TORCH_CHECK(found!=state_.objects.end(),"unknown extraction ID");
+  auto extracted=std::make_unique<Sam31TrackingSession>(core_,provider_,frames_,height_,width_,device_,mode_,options_);
+  extracted->state_=state_;extracted->cached_index_=cached_index_;extracted->cached_=cached_;
+  const auto singleton=MultiplexController().get_state(1,device_,at::kFloat,false,std::vector<int64_t>{id});
+  extracted->remap(singleton);extracted->state_.objects={*found};extracted->classify_inputs();
+  extracted->state_.tracked_direction.clear();
+  for(auto it=extracted->state_.dirty.begin();it!=extracted->state_.dirty.end();)if(!extracted->state_.annotated.count(*it))it=extracted->state_.dirty.erase(it);else ++it;
+  // Publish source removal only after every singleton history rebuild succeeds.
+  remove_object(id,true);return extracted;
+}
+void Sam31TrackingSession::discard_mask_only_inputs(){
+  for(auto& object:state_.objects){std::vector<int64_t> remove;for(const auto& [index,mask]:object.masks)if(!object.points.count(index))remove.push_back(index);for(auto index:remove)object.masks.erase(index);}
+  state_.annotated.clear();for(const auto& object:state_.objects){for(const auto& [index,points]:object.points)state_.annotated.insert(index);for(const auto& [index,mask]:object.masks)state_.annotated.insert(index);}
+}
 void Sam31TrackingSession::reset(){state_=MultiplexSessionState{};cancelled_.store(false);}
 }

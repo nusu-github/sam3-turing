@@ -20,4 +20,16 @@ SAM3_NATIVE_EXPORT VideoOutput edit_video_mask(int64_t frame,int64_t id,
     const VideoEditOptions& options={});
 SAM3_NATIVE_EXPORT void remove_video_user_object(int64_t id,Sam3VideoSessions&,
     VideoMetadata&,VideoInteractionState&,bool record_action=true);
+// SAM3.1 first refinement extracts grouped objects into a singleton. Retained
+// dense history is re-encoded, including memory upstream's slot demux loses.
+struct Sam31VideoEditOptions : VideoEditOptions {
+  Sam31VideoEditOptions(){cleanup_area=0;}
+  bool clear_old_points=true;
+};
+SAM3_NATIVE_EXPORT VideoOutput edit_video_points(int64_t frame,int64_t id,
+    const TrackingPoints&,Sam31VideoSessions&,const Sam31SessionFactory&,
+    VideoMetadata&,VideoInteractionState&,VideoSuppressionHistory&,
+    const Sam31VideoEditOptions& options={});
+SAM3_NATIVE_EXPORT void remove_video_user_object(int64_t id,Sam31VideoSessions&,
+    VideoMetadata&,VideoInteractionState&,bool record_action=true);
 }
