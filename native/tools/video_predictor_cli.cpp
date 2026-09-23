@@ -1,0 +1,29 @@
+#include "sam3/video_predictor.h"
+#include "sam3/ops.h"
+#include "ppm.h"
+#include <ATen/Context.h>
+#include <ATen/Parallel.h>
+#include <fstream>
+#include <iostream>
+namespace {
+void binary(const std::filesystem::path& path,const at::Tensor& tensor){auto x=tensor.cpu().contiguous();std::ofstream f(path,std::ios::binary);f.write(static_cast<const char*>(x.const_data_ptr()),x.nbytes());TORCH_CHECK(f,"cannot write output");}
+}
+int main(int argc,char** argv){try{
+ TORCH_CHECK(argc==8,"usage: sam3_video_predictor_probe STORE sam3|sam3.1 DEVICE MODE FRAMES.txt BPE.gz OUTPUT");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
+ const std::string model=argv[2];TORCH_CHECK(model=="sam3" || model=="sam3.1","invalid model");const at::Device device(argv[3]);const auto manifest=std::filesystem::u8path(argv[5]),root=std::filesystem::u8path(argv[7]);std::ifstream input(manifest);TORCH_CHECK(input,"cannot read frames");std::vector<std::filesystem::path> files;std::string line;
+ while(std::getline(input,line)){if(!line.empty() && line.back()=='\r')line.pop_back();if(line.empty() || line[0]=='#')continue;auto path=std::filesystem::u8path(line);files.push_back(path.is_absolute()?path:manifest.parent_path()/path);}TORCH_CHECK(files.size()>=4,"regression fixture requires at least4frames");std::filesystem::create_directories(root);
+ const auto rgb=sam3::cli::read_ppm(files.front());int64_t latest=-1;auto options=sam3::video_predictor_defaults(model=="sam3"?sam3::AssociationPolicy::Sam3:sam3::AssociationPolicy::Sam31);options.mode=argv[4];options.centers=true;options.sam31_session.history_directory=root/"history";
+ sam3::VideoPredictor predictor(sam3::WeightStore(std::filesystem::u8path(argv[1])),std::filesystem::u8path(argv[6]),[&](int64_t i){latest=i;return sam3::cli::read_ppm(files.at(i));},files.size(),rgb.size(1),rgb.size(2),device,options);
+ const auto save=[&](const std::string& tag,const sam3::VideoOutput& out){TORCH_CHECK(out.centers.defined() && out.centers.sizes()==at::IntArrayRef({out.ids.numel(),2}),"missing requested centers");binary(root/(tag+".ids.i64.bin"),out.ids);binary(root/(tag+".scores.f32.bin"),out.probabilities);binary(root/(tag+".boxes.f32.bin"),out.boxes_xywh);binary(root/(tag+".masks.bin"),sam3::pack_masks(out.masks));std::ofstream f(root/(tag+".json"));f<<"{\"height\":"<<rgb.size(1)<<",\"width\":"<<rgb.size(2)<<",\"emitted_at\":"<<latest<<",\"visual_encodes\":"<<predictor.visual_encodes()<<"}\n";std::cout<<tag<<" count="<<out.ids.numel()<<" encodes="<<predictor.visual_encodes()<<"\n";};
+ const auto propagate=[&](int64_t start,int64_t steps,const std::string& tag){sam3::VideoPredictorPropagation r;r.start=start;r.max_steps=steps;predictor.propagate(r,[&](int64_t frame,const auto& out){save(std::to_string(frame)+tag,out);return true;});};
+ sam3::VideoSemanticPrompt text;text.text="person";auto first=predictor.add_prompt(0,text);save("0.person",first);propagate(0,3,".person_track");TORCH_CHECK(predictor.visual_encodes()==4,"forward reused frame0 features incorrectly");
+ sam3::VideoSemanticPrompt box;box.boxes_xywh=at::tensor({.30,.15,.35,.70},at::kFloat).view({1,4});box.box_labels=at::tensor({1},at::kLong);save("1.box",predictor.add_prompt(1,box));propagate(1,1,".box_track");
+ auto combined=box;combined.text="person";combined.box_labels=at::tensor({0},at::kLong);save("2.text_box",predictor.add_prompt(2,combined));save("2.fetch",predictor.fetch(2));
+ const auto ids=predictor.metadata().object_ids();const auto encodes=predictor.visual_encodes();auto invalid=combined;invalid.boxes_xywh=at::full({1,4},2.,at::kFloat);bool rejected=false;try{predictor.add_prompt(0,invalid);}catch(const c10::Error&){rejected=true;}TORCH_CHECK(rejected && predictor.metadata().object_ids()==ids && predictor.visual_encodes()==encodes,"invalid semantic prompt reset state");
+ predictor.reset();TORCH_CHECK(predictor.metadata().object_ids().empty() && predictor.interaction().cached_frames().empty() && predictor.interaction().actions().empty(),"reset retained session observations");const auto repeated=predictor.add_prompt(0,text);save("0.reset_person",repeated);TORCH_CHECK(at::equal(first.ids,repeated.ids) && at::equal(first.masks,repeated.masks),"reset did not restore original semantic result");
+ // This checks the owning API's point-only initialization, which seeds an empty
+ // displayed-frame cache instead of inheriting source missing-cache behavior.
+ predictor.reset();sam3::TrackingPoints point;point.points=at::tensor({.45,.55},at::kFloat).view({1,2});point.labels=at::tensor({1},at::kLong);const auto fresh=predictor.add_points(0,9000,point);TORCH_CHECK(predictor.metadata().object_ids()==std::vector<int64_t>{9000} && predictor.interaction().cached_frames().at(0).count(9000),"point-only video did not initialize object/cache");save("0.point_only",fresh);
+ sam3::VideoPredictorPropagation r;r.start=0;r.max_steps=2;int64_t callbacks=0;predictor.propagate(r,[&](int64_t,const auto&){++callbacks;return false;});TORCH_CHECK(callbacks==1,"callback cancellation continued output");predictor.remove_object(9000);TORCH_CHECK(predictor.metadata().object_ids().empty(),"remove left active object");
+ std::cout<<"semantic replacement/reset, full propagation, point-only initialization and callback cancellation completed without Python\n";return 0;
+}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

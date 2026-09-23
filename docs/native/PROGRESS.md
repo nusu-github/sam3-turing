@@ -1986,3 +1986,31 @@ IDs, probabilities and boxes remain exact. This discrepancy is unresolved and
 reports retain exact=false. See [VIDEO_EDIT_SEQUENCE.md](VIDEO_EDIT_SEQUENCE.md).
 No Actions/physical Windows/Turing tests. Full predictor integration/packaging and
 quality/performance work remain; these results do not establish completion.
+
+## Own semantic prompt lifecycle in the C++ video API
+
+Added `VideoPredictor`, which owns shared neural modules, frame features, prompts,
+metadata, sessions, action routing, output caching and scheduling for one video.
+Semantic replacement/reset retains shared model modules; point/mask/removal/fetch
+helpers are integrated. Point-only SAM3.1 initializes a cache explicitly. The
+standalone probe also checks callback cancellation, requested center shapes and
+invalid semantic input preserving state. Prompt/object/query limits are unchanged.
+
+Revisiting the initial SAM3.1 prompt exposed loss of the sole conditioning frame
+on detector correction. Mask edits/reconditioning now retain an existing condition,
+while new tracked-frame corrections stay non-conditioning. Extended full-grid
+neural invariants pass; CTest28/16 passes with and without custom CUDA operators.
+
+SAM3 matches all11actual original semantic lifecycle outputs; latest standalone
+results remain exact against saved references. SAM3.1 executes but is not exact:
+original bounded batched propagation first raises an endpoint IndexError. An
+explicit test-only forward-bound adapter permits comparison. Ten output sets keep
+identical IDs/probabilities/boxes but differ in masks; the remaining box-track
+frame displays no native object versus original ID0. These discrepancies and the
+prior120-pixel reverse-edit difference remain unresolved. See
+[VIDEO_PREDICTOR.md](VIDEO_PREDICTOR.md) and the non-exact JSON reports.
+
+This remains a development API. Full video C ABI, SAM3.1 high-level mask editing,
+image-only fallback, codecs, multi-GPU transport, portable SDK/CPU stability and
+broad quality/performance remain. No Actions or Windows/Turing physical tests.
+The previous34-frame SAM3.1 raw/final baseline remains exact after this change.

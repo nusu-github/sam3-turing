@@ -1,0 +1,9 @@
+{
+  "model": "sam3.1",
+  "unmodified_source_result": "IndexError: list index out of range in _batch_find_inputs at chunk_find_inputs[0]",
+  "trigger": "add_prompt(frame=0,text=person), propagate(start=0,max_frame_num_to_track=3), grounding batch1",
+  "source_generator": "includes start+max_frame_num_to_track",
+  "source_detector": "exclusive chunk_end=start+max_frame_num_to_track",
+  "reference_adapter": "Opt-in --sam31-inclusive-grounding-bound increments only the forward detector bound by one; generator/output scheduling unchanged.",
+  "scope": "Actual original invocation failed. Adapted report retains non-exact semantic lifecycle results."
+}

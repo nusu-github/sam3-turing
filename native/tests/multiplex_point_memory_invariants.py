@@ -19,6 +19,15 @@ def main():
     assert not torch.equal(result['4/cond/1/low'],result['6/cond/1/low'])
     assert not torch.equal(result['4/cond/1/memory'],result['6/cond/1/memory'])
     torch.testing.assert_close(result['4/cond/0/memory'],result['6/cond/0/memory'],rtol=0,atol=0)
-    a.report.write_text(json.dumps(dict(device='cuda',mode=a.mode,operations=len(ops),checks=['tracked frame becomes point conditioning with all_edits_conditioning false','appended click retained','latest low mask changes','encoded memory changes with latest point','prior frame memory unchanged'],scope='Full-grid synthetic features with actual native frame and memory cores. No upstream neural parity claim.'),indent=2)+'\n')
+    # Revisit the original conditioning frame, then correct it. Detector masks
+    # must preserve an existing condition while new correction frames stay tracked.
+    corrections=[[2,0,101,0,0,0,0,0],[3,0,0,1,0,0,0,0],[4,0,1,0,1,0,0,0],[9,0,101],[3,0,0,1,0,0,0,0],[9,1,101],[3,0,0,1,0,0,0,0],[2,0,101,0,0,0,0,0],[3,0,0,1,0,0,0,0],[4,2,0,0,1,0,0,0]]
+    changed=mask.roll(2,0);payloads=[mask,torch.empty(0),torch.empty(0),changed.unsqueeze(0),torch.empty(0),mask.unsqueeze(0),torch.empty(0),mask,torch.empty(0),torch.empty(0)]
+    corrected=torch.ops.sam3_native.multiplex_session(str(a.store),features,corrections,payloads,[4,37,53],[True,True,False,False,False],a.mode)
+    for step in (4,6,8,9):
+        assert f'{step}/cond/0/memory' in corrected and f'{step}/tracked/0/memory' not in corrected
+    assert '6/tracked/1/memory' in corrected and '6/cond/1/memory' not in corrected
+    assert '9/tracked/2/memory' in corrected
+    a.report.write_text(json.dumps(dict(device='cuda',mode=a.mode,operations=len(ops)+len(corrections),checks=['tracked frame becomes point conditioning with all_edits_conditioning false','appended click retained','latest low mask changes','encoded memory changes with latest point','prior frame memory unchanged','detector reconditioning preserves an existing condition','new detector correction stays non-conditioning','single-mask edit preserves existing condition','propagation remains possible after revisiting the initial frame'],scope='Full-grid synthetic features with actual native frame and memory cores. No upstream neural parity claim.'),indent=2)+'\n')
     print('point conditioning and latest-memory invariants passed')
 if __name__=='__main__':main()

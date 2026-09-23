@@ -49,7 +49,7 @@ MultiplexFrame Sam31TrackingSession::blank(int64_t index){
   const auto value=features(index);frame.image=value.propagation.image.flatten(2).permute({2,0,1});frame.image_position=value.propagation.position.flatten(2).permute({2,0,1});return frame;
 }
 void Sam31TrackingSession::merge_edit(int64_t index,size_t object,const MultiplexFrame& edit,const at::Tensor& video,bool point_edit){
-  const auto existing=find(index);auto frame=existing?load_multiplex_frame(*existing):blank(index);
+  const auto existing=find(index);const bool was_conditioning=std::any_of(state_.history.conditioning.begin(),state_.history.conditioning.end(),[&](const auto& f){return f.index==index;});auto frame=existing?load_multiplex_frame(*existing):blank(index);
   frame.masks.low_res_mask=frame.masks.low_res_mask.to(device_).clone();frame.masks.low_res_mask.slice(0,object,object+1).copy_(resize(edit.masks.low_res_mask,288,288,true));
   frame.masks.high_res_mask=frame.masks.high_res_mask.to(device_).clone();frame.masks.high_res_mask.slice(0,object,object+1).copy_(resize(edit.masks.high_res_mask,1008,1008));
   const auto score_type=existing?c10::promoteTypes(frame.masks.object_logits.scalar_type(),edit.masks.object_logits.scalar_type()):edit.masks.object_logits.scalar_type();
@@ -58,7 +58,7 @@ void Sam31TrackingSession::merge_edit(int64_t index,size_t object,const Multiple
   for(size_t bucket=0;bucket<state_.buckets->assignments().size();++bucket)for(int64_t slot=0;slot<16;++slot)if(state_.buckets->assignments()[bucket][slot]==int64_t(object))frame.pointer[bucket][slot].copy_(edit.pointer[0][0]);
   if(frame_options_.temporal.select_by_score){frame.iou=frame.iou.to(existing?c10::promoteTypes(frame.iou.scalar_type(),edit.masks.iou.scalar_type()):edit.masks.iou.scalar_type()).clone();frame.iou.slice(0,object,object+1).copy_(std::get<0>(edit.masks.iou.max(-1)));frame.confidence=memory_confidence(frame.masks.object_logits,frame.iou);}
   if(std::find(frame.conditioning_objects.begin(),frame.conditioning_objects.end(),object)==frame.conditioning_objects.end())frame.conditioning_objects.push_back(object);
-  frame.memory=at::Tensor();frame.memory_position=at::Tensor();frame.memory_masks=at::Tensor();frame.memory_object_logits=at::Tensor();store(frame);put(std::move(frame),point_edit || !state_.tracked_direction.count(index) || options_.all_edits_conditioning);
+  frame.memory=at::Tensor();frame.memory_position=at::Tensor();frame.memory_masks=at::Tensor();frame.memory_object_logits=at::Tensor();store(frame);put(std::move(frame),was_conditioning || point_edit || !state_.tracked_direction.count(index) || options_.all_edits_conditioning);
   state_.objects[object].video_edits[index]=video.to(storage_);state_.dirty.insert(index);state_.annotated.insert(index);
 }
 TrackingSessionOutput Sam31TrackingSession::output(const MultiplexFrame& stored,bool preview)const{
@@ -147,7 +147,7 @@ TrackingSessionOutput Sam31TrackingSession::recondition_masks(int64_t index,cons
     }
     // Only already pending brush outputs are suppressed, as in the source.
     for(auto& object:state_.objects)if(std::find(ids.begin(),ids.end(),object.id)==ids.end() && object.video_edits.count(index))object.video_edits[index]=at::where((counts>0).to(storage_),-1024.,object.video_edits.at(index));
-    store(frame);put(std::move(frame),!state_.tracked_direction.count(index) || options_.all_edits_conditioning);
+    store(frame);put(std::move(frame),std::any_of(state_.history.conditioning.begin(),state_.history.conditioning.end(),[&](const auto& f){return f.index==index;}) || !state_.tracked_direction.count(index) || options_.all_edits_conditioning);
     state_.dirty.insert(index);state_.annotated.insert(index);return output(*find(index),true);
   }catch(...){state_=std::move(previous);throw;}
 }

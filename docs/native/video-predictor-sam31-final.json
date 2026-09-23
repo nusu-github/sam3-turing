@@ -1,0 +1,120 @@
+{
+  "model": "sam3.1",
+  "cases": [
+    {
+      "tag": "0.person",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": false
+      }
+    },
+    {
+      "tag": "0.person_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": false,
+        "emission": true
+      }
+    },
+    {
+      "tag": "0.reset_person",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": false
+      }
+    },
+    {
+      "tag": "1.box",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": false
+      }
+    },
+    {
+      "tag": "1.box_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": false,
+        "emission": true
+      }
+    },
+    {
+      "tag": "1.person_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": false,
+        "emission": true
+      }
+    },
+    {
+      "tag": "2.box_track",
+      "exact": {
+        "out_obj_ids": false,
+        "out_probs": false,
+        "out_boxes_xywh": false,
+        "out_binary_masks": false,
+        "emission": true
+      }
+    },
+    {
+      "tag": "2.fetch",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": false
+      }
+    },
+    {
+      "tag": "2.person_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": false,
+        "emission": true
+      }
+    },
+    {
+      "tag": "2.text_box",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": false
+      }
+    },
+    {
+      "tag": "3.person_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": false,
+        "emission": true
+      }
+    }
+  ],
+  "exact": false,
+  "reference_metadata": {
+    "model": "sam3.1",
+    "mode": "bf16_reference",
+    "source_grounding_batch": 1,
+    "source_complex_rope": true,
+    "source_inclusive_grounding_bound_adapter": true,
+    "metadata_backfilled_from_live_command": true
+  },
+  "scope": "Cached original semantic lifecycle tensors versus latest standalone outputs. Emission timing is checked only when retained reference metadata includes it. No reference tensors regenerated."
+}
