@@ -2129,3 +2129,28 @@ hardware validation. No Actions were used. CPU long-run stability, integrated
 codecs, multi-GPU transport, broader quality/performance and the earlier 120-pixel
 reverse-edit discrepancy remain open. Goal remains active. See SDK.md and
 sdk-validation.json for exact scope and artifact provenance.
+
+## Reverse-edit discrepancy traced to original stale pointer
+
+The 120-pixel frame17 reverse-edit discrepancy reproduces unchanged. Of 51
+recorded temporal tensors, 48 match; the sole differing input is cond19.pointer
+(256 elements, max0.53515625), which changes assembled memory and conditioned
+features. Captured original neural point outputs prove the source uses its first
+two-point edit's pointer while native uses its latest three-point edit's pointer.
+Source consolidation prioritizes the old conditioning entry despite newer
+non-conditioning point output. The prior memory-refresh adapter alone cannot
+correct that stale auxiliary value.
+
+Changing only that pointer in a native temporal replay exactly reproduces the old
+reference conditioned features; keeping it reproduces native features exactly.
+A new opt-in original-reference pointer refresh uses the latest original neural
+entry, never native predictions. With all earlier adapters plus this one, all51
+tensors and all15 edited/propagated/fetched outputs match exactly, and all34raw
+and34final pre-edit outputs remain exact. Native production code is unchanged.
+The old mismatching reference is retained and unmodified-source equivalence is
+not claimed. See REVERSE_EDIT_POINTER.md and reverse-pointer-*.json.
+
+This closes the cause investigation for this fixture; it does not prove all
+interactive sequences or broad quality. Codecs, multiGPU, wider-platform SDK/CPU
+stability and quality/performance remain. No Actions or Windows/Turing physical
+execution. Goal remains active.

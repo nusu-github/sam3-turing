@@ -12,7 +12,7 @@ still clears cached masks and records the requested action, matching original
 behavior after user removal or automatic hotstart removal. It does not change
 rank IDs or bucket workloads when the ID is already absent.
 
-## Real-video sequence and current result
+## Real-video sequence and earlier result
 
 `sam3_video_pipeline_probe --edit-sequence-probe` runs the full34-frame,200-query
 pipeline, then the following sequence with actual shared neural cores:
@@ -33,8 +33,8 @@ All34pre-edit raw/final outputs remain exact. Of15edit/propagation/fetch output
 sets,14match in IDs, probabilities, boxes and masks. Frame17reverse has120binary
 mask differences after the fixes, with all IDs/probabilities/boxes still equal.
 Per-object IoU is0.9991406868,1,0.9995450869,1. The second affected displayed mask
-comes from final overlap resolution with the edited object. **The reverse-frame
-pixel discrepancy remains unresolved.** This result does not establish bit-exact
+comes from final overlap resolution with the edited object. The reverse-frame pixel discrepancy was unresolved at this checkpoint. Its
+cause is now identified; see [REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md). This result does not establish bit-exact
 full interactivity or dataset-wide quality.
 
 The earlier native/reference comparison had192different mask pixels on17.
@@ -96,7 +96,9 @@ results and logs are private under `video-sam31-sequence`; development snapshots
 are under `native-foundation/video-sam31-sequence-linux-cuda13`.
 
 No GitHub Actions or physical Windows/Turing execution was used. This remains a
-development runtime, not a portable SDK. Semantic text/geometry/visual prompt
-replacement/reset, image-only fallback, complete C ABI, codecs, distributed
-transport, portable packaging, CPU stability and broad quality/performance work
-remain, together with the reverse-frame discrepancy above.
+development runtime. Subsequent work supplies semantic prompt replacement/reset,
+image mode, an owning C ABI and a standalone development SDK. Codecs, distributed
+transport, broader packaging/CPU stability and quality/performance work remain.
+The reverse-frame difference above has since been traced to a stale original
+pointer; the additional explicit reference repair and exact comparisons are in
+[REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md).

@@ -6,6 +6,7 @@ with the original memory encoder. It never runs in production or silently alters
 an unmodified-source comparison. Both references must be reported separately.
 """
 import inspect
+from functools import wraps
 import json
 import numpy as np
 import torch
@@ -120,6 +121,42 @@ def refresh_refined_memory(model):
     tracker.propagate_in_video_preflight=repair
 
 
+def refresh_refined_pointer(model):
+    """Use the latest original pointer when old cond/new non-cond keys collide.
+
+    The source consolidator always selects the conditioning entry for obj_ptr,
+    even when consolidating newer non-conditioning point edits. Masks come from
+    the latest temporary output, leaving that pointer one click behind. This
+    opt-in reference repair retains the original newly computed pointer; it does
+    not modify neural computations or consume native tensors.
+    """
+    tracker = model.tracker.model
+    consolidate = tracker._consolidate_temp_output_across_obj
+    signature = inspect.signature(consolidate)
+    audit = []
+
+    @wraps(consolidate)
+    def repair(*args, **kwargs):
+        values = signature.bind(*args, **kwargs).arguments
+        state, frame = values['inference_state'], values['frame_idx']
+        previous = state['output_dict']['cond_frame_outputs'].get(frame)
+        latest = state['output_dict']['non_cond_frame_outputs'].get(frame)
+        result = consolidate(*args, **kwargs)
+        if (not values['is_cond'] and previous is not None and latest is not None
+                and any(frame in frames for frames in state['point_inputs_per_obj'].values())):
+            pointer = latest.get('obj_ptr')
+            if pointer is not None:
+                old = result['obj_ptr']
+                audit.append(dict(frame=frame,run_mem_encoder=values['run_mem_encoder'],
+                                  changed_elements=int((old != pointer).sum()),
+                                  max_pointer_error=float((old.float()-pointer.float()).abs().max())))
+                result['obj_ptr'] = pointer
+        return result
+
+    tracker._consolidate_temp_output_across_obj = repair
+    return audit
+
+
 def edit_tags(extended=False):
     first=['18.point','18.track','19.track','20.track']
     return first+(['19.repeat1','19.repeat2','18.reverse','17.reverse','20.new','20.multi','21.multi','22.multi','20.remove','20.remove_again','22.stateless'] if extended else [])
@@ -164,8 +201,9 @@ def compare_edits(a,model,state,dtype):
             model.use_stateless_refinement=True;other=int(state['tracker_metadata']['obj_ids_all_gpu'][1])
             _,value=model.add_prompt(state,22,points=points,point_labels=labels,obj_id=other);check('22.stateless',value)
 
-    if a.reference_output:(a.reference_output/'edit-reference.json').write_text(json.dumps(dict(corrected_dense_extraction=a.sam31_rebuild_extracted_memory,iteration_mask_enabled=a.sam31_enable_repeat_refinement,default_remove_frame=a.sam31_default_remove_frame,refresh_refined_memory=a.sam31_refresh_refined_memory,preserve_singleton_history=a.sam31_preserve_singleton_history))+'\n')
+    if a.reference_output:(a.reference_output/'edit-reference.json').write_text(json.dumps(dict(corrected_dense_extraction=a.sam31_rebuild_extracted_memory,iteration_mask_enabled=a.sam31_enable_repeat_refinement,default_remove_frame=a.sam31_default_remove_frame,refresh_refined_memory=a.sam31_refresh_refined_memory,preserve_singleton_history=a.sam31_preserve_singleton_history,refresh_refined_pointer=a.sam31_refresh_refined_pointer))+'\n')
     exact=all(all(r['exact'].values()) for r in rows)
-    a.report.with_suffix('.edit.json').write_text(json.dumps(dict(model=a.model,mode=a.mode,corrected_dense_extraction=a.sam31_rebuild_extracted_memory,iteration_mask_enabled=a.sam31_enable_repeat_refinement,default_remove_frame=a.sam31_default_remove_frame,refresh_refined_memory=a.sam31_refresh_refined_memory,preserve_singleton_history=a.sam31_preserve_singleton_history,extended_sequence=a.extended_edit_output,scope='Original high-level first point refinement of a grouped object, singleton extraction, and three-frame partial propagation after full neural forward. Optional adapter explicitly re-encodes historical dense memories upstream loses; no neural computation mocked. Extended sequence, when selected, adds repeated/accumulated points, reverse propagation, new ID, forward propagation, removal/fetch and stateless first refinement. This is not a quality benchmark.',cases=rows,exact=exact),indent=2)+'\n')
+    a.report.with_suffix('.edit.json').write_text(json.dumps(dict(model=a.model,mode=a.mode,corrected_dense_extraction=a.sam31_rebuild_extracted_memory,iteration_mask_enabled=a.sam31_enable_repeat_refinement,default_remove_frame=a.sam31_default_remove_frame,refresh_refined_memory=a.sam31_refresh_refined_memory,preserve_singleton_history=a.sam31_preserve_singleton_history,refresh_refined_pointer=a.sam31_refresh_refined_pointer,extended_sequence=a.extended_edit_output,scope='Original high-level first point refinement of a grouped object, singleton extraction, and three-frame partial propagation after full neural forward. Optional adapter explicitly re-encodes historical dense memories upstream loses; no neural computation mocked. Extended sequence, when selected, adds repeated/accumulated points, reverse propagation, new ID, forward propagation, removal/fetch and stateless first refinement. This is not a quality benchmark.',cases=rows,exact=exact),indent=2)+'\n')
+    if getattr(a,'pointer_refresh_audit',None):a.report.with_suffix('.pointer-refresh.json').write_text(json.dumps(a.pointer_refresh_audit,indent=2)+'\n')
     if getattr(a,'singleton_history_differences',None):a.report.with_suffix('.history-casts.json').write_text(json.dumps(a.singleton_history_differences,indent=2)+'\n')
     if a.require_exact:assert exact,'SAM3.1 edited video differs; see report'

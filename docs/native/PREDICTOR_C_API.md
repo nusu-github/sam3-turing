@@ -99,8 +99,9 @@ outputs: all 10 SAM3.1 image checkpoints and all 13 video checkpoints for each
 model match exactly in IDs, probabilities, boxes and masks. Video emission timing
 also matches; retained result fields remain unchanged after owner destruction.
 The image's retained original mask matches too. These are C-boundary comparisons;
-the earlier original-reference configuration/adapters and the separate 120-pixel
-reverse-edit discrepancy remain as documented. Reverse execution in this C client
+the earlier original-reference configuration/adapters remain applicable. The
+120-pixel reverse-edit difference was later traced to a stale original pointer;
+see [REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md) for the explicit repair. Reverse execution in this C client
 is an invariant check, not a newly established original-output parity result.
 
 The existing low-level C tracker also retains 86 exact comparisons (46 SAM3,

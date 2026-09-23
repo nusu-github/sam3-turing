@@ -1,0 +1,17 @@
+{
+  "scope": "Replay recorded real reverse temporal inputs through the native neural conditioner. The second case changes only cond19.pointer to the old source pointer; all other inputs/weights/settings are unchanged.",
+  "cases": [
+    {
+      "pointer": "latest_native_click",
+      "expected": "native_conditioned",
+      "exact": true,
+      "max_abs": 0.0
+    },
+    {
+      "pointer": "old_source_click",
+      "expected": "old_source_conditioned",
+      "exact": true,
+      "max_abs": 0.0
+    }
+  ]
+}

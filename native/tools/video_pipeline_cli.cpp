@@ -15,7 +15,7 @@
 #include <type_traits>
 namespace {
 void binary(const std::filesystem::path& path,const at::Tensor& tensor){const auto x=tensor.cpu().contiguous();std::ofstream f(path,std::ios::binary);f.write(static_cast<const char*>(x.const_data_ptr()),x.nbytes());TORCH_CHECK(f,"cannot write tensor output");}
-template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,const std::string& mode,const std::vector<std::filesystem::path>& files,const sam3::GroundingPrompt& prompt,const std::filesystem::path& root,bool trace,bool partial_probe,bool edit_probe,bool edit_sequence){
+template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,const std::string& mode,const std::vector<std::filesystem::path>& files,const sam3::GroundingPrompt& prompt,const std::filesystem::path& root,bool trace,bool partial_probe,bool edit_probe,bool edit_sequence,bool edit_trace){
   const std::string model=Mux?"sam3.1":"sam3";const auto vision=std::make_shared<sam3::VisionEncoder>(store,model,device);const auto detector=std::make_shared<sam3::GroundingDetector>(store,model,device);
   using Core=std::conditional_t<Mux,sam3::Sam31TrackingFrame,sam3::Sam3TrackingFrame>;using Session=std::conditional_t<Mux,sam3::Sam31TrackingSession,sam3::Sam3TrackingSession>;using Options=std::conditional_t<Mux,sam3::MultiplexSessionOptions,sam3::TrackingSessionOptions>;
   const auto core=std::make_shared<Core>(store,device);const sam3::VideoFrameEncoder encoder(vision,detector,core,device);
@@ -90,7 +90,26 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
       for(int64_t frame=18;frame<=20;++frame){const auto refined=sam3::propagate_video_refinements(frame,false,*route.ids,local,update.cleanup_area);save(std::to_string(frame)+".track",interaction.merge_refined(frame,refined,metadata,suppressed_per_frame[frame]));}
       if(edit_sequence){
         TORCH_CHECK(files.size()>22,"extended edit regression requires23frames");
-        const auto propagate=[&](int64_t start,int64_t steps,bool reverse,const std::string& tag){const auto route=interaction.route();TORCH_CHECK(route.type==sam3::VideoActionType::Partial && route.ids,"expected partial action");interaction.append({route.type,start,route.ids});std::vector<Session*> owners;for(auto& session:sessions)owners.push_back(session.get());const auto range=sam3::video_processing_range(files.size(),{},start,steps,reverse);for(int64_t f=range.first;!range.empty && (reverse?f>=range.end:f<=range.end);f+=range.step){const auto refined=sam3::propagate_video_refinements(f,reverse,*route.ids,owners,update.cleanup_area);save(std::to_string(f)+tag,interaction.merge_refined(f,refined,metadata,suppressed_per_frame[f]));}};
+        const auto propagate=[&](int64_t start,int64_t steps,bool reverse,const std::string& tag){const auto route=interaction.route();TORCH_CHECK(route.type==sam3::VideoActionType::Partial && route.ids,"expected partial action");interaction.append({route.type,start,route.ids});std::vector<Session*> owners;for(auto& session:sessions)owners.push_back(session.get());const auto range=sam3::video_processing_range(files.size(),{},start,steps,reverse);for(int64_t f=range.first;!range.empty && (reverse?f>=range.end:f<=range.end);f+=range.step){if(edit_trace && reverse && f==17){
+          const auto dir=root/"reverse-input";std::filesystem::create_directories(dir);std::ofstream manifest(dir/"tensors.tsv");
+          const auto dump=[&](const std::string& name,const at::Tensor& x){if(!x.defined())return;manifest<<name<<"\t"<<x.scalar_type()<<"\t";for(auto d:x.sizes())manifest<<d<<",";manifest<<"\t";for(auto d:x.strides())manifest<<d<<",";manifest<<"\n";binary(dir/(name+".bin"),x.to(at::kFloat));};
+          for(const auto& owner:sessions)if(owner->object_ids()==std::vector<int64_t>{selected}){
+            sam3::MultiplexTemporalState temporal;
+            const auto history=sam3::load_selected_multiplex_history(owner->state().history,f,files.size(),reverse,session_options.frame.temporal);
+            for(const bool cond:{true,false})for(const auto& x:cond?history.conditioning:history.tracked){
+              const auto key=std::string(cond?"cond":"tracked")+std::to_string(x.index)+".";
+              dump(key+"memory",x.memory);dump(key+"position",x.memory_position);dump(key+"pointer",x.pointer);dump(key+"image",x.image);dump(key+"image_position",x.image_position);
+              (cond?temporal.conditioning:temporal.tracked).push_back({x.index,x.memory,x.memory_position,x.pointer,x.confidence,x.image,x.image_position});
+            }
+            const auto& features_now=features(f).tracking.propagation;
+            const auto source=features_now.image.flatten(2).permute({2,0,1}),position=features_now.position.flatten(2).permute({2,0,1});dump("source",source);dump("source_position",position);
+            sam3::MultiplexMemoryConditioner conditioner(store,device);sam3::MultiplexTemporalAssembly assembly;
+            dump("conditioned",conditioner.forward(source,position,72,72,f,files.size(),false,reverse,true,temporal,*owner->state().buckets,session_options.frame.temporal,mode,&assembly));
+            dump("assembled_memory",assembly.memory);dump("assembled_position",assembly.position);dump("assembled_image",assembly.image);dump("assembled_image_position",assembly.image_position);
+            std::ofstream plan(dir/"plan.tsv");for(auto r:assembly.plan.spatial)plan<<"spatial\t"<<r.frame<<"\t"<<r.position<<"\t"<<r.conditioning<<"\n";for(auto r:assembly.plan.pointers)plan<<"pointer\t"<<r.frame<<"\t"<<r.position<<"\t"<<r.conditioning<<"\n";
+          }
+        }
+        const auto refined=sam3::propagate_video_refinements(f,reverse,*route.ids,owners,update.cleanup_area);save(std::to_string(f)+tag,interaction.merge_refined(f,refined,metadata,suppressed_per_frame[f]));}};
         save("19.repeat1",sam3::edit_video_points(19,selected,points,sessions,factory,metadata,interaction,suppressed_per_frame,edit));
         sam3::TrackingPoints extra;extra.points=at::tensor({.5,.65},opts).view({1,2});extra.labels=at::tensor({1},opts.dtype(at::kInt));edit.clear_old_points=false;
         save("19.repeat2",sam3::edit_video_points(19,selected,extra,sessions,factory,metadata,interaction,suppressed_per_frame,edit));edit.clear_old_points=true;
@@ -126,7 +145,7 @@ std::cout<<"shared-trunk detector/tracker pipeline completed; raw outputs, no Py
 }
 }
 int main(int argc,char** argv){try{
-  TORCH_CHECK(argc==9 || argc==10,"usage: sam3_video_pipeline_probe STORE sam3|sam3.1 DEVICE MODE FRAMES.txt BPE.gz PROMPT.txt OUTPUT [--trace|--partial-probe|--edit-probe|--edit-sequence-probe]");const std::string option=argc==10?argv[9]:"";TORCH_CHECK(option.empty() || option=="--trace" || option=="--partial-probe" || option=="--edit-probe" || option=="--edit-sequence-probe","unknown probe option");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
+  TORCH_CHECK(argc==9 || argc==10,"usage: sam3_video_pipeline_probe STORE sam3|sam3.1 DEVICE MODE FRAMES.txt BPE.gz PROMPT.txt OUTPUT [--trace|--partial-probe|--edit-probe|--edit-sequence-probe|--edit-sequence-trace]");const std::string option=argc==10?argv[9]:"";TORCH_CHECK(option.empty() || option=="--trace" || option=="--partial-probe" || option=="--edit-probe" || option=="--edit-sequence-probe" || option=="--edit-sequence-trace","unknown probe option");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
   const sam3::WeightStore store(std::filesystem::u8path(argv[1]));const std::string model=argv[2],mode=argv[4];const at::Device device(argv[3]);TORCH_CHECK(model=="sam3" || model=="sam3.1","invalid model");
   const auto manifest=std::filesystem::u8path(argv[5]);std::ifstream input(manifest);TORCH_CHECK(input,"cannot read frame manifest");std::vector<std::filesystem::path> files;std::string line;
   while(std::getline(input,line)){if(!line.empty() && line.back()=='\r')line.pop_back();if(line.empty() || line[0]=='#')continue;auto p=std::filesystem::u8path(line);files.push_back(p.is_absolute()?p:manifest.parent_path()/p);}TORCH_CHECK(!files.empty(),"empty frame manifest");
@@ -134,5 +153,5 @@ int main(int argc,char** argv){try{
   sam3::GroundingPrompt prompt;const auto opts=at::TensorOptions().device(device);prompt.image_ids=prompt.text_ids=at::zeros({1},opts.dtype(at::kLong));
   {sam3::TextEncoder encoder(store,model,device);const auto encoded=encoder.forward([&]{std::vector<at::Tensor> rows;for(const auto& ids:tokenizer.tokenize(model=="sam3.1"?std::vector<std::string>{text,"visual","geometric"}:std::vector<std::string>{text,"visual"}))rows.push_back(at::tensor(ids,opts.dtype(at::kLong)));return at::stack(rows);}(),mode);prompt.text_padding=std::get<0>(encoded);prompt.text_features=std::get<1>(encoded);}
   const auto labels=at::empty({0,1},opts.dtype(at::kLong)),padding=at::empty({1,0},opts.dtype(at::kBool));prompt.geometry={at::empty({0,1,2},opts),labels,padding,at::empty({0,1,4},opts),labels,padding};
-  if(model=="sam3")run<false>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),option=="--trace",option=="--partial-probe",option=="--edit-probe" || option=="--edit-sequence-probe",option=="--edit-sequence-probe");else run<true>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),option=="--trace",option=="--partial-probe",option=="--edit-probe" || option=="--edit-sequence-probe",option=="--edit-sequence-probe");return 0;
+  if(model=="sam3")run<false>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),option=="--trace",option=="--partial-probe",option=="--edit-probe" || option=="--edit-sequence-probe" || option=="--edit-sequence-trace",option=="--edit-sequence-probe" || option=="--edit-sequence-trace",option=="--edit-sequence-trace");else run<true>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),option=="--trace",option=="--partial-probe",option=="--edit-probe" || option=="--edit-sequence-probe" || option=="--edit-sequence-trace",option=="--edit-sequence-probe" || option=="--edit-sequence-trace",option=="--edit-sequence-trace");return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

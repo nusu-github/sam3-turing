@@ -125,6 +125,7 @@ The original CPU instability has not been diagnosed by this environment change;
 finite official-runtime tests do not establish long-run CPU stability.
 
 The overall goal remains open: integrated media codecs, multi-GPU transport,
-broader quality/performance and the prior 120-pixel reverse-edit discrepancy still
-need work. This SDK is a tested development distribution, not a full-function
+broader quality/performance and wider platform validation still need work.
+The previously unresolved 120-pixel reverse-edit difference was subsequently
+traced to a stale original pointer; see [REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md). This SDK is a tested development distribution, not a full-function
 completion claim.

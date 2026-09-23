@@ -119,7 +119,8 @@ box from frame1through6. With both explicit source adapters enabled, all15output
 sets match exactly, including masks and emission timing. The geometry adapter's
 actual use is recorded and asserted. This remains a finite fixture, not proof of
 arbitrary trajectories, all states or dataset-wide quality.
-The prior120-pixel reverse-edit discrepancy is separate and remains unresolved.
+The prior 120-pixel reverse-edit difference was later traced to a stale original
+pointer; see [REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md).
 
 The existing34-frame SAM3.1 pipeline also remains exact in raw masks, tracker
 values, scores, final displayed outputs and emission timing against retained

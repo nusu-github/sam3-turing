@@ -1,0 +1,8 @@
+[
+  {
+    "frame": 19,
+    "run_mem_encoder": true,
+    "changed_elements": 256,
+    "max_pointer_error": 0.53515625
+  }
+]

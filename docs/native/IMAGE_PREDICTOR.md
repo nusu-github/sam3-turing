@@ -92,7 +92,8 @@ links this environment's CUDA-capable LibTorch. See
 
 This remains a development C++ API. The owning C ABI is available in [PREDICTOR_C_API.md](PREDICTOR_C_API.md). Integrated codecs,
 multi-GPU transport, broader quality/performance work remain.
-The earlier 120-pixel reverse-edit discrepancy is separate and unresolved.
+The earlier reverse-edit discrepancy was traced to a stale original pointer;
+see [REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md).
 No GitHub Actions or Windows/Turing physical tests are used.
 
 The standalone development SDK is documented in [SDK.md](SDK.md).
