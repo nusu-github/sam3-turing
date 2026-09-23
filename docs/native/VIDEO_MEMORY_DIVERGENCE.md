@@ -1,7 +1,8 @@
 # Coherent SAM3.1 memory update investigation
 
-Status: open, 2026-09-23. Do not treat isolated component parity as proof that this
-combined pipeline is correct.
+Status: fixed for the captured divergence, 2026-09-23. The historical investigation
+below explains why isolated component parity missed this integration bug. Full
+predictor functionality and broader quality validation remain incomplete.
 
 The reproducible fixture is `assets/videos/0001/{0,1,2}.jpg`, runtime text `person`,
 CUDA Blackwell, BF16-reference. Native input now matches source high-level
@@ -48,8 +49,49 @@ Private reproducibility data:
 - `native-foundation/video-pipeline-source-linux-cuda13`: binaries, headers,
   logs and `diagnose_video_memory.py` (standalone replay used above).
 
-Next useful check: recompute memory immediately inside the native probe using
-both the live tracking core and an independent memory module, preserving the
-live layout/options/bucket matrix, then compare before and after storage/paging.
-Avoid changing inference policy to make this fixture pass. Broader source video,
-user-action and final predictor output validation remain required.
+## Resolution
+
+Recomputation inside the standalone process matched its retained state for both
+the live tracking core and an independent memory module. The packed encoder
+masks also matched the source exactly. The remaining difference was the image's
+singleton batch stride: raw native BCHW used `[1327104,1,18432,256]`, while the
+source sequence-to-BCHW view used `[256,1,18432,256]`. Both represent identical
+BF16 values and are channels-last. Forcing the raw stride in Python reproduced
+all 387,108 differing memory values; forcing the source stride produced zero
+differences. Ordinary `contiguous(memory_format=channels_last)` was insufficient
+because it preserves a tensor already considered contiguous in that format.
+
+`Sam31TrackingFrame::update_memory` now uses the same sequence-to-BCHW view as
+its existing initial/corrected memory paths. Those three callers share a helper.
+The change adjusts a view; it does not copy image data, change values, lower
+precision, limit prompts/objects or add weights.
+
+The strengthened `video_memory_storage.py` uses channels-last shared features
+and compares the immediate global rewrite with the actual source neural encoder,
+before a later layout rebuild can hide the defect. It fails before the fix
+(345,206 mismatches in the synthetic regression) and passes afterward: 452 exact
+comparisons per CUDA precision mode, including resident/offloaded/paged histories
+and changed bucket layouts. The three-frame coherent comparison now passes
+`--require-exact`: all masks and low tracking values match, and scores agree within
+the documented JSON serialization tolerance. Builder-default batched/real-RoPE
+and native-FP16 versus source-BF16 reports remain separate numerical comparisons;
+they are not claimed byte-identical or dataset-level quality evidence.
+
+Diagnostic replays and fixed output data are saved privately in
+`native-foundation/video-memory-stride-linux-cuda13` and
+`video-memory-stride-fixed`. Historical failing tensors remain available under
+the paths above. General CPU runtime instability is a separate unresolved issue.
+
+## Longer sequence exposes a separate remaining transition
+
+Extending the coherent fixture to 18 consecutive source frames, with the same
+matched BF16/batch/RoPE configuration, gives exact masks and low tracking values
+for frames 0 through 16. Frame 17 differs after the periodic frame-16
+reconditioning step: mask differences `[53,29,826,70]`, maximum low-logit error
+7.125. All four IDs and first-detection scores remain aligned. The strict
+18-frame comparison fails and is retained as `video-memory-stride-sequence18.json`.
+This does not invalidate the reproduced/fixed stride defect, but it prevents a
+claim of complete coherent video parity. The next investigation is the retained
+frame-16 state and reconditioning transition, using private
+`video-sequence-18/{native-sam31,reference-sam31}`. Do not loosen the gate or
+skip periodic corrections to make the longer case pass.

@@ -762,3 +762,28 @@ real RoPE is recorded separately. Existing isolated memory comparisons passing
 are not evidence that this combined path is fixed. Private state traces preserve
 the failing intermediate tensors for continued investigation. No full-video
 quality, predictor temporal filtering or complete user-action parity is claimed.
+
+## Fix singleton stride in the global SAM3.1 memory update
+
+The memory divergence above was reproduced by changing only the singleton batch
+stride of a channels-last image. Source memory encoding reconstructs BCHW from
+sequence features; the global native update passed raw BCHW directly. Initial
+and mask-correction paths already used the source view. All three now share that
+view conversion, without copying data or changing values/precision/features.
+
+The strengthened storage/source-neural regression fails before the fix and passes
+afterward: 1,356 exact comparisons across CUDA FP32/FP16/BF16-reference, plus 452
+CPU FP32 comparisons with one CPU thread. Resident, offloaded and paged state and
+bucket rebuild are covered. A default-four-thread CPU attempt terminated with
+the previously observed null-address crash; this is not a CPU stability fix.
+CTest passes 25 CUDA-enabled and 14 custom-CUDA-disabled checks.
+
+The matching batch/RoPE three-frame SAM3.1 coherent comparison now passes the exact
+gate. Against original builder-default BF16 settings, the separate minimum IoU
+is 0.9994449; native FP16 vs that reference is 0.9990008 on this short fixture.
+Those measurements do not establish general quality. Extending the matching
+configuration to 18 frames is exact through frame 16 but fails at frame 17,
+after periodic reconditioning. That remaining transition is documented in
+[the investigation](VIDEO_MEMORY_DIVERGENCE.md); no complete-video parity claim
+is made. Source state capture is now explicitly enabled with `--trace-state` so
+ordinary comparisons do not write large internal tensors unnecessarily.

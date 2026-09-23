@@ -1,0 +1,113 @@
+{
+  "model": "sam3.1",
+  "mode": "bf16_reference",
+  "reference_mode": "bf16_reference",
+  "source_grounding_batch": 16,
+  "source_complex_rope": false,
+  "cases": [
+    {
+      "frame": 0,
+      "ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mask_mismatches": [
+        14,
+        8,
+        43,
+        8
+      ],
+      "mask_iou": [
+        0.9998063034394975,
+        0.9997591087021981,
+        0.9995443563768914,
+        0.9996153106366609
+      ],
+      "max_tracker_error": 0.0,
+      "native_scores": [
+        0.96875,
+        0.964912295,
+        0.972602725,
+        0.94520551
+      ],
+      "source_scores": [
+        0.96875,
+        0.9649122953414917,
+        0.9726027250289917,
+        0.9452055096626282
+      ]
+    },
+    {
+      "frame": 1,
+      "ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mask_mismatches": [
+        17,
+        9,
+        14,
+        9
+      ],
+      "mask_iou": [
+        0.9997675722235135,
+        0.9997341211225997,
+        0.9998472282845918,
+        0.9995912620918298
+      ],
+      "max_tracker_error": 4.625,
+      "native_scores": [
+        0.96875,
+        0.964912295,
+        0.972602725,
+        0.94520551
+      ],
+      "source_scores": [
+        0.96875,
+        0.9649122953414917,
+        0.9726027250289917,
+        0.9452055096626282
+      ]
+    },
+    {
+      "frame": 2,
+      "ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mask_mismatches": [
+        14,
+        8,
+        15,
+        13
+      ],
+      "mask_iou": [
+        0.9998096300023116,
+        0.9997648234706177,
+        0.9998327404912969,
+        0.9994449425729046
+      ],
+      "max_tracker_error": 2.75,
+      "native_scores": [
+        0.96875,
+        0.964912295,
+        0.972602725,
+        0.94520551
+      ],
+      "source_scores": [
+        0.96875,
+        0.9649122953414917,
+        0.9726027250289917,
+        0.9452055096626282
+      ]
+    }
+  ],
+  "exact": false,
+  "scope": "Original raw frame engine with actual neural detection, propagation and updates versus standalone C++ probe. Original feature casts retained; batching and RoPE comparison configuration recorded explicitly. Predictor temporal/output filtering and interactive actions are outside this comparison. FP16/FP32 source MLP uses requested precision adaptation; BF16 source neural execution is unchanged. TF32 disabled, one CPU initialization thread. JSON scores tolerate 1e-8 serialization rounding. Cached references, when used, contain the original neural outputs."
+}

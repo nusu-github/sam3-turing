@@ -1827,3 +1827,26 @@ CTest remains 25 CUDA-enabled / 14 custom-CUDA-disabled. No Actions or physical
 Windows/Turing tests were run. Code, reports and private diagnostic artifacts are
 being persisted before continuing this investigation and temporal/prompt lifecycle
 integration. General CPU stability and portable packaging remain open.
+
+## Fix global memory view and extend continuous-video coverage
+
+Identified and fixed the SAM3.1 global memory-update divergence: identical shared
+image values had a different singleton batch stride than the source sequence-to-
+BCHW view. A forced-stride replay reproduces every differing value, and the source
+view removes the discrepancy. Initial/correction/global update paths now share
+the view conversion. No data copy, precision reduction, feature limit or weights
+were added.
+
+The strengthened regression fails before the fix and passes afterward with 1,356
+exact CUDA comparisons over three precisions and 452 CPU FP32 comparisons using
+one thread. The initial four-thread CPU attempt hit the known unresolved runtime
+crash. CTest passes 25/14. Three-frame matching-configuration SAM3.1 raw video
+outputs/low values now match exactly; original builder defaults and native FP16
+quality measurements are retained separately.
+
+An 18-frame original neural comparison matches every raw mask/low value through
+frame 16, then fails after periodic reconditioning at frame 17. Preserve this
+failure: it is the next integration issue, not a reason to disable reconditioning
+or relax the exact gate. The goal remains incomplete; after that transition,
+continue predictor temporal/output filtering, prompt/user-action state, codecs,
+complete C ABI, multi-GPU, portable packaging and quality/performance validation.

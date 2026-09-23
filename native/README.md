@@ -1043,7 +1043,7 @@ history tensors; these weight-derived debug outputs belong in private storage.
 
 The coherent source comparison is `native/tests/video_pipeline_parity.py`.
 SAM3 BF16-reference matches all raw masks and low tracking values in the current
-three-frame fixture. SAM3.1 has a captured divergence after the first global
-memory update; it is not yet a passing full-pipeline comparison. See the updated
+three-frame fixture. The captured SAM3.1 memory-update divergence is fixed: the matching batch/RoPE
+three-frame comparison now passes exactly too. See the updated
 [video integration notes](../docs/native/VIDEO_INTEGRATION.md) for measured scope,
 FP16/BF16 comparisons and the remaining investigation.

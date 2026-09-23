@@ -8,6 +8,12 @@
 #include <numeric>
 namespace sam3 {
 namespace {
+// Source memory encoding reconstructs BCHW from sequence features. In particular,
+// this sets the singleton batch stride for a channels-last shared image; passing
+// its raw BCHW view can select numerically different convolution behavior.
+at::Tensor memory_pixels(const TrackingFeatures& features) {
+  return features.image.flatten(2).permute({2,0,1}).permute({1,2,0}).view({1,256,72,72});
+}
 MultiplexTemporalState temporal_state(const MultiplexFrameHistory& history) {
   MultiplexTemporalState out;
   for(const bool cond:{true,false}) for(const auto& frame:cond?history.conditioning:history.tracked)
@@ -92,7 +98,7 @@ MultiplexFrame Sam31TrackingFrame::forward(const TrackingFeatures& interactive,c
     const auto conditions=at::tensor(out.conditioning_objects,at::TensorOptions().device(device).dtype(at::kLong));
     // Match the source sequence -> BCHW view, including singleton N strides
     // observed by convolution dispatch for a channels-last shared image.
-    const auto pixels=propagation.image.flatten(2).permute({2,0,1}).permute({1,2,0}).view({1,256,72,72});
+    const auto pixels=memory_pixels(propagation);
     const auto encoded=memory_.encode_frame(pixels,out.masks.high_res_mask,out.masks.object_logits,
         {points,options.non_overlap_memory,options.object_threshold},buckets.mux_matrix(),conditions,mode);
     out.memory=encoded.features;out.memory_position=encoded.position;
@@ -150,7 +156,7 @@ std::vector<int64_t> Sam31TrackingFrame::update_masks(const TrackingFeatures& in
   for(auto index:affected)if(std::find(updated.conditioning_objects.begin(),updated.conditioning_objects.end(),index)==updated.conditioning_objects.end())updated.conditioning_objects.push_back(index);
   if(request.encode_memory) {
     TORCH_CHECK(updated.masks.high_res_mask.size(0)==state.object_count(),"updated masks must match the multiplex state");
-    const auto pixels=propagation.image.flatten(2).permute({2,0,1}).permute({1,2,0}).view({1,256,72,72});
+    const auto pixels=memory_pixels(propagation);
     const auto conditions=at::tensor(updated.conditioning_objects,at::TensorOptions().device(device).dtype(at::kLong));
     const auto encoded=memory_.encode_frame(pixels,updated.masks.high_res_mask,updated.masks.object_logits,
         {request.append && request.masks_from_points,options.non_overlap_memory,options.object_threshold},state.mux_matrix(),conditions,mode);
@@ -164,7 +170,7 @@ void Sam31TrackingFrame::update_memory(const TrackingFeatures& propagation,const
   TORCH_CHECK(high.dim()==4 && high.size(0)==buckets.object_count() && high.size(1)==1 && high.size(2)>0 && high.size(3)>0 && high.is_floating_point() && scores.sizes()==at::IntArrayRef({buckets.object_count(),1}) && scores.is_floating_point(),"invalid memory mask/proxy score shape");
   auto frame=load_multiplex_frame(stored);
   const auto masks=high.to(device),logits=scores.to(device),conditions=at::tensor(frame.conditioning_objects,at::TensorOptions().device(device).dtype(at::kLong));
-  const auto encoded=memory_.encode_frame(propagation.image,masks,logits,{false,options.non_overlap_memory,options.object_threshold},buckets.mux_matrix(),conditions,mode);
+  const auto encoded=memory_.encode_frame(memory_pixels(propagation),masks,logits,{false,options.non_overlap_memory,options.object_threshold},buckets.mux_matrix(),conditions,mode);
   if(reapply){
     const auto suppressed=frame.masks.object_logits.to(device).gt(options.object_threshold).logical_and(logits.lt(0));
     if(suppressed.any().item<bool>()){

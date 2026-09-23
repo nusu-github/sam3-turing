@@ -69,3 +69,14 @@ workaround, not a demonstrated portable runtime fix. The new stack localizes
 this particular failure; it does not establish that the earlier positional
 encoding and native history crashes share its cause. CPU stability and testing
 against a redistributable LibTorch build remain open.
+
+During the singleton-stride regression, the CPU FP32 memory-storage comparison
+again terminated with a null-address UCX/SIGSEGV report under four ATen threads.
+No relinking of its loaded CPU library occurred. The log does not localize the
+failure. A fresh run with one ATen thread completed all ten operations and 452
+exact comparisons, including immediate source memory encoding, bucket rebuild,
+resident/offloaded/paged equivalence and reverse propagation. The test now accepts
+an explicit `--threads` setting (default remains four). This repeat is retained
+privately with `video-memory-stride-linux-cuda13`; the successful one-thread run
+does not establish general CPU stability or prove a common cause with earlier
+MKL crashes.
