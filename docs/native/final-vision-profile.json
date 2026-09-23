@@ -1,0 +1,80 @@
+{
+  "current_source": "1ee344087a2d8c05dd18ae9254122d668b2a2a6d",
+  "before_source": "3a581381e480e2ebe3dbd7d00bb8528dbc6c1dbf",
+  "gpu": "RTX PRO 4500 Blackwell",
+  "tool": "Nsight Systems 2025.5.1",
+  "samples": 1,
+  "warmups": 3,
+  "scope": "Full vision, FP16, batch 1, all heads and positions. Capture excludes parameter loading and warmups. These instrumented single-run samples diagnose kernels; use the separate alternating unprofiled measurements for latency claims.",
+  "limitations": "No SM occupancy or tensor-core utilization claim follows from the active time fraction. This Blackwell trace selects LibTorch Flash attention; it does not characterize the Turing backend. GEMM kernel names containing relu do not imply that model GELU was replaced by ReLU.",
+  "rows": [
+    {
+      "case": "pre-fusion-sam3-fp16-b1",
+      "kernels": 711,
+      "kernel_sum_ms": 52.747979,
+      "kernel_span_ms": 53.957648,
+      "kernel_active_union_ms": 52.747979,
+      "kernel_span_idle_ms": 1.209669,
+      "kernel_active_fraction": 0.9775811391927239,
+      "categories_percent": {
+        "GEMM": 59.440372113593206,
+        "attention": 10.348297894029267,
+        "normalization_fusion": 0.0,
+        "GELU": 5.316287094146299,
+        "QK_rotary_fusion": 0.0,
+        "other": 24.895042898231228
+      }
+    },
+    {
+      "case": "sam3-fp16-b1",
+      "kernels": 416,
+      "kernel_sum_ms": 46.104551,
+      "kernel_span_ms": 47.002091,
+      "kernel_active_union_ms": 46.104551,
+      "kernel_span_idle_ms": 0.89754,
+      "kernel_active_fraction": 0.9809042538128783,
+      "categories_percent": {
+        "GEMM": 67.94190013909906,
+        "attention": 11.95443590807337,
+        "normalization_fusion": 6.145844474225549,
+        "GELU": 2.7894274471949636,
+        "QK_rotary_fusion": 1.7782257547633422,
+        "other": 9.39016627664371
+      }
+    },
+    {
+      "case": "pre-fusion-sam31-fp16-b1",
+      "kernels": 705,
+      "kernel_sum_ms": 54.297688,
+      "kernel_span_ms": 55.50717,
+      "kernel_active_union_ms": 54.297688,
+      "kernel_span_idle_ms": 1.209482,
+      "kernel_active_fraction": 0.9782103465191975,
+      "categories_percent": {
+        "GEMM": 57.78444194529977,
+        "attention": 10.03686381637465,
+        "normalization_fusion": 0.0,
+        "GELU": 5.245473803599151,
+        "QK_rotary_fusion": 0.0,
+        "other": 26.93322043472643
+      }
+    },
+    {
+      "case": "sam31-fp16-b1",
+      "kernels": 430,
+      "kernel_sum_ms": 47.639732,
+      "kernel_span_ms": 48.403928,
+      "kernel_active_union_ms": 47.639732,
+      "kernel_span_idle_ms": 0.764196,
+      "kernel_active_fraction": 0.9842121077446442,
+      "categories_percent": {
+        "GEMM": 65.80576481832433,
+        "attention": 11.602191632816071,
+        "normalization_fusion": 5.900702799923391,
+        "GELU": 2.651710971002104,
+        "QK_rotary_fusion": 1.6068667220881931,
+        "other": 12.432763055845905
+      }
+    }
+  ]
+}

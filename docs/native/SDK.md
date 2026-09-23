@@ -1,6 +1,12 @@
 # Standalone LibTorch SDK (development release 0.1.0)
 
-Latest semantic-replacement increment: [SEMANTIC_TEXT_REUSE.md](SEMANTIC_TEXT_REUSE.md),
+Current recovery and platform limits: [QUICKSTART_JA.md](QUICKSTART_JA.md).
+The private `releases/20260923-1ee3440/` archives consolidate the layers below;
+new deployments need one CPU or CUDA SDK and the shared weight store.
+The final implementation passes CPU27/CUDA51 CTests after all dispatch guards.
+Profiler evidence and rejected candidates: [FINAL_PROFILE.md](FINAL_PROFILE.md).
+
+Semantic-replacement increment: [SEMANTIC_TEXT_REUSE.md](SEMANTIC_TEXT_REUSE.md),
 with private recipe `semantic-text-sdk-overlay/overlays.json` after compute-storage.
 It installs `sam3_semantic_text_probe` for reuse, invalidation and recovery checks.
 

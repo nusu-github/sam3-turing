@@ -2,9 +2,12 @@
 
 This is a Python-independent ATen C++/CUDA library with owning image/video
 predictors, C ABI 1, media input, shared model modules and tracking ranks.
-The Linux SDK runs without Python or Triton. Windows/Turing physical validation
-belongs to the user; source-reference precision and broader quality/performance
-work remain open. No GitHub Actions are used.
+The Linux SDK runs without Python or Triton. Start with the current
+[Japanese quickstart and recovery guide](../docs/native/QUICKSTART_JA.md).
+The user confirmed Windows/Turing execution at `19f8bf9` plus the imported
+compatibility patch; later fusion changes still need their own physical checks.
+Source-reference precision and broader quality/performance work remain open.
+No GitHub Actions are used.
 
 The component notes below retain the development sequence. Their historical
 "pending" statements describe that stage, not the current runtime. See the
@@ -41,7 +44,8 @@ ctest --test-dir build/native -C Release --output-on-failure
 Select architectures supported by your CUDA toolkit; 75 is the Turing target,
 120 is used on the present Blackwell development GPU. Torch's own CMake package
 may add additional architectures. GPU execution tests require real hardware for
-the architecture being tested. No Turing runtime validation has been performed.
+the architecture being tested. See [Windows/Turing evidence](../docs/native/WINDOWS_TURING.md)
+for the user-tested baseline and the separate scope of later changes.
 
 Use both `-DSAM3_WITH_CUDA=OFF -DSAM3_TEST_CUDA=OFF` for CPU-only builds. Windows
 requires matching MSVC and LibTorch Release/Debug configurations. Tests fail on

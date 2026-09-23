@@ -1,5 +1,8 @@
 # SAM3-Turing
 
+**Native C/C++ runtime:** [Python 不要の SAM3 / SAM3.1 — 使い方と現状](docs/native/QUICKSTART_JA.md).
+The original Python patch instructions and benchmarks follow below.
+
 Runtime patches for SAM 3 image inference on GPUs with limited VRAM, validated
 on an **RTX 2060 Max-Q with 6 GB VRAM** and an RTX 3090. Apply selective FP16
 conversion, memory optimizations, text caching, and optional compilation without

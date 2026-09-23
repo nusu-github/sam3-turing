@@ -113,3 +113,6 @@ The private increment is `position-fusion-sdk-overlay/overlays.json`, after
 weight store are reused. Reproducers, hashes, measurements and recovery evidence
 are in `native-foundation/position-fusion-linux`; the public record is
 [position-fusion-validation.json](position-fusion-validation.json).
+
+The final complete CPU27/CUDA51 suites were also repeated after that dispatch
+guard and restoration of rejected experiments; all pass. See [final-checks.json](final-checks.json).

@@ -83,6 +83,7 @@ verified by the C++ CLI with Python absent from PATH. The unique data total is
 6,898,771,600 bytes; index, alignment and JSON metadata add small overhead.
 Synthetic exporter-to-C++ tests compare exact logical bytes for 12 dtypes,
 scalar/empty/noncontiguous source tensors, cross-model aliases, CPU/CUDA
-placement and stale-inventory rejection. This does not establish model-level
-inference parity. The native runtime still needs tokenizer, image/geometry,
-tracker/multiplex and host session implementations.
+placement and stale-inventory rejection. This weight-reader check does not establish model-level
+inference parity. Tokenizer, image/geometry, tracker/multiplex and owning session
+implementations were added subsequently; see [QUICKSTART_JA.md](QUICKSTART_JA.md)
+for the current runtime and remaining source-reference differences.

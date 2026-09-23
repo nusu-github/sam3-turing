@@ -45,8 +45,10 @@ failed import produced inference results. Existing reference environments and
 all deployed SDKs were retained.
 
 FP16 uses the existing test-only vision-MLP adapter to match native FP16 policy;
-the original model normally forces those MLP operations to FP32. TF32 is disabled
-after model construction. No tolerance converts the residual differences into a
+the original [`addmm_act` helper](../../sam3/perflib/fused.py) explicitly casts
+the first-layer bias, input and weights to **BF16** before `_addmm_activation`.
+(The earlier wording here incorrectly said FP32.) TF32 is disabled after model
+construction. No tolerance converts the residual differences into a
 passing exact comparison. The source-versus-native FP16 issue remains open.
 
 ## Adapter scope and reproduction

@@ -2603,3 +2603,43 @@ vision changes against3a58138 is57.922→50.745ms and59.858→52.606ms,12.39%/12
 shorter on Blackwell FP16batch1. This is component performance, not full-predictor
 or Turing performance. See POSITION_FUSION.md and position-fusion-validation.json.
 Original-source FP16 residuals remain unresolved. No Actions were used.
+
+## 2026-09-23 — final optimization audit and recovery packaging
+
+Implementation remains `1ee3440`. The supplied Windows/Turing compatibility
+patch is incorporated. Full CPU27/CUDA51 suites pass after the final position
+dispatch guard and restoration of rejected experiments; the raw CUDA core hash
+is unchanged from the validated position-fusion ON build.
+
+Additional neck GELU, BLAS preference and column-major projection storage
+candidates were measured and rejected. The last candidate preserves 200
+actual-weight feature/metadata files but worsens latency and allocation. Native
+Nsight traces show reduced launch counts and GEMM as the remaining dominant
+Blackwell vision cost. See [FINAL_PROFILE.md](FINAL_PROFILE.md).
+
+The final private Linux SDK archives consolidate all historical overlays.
+Deployment needs one selected SDK and the existing shared weight store, with
+no image/video weight variants. `latest/` is the private recovery entrypoint;
+[QUICKSTART_JA.md](QUICKSTART_JA.md) gives the public usage and scope. Original
+checkpoints, attached documentation, comparison fixtures and historical overlays
+remain available as separate recovery/research material.
+
+The user requires work to stop at 2026-09-23 18:02:10 UTC, with the final hour
+reserved for preservation and documentation. Unresolved source FP16 differences,
+new-fusion Windows/Turing checks, physical multi-GPU validation and broader
+quality/CPU-stability work prevent claiming the complete objective achieved.
+No GitHub Actions or pull request is used.
+
+Fresh flat-archive recovery checks all 168 CPU / 207 CUDA SDK entries, including
+file hashes and symlink targets. C API image lifecycle outputs (153 files) and
+semantic-probe outputs (243 files) remain exact; all 45 initialized libraries
+exclude Python/Triton, with every workspace library resolved inside the recovered
+SDK. Both SDK recovery scripts also verify all 3,088 tensor references. Every
+remote weight-store file was independently downloaded and SHA-256 checked.
+C-only clients configure/build against both recovered SDKs without Torch/C++
+header discovery; the CPU client executes finite actual text features.
+
+Documentation correction: the original `sam3/perflib/fused.py` helper explicitly
+casts first-layer bias/input/weights to BF16, not FP32 as one historical reference
+note stated. The comparison adapter and unresolved FP16 output differences are
+unchanged.
