@@ -1010,3 +1010,26 @@ FP32 by default; there is no object cap. Predictor prompt/cache/user-action stat
 temporal output filtering, distributed communication and a complete high-level
 C ABI remain unfinished. See `docs/native/VIDEO_INTEGRATION.md` for the split between
 original policy comparisons and actual-weight synthetic execution probes.
+
+### Shared detector/tracker video frames
+
+`sam3/video_frame.h` evaluates a single full vision trunk for detection and all
+required tracker necks. It supports the existing grounding prompt API and
+prompt batches, source video joint-presence scoring, and uncapped source-specific
+NMS/query filtering. See [video integration](../docs/native/VIDEO_INTEGRATION.md)
+for the distinction between SAM3 greedy, SAM3.1 batched and alternate perflib NMS.
+
+A development-only standalone integration probe accepts a UTF-8 prompt and PPM
+frame manifest (paths relative to the manifest):
+
+```sh
+build/native/sam3_video_pipeline_probe STORE sam3.1 cuda fp16 \
+  FRAMES.txt sam3/assets/bpe_simple_vocab_16e6.txt.gz PROMPT.txt OUTPUT_DIRECTORY
+```
+
+It runs native text encoding, shared visual features, detection, propagation,
+update planning/execution and raw mask output. The probe exposes one text prompt;
+the library accepts batches. It is not the complete video predictor: temporal
+output buffering, prompt/user-action lifecycle and codec input are still pending.
+It writes packed masks, raw tensor files and per-frame JSON for validation, not a
+final application output contract. No new weight variants are required.

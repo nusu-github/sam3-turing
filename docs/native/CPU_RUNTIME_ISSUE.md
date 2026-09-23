@@ -52,3 +52,20 @@ normally: two 16-operation CPU FP32 workflows produced 926 exact resident-vs-pag
 tensor comparisons. It did not capture a failing native backtrace or resolve
 the intermittent crash. Standalone CPU session and direct mask-update probes
 also completed, including archive-read rollback and cleanup checks.
+
+During shared-video-frame comparison on 2026-09-23, original-model construction
+failed again before the first frame. A GDB rerun captured a null program counter
+inside `mkl_vml_serv_threader_s_1i_1o._omp_fn`, reached through `vmsErfInv`,
+ATen's AVX2 `erfinv_kernel`, TensorIterator and the OpenMP parallel launcher.
+The MKL libraries were `/usr/local/lib/libmkl_gnu_thread.so.1` and
+`libmkl_intel_lp64.so.1`. This occurred during source weight initialization with
+four ATen CPU threads, before native frame evaluation. No library relinking
+occurred. The failing log and GDB backtrace are retained in the private
+`video-frame-linux-cuda13` snapshot.
+
+Setting `torch.set_num_threads(1)` in this development comparison allowed the
+initial SAM3/SAM3.1 FP16 real-frame comparison to complete. This is a local test
+workaround, not a demonstrated portable runtime fix. The new stack localizes
+this particular failure; it does not establish that the earlier positional
+encoding and native history crashes share its cause. CPU stability and testing
+against a redistributable LibTorch build remain open.

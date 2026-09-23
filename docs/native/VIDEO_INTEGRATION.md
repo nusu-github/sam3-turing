@@ -649,3 +649,66 @@ SDK. Remaining work includes coherent detector/tracker feature-cache integration
 text/visual prompt and user-action state, predictor-level temporal/output filtering,
 C ABI exposure of the complete high-level lifecycle, codecs, actual multi-GPU
 execution, portable packaging and end-to-end quality/performance validation.
+
+## Shared real-frame features and video detector filtering
+
+`sam3/video_frame.h` connects one full 1008-pixel vision trunk evaluation to the
+three detection pyramid levels and projected tracker features. SAM3 shares its
+tracker neck for interactive and propagation calls; SAM3.1 produces both necks
+from the same trunk. Modules are shared with tracking sessions. No additional
+weight variants or model copies are introduced. `encode_rgb` uses the video
+Pillow-compatible preprocessing path; `encode_preprocessed` accepts a frame
+batch. `detect` accepts the existing unrestricted `GroundingPrompt` API,
+including visual/previous-feature fields, and enables joint presence scoring
+for both video models. SAM3 image inference has a different scoring default.
+
+`postprocess_video_detections` handles every prompt independently. SAM3 compacts
+retained queries after NMS; SAM3.1 retains every slot and sorts the keep flags as
+in the source. The implementation distinguishes three source NMS policies:
+
+- SAM3 greedy suppression, with stable score ordering on the CUDA path.
+- SAM3.1 standard batched greedy suppression, preserving ATen's source tie order.
+- SAM3.1 alternate single-frame perflib behavior, where even rejected earlier
+  rows can suppress later rows. Its self-IoM denominator uses the row area due to
+  the source's missing transpose; this behavior is deliberately preserved here.
+
+NMS uses native ATen and precompiled generic-NMS CUDA kernels, without Triton.
+Policy arithmetic defaults to FP32 separately from neural precision. Explicit
+same-mode comparison reproduces the source's FP16 full-grid overflow behavior;
+that comparison is not a recommendation to use overflowing policy arithmetic.
+An empty perflib input fails in the original reshape; the native path returns
+empty keep flags. No object/query cap is added.
+
+`sam3_video_pipeline_probe` is a development integration probe. It accepts a
+runtime UTF-8 text file and PPM frame manifest, runs native tokenization/text,
+shared vision, video detection, propagation, update planning, correction/memory,
+object birth/removal and raw mask assembly. A one-frame cache supplies tracking
+sessions; ordinary forward processing asserts exactly one trunk call per frame.
+Output includes packed masks and detector/tracker tensors for subsequent source
+comparison. This executable currently exposes one text prompt per invocation;
+the reusable detection API supports prompt batches. It is not the finished
+predictor interface and does not implement prompt editing, temporal output
+buffering, warmup lifecycle or codecs. Raw outputs must not be presented as final
+predictor results or as proof of complete video-quality parity.
+
+Validation in this development environment:
+
+- `video_detection_parity.py`: 522 exact comparisons across CPU/CUDA and three
+  arithmetic modes, including suppression chains, ties, empty input, overflowing
+  FP16 full-grid counts and 257-query/two-prompt fixtures.
+- `video_frame_parity.py`: both models, two real decoded video frames, FP32/FP16/
+  BF16-reference, two text/geometry prompts and all 200 queries. All 12 feature
+  tensors and seven detector outputs matched exactly in each of 12 cases. The
+  reference MLP uses the existing same-mode adaptation for FP32/FP16.
+- Standalone probe: both models, FP16, three real frames, runtime text `person`,
+  Python absent from PATH. Each frame produces four nonempty raw masks and finite
+  logits, with one trunk evaluation per frame. This is execution evidence;
+  coherent source tracking-mask and final predictor parity remain to be tested.
+- Existing CTest suites pass 25 CUDA-enabled / 14 custom-CUDA-disabled checks.
+  Linkage excludes libpython/libtorch_python; sm_75 cubins are present. Those are
+  build facts, not Windows/Turing runtime validation or a portable SDK.
+
+Reports are `video-detection-validation.json`, `video-frame-validation.json` and
+`video-pipeline-probe-validation.json`. Outputs and binaries are retained in the
+private bucket. Earlier CPU instability remains open; the feature comparison uses
+one CPU thread after a captured source MKL `erfinv` initialization crash.

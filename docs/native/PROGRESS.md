@@ -1769,3 +1769,34 @@ codecs, multi-GPU, portable SDK packaging and end-to-end accuracy/performance ar
 still open. Earlier intermittent CPU instability is unresolved. Continue with
 coherent feature/detection/propagation integration rather than claiming the full
 predictor is finished.
+
+## Connect real video frames to detection and tracking
+
+Added a shared full-1008 vision frame encoder feeding detection and both tracking
+paths, video joint-presence scoring, and source-specific uncapped NMS/query
+filtering. The same modules are shared by tracking sessions; no whole-model
+variants or extra weight files were created. Both standard SAM3.1 batched NMS
+and its alternate perflib quirks are preserved as explicit modes. Policy math
+defaults to FP32 independently of neural execution precision.
+
+Source comparison passes 522 detector-filter checks and 12 real-frame feature/
+detector cases (both models, two frames, three precisions, two runtime text/geometry
+prompts, all 200 queries). Every compared feature and detector value is exact.
+A standalone C++ integration probe runs native text/vision/detection/propagation/
+update/memory/birth/removal/raw-output assembly on three real frames with Python
+absent from PATH. Both models track four persons and use exactly one trunk call
+per frame. The probe exposes one text prompt while the detection API accepts
+batches. Final temporal filtering and source coherent tracking-mask parity are
+not established by this execution check.
+
+CTest passes 25 CUDA-enabled and 14 custom-CUDA-disabled checks. Python-free
+linkage and sm_75 compilation evidence remain; no Actions or Windows/Turing
+execution was used. A source initialization crash was localized with GDB to MKL
+parallel erfinv; one-thread comparison initialization completes, but general CPU
+stability is still unresolved. Development binaries are not a portable SDK.
+
+Code/reports are on `codex/native-onboarding`; private artifacts are in
+`native-foundation/video-frame-linux-cuda13`, with raw fixture outputs separately
+in `video-pipeline-fixture`. Continue with coherent source video comparisons,
+warmup/temporal filtering, prompt and user-action management, complete C ABI,
+codecs, multi-GPU and portable packaging. The overall goal remains incomplete.

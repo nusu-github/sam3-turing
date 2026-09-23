@@ -1,0 +1,211 @@
+{
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "frame": "assets/videos/0001/0.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "frame": "assets/videos/0001/1.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "frame": "assets/videos/0001/0.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "frame": "assets/videos/0001/1.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "frame": "assets/videos/0001/0.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "frame": "assets/videos/0001/1.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "frame": "assets/videos/0001/0.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "frame": "assets/videos/0001/1.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "frame": "assets/videos/0001/0.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "frame": "assets/videos/0001/1.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "frame": "assets/videos/0001/0.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "frame": "assets/videos/0001/1.jpg",
+      "prompts": 2,
+      "exact_feature_tensors": 12,
+      "query_count": 200,
+      "max_detection_errors": {
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "presence_logit_dec": 0.0,
+        "semantic_seg": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    }
+  ],
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "scope": "Actual decoded video images through shared full 1008 vision trunk, detector neck and all projected tracker necks, arbitrary text+geometry prompt batches, all 200 detector queries with source video joint-presence scoring. Same-mode source MLP adaptations for FP16/FP32. Does not yet validate high-level prompt lifecycle or complete tracking output."
+}
