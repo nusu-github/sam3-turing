@@ -1,5 +1,9 @@
 # Standalone LibTorch SDK (development release 0.1.0)
 
+Latest weight-loading increment: [WEIGHT_CRC.md](WEIGHT_CRC.md), with private
+recipe `weight-crc-sdk-overlay/overlays.json` applied after the cache-fetch layer.
+It includes the standalone `sam3_weights` integrity verifier and large-CRC test.
+
 The native library now installs as a relocatable CMake package with C and C++
 interfaces. Weights stay in the external shared modular store. Image/video and
 SAM3/SAM3.1 do not get duplicated weight packages.

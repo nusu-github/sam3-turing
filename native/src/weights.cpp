@@ -1,7 +1,8 @@
 #include "sam3/weights.h"
-#include <array>
+#include <algorithm>
 #include <fstream>
 #include <limits>
+#include <zlib.h>
 
 namespace sam3 {
 namespace {
@@ -47,19 +48,17 @@ at::ScalarType scalar_type(uint64_t code) {
   }
 }
 uint32_t checksum(const void* data, uint64_t length) {
-  static const auto table = [] {
-    std::array<uint32_t, 256> values{};
-    for (uint32_t i = 0; i < 256; ++i) {
-      auto c = i;
-      for (int k = 0; k < 8; ++k) c = (c >> 1) ^ ((c & 1) ? 0xedb88320U : 0);
-      values[i] = c;
-    }
-    return values;
-  }();
-  auto c = 0xffffffffU;
-  const auto* bytes = static_cast<const uint8_t*>(data);
-  for (uint64_t i = 0; i < length; ++i) c = table[(c ^ bytes[i]) & 255] ^ (c >> 8);
-  return c ^ 0xffffffffU;
+  auto crc = crc32(0L, Z_NULL, 0);
+  const auto* bytes = static_cast<const Bytef*>(data);
+  // crc32 takes a uInt count on both platforms. Keep the full tensor length
+  // in uint64_t and feed bounded chunks without truncating large payloads.
+  while (length) {
+    const auto count = static_cast<uInt>(std::min<uint64_t>(length, 1ULL << 30));
+    crc = crc32(crc, bytes, count);
+    bytes += count;
+    length -= count;
+  }
+  return static_cast<uint32_t>(crc);
 }
 }
 

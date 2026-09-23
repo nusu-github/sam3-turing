@@ -2479,3 +2479,21 @@ See CACHE_FETCH.md and cache-fetch-validation.json. Private SDK increment and
 evidence reuse the existing dependency/weight layers. No Actions or Windows/
 Turing execution. The goal remains active under the user's six-hour deadline;
 new optimization stops 2026-09-23 17:02:10 UTC, final work stops 18:02:10 UTC.
+
+## Faster complete weight integrity checks
+
+The weight loader now uses the existing zlib IEEE CRC32 implementation with
+bounded chunks, retaining complete checks before device transfer. No format,
+ABI, model weight or dependency changes. CPU23/CUDA41 tests pass, with repeated
+weight tests for the final empty-tensor assertions. A >1 GiB fixture checks the
+chunk boundary and rejects corruption beyond it. Six C lifecycle cases retain
+all 1,074 output files exactly.
+
+Three alternating warm-filesystem baseline/current pairs measure whole-store
+verification at 18.766→2.618 seconds, SAM3 vision/text/grounding GPU loading at
+9.497→1.577 seconds, and SAM3.1 at 9.565→1.591 seconds. This excludes CUDA context
+initialization and inference; it is not a full-startup or Turing measurement.
+CUDA module allocations are unchanged. See WEIGHT_CRC.md and
+weight-crc-validation.json. The private SDK layer reuses all weights and
+dependencies, and installs a native whole-store verifier. No Actions or
+Windows/Turing execution; broader source-reference and deployment limits remain.

@@ -5,6 +5,8 @@ find_package(Threads REQUIRED)
 option(SAM3_BENCHMARK_CUDA "Collect CUDA allocator statistics" OFF)
 add_executable(sam3_vision_positions_benchmark ../tools/vision_positions_benchmark.cpp)
 add_executable(sam3_rotary_test ../tests/rotary_test.cpp)
+add_executable(sam3_weights_large_test ../tests/weights_large_test.cpp)
+add_executable(sam3_weights ../tools/weights_cli.cpp)
 add_executable(sam3_video_mask_cache_test ../tests/video_mask_cache_test.cpp)
 add_executable(sam3_video_mask_cache_benchmark ../tools/video_mask_cache_benchmark.cpp)
 add_executable(sam3_video_cache_fetch_probe ../tools/video_cache_fetch_probe.cpp)
@@ -29,7 +31,7 @@ if(SAM3_BENCHMARK_CUDA)
   target_compile_definitions(sam3_image_benchmark PRIVATE SAM3_BENCH_CUDA)
   target_compile_definitions(sam3_image_results_test PRIVATE SAM3_TEST_CUDA_STATS)
 endif()
-foreach(target sam3_video_cache_fetch_probe sam3_video_mask_cache_test sam3_video_mask_cache_benchmark sam3_rotary_test sam3_vision_positions_benchmark sam3_image_benchmark sam3_image_results_test
+foreach(target sam3_weights sam3_weights_large_test sam3_video_cache_fetch_probe sam3_video_mask_cache_test sam3_video_mask_cache_benchmark sam3_rotary_test sam3_vision_positions_benchmark sam3_image_benchmark sam3_image_results_test
                sam3_rank_executor_test sam3_video_collective_test sam3_video_collective_probe sam3_video_multidevice_probe)
   target_link_libraries(${target} PRIVATE sam3::cpp)
   set_target_properties(${target} PROPERTIES
