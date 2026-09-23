@@ -44,7 +44,13 @@ std::vector<ImageResult> postprocess_image(const DetectionOutput& input,
       probabilities=std::move(all);
       for (int64_t start=first_end;start<selected.numel();start+=chunk_size) {
         const auto end=std::min(start+chunk_size,selected.numel());
-        probabilities.slice(0,start,end).copy_(at::upsample_bilinear2d(masks.slice(0,start,end).unsqueeze(1),{h,w},false));
+        auto destination=probabilities.slice(0,start,end);
+        // An out= operation bypasses autocast. Match the dtype inferred by the
+        // first ordinary interpolation explicitly, then write the same ATen
+        // interpolation directly into the final result. This avoids a full
+        // resized temporary and its device-to-device copy for every later chunk.
+        const auto source=masks.slice(0,start,end).unsqueeze(1).to(probabilities.scalar_type());
+        at::upsample_bilinear2d_out(destination,source,{h,w},false);
       }
     }
     // Apply sigmoid once across the assembled result. Per-chunk CPU SIMD

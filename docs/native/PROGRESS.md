@@ -2269,3 +2269,30 @@ see IMAGE_PRECISION_AUDIT.md and image-precision-coco-slice.json. No production
 arithmetic or threshold was changed. Broader image/video quality, Windows/Turing
 physical testing (user-owned), multiGPU and the previous open items remain.
 No Actions. Goal remains active.
+
+## Direct image probability interpolation
+
+Image postprocessing now writes later resize chunks directly into the final
+probability storage using ATen out=, explicitly preserving the dtype inferred
+from the first normal/autocast interpolation. It retains the whole-result sigmoid,
+all queries, probability maps and masks. No model or weight change.
+
+CPU/CUDA each pass2,304 one-shot source-formula comparisons, including FP64/FP32/
+FP16/BF16, empty/ragged selections,201 queries, noncontiguous input, up/same/down
+resize and special values. Full CTests pass18 CPU/31 CUDA-build tests. All672
+previous annotated-image runs retain identical candidate/mask bytes and their
+scored fingerprints. Four real full-probability comparisons cover276,480,000
+float32 values, all byte-identical. The optional audit dump and strict comparator
+make this repeatable; eight offline evaluator/comparator tests pass.
+
+Three alternating process pairs measure default chunk8 postprocessing reductions
+of8.4% at640x540,21.5% at1080p and26.1% at4K on Blackwell. These are isolated
+postprocess timings, not complete inference throughput or Turing performance.
+Overall allocation peaks do not change. See IMAGE_POSTPROCESS_COPY.md and report.
+
+Installed and reconstructed SDK checks preserve full outputs without Python.
+Small CPU/CUDA patches contain only the native library and two audit tools, with
+no new dependency/weight copies. Full reconstructed file hashes/symlinks match.
+The identical earlier COCO outputs are referenced rather than archived twice.
+No Actions or Windows/Turing physical execution; overall goal remains active,
+including broader quality, CPU long-run stability, multiGPU and prior open items.

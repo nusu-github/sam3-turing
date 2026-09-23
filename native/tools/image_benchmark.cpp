@@ -58,8 +58,12 @@ struct Row {
 } // namespace
 int main(int argc, char **argv) {
   try {
-    TORCH_CHECK(argc == 8, "usage: sam3_image_benchmark STORE sam3|sam3.1 "
-                           "DEVICE MODE MANIFEST.tsv BPE.gz OUTPUT");
+    TORCH_CHECK(
+        argc == 8 ||
+            (argc == 9 && std::string(argv[8]) == "--save-probabilities"),
+        "usage: sam3_image_benchmark STORE sam3|sam3.1 "
+        "DEVICE MODE MANIFEST.tsv BPE.gz OUTPUT [--save-probabilities]");
+    const bool save_probabilities = argc == 9;
     c10::InferenceMode inference;
     at::set_num_threads(4);
     at::globalContext().setAllowTF32CuBLAS(false);
@@ -211,12 +215,25 @@ int main(int argc, char **argv) {
       binary.write(static_cast<const char *>(packed.const_data_ptr()),
                    packed.nbytes());
       TORCH_CHECK(binary, "cannot write masks");
+      if (save_probabilities) {
+        const auto probabilities = result.mask_probabilities.cpu().contiguous();
+        std::ofstream output(root / (prefix + ".probabilities.bin"),
+                             std::ios::binary);
+        output.write(static_cast<const char *>(probabilities.const_data_ptr()),
+                     probabilities.nbytes());
+        TORCH_CHECK(output, "cannot write full probability maps");
+      }
       std::ofstream json(root / (prefix + ".json"));
       TORCH_CHECK(json, "cannot write detections");
       json << std::setprecision(9) << "{\"image_id\":" << row.image
            << ",\"category_id\":" << row.category << ",\"height\":" << h
-           << ",\"width\":" << w << ",\"mask_bytes\":" << packed.size(1)
-           << ",\"detections\":[";
+           << ",\"width\":" << w << ",\"mask_bytes\":" << packed.size(1);
+      if (save_probabilities)
+        json << ",\"probability_dtype\":\""
+             << c10::toString(result.mask_probabilities.scalar_type())
+             << "\",\"probability_bytes\":"
+             << result.mask_probabilities.nbytes();
+      json << ",\"detections\":[";
       for (int64_t i = 0; i < scores.numel(); ++i) {
         if (i)
           json << ',';
