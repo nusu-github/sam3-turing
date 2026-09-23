@@ -2296,3 +2296,29 @@ no new dependency/weight copies. Full reconstructed file hashes/symlinks match.
 The identical earlier COCO outputs are referenced rather than archived twice.
 No Actions or Windows/Turing physical execution; overall goal remains active,
 including broader quality, CPU long-run stability, multiGPU and prior open items.
+
+## Native tracking rank collection and device transport
+
+Added a same-process C++ rank boundary for tracker prediction collection and
+execution of global video updates. It follows source cleanup-before-FP32 and
+rank/metadata ordering, keeps empty ranks and signed IDs, and retains global
+masks through visibility decisions before selecting local memory rows. Transfers
+between devices stage through CPU, avoiding the Windows-incompatible NCCL path.
+No model/weight duplication, object cap or fixed prompt was introduced. The
+owning video predictor now exercises the boundary with its existing single rank.
+
+CPU19/CUDA33 CTests pass. Actual tracker weights with synthetic features verify
+17-object births, reconditioning, global memory, reverse propagation and removal
+against serial per-rank execution for both models and FP16/BF16. Two logical
+ranks share the available GPU; an additional SAM3 FP16 CUDA+CPU run verifies
+heterogeneous execution. That run exposed and fixed CPU autocast rejection of
+BF16 stored-memory concatenation under FP16. The original error is preserved.
+Four real-frame owning-video regressions retain all266 emitted files exactly
+against592def8, across both models and precisions. Installed/reconstructed SDK
+checks and private incremental artifacts are recorded in VIDEO_COLLECTIVE.md
+and video-collective-validation.json.
+
+This is a serial lower-level boundary, not a completed owning multiGPU API.
+Device-list configuration, feature/core ownership, parallel scheduling and
+multi-rank edit/reset/cancel coordination remain. Physical multiGPU operation
+is untested; Windows/Turing remain user-owned. No Actions. Goal remains active.

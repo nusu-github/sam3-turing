@@ -1,4 +1,6 @@
 #include "sam3/video_predictor.h"
+#include "sam3/video_collective.h"
+#include <type_traits>
 #include "sam3/text_encoder.h"
 #include "sam3/tokenizer.h"
 #include <c10/core/InferenceMode.h>
@@ -57,11 +59,11 @@ struct VideoPredictor::Impl {
   if(mux && direct)detection.nms=VideoNmsMode::Sam31Perflib;
   detection.allow_new_detections=mux || has_text || (prompt_frame==frame && semantic.boxes_xywh.defined()) || semantic.visual_features.defined();
   auto detections=postprocess_video_detections(raw.detection,detection);TORCH_CHECK(detections.size()==1,"one semantic prompt belongs to this video session");auto& d=detections.front();
-  std::vector<at::Tensor> masks,scores;std::vector<int64_t> ids;TrackingPropagation request;request.start=frame;request.max_steps=0;request.reverse=reverse;request.encode_memory=false;
-  for(auto& session:sessions)session->propagate(request,[&](const auto& value){ids.insert(ids.end(),value.object_ids.begin(),value.object_ids.end());masks.push_back(value.low_masks.squeeze(1));scores.push_back(value.object_logits.flatten());return true;});
-  const auto o=at::TensorOptions().device(device).dtype(at::kFloat);auto low=at::empty({0,288,288},o),logits=at::empty({0},o);
-  if(!ids.empty()){const auto order=at::tensor(video_memory_rows(ids,{metadata.object_ids()})[0],o.dtype(at::kLong));low=clean_video_mask_scores(at::cat(masks).index_select(0,order).unsqueeze(1),options.update.cleanup_area).squeeze(1);logits=at::cat(scores).index_select(0,order);}
-  auto plan=plan_video_update(frame,reverse,d,low,logits,metadata,options.update);execute_video_update(frame,0,plan,d,sessions,factory,options.update);auto masks_out=build_video_outputs(plan,d,h,w,options.update);finalize_video_scores(plan.metadata,frame,plan.previous_ids,logits);metadata=std::move(plan.metadata);metadata.host.removed.insert(plan.removed.begin(),plan.removed.end());
+  using Rank=std::conditional_t<std::is_same_v<Sessions,Sam3VideoSessions>,Sam3VideoRank,Sam31VideoRank>;
+  const std::vector<Rank> ranks{{device,&sessions,&factory}};
+  auto tracking=propagate_video_tracking_ranks(frame,reverse,ranks,metadata,device,options.update.cleanup_area);
+  const auto& low=tracking.masks;const auto& logits=tracking.logits;
+  auto plan=plan_video_update(frame,reverse,d,low,logits,metadata,options.update);execute_video_update_ranks(frame,plan,d,ranks,options.update);auto masks_out=build_video_outputs(plan,d,h,w,options.update);finalize_video_scores(plan.metadata,frame,plan.previous_ids,logits);metadata=std::move(plan.metadata);metadata.host.removed.insert(plan.removed.begin(),plan.removed.end());
   if(mux && options.image_only)for(const auto& session:sessions31)for(const auto& object:session->state().objects)if(!image_masks.count(object.id) && object.masks.count(frame))image_masks[object.id]=object.masks.at(frame).squeeze(0).squeeze(0).cpu().clone();
   VideoRawOutput out;out.frame=frame;out.masks=std::move(masks_out);out.scores=metadata.object_scores;out.tracker_scores=metadata.frame_scores[frame];out.removed=metadata.host.removed;out.frame_stats={{"num_obj_tracked",int64_t(metadata.object_ids().size())},{"num_obj_dropped",0}};
   // Source SAM3.1 computes a GPU suppression candidate but does not publish it

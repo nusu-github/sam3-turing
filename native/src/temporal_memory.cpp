@@ -151,7 +151,14 @@ TemporalAssembly Sam3MemoryConditioner::assemble(int64_t frame,int64_t frame_cou
     features.push_back(values);positions.push_back(position);out.pointer_tokens=values.size(0);
   }
   TORCH_CHECK(!features.empty(),"no spatial or pointer memory selected");
-  out.memory=at::cat(features,0);out.position=at::cat(positions,0);return out;
+  if(device_.is_cpu()) {
+    // Stored memory remains BF16 even in an FP16 session. CPU autocast's cat
+    // policy rejects that mixed lower-precision input. Concatenation performs
+    // no neural arithmetic: use normal type promotion, as on the CUDA path.
+    AutocastGuard concatenate(at::kCPU,false,at::kBFloat16);
+    out.memory=at::cat(features,0);out.position=at::cat(positions,0);
+  } else {out.memory=at::cat(features,0);out.position=at::cat(positions,0);}
+  return out;
 }
 at::Tensor Sam3MemoryConditioner::forward(const at::Tensor& source,const at::Tensor& source_position,int64_t height,int64_t width,
     int64_t frame,int64_t frame_count,bool initial,bool reverse,bool use_previous,const TemporalState& state,
