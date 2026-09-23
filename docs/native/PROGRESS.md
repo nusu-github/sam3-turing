@@ -1850,3 +1850,28 @@ failure: it is the next integration issue, not a reason to disable reconditionin
 or relax the exact gate. The goal remains incomplete; after that transition,
 continue predictor temporal/output filtering, prompt/user-action state, codecs,
 complete C ABI, multi-GPU, portable packaging and quality/performance validation.
+
+## Resolve periodic correction history mismatch; both raw pipelines pass 34 frames
+
+Frame-16 memory, pointer, image and mask traces were all equal. The divergence
+came from history classification: original SAM3.1 keeps corrections to already
+tracked frames in non-conditioning history; the standalone probe inherited a
+low-level default that promotes them. Configure the SAM3.1 probe explicitly with
+`all_edits_conditioning=false`. Original SAM3 promotes corrections, so keep its
+True setting. No neural change, weight variant or capability reduction is involved.
+
+The previously failing 18-frame strict comparison passes. Fresh actual-source
+runs of both SAM3 and SAM3.1 pass all masks and pre-plan tracker values for 34
+consecutive frames, including periodic corrections at 16/32 and their following
+frames. Scores tolerate 1e-8 serialization rounding. BF16, no TF32; SAM3.1 uses
+matching batch-one grounding/complex RoPE. Each standalone process ran with
+`PATH=/nonexistent`, all 200 queries, four people, one trunk evaluation per frame.
+Both CUDA-enabled and custom-CUDA-disabled probe targets build. This milestone
+does not establish dataset-wide quality, CPU stability, physical Turing/Windows
+support or complete predictor parity. No Actions were used.
+
+The exact reports, state diagnosis and historical failure are retained. Private
+before/after outputs and source tensors accompany the updated development probe
+snapshot. Continue with predictor temporal buffering, confirmation/final output
+filtering, prompt/user-action state, codecs, full C ABI, multi-GPU, portable SDK
+and quality/performance validation; the overall goal remains active.

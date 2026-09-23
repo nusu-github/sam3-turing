@@ -787,3 +787,26 @@ after periodic reconditioning. That remaining transition is documented in
 [the investigation](VIDEO_MEMORY_DIVERGENCE.md); no complete-video parity claim
 is made. Source state capture is now explicitly enabled with `--trace-state` so
 ordinary comparisons do not write large internal tensors unnecessarily.
+
+## Match SAM3.1 correction history policy in the coherent probe
+
+The 18-frame failure above is resolved. The corrected frame's tensors were all
+exact; the probe promoted edits into conditioning history while original SAM3.1
+keeps already tracked frames in non-conditioning history. The probe now explicitly
+sets `all_edits_conditioning=false` for SAM3.1, preserving SAM3's distinct True
+setting and leaving the configurable low-level session API intact.
+
+Both the 18-frame regression and a fresh 34-frame original-neural SAM3.1 run pass
+the strict gate, including corrections at frames 16 and 32 and subsequent tracking.
+Every raw mask and pre-plan tracker value matches; scores tolerate only 1e-8 JSON
+rounding. This uses BF16, batch-one grounding and complex RoPE, the same diagnostic
+configuration as before. No object/query/prompt limits or new weights were added.
+See `video-recondition-history-exact34.json` and the detailed investigation linked
+above. Predictor temporal buffering, final filtering and user-action lifecycle are
+still outside this raw frame probe and remain to be implemented.
+
+A fresh original SAM3 BF16 run also passes the same 34-frame strict raw comparison
+with its existing correction policy (`video-recondition-history-sam3-exact34.json`).
+Both standalone runs use `PATH=/nonexistent`, all 200 queries, four objects and
+exactly 34 shared-trunk evaluations. CUDA-enabled and custom-CUDA-disabled probe
+builds succeed; no Actions or physical Windows/Turing validation was performed.

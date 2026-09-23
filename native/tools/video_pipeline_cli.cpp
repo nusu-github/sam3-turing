@@ -19,6 +19,9 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
   auto pixels=sam3::cli::read_ppm(files.front());const auto h=pixels.size(1),w=pixels.size(2);int64_t cached_index=-1,encodes=0;sam3::VideoFrameFeatures cached;
   const auto features=[&](int64_t index)->const sam3::VideoFrameFeatures&{if(cached_index!=index){auto rgb=sam3::cli::read_ppm(files.at(index));TORCH_CHECK(rgb.size(1)==h && rgb.size(2)==w,"video dimensions changed");cached=encoder.encode_rgb(rgb,mode);cached_index=index;++encodes;}return cached;};
   Options session_options;session_options.offload_state=true;
+  // SAM3.1 keeps corrections to tracked frames in non-conditioning history;
+  // SAM3 explicitly promotes them. This affects the next frame's memories.
+  if constexpr(Mux)session_options.all_edits_conditioning=false;
   if constexpr(!Mux)session_options.frame.temporal.select_by_score=true;
   if constexpr(Mux)session_options.history_directory=root/"history";
   std::vector<std::unique_ptr<Session>> sessions;

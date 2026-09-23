@@ -1,0 +1,253 @@
+{
+  "scope": "Pre-fix coherent SAM31 matched BF16/batch1/complexRoPE. Post-frame15/16 state values exact despite different correction history categories; frame17 diverges. Native all_edits_conditioning=true versus source false. Private full traces: video-recondition-trace.",
+  "frames": [
+    {
+      "frame": 15,
+      "source_conditioning_objects": [],
+      "fields": {
+        "memory": {
+          "shape": [
+            1,
+            256,
+            72,
+            72
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "position": {
+          "shape": [
+            1,
+            256,
+            72,
+            72
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "image": {
+          "shape": [
+            5184,
+            1,
+            256
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "image_position": {
+          "shape": [
+            5184,
+            1,
+            256
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "pointer": {
+          "shape": [
+            1,
+            16,
+            256
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "low": {
+          "shape": [
+            4,
+            1,
+            288,
+            288
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "high_input": {
+          "shape": [
+            4,
+            1,
+            1152,
+            1152
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "proxy": {
+          "shape": [
+            4,
+            1
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        }
+      }
+    },
+    {
+      "frame": 16,
+      "source_conditioning_objects": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "fields": {
+        "memory": {
+          "shape": [
+            1,
+            256,
+            72,
+            72
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "position": {
+          "shape": [
+            1,
+            256,
+            72,
+            72
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "image": {
+          "shape": [
+            5184,
+            1,
+            256
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "image_position": {
+          "shape": [
+            5184,
+            1,
+            256
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "pointer": {
+          "shape": [
+            1,
+            16,
+            256
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "low": {
+          "shape": [
+            4,
+            1,
+            288,
+            288
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "high_input": {
+          "shape": [
+            4,
+            1,
+            1152,
+            1152
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "proxy": {
+          "shape": [
+            4,
+            1
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        }
+      }
+    },
+    {
+      "frame": 17,
+      "source_conditioning_objects": [],
+      "fields": {
+        "memory": {
+          "shape": [
+            1,
+            256,
+            72,
+            72
+          ],
+          "mismatches": 439575,
+          "max_error": 0.794921875
+        },
+        "position": {
+          "shape": [
+            1,
+            256,
+            72,
+            72
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "image": {
+          "shape": [
+            5184,
+            1,
+            256
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "image_position": {
+          "shape": [
+            5184,
+            1,
+            256
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        },
+        "pointer": {
+          "shape": [
+            1,
+            16,
+            256
+          ],
+          "mismatches": 999,
+          "max_error": 0.1796875
+        },
+        "low": {
+          "shape": [
+            4,
+            1,
+            288,
+            288
+          ],
+          "mismatches": 275273,
+          "max_error": 7.125
+        },
+        "high_input": {
+          "shape": [
+            4,
+            1,
+            1152,
+            1152
+          ],
+          "mismatches": 5237614,
+          "max_error": 6.666015625
+        },
+        "proxy": {
+          "shape": [
+            4,
+            1
+          ],
+          "mismatches": 0,
+          "max_error": 0.0
+        }
+      }
+    }
+  ]
+}

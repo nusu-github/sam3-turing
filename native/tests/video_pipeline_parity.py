@@ -23,7 +23,7 @@ def save_report(a,rows):
 
 @torch.inference_mode()
 def main():
- p=argparse.ArgumentParser();p.add_argument('--model',choices=['sam3','sam3.1'],required=True);p.add_argument('--checkpoint');p.add_argument('--native-output',type=Path,required=True);p.add_argument('--frames',nargs='+',type=Path,required=True);p.add_argument('--prompt',default='person');p.add_argument('--mode',choices=['fp16','fp32','bf16_reference'],default='fp16');p.add_argument('--reference-output',type=Path);p.add_argument('--trace-state',action='store_true');p.add_argument('--reference-cache',type=Path);p.add_argument('--reference-mode',choices=['fp16','fp32','bf16_reference']);p.add_argument('--require-exact',action='store_true');p.add_argument('--source-grounding-batch',type=int,default=16);p.add_argument('--source-complex-rope',action='store_true');p.add_argument('--report',type=Path,required=True);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--model',choices=['sam3','sam3.1'],required=True);p.add_argument('--checkpoint');p.add_argument('--native-output',type=Path,required=True);p.add_argument('--frames',nargs='+',type=Path,required=True);p.add_argument('--prompt',default='person');p.add_argument('--mode',choices=['fp16','fp32','bf16_reference'],default='fp16');p.add_argument('--reference-output',type=Path);p.add_argument('--trace-state',action='store_true');p.add_argument('--trace-frames',nargs='+',type=int,help='Save internal traces only for these frame indices; all frames still run');p.add_argument('--reference-cache',type=Path);p.add_argument('--reference-mode',choices=['fp16','fp32','bf16_reference']);p.add_argument('--require-exact',action='store_true');p.add_argument('--source-grounding-batch',type=int,default=16);p.add_argument('--source-complex-rope',action='store_true');p.add_argument('--report',type=Path,required=True);a=p.parse_args()
  if a.reference_cache:
   rows=[]
   for i in range(len(a.frames)):
@@ -65,7 +65,7 @@ def main():
    low=captured['low'].float().cpu().numpy();scores=[float(out['obj_id_to_score'][k]) for k in ids]
    if a.reference_output:
     a.reference_output.mkdir(parents=True,exist_ok=True);np.savez_compressed(a.reference_output/f'{i}.npz',masks=expected,low=low,ids=ids,scores=scores)
-   if tri and a.reference_output and a.trace_state:
+   if tri and a.reference_output and a.trace_state and (a.trace_frames is None or i in a.trace_frames):
     for si,session in enumerate(state['sam2_inference_states']):
      for history in session['output_dict'].values():
       if i not in history:continue

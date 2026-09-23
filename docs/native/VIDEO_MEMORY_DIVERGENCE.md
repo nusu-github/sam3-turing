@@ -95,3 +95,31 @@ claim of complete coherent video parity. The next investigation is the retained
 frame-16 state and reconditioning transition, using private
 `video-sequence-18/{native-sam31,reference-sam31}`. Do not loosen the gate or
 skip periodic corrections to make the longer case pass.
+
+## Resolved: correction history category in the coherent probe
+
+The captured states after frame 16 match in every compared value: low masks,
+object pointers, shared images/positions, encoded memory/positions, global
+1152-square memory masks and proxy scores. The difference was the history
+category, not the reconditioning arithmetic. The low-level native session defaults
+to promoting edits into conditioning history. The original SAM3.1 tracker defaults
+`add_all_frames_to_correct_as_cond=False`, keeping an edit of an already tracked
+frame in non-conditioning history. Consequently frame 17 selected a different
+memory set in the probe. Original SAM3 explicitly sets this option to True in
+`sam3_tracking_predictor.py`; it must keep its separate setting.
+
+The coherent probe now explicitly selects False for SAM3.1 only. Low-level session
+configuration remains available for interactive callers. The exact 18-frame gate
+now passes, and a fresh 34-frame original-neural run passes every raw mask/low-value
+comparison through two periodic corrections, at frames 16 and 32. All 200 detector
+queries, four tracked people and one shared visual trunk evaluation per frame
+remain enabled. Scores use the existing 1e-8 JSON-rounding tolerance. Evidence:
+`video-recondition-state-diagnosis.json`, `video-recondition-history-exact18.json`
+and `video-recondition-history-exact34.json`. BF16, batch-one grounding and complex
+RoPE are the explicit matching configuration; this is one video fixture, not a
+broad quality benchmark or complete predictor parity.
+
+Source `--trace-state --trace-frames 15 16 17` now limits saved internal traces
+without skipping any inference frame. Full before/after outputs, source outputs
+and traces are retained privately in `video-recondition-trace`,
+`video-recondition-fixed` and `video-sequence-34`.
