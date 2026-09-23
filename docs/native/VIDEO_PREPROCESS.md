@@ -96,7 +96,7 @@ possible. The reference color behavior is visible in OpenCV4.10's
 
 Reports: `video-preprocess-matched.json`, `video-preprocess-nvidia.json`,
 `video-preprocess-wheel.json`, `video-preprocess-files.json`, and
-`video-preprocess-validation.json`. Tests preserve per-case hashes and mismatch
+`video-loader-validation.json`. Tests preserve per-case hashes and mismatch
 arrays privately. Existing23 codec cases and CPU/CUDA CTests17/29 remain passing.
 The goal is not complete; this does not establish all codecs, Windows/Turing
 execution, or broad model quality across CPU arithmetic variants.
