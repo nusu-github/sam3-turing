@@ -171,3 +171,8 @@ whole-vision benchmark, CPU26/CUDA48 validation, and the supplied Windows
 compatibility headers. Build Windows using [WINDOWS_TURING.md](WINDOWS_TURING.md);
 the included binaries are Linux builds. All increments reuse the same weight
 store and dependency layers.
+
+`vision-gelu-sdk-overlay/overlays.json` then updates the core for exact in-place
+MLP GELU. Existing installed C/C++ binary clients are reused and verified against
+the updated core; no new headers or dependencies are needed. See
+[VISION_GELU.md](VISION_GELU.md) for separate and combined performance results.

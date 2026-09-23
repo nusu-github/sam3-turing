@@ -2565,3 +2565,20 @@ the shared weight store are unchanged. Supplementary complete-prompt timings are
 noisier and do not establish a SAM3.1 whole-predictor speedup. See VISION_FUSION.md
 and vision-fusion-validation.json. New fusion Windows/Turing execution and the
 original-source FP16 residual remain open. No Actions were used.
+
+## Exact MLP GELU in the existing projection allocation
+
+The ordinary vision MLP applies native in-place GELU to its private fresh linear
+output, retaining the same expression and rounding stage. BF16-reference fused
+activation is unchanged. No weights, API/ABI, dependencies or input restrictions
+change. CPU26/CUDA48, 312 feature files and1,940 API files pass exact regressions;
+recovered old binary C/C++ clients retain153/243 files without Python/Triton.
+
+The additional FP16 batch1 whole-vision improvement is2.64%/2.62% for SAM3/SAM3.1,
+with unchanged observed whole-forward peak allocation. Batch2 gains0.54%/0.41%
+and adds1MiB to the observed peak. Direct comparison against pre-fusion3a58138
+measures58.260→52.235ms and60.134→53.980ms, a combined10.34%/10.23% reduction on
+Blackwell with all heads/positions. These are component timings; new Windows/
+Turing execution and original-source FP16 precision remain unverified. See
+VISION_GELU.md and vision-gelu-validation.json. Custom GELU lookup/vector kernels
+were investigated but not adopted; private source/results retain those decisions.

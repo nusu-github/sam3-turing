@@ -116,7 +116,10 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
     hidden = at::_addmm_activation(weight(prefix + ".mlp.fc1.bias").to(at::kBFloat16), flat,
       weight(prefix + ".mlp.fc1.weight").to(at::kBFloat16).t(), 1, 1, true).view({b,h,w,4736});
   } else {
-    hidden = at::gelu(linear(normalized, prefix + ".mlp.fc1"), "none");
+    // The fresh linear result has no other consumers. Reuse its allocation
+    // for exact GELU, keeping the FP16 rounding point before activation.
+    hidden = linear(normalized, prefix + ".mlp.fc1");
+    at::gelu_(hidden, "none");
   }
   auto projection = linear(hidden, prefix + ".mlp.fc2");
   if (fuse_norm && prepared && layer < 31) {

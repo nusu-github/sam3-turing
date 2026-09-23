@@ -1,0 +1,603 @@
+{
+  "scope": "Exact native regression; no source FP16 parity completion claim",
+  "platform": "Linux x86_64, RTX PRO 4500 Blackwell sm120, standalone LibTorch 2.10.0 cu130",
+  "implementation": "at::gelu_ on fresh private mlp.fc1 output; BF16-reference fused epilogue unchanged",
+  "ctest": {
+    "cpu": 26,
+    "cuda": 48
+  },
+  "features": [
+    {
+      "case": "sam3-fp16-b1-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp16-b2-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp16-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-bf16_reference-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp32-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp16-b2-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b1-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b2-half",
+      "files": 50,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp32-b1-float",
+      "files": 14,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b2-float",
+      "files": 14,
+      "all_bytes_exact": true
+    }
+  ],
+  "feature_files": 312,
+  "owner_api": [
+    {
+      "case": "sam3-fp16-cache0",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-fp16-cache1",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-fp16-cache2",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache0",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache1",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache2",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache0",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache1",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache2",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache0",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache1",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache2",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache2-parallel",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    }
+  ],
+  "c_api": [
+    {
+      "case": "3-video-cache1",
+      "files": 195,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "3-video-cache2",
+      "files": 195,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-video-cache1",
+      "files": 189,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-video-cache2",
+      "files": 189,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-image-cache1",
+      "files": 153,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-image-cache2",
+      "files": 153,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    }
+  ],
+  "benchmark_batch1": {
+    "core_sha256": {
+      "baseline": "4a1194fb2796d29deec9c6afa40a7b7682e1b6bb2333c8efaf0278ebf4992500",
+      "current": "632ed831ae3f32efe4552fab8fc4892aa5625169744186013be179d5cdad5a95"
+    },
+    "baseline": "fusion ON, out-of-place GELU",
+    "current": "fusion ON, in-place GELU",
+    "native_tool": "sam3_vision_fusion_benchmark",
+    "samples_per_process": 10,
+    "warmups": 3,
+    "all_heads_and_positions": true,
+    "no_concurrent_builds_or_gpu_work": true,
+    "summary": [
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "batch": 1,
+        "process_medians_ms": {
+          "baseline": [
+            53.0873,
+            53.1413565,
+            53.2840465
+          ],
+          "current": [
+            51.740100999999996,
+            51.693945,
+            51.921767
+          ]
+        },
+        "median_ms": {
+          "baseline": 53.1413565,
+          "current": 51.740100999999996
+        },
+        "reduction_percent": 2.636845561140322,
+        "parameter_bytes": {
+          "baseline": [
+            936842240
+          ],
+          "current": [
+            936842240
+          ]
+        },
+        "peak_extra_bytes": {
+          "baseline": [
+            278798848
+          ],
+          "current": [
+            278798848
+          ]
+        }
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "batch": 1,
+        "process_medians_ms": {
+          "baseline": [
+            55.0818145,
+            55.068959,
+            55.055763999999996
+          ],
+          "current": [
+            53.624732,
+            53.4796875,
+            53.7197055
+          ]
+        },
+        "median_ms": {
+          "baseline": 55.068959,
+          "current": 53.624732
+        },
+        "reduction_percent": 2.6225790830729068,
+        "parameter_bytes": {
+          "baseline": [
+            949690880
+          ],
+          "current": [
+            949690880
+          ]
+        },
+        "peak_extra_bytes": {
+          "baseline": [
+            278798848
+          ],
+          "current": [
+            278798848
+          ]
+        }
+      }
+    ]
+  },
+  "benchmark_batch2": {
+    "core_sha256": {
+      "baseline": "4a1194fb2796d29deec9c6afa40a7b7682e1b6bb2333c8efaf0278ebf4992500",
+      "current": "632ed831ae3f32efe4552fab8fc4892aa5625169744186013be179d5cdad5a95"
+    },
+    "baseline": "fusion ON, out-of-place GELU",
+    "current": "fusion ON, in-place GELU",
+    "native_tool": "sam3_vision_fusion_benchmark",
+    "samples_per_process": 10,
+    "warmups": 3,
+    "all_heads_and_positions": true,
+    "no_concurrent_builds_or_gpu_work": true,
+    "summary": [
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "batch": 2,
+        "process_medians_ms": {
+          "baseline": [
+            108.3328595,
+            108.559871,
+            108.549122
+          ],
+          "current": [
+            107.96546749999999,
+            107.9359865,
+            108.1357735
+          ]
+        },
+        "median_ms": {
+          "baseline": 108.549122,
+          "current": 107.96546749999999
+        },
+        "reduction_percent": 0.5376869837786513,
+        "parameter_bytes": {
+          "baseline": [
+            936842240
+          ],
+          "current": [
+            936842240
+          ]
+        },
+        "peak_extra_bytes": {
+          "baseline": [
+            555500032
+          ],
+          "current": [
+            556548608
+          ]
+        }
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "batch": 2,
+        "process_medians_ms": {
+          "baseline": [
+            112.52684450000001,
+            112.684965,
+            112.6660645
+          ],
+          "current": [
+            112.0727205,
+            112.20589899999999,
+            112.198924
+          ]
+        },
+        "median_ms": {
+          "baseline": 112.6660645,
+          "current": 112.198924
+        },
+        "reduction_percent": 0.4146239615922642,
+        "parameter_bytes": {
+          "baseline": [
+            949690880
+          ],
+          "current": [
+            949690880
+          ]
+        },
+        "peak_extra_bytes": {
+          "baseline": [
+            555500032
+          ],
+          "current": [
+            556548608
+          ]
+        }
+      }
+    ]
+  },
+  "combined_vision_changes": {
+    "core_sha256": {
+      "baseline": "72dacc0a07fbb068388de4ad8368e4a141c1ae19f66ad70d1c0c517962293838",
+      "current": "632ed831ae3f32efe4552fab8fc4892aa5625169744186013be179d5cdad5a95"
+    },
+    "baseline": "semantic-text checkpoint 3a58138, before vision fusion",
+    "current": "fusion ON, in-place GELU",
+    "native_tool": "sam3_vision_fusion_benchmark",
+    "samples_per_process": 10,
+    "warmups": 3,
+    "all_heads_and_positions": true,
+    "no_concurrent_builds_or_gpu_work": true,
+    "summary": [
+      {
+        "model": "sam3",
+        "mode": "fp16",
+        "batch": 1,
+        "process_medians_ms": {
+          "baseline": [
+            58.264621500000004,
+            58.260071999999994,
+            58.220935499999996
+          ],
+          "current": [
+            52.0463815,
+            52.2690635,
+            52.235477
+          ]
+        },
+        "median_ms": {
+          "baseline": 58.260071999999994,
+          "current": 52.235477
+        },
+        "reduction_percent": 10.340864322996357,
+        "parameter_bytes": {
+          "baseline": [
+            936842240
+          ],
+          "current": [
+            936842240
+          ]
+        },
+        "peak_extra_bytes": {
+          "baseline": [
+            277750272
+          ],
+          "current": [
+            278798848
+          ]
+        }
+      },
+      {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "batch": 1,
+        "process_medians_ms": {
+          "baseline": [
+            60.140912,
+            60.1338825,
+            60.1252675
+          ],
+          "current": [
+            53.802212499999996,
+            53.980064,
+            54.050250500000004
+          ]
+        },
+        "median_ms": {
+          "baseline": 60.1338825,
+          "current": 53.980064
+        },
+        "reduction_percent": 10.233529325168721,
+        "parameter_bytes": {
+          "baseline": [
+            949690880
+          ],
+          "current": [
+            949690880
+          ]
+        },
+        "peak_extra_bytes": {
+          "baseline": [
+            277750272
+          ],
+          "current": [
+            278798848
+          ]
+        }
+      }
+    ]
+  },
+  "symbols": [
+    {
+      "variant": "cpu",
+      "strong_exports": 474,
+      "unchanged": true
+    },
+    {
+      "variant": "cuda",
+      "strong_exports": 481,
+      "unchanged": true
+    }
+  ],
+  "symbol_definition": "nm dynamic defined strong T,D,B,R symbols",
+  "recovered_sdk": {
+    "recovered_operator_checks": [],
+    "c_api_exact_output_files": 153,
+    "c_api_model": "sam3.1",
+    "c_api_precision": "fp16",
+    "c_api_source": "image",
+    "c_api_tracking_ranks": 2,
+    "c_api_parallel": true,
+    "workspace_runtime_libraries": [
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libavcodec.so.60",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libavformat.so.60",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libavutil.so.58",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libbz2.so.1.0",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libc10.so",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libc10_cuda.so",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcublas-e70f38ef.so.13",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcublasLt-656298c8.so.13",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcudart-96c42e41.so.13",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcudart.so.13",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcudnn.so.9",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcudnn_engines_precompiled.so.9",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcudnn_engines_runtime_compiled.so.9",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcudnn_graph.so.9",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcudnn_heuristic.so.9",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcufft.so.12",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcupti-e2f9ed86.so.13",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcurand.so.10",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libcusparse.so.12",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libgomp-98b21ff3.so.1",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libicudata.so.74",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libicui18n.so.74",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libicuuc.so.74",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libjpeg.so.8",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/liblzma.so.5",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libnvJitLink.so.13",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libopencv_core.so.410",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libopencv_imgproc.so.410",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libsam3_native.so",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libswresample.so.4",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libswscale.so.7",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libtorch.so",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libtorch_cpu.so",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libtorch_cuda.so",
+      "/workspace/vision-gelu-recovered-cuda/bin/../lib/libz.so.1"
+    ],
+    "no_python_or_triton": true,
+    "storage": "packed_disk",
+    "temporary_files_cleaned": true,
+    "semantic_text_probe_exact_files": 243,
+    "semantic_text_probe": {
+      "reuse_hits_with_hidden_shards": 6,
+      "required_misses": 15,
+      "settings_invalidations": 3,
+      "samples_ms": [
+        232.960545,
+        226.154985,
+        222.943571,
+        217.752444,
+        204.00144
+      ],
+      "visual_encodes": 34,
+      "provider_calls": 34
+    },
+    "installed_benchmark_runs": true
+  },
+  "sdk_overlay": {
+    "prerequisite": "vision-fusion-sdk-overlay/overlays.json (includes base/media/seek/preprocess recipe)",
+    "prerequisite_sha256": "64051fd16902cf91a0033bb41b9bfc00e16241c380898cd47d92eb469ece5df8",
+    "notes": "Apply after the vision-fusion SDK. Exact native GELU reuses its fresh MLP projection allocation; no custom activation arithmetic, new weight variants, dependencies, public API or C ABI changes. Whole-model peak allocation remains unchanged in the measured batch-one cases. New Windows/Turing execution remains user-owned.",
+    "overlays": [
+      {
+        "variant": "cpu",
+        "archive": "cpu.tar.gz",
+        "bytes": 1588235,
+        "sha256": "e2f3def0755ce8db5f60408f3c5d6430b2fb6304a42b9b51e2ab9ab454562035",
+        "files": [
+          {
+            "path": "lib/libsam3_native.so",
+            "bytes": 4570904,
+            "sha256": "a6e0d8333496a3e2f8a8d8fc17e0cf34ced729e31f39e4607d0c06da63c97817"
+          }
+        ],
+        "complete_recovery_entries_verified": 166
+      },
+      {
+        "variant": "cuda",
+        "archive": "cuda.tar.gz",
+        "bytes": 2153786,
+        "sha256": "711cc4e4fcb4e720a65b33fa97aae91c100d3b23ccad8b76dffcc50af51919f4",
+        "files": [
+          {
+            "path": "lib/libsam3_native.so",
+            "bytes": 7847856,
+            "sha256": "07c7f48f061bd8dbab3172cd13ee3b03c54adc3ad75a612dfae701cab77cf88f"
+          }
+        ],
+        "complete_recovery_entries_verified": 204
+      }
+    ]
+  },
+  "private_evidence": "native-foundation/vision-gelu-linux",
+  "remaining_limits": [
+    "New Windows/Turing execution remains user-owned",
+    "Original-source FP16 residual remains unresolved",
+    "Component timings do not imply complete predictor speedup",
+    "No GitHub Actions",
+    "No full-function completion claim"
+  ]
+}
