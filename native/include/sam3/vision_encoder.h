@@ -11,6 +11,11 @@ struct VisionFeatures {
 class SAM3_NATIVE_EXPORT VisionEncoder {
  public:
   VisionEncoder(const WeightStore& store, const std::string& model, at::Device device = at::kCPU);
+  // Optional fixed-FP16 CUDA storage for linear/convolution parameters only.
+  // kFloat retains mode switching; kHalf requires forward(..., "fp16").
+  // Norms, positions and complex rotary frequencies retain their source dtype.
+  VisionEncoder(const WeightStore& store, const std::string& model,
+                at::Device device, at::ScalarType compute_storage);
   // Preprocessed RGB [B,3,1008,1008], matching the original model resolution.
   // Modes: fp32, fp16 (Turing path), bf16_reference (original fused MLP).
   // All available necks are returned by default; selected heads reuse one trunk.

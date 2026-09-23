@@ -3,11 +3,16 @@
 #include <tuple>
 
 namespace sam3 {
-// Token-level VE encoder. Tokenization is a separate host component still to be
-// ported. Accepts arbitrary int64/int32 token batches up to the model context.
+// Token-level VE encoder. Tokenization is provided by the separate Tokenizer.
+// Accepts arbitrary int64/int32 token batches up to the model context.
 class SAM3_NATIVE_EXPORT TextEncoder {
  public:
   TextEncoder(const WeightStore& store, const std::string& model, at::Device device = at::kCPU);
+  // kHalf stores CUDA projection parameters at the forward FP16 compute dtype;
+  // norms/embeddings stay at source precision and only fp16 mode is permitted.
+  // kFloat and the original constructor retain forward precision switching.
+  TextEncoder(const WeightStore& store, const std::string& model,
+              at::Device device, at::ScalarType compute_storage);
   // padding mask [B,L], resized memory [L,B,256], input embeds [L,B,1024].
   std::tuple<at::Tensor, at::Tensor, at::Tensor> forward(const at::Tensor& tokens,const std::string& mode="fp32") const;
  private:

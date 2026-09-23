@@ -5,10 +5,30 @@
 
 namespace sam3 {
 TextEncoder::TextEncoder(const WeightStore& store, const std::string& model, at::Device device)
+    : TextEncoder(store, model, device, at::kFloat) {}
+TextEncoder::TextEncoder(const WeightStore& store, const std::string& model,
+                         at::Device device, at::ScalarType compute_storage)
     : device_(device) {
+  TORCH_CHECK(compute_storage == at::kFloat ||
+    (compute_storage == at::kHalf && device.is_cuda()),
+    "text compute storage must be Float, or Half on CUDA");
   const auto prefix = model + "/detector.backbone.language_backbone.";
-  auto values = store.read_prefix(prefix, device);
-  for (auto& [name, value] : values) weights_.emplace(name.substr(prefix.size()), std::move(value));
+  for (auto it = store.records().lower_bound(prefix);
+       it != store.records().end() && it->first.compare(0,prefix.size(),prefix) == 0; ++it) {
+    const auto name = it->first.substr(prefix.size());
+    auto value = store.read(it->first, device);
+    const bool projection = name.compare(0,8,"resizer.") == 0 ||
+      (name.compare(0,30,"encoder.transformer.resblocks.") == 0 &&
+       (name.find(".attn.in_proj_") != std::string::npos ||
+        name.find(".attn.out_proj.") != std::string::npos ||
+        name.find(".mlp.c_fc.") != std::string::npos ||
+        name.find(".mlp.c_proj.") != std::string::npos));
+    if (compute_storage == at::kHalf && projection) {
+      TORCH_CHECK(value.scalar_type() == at::kFloat, "expected FP32 text compute parameter: ", name);
+      value = value.to(at::kHalf);
+    }
+    weights_.emplace(name, std::move(value));
+  }
   width_ = weight("encoder.token_embedding.weight").size(1);
   context_ = weight("encoder.positional_embedding").size(0);
   TORCH_CHECK(width_ == 1024 && context_ == 32, "unexpected SAM3 VE text encoder configuration");
@@ -29,6 +49,8 @@ at::Tensor TextEncoder::linear(const at::Tensor& x, const std::string& name) con
 std::tuple<at::Tensor, at::Tensor, at::Tensor> TextEncoder::forward(const at::Tensor& tokens,const std::string& mode) const {
   c10::InferenceMode guard;
   TORCH_CHECK(mode=="fp32" || mode=="fp16" || mode=="bf16_reference","unknown text precision mode");
+  TORCH_CHECK(weight("resizer.weight").scalar_type() != at::kHalf || mode == "fp16",
+              "Half text compute storage requires fp16 mode");
   AutocastGuard autocast(device_.type(),mode!="fp32",mode=="fp16"?at::kHalf:at::kBFloat16);
   TORCH_CHECK(tokens.dim() == 2 && (tokens.scalar_type() == at::kLong || tokens.scalar_type() == at::kInt),
               "text tokens must be int32 or int64 [B,L]");

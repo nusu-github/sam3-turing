@@ -7,10 +7,35 @@
 
 namespace sam3 {
 VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model, at::Device device)
+    : VisionEncoder(store, model, device, at::kFloat) {}
+VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
+                             at::Device device, at::ScalarType compute_storage)
     : device_(device) {
+  TORCH_CHECK(compute_storage == at::kFloat ||
+    (compute_storage == at::kHalf && device.is_cuda()),
+    "vision compute storage must be Float, or Half on CUDA");
   const auto prefix = model + "/detector.backbone.vision_backbone.";
-  auto values = store.read_prefix(prefix, device);
-  for (auto& [name, tensor] : values) weights_.emplace(name.substr(prefix.size()), std::move(tensor));
+  for (auto it = store.records().lower_bound(prefix);
+       it != store.records().end() && it->first.compare(0,prefix.size(),prefix) == 0; ++it) {
+    const auto name = it->first.substr(prefix.size());
+    auto tensor = store.read(it->first, device);
+    const bool projection = name == "trunk.patch_embed.proj.weight" ||
+      (name.compare(0,13,"trunk.blocks.") == 0 &&
+       (name.find(".attn.qkv.") != std::string::npos ||
+        name.find(".attn.proj.") != std::string::npos ||
+        name.find(".mlp.fc1.") != std::string::npos ||
+        name.find(".mlp.fc2.") != std::string::npos)) ||
+      name.compare(0,6,"convs.") == 0 || name.compare(0,11,"sam2_convs.") == 0 ||
+      name.compare(0,18,"interactive_convs.") == 0 ||
+      name.compare(0,18,"propagation_convs.") == 0;
+    // Convert on the same device as autocast, one tensor at a time. This avoids
+    // a full FP32 GPU copy and preserves the original device conversion rules.
+    if (compute_storage == at::kHalf && projection) {
+      TORCH_CHECK(tensor.scalar_type() == at::kFloat, "expected FP32 vision compute parameter: ", name);
+      tensor = tensor.to(at::kHalf);
+    }
+    weights_.emplace(name, std::move(tensor));
+  }
   TORCH_CHECK(weight("trunk.patch_embed.proj.weight").sizes() == at::IntArrayRef({1024,3,14,14}), "unexpected SAM3 patch embedding");
   TORCH_CHECK(weight("trunk.pos_embed").sizes() == at::IntArrayRef({1,577,1024}), "unexpected absolute positions");
   heads_ = {"convs"};
@@ -122,6 +147,8 @@ VisionFeatures VisionEncoder::forward(const at::Tensor& image, const std::string
     image.size(2) == 1008 && image.size(3) == 1008 && image.is_floating_point(),
     "vision expects normalized floating RGB [B,3,1008,1008]");
   TORCH_CHECK(mode == "fp32" || mode == "fp16" || mode == "bf16_reference", "invalid vision precision mode");
+  TORCH_CHECK(weight("trunk.patch_embed.proj.weight").scalar_type() != at::kHalf || mode == "fp16",
+              "Half vision compute storage requires fp16 mode");
   AutocastGuard autocast(device_.type(), mode != "fp32", mode == "fp16" ? at::kHalf : at::kBFloat16);
   const auto selected = heads.empty() ? heads_ : heads;
   std::set<std::string> unique;

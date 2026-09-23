@@ -27,8 +27,8 @@ Context::Context(const sam3_context_options& o):store(std::filesystem::u8path(o.
     mode(o.precision==SAM3_FP32?"fp32":o.precision==SAM3_FP16?"fp16":"bf16_reference"),device(o.device?o.device:"cpu"),vocabulary(o.vocabulary_path?std::filesystem::u8path(o.vocabulary_path):std::filesystem::path()) {
   require(device.is_cpu() || device.is_cuda(),"only CPU and CUDA execution devices are supported");device=at::empty({0},at::TensorOptions().device(device)).device();
 }
-std::shared_ptr<const VisionEncoder> Context::vision(){std::lock_guard<std::mutex> guard(mutex);if(!vision_cache)vision_cache=std::make_shared<VisionEncoder>(store,model,device);return vision_cache;}
-std::shared_ptr<const TextEncoder> Context::text(){std::lock_guard<std::mutex> guard(mutex);if(!text_cache)text_cache=std::make_shared<TextEncoder>(store,model,device);return text_cache;}
+std::shared_ptr<const VisionEncoder> Context::vision(){std::lock_guard<std::mutex> guard(mutex);if(!vision_cache)vision_cache=std::make_shared<VisionEncoder>(store,model,device,device.is_cuda() && mode=="fp16"?at::kHalf:at::kFloat);return vision_cache;}
+std::shared_ptr<const TextEncoder> Context::text(){std::lock_guard<std::mutex> guard(mutex);if(!text_cache)text_cache=std::make_shared<TextEncoder>(store,model,device,device.is_cuda() && mode=="fp16"?at::kHalf:at::kFloat);return text_cache;}
 std::shared_ptr<const GroundingDetector> Context::detector(){std::lock_guard<std::mutex> guard(mutex);if(!detector_cache)detector_cache=std::make_shared<GroundingDetector>(store,model,device);return detector_cache;}
 std::shared_ptr<const InteractiveImageSession> Context::interactive(){std::lock_guard<std::mutex> guard(mutex);if(!interactive_cache)interactive_cache=std::make_shared<InteractiveImageSession>(store,model,device);return interactive_cache;}
 std::shared_ptr<const Sam3TrackingFrame> Context::tracking(){std::lock_guard<std::mutex> guard(mutex);if(!tracking_cache)tracking_cache=std::make_shared<Sam3TrackingFrame>(store,device);return tracking_cache;}

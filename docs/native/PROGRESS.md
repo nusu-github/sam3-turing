@@ -2497,3 +2497,26 @@ CUDA module allocations are unchanged. See WEIGHT_CRC.md and
 weight-crc-validation.json. The private SDK layer reuses all weights and
 dependencies, and installs a native whole-store verifier. No Actions or
 Windows/Turing execution; broader source-reference and deployment limits remain.
+
+## FP16 compute-parameter residency
+
+Fixed-FP16 CUDA contexts and owners now keep vision/text linear and convolution
+weights at compute precision. Norms, positions, embeddings and complex rotary
+values retain source precision. Original C++ constructors preserve mode
+switching and class layout; additive overloads expose the fixed-storage choice.
+No on-disk weight variants, dependencies, prompt/query or input limits change.
+
+Both models' batch1/2 full vision features and12 text cases per process retain
+exact values/layouts. Original-constructor FP16/BF16/FP32 compatibility checks
+also pass. CPU23/CUDA41 and25 API cases (1,848 files) pass. Recovered native C
+lifecycle and installed compute-storage probe retain153/50 files, with isolated
+SDK runtime loading. All preceding exported symbols remain available.
+
+Three alternating process pairs measure image-encoder time reductions4.87–4.98%
+and text-encoder reductions17.86–19.79% on Blackwell. With both modules alive,
+retained CUDA parameters fall by1.412/1.419GiB for SAM3/SAM3.1. This is component
+timing; owning sessions still release temporary text weights, so their retained
+saving is the vision portion. See COMPUTE_STORAGE.md and
+compute-storage-validation.json. SDK increments reuse all source-weight and
+dependency layers. No Actions, Windows/Turing execution or broader source
+exactness/full-function completion claim. Deadline remains unchanged.

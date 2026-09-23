@@ -138,7 +138,8 @@ struct VideoPredictor::Impl {
     const auto model = mux ? "sam3.1" : "sam3";
     vision = modules.vision
                  ? modules.vision
-                 : std::make_shared<VisionEncoder>(store, model, device);
+                 : std::make_shared<VisionEncoder>(store, model, device,
+                       device.is_cuda() && o.mode == "fp16" ? at::kHalf : at::kFloat);
     detector = modules.detector
                    ? modules.detector
                    : std::make_shared<GroundingDetector>(store, model, device);
@@ -328,7 +329,8 @@ struct VideoPredictor::Impl {
       rows.push_back(at::tensor(ids, o.dtype(at::kLong)));
     // Text weights are temporary; retained token features are small. Trunk and
     // tracker weights remain shared across semantic replacements and sessions.
-    TextEncoder text_encoder(store, model, device);
+    TextEncoder text_encoder(store, model, device,
+        device.is_cuda() && options.mode == "fp16" ? at::kHalf : at::kFloat);
     const auto result = text_encoder.forward(at::stack(rows), options.mode);
     encoded.text_padding = std::get<0>(result);
     encoded.text_features = std::get<1>(result);
