@@ -192,6 +192,9 @@ SAM3_NATIVE_EXPORT sam3_status sam3_predictor_set_preprocess(sam3_predictor*,int
  * devices represent logical ranks and share cores. Existing ABI structs do not
  * change. Execution is synchronous; cancel remains callable from another thread. */
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_set_tracking_devices(sam3_predictor*,const char* const* devices,int64_t count) SAM3_NOEXCEPT;
+/* Opt-in parallel tracking ranks, enabled must be 0 or 1. Before use/after
+ * reset; retained across reset. Calls still complete synchronously. */
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_set_parallel_tracking(sam3_predictor*,int32_t enabled) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_options_init(sam3_predictor_options*,int32_t model) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_semantic_prompt_init(sam3_semantic_prompt*) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_predictor_create(sam3_context*,const sam3_predictor_options*,sam3_predictor**) SAM3_NOEXCEPT;

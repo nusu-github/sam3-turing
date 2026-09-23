@@ -102,6 +102,13 @@ int main(int argc, char **argv) {
     auto plan = sam3::plan_video_update(0, false, d, predictions.masks,
                                         predictions.logits, metadata);
     sam3::execute_video_update_ranks(0, plan, d, ranks);
+    auto parallel = sam3::propagate_video_tracking_ranks(
+        0, false, ranks, metadata, device, 0,
+        sam3::VideoRankExecution::Parallel);
+    TORCH_CHECK(at::equal(parallel.masks, predictions.masks),
+                "parallel empty propagation differs");
+    sam3::execute_video_update_ranks(0, plan, d, ranks, {},
+                                     sam3::VideoRankExecution::Parallel);
     rejected([&] {
       auto bad = ranks;
       bad[1].sessions = &left;

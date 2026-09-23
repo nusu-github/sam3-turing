@@ -5,6 +5,7 @@
 #include <c10/core/InferenceMode.h>
 #include <iostream>
 #include <sstream>
+#include <thread>
 namespace {
 void same(const sam3::VideoOutput &a, const sam3::VideoOutput &b) {
   for (auto pair : {std::make_pair(a.ids, b.ids),
@@ -23,9 +24,9 @@ void same(const sam3::VideoOutput &a, const sam3::VideoOutput &b) {
 } // namespace
 int main(int argc, char **argv) {
   try {
-    TORCH_CHECK(argc == 8,
+    TORCH_CHECK(argc == 8 || argc == 9,
                 "usage: video_multidevice_probe STORE sam3|sam3.1 COORDINATOR "
-                "MODE FRAME.ppm BPE.gz TRACKING_DEVICES");
+                "MODE FRAME.ppm BPE.gz TRACKING_DEVICES [PARALLEL]");
     c10::InferenceMode inference;
     at::set_num_threads(4);
     at::globalContext().setAllowTF32CuBLAS(false);
@@ -53,10 +54,17 @@ int main(int argc, char **argv) {
     options.centers = true;
     sam3::WeightStore store(std::filesystem::u8path(argv[1]));
     const auto vocab = std::filesystem::u8path(argv[6]);
-    sam3::VideoPredictor multi(
-        store, vocab, [&](int64_t) { return rgb; }, 3, rgb.size(1), rgb.size(2),
-        device, options);
+    const auto caller_thread = std::this_thread::get_id();
+    const auto provider = [&](int64_t) {
+      TORCH_CHECK(std::this_thread::get_id() == caller_thread,
+                  "frame provider moved to worker");
+      return rgb;
+    };
+    sam3::VideoPredictor multi(store, vocab, provider, 3, rgb.size(1),
+                               rgb.size(2), device, options);
     multi.set_tracking_devices(devices);
+    const bool parallel = argc == 9 && std::stoi(argv[8]) != 0;
+    multi.set_parallel_tracking(parallel);
     TORCH_CHECK(multi.tracking_devices() == devices,
                 "device list not retained");
     bool caught = false;
@@ -70,8 +78,7 @@ int main(int argc, char **argv) {
     std::unique_ptr<sam3::VideoPredictor> single;
     if (logical)
       single = std::make_unique<sam3::VideoPredictor>(
-          store, vocab, [&](int64_t) { return rgb; }, 3, rgb.size(1),
-          rgb.size(2), device, options);
+          store, vocab, provider, 3, rgb.size(1), rgb.size(2), device, options);
     int comparisons = 0;
     const auto compare = [&](const sam3::VideoOutput &a,
                              const sam3::VideoOutput &b) {
@@ -101,6 +108,14 @@ int main(int argc, char **argv) {
       caught = true;
     }
     TORCH_CHECK(caught, "active device reconfiguration accepted");
+    caught = false;
+    try {
+      multi.set_parallel_tracking(!parallel);
+    } catch (const c10::Error &) {
+      caught = true;
+    }
+    TORCH_CHECK(caught && multi.parallel_tracking() == parallel,
+                "active parallel reconfiguration accepted");
     sam3::VideoPredictorPropagation request;
     request.start = 0;
     request.max_steps = 2;
@@ -161,6 +176,8 @@ int main(int argc, char **argv) {
     });
     TORCH_CHECK(emitted == 1, "cancel ignored");
     multi.reset();
+    TORCH_CHECK(multi.parallel_tracking() == parallel,
+                "reset lost execution policy");
     TORCH_CHECK(multi.tracking_devices() == devices &&
                     multi.metadata().object_ids().empty() &&
                     multi.interaction().actions().empty() &&
@@ -173,6 +190,8 @@ int main(int argc, char **argv) {
     TORCH_CHECK(at::equal(restored.cached_masks.at(42).squeeze(0).cpu(), mask),
                 "reconfigured owner unusable");
     multi.reset();
+    TORCH_CHECK(multi.parallel_tracking() == parallel,
+                "reset lost execution policy");
     multi.set_tracking_devices(devices);
     sam3::VideoSemanticPrompt prompt;
     prompt.text = "person";
@@ -196,6 +215,8 @@ int main(int argc, char **argv) {
     TORCH_CHECK(std::find(placed.begin(), placed.end(), id) != placed.end(),
                 "stateless refinement did not reassign least-loaded rank");
     multi.reset();
+    TORCH_CHECK(multi.parallel_tracking() == parallel,
+                "reset lost execution policy");
     std::cout << "{\"model\":\"" << model << "\",\"mode\":\"" << argv[4]
               << "\",\"ranks\":" << devices.size()
               << ",\"all_ranks_on_coordinator\":"

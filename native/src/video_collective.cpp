@@ -1,4 +1,5 @@
 #include "sam3/video_collective.h"
+#include "rank_executor.h"
 #include <algorithm>
 #include <c10/core/DeviceGuard.h>
 #include <c10/core/InferenceMode.h>
@@ -55,11 +56,16 @@ void placement_check(const std::vector<std::vector<int64_t>> &actual,
 template <class Rank>
 VideoRankPrediction
 propagate(int64_t frame, bool reverse, const std::vector<Rank> &ranks,
-          const VideoMetadata &metadata, at::Device target, int64_t cleanup) {
+          const VideoMetadata &metadata, at::Device target, int64_t cleanup,
+          VideoRankExecution execution = VideoRankExecution::Serial) {
   c10::InferenceMode inference;
   placement_check(validate_ranks(ranks), metadata.ids_per_rank);
-  std::vector<VideoRankPrediction> predictions;
-  for (const auto &rank : ranks) {
+  std::vector<VideoRankPrediction> predictions(ranks.size());
+  std::vector<at::Device> devices;
+  for (const auto &rank : ranks)
+    devices.push_back(resolved_device(rank.device));
+  detail::run_tracking_ranks(devices, execution, [&](size_t r) {
+    const auto &rank = ranks[r];
     c10::DeviceGuard guard(resolved_device(rank.device));
     const auto options =
         at::TensorOptions().device(rank.device).dtype(at::kFloat);
@@ -87,14 +93,15 @@ propagate(int64_t frame, bool reverse, const std::vector<Rank> &ranks,
     const auto resolved = at::empty({0}, options).device();
     TORCH_CHECK(p.masks.device() == resolved && p.logits.device() == resolved,
                 "tracking result is on the wrong rank device");
-    predictions.push_back(std::move(p));
-  }
+    predictions[r] = std::move(p);
+  });
   return gather_video_tracking(predictions, metadata.ids_per_rank, target);
 }
 template <class Rank>
 void execute(int64_t frame, VideoUpdatePlan &plan,
              const VideoDetections &detection, const std::vector<Rank> &ranks,
-             const VideoUpdateOptions &options) {
+             const VideoUpdateOptions &options,
+             VideoRankExecution execution = VideoRankExecution::Serial) {
   c10::InferenceMode inference;
   const auto local_ids = validate_ranks(ranks);
   TORCH_CHECK(ranks.size() == plan.metadata.ids_per_rank.size() &&
@@ -115,6 +122,40 @@ void execute(int64_t frame, VideoUpdatePlan &plan,
   TORCH_CHECK(actual == std::set<int64_t>(plan.previous_ids.begin(),
                                           plan.previous_ids.end()),
               "rank sessions do not cover the plan's previous IDs");
+  if (execution == VideoRankExecution::Parallel && ranks.size() > 1) {
+    std::vector<at::Device> devices;
+    std::vector<VideoUpdatePlan> local;
+    std::vector<VideoDetections> detections;
+    for (const auto &rank : ranks) {
+      devices.push_back(resolved_device(rank.device));
+      auto p = plan;
+      p.tracking_masks =
+          transfer_video_tensor(plan.tracking_masks, rank.device);
+      p.corrections.binary_masks =
+          transfer_video_tensor(plan.corrections.binary_masks, rank.device);
+      p.corrections.low_masks =
+          transfer_video_tensor(plan.corrections.low_masks, rank.device);
+      local.push_back(std::move(p));
+      detections.push_back(
+          {transfer_video_tensor(detection.masks, rank.device),
+           transfer_video_tensor(detection.scores, rank.device),
+           transfer_video_tensor(detection.boxes, rank.device),
+           transfer_video_tensor(detection.keep, rank.device)});
+    }
+    detail::run_tracking_ranks(devices, execution, [&](size_t r) {
+      execute_video_update(frame, r, local[r], detections[r],
+                           *ranks[r].sessions, *ranks[r].factory, options);
+    });
+    for (size_t r = 0; r < ranks.size(); ++r) {
+      plan.metadata.buckets_per_rank[r] = local[r].metadata.buckets_per_rank[r];
+      plan.reconditioned.insert(local[r].reconditioned.begin(),
+                                local[r].reconditioned.end());
+    }
+    return;
+  }
+  TORCH_CHECK(execution == VideoRankExecution::Serial ||
+                  execution == VideoRankExecution::Parallel,
+              "invalid tracking execution policy");
   for (size_t r = 0; r < ranks.size(); ++r) {
     const auto &rank = ranks[r];
     const auto device = resolved_device(rank.device);
@@ -245,5 +286,33 @@ void execute_video_update_ranks(int64_t f, VideoUpdatePlan &p,
                                 const std::vector<Sam31VideoRank> &r,
                                 const VideoUpdateOptions &o) {
   execute(f, p, d, r, o);
+}
+VideoRankPrediction
+propagate_video_tracking_ranks(int64_t f, bool reverse,
+                               const std::vector<Sam3VideoRank> &r,
+                               const VideoMetadata &m, at::Device d,
+                               int64_t cleanup, VideoRankExecution e) {
+  return propagate(f, reverse, r, m, d, cleanup, e);
+}
+VideoRankPrediction
+propagate_video_tracking_ranks(int64_t f, bool reverse,
+                               const std::vector<Sam31VideoRank> &r,
+                               const VideoMetadata &m, at::Device d,
+                               int64_t cleanup, VideoRankExecution e) {
+  return propagate(f, reverse, r, m, d, cleanup, e);
+}
+void execute_video_update_ranks(int64_t f, VideoUpdatePlan &p,
+                                const VideoDetections &d,
+                                const std::vector<Sam3VideoRank> &r,
+                                const VideoUpdateOptions &o,
+                                VideoRankExecution e) {
+  execute(f, p, d, r, o, e);
+}
+void execute_video_update_ranks(int64_t f, VideoUpdatePlan &p,
+                                const VideoDetections &d,
+                                const std::vector<Sam31VideoRank> &r,
+                                const VideoUpdateOptions &o,
+                                VideoRankExecution e) {
+  execute(f, p, d, r, o, e);
 }
 } // namespace sam3

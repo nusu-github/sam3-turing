@@ -1,4 +1,5 @@
 #include "sam3/video_predictor.h"
+#include "rank_executor.h"
 #include "sam3/text_encoder.h"
 #include "sam3/tokenizer.h"
 #include "sam3/video_collective.h"
@@ -68,6 +69,8 @@ struct VideoPredictor::Impl {
   at::Device device;
   VideoPredictorOptions options;
   bool mux;
+  bool parallel_tracking = false;
+  int64_t worker_frame = -1;
   std::shared_ptr<const VisionEncoder> vision;
   std::shared_ptr<const GroundingDetector> detector;
   std::shared_ptr<const Sam3TrackingFrame> core3;
@@ -211,6 +214,15 @@ struct VideoPredictor::Impl {
   }
   const MultiplexTrackingFeatures &
   tracking_features(const std::shared_ptr<Worker> &worker, int64_t frame) {
+    if (worker_frame >= 0) {
+      TORCH_CHECK(frame == worker_frame && cached_index == frame,
+                  "rank requested features outside its prepared frame");
+      if (worker->device == device)
+        return cached.tracking;
+      TORCH_CHECK(worker->cached_index == frame,
+                  "rank features were not prepared");
+      return worker->cached;
+    }
     const auto &visual = features(frame);
     if (worker->device == device)
       return visual.tracking;
@@ -230,6 +242,24 @@ struct VideoPredictor::Impl {
     }
     return worker->cached;
   }
+  VideoRankExecution execution() const {
+    return parallel_tracking ? VideoRankExecution::Parallel
+                             : VideoRankExecution::Serial;
+  }
+  // Prepare every shared feature cache on the caller. Workers read only this
+  // snapshot, never invoke the user's frame provider or the shared encoder.
+  struct WorkerFrame {
+    Impl &owner;
+    WorkerFrame(Impl &s, int64_t frame) : owner(s) {
+      if (!s.parallel_tracking || s.ranks.size() <= 1)
+        return;
+      TORCH_CHECK(s.worker_frame < 0, "nested rank dispatch");
+      for (const auto &rank : s.ranks)
+        s.tracking_features(rank->worker, frame);
+      s.worker_frame = frame;
+    }
+    ~WorkerFrame() { owner.worker_frame = -1; }
+  };
   size_t rank_for(int64_t id) const {
     for (size_t r = 0; r < ranks.size(); ++r)
       for (auto existing : metadata.ids_per_rank[r])
@@ -365,14 +395,16 @@ struct VideoPredictor::Impl {
                 "one semantic prompt belongs to this video session");
     auto &d = detections.front();
     const auto local_ranks = descriptors<Rank>();
-    auto tracking =
-        propagate_video_tracking_ranks(frame, reverse, local_ranks, metadata,
-                                       device, options.update.cleanup_area);
+    const WorkerFrame prepared(*this, frame);
+    auto tracking = propagate_video_tracking_ranks(
+        frame, reverse, local_ranks, metadata, device,
+        options.update.cleanup_area, execution());
     const auto &low = tracking.masks;
     const auto &logits = tracking.logits;
     auto plan = plan_video_update(frame, reverse, d, low, logits, metadata,
                                   options.update);
-    execute_video_update_ranks(frame, plan, d, local_ranks, options.update);
+    execute_video_update_ranks(frame, plan, d, local_ranks, options.update,
+                               execution());
     auto masks_out = build_video_outputs(plan, d, h, w, options.update);
     finalize_video_scores(plan.metadata, frame, plan.previous_ids, logits);
     metadata = std::move(plan.metadata);
@@ -429,6 +461,16 @@ std::vector<at::Device> VideoPredictor::tracking_devices() const {
   for (const auto &r : impl_->ranks)
     out.push_back(r->worker->device);
   return out;
+}
+void VideoPredictor::set_parallel_tracking(bool enabled) {
+  TORCH_CHECK(!impl_->preprocess_locked && impl_->initialized.empty() &&
+                  impl_->metadata.object_ids().empty() &&
+                  impl_->interaction.actions().empty(),
+              "set parallel tracking before use or after reset");
+  impl_->parallel_tracking = enabled;
+}
+bool VideoPredictor::parallel_tracking() const {
+  return impl_->parallel_tracking;
 }
 void VideoPredictor::set_preprocess(VideoPreprocess policy) {
   TORCH_CHECK(!impl_->preprocess_locked,
@@ -693,8 +735,13 @@ void VideoPredictor::propagate(const VideoPredictorPropagation &request,
         TORCH_CHECK(route.type == VideoActionType::Partial && route.ids,
                     "invalid propagation action");
         s.ensure_cache(frame);
-        RefinedVideoObjects refined;
-        for (auto &rank : s.ranks) {
+        const Impl::WorkerFrame prepared(s, frame);
+        std::vector<RefinedVideoObjects> outputs(s.ranks.size());
+        std::vector<at::Device> devices;
+        for (const auto &rank : s.ranks)
+          devices.push_back(rank->worker->device);
+        detail::run_tracking_ranks(devices, s.execution(), [&](size_t r) {
+          const auto &rank = s.ranks[r];
           c10::DeviceGuard guard(rank->worker->device);
           RefinedVideoObjects local;
           if (s.mux) {
@@ -712,6 +759,10 @@ void VideoPredictor::propagate(const VideoPredictorPropagation &request,
                                                 *route.ids, owners,
                                                 s.options.update.cleanup_area);
           }
+          outputs[r] = std::move(local);
+        });
+        RefinedVideoObjects refined;
+        for (auto &local : outputs) {
           for (auto &[id, pair] : local) {
             if (pair.first.device() != s.device)
               pair.first = transfer_video_tensor(pair.first, s.device);

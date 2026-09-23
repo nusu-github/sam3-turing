@@ -17,7 +17,7 @@ struct VideoPredictorOptions {
   double image_detection_threshold = .5; // SAM3.1 image-mode birth threshold
 };
 SAM3_NATIVE_EXPORT
-    VideoPredictorOptions video_predictor_defaults(AssociationPolicy);
+VideoPredictorOptions video_predictor_defaults(AssociationPolicy);
 struct VideoSemanticPrompt {
   std::optional<std::string> text; // UTF-8; absent means box/visual prompting
   at::Tensor boxes_xywh,
@@ -76,6 +76,11 @@ public:
   // execution is synchronous. No on-disk weight variants are created.
   void set_tracking_devices(const std::vector<at::Device> &);
   std::vector<at::Device> tracking_devices() const;
+  // Opt-in rank workers; call before use or after reset. Caller streams/TLS
+  // are preserved. All workers finish before return/error; cancel is observed
+  // at the existing frame boundaries. Reset retains this setting.
+  void set_parallel_tracking(bool enabled);
+  bool parallel_tracking() const;
   // Configure before first frame encoding, or after reset. Does not alter
   // image/video birth thresholds or model weights.
   void set_preprocess(VideoPreprocess);

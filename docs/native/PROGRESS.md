@@ -2369,3 +2369,22 @@ BF16 comparison pass. See VIDEO_COLLECTIVE_REFERENCE.md and its validation JSON.
 Only tests/docs change; deployable SDK, dependencies and weights are reused.
 Private reference evidence is persisted separately. No Actions or Windows/Turing
 execution. Goal remains active, including parallel workers and unresolved FP16.
+
+## Parallel tracking workers
+
+Added opt-in parallel tracking to the owning C++ predictor and C ABI, preserving
+ABI 1 structures and existing serial overloads. Complete propagation/update and
+partial refinement dispatch separate rank states on C++ threads; shared frame
+features are prepared on the caller first. ATen thread-local state and each
+device's caller stream are inherited. Frame providers and application callbacks
+stay on the caller. All workers join before return/error; state mutations remain
+nontransactional. Reset preserves the setting, and active reconfiguration fails.
+
+CPU20/CUDA35 CTests pass, including actual host overlap, inference/autocast TLS,
+nondefault CUDA stream ordering and error draining. Real-weight lifecycle probes
+pass both models in FP32/FP16/BF16 with two logical GPU ranks and both models in mixed
+CUDA+CPU FP16. SDK and detailed regression results are recorded in VIDEO_PARALLEL.md
+and video-parallel-validation.json. Dependency/weight layers are reused.
+Same-GPU ranks retain one caller stream; no physical multiGPU speedup is claimed.
+No Actions or Windows/Turing execution. Overall goal remains active, including
+broader quality/performance, CPU long-run stability and the prior FP16 residual.

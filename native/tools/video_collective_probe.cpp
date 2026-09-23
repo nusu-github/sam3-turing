@@ -83,7 +83,7 @@ void reference_execute(int64_t frame, sam3::VideoUpdatePlan &plan,
 }
 template <bool Mux>
 void run(const sam3::WeightStore &store, const std::vector<at::Device> &devices,
-         const std::string &mode) {
+         const std::string &mode, sam3::VideoRankExecution execution) {
   using Core = std::conditional_t<Mux, sam3::Sam31TrackingFrame,
                                   sam3::Sam3TrackingFrame>;
   using Session = std::conditional_t<Mux, sam3::Sam31TrackingSession,
@@ -145,7 +145,7 @@ void run(const sam3::WeightStore &store, const std::vector<at::Device> &devices,
                                       at::empty({0}, o), metadata, options);
   auto oracle = plan;
   reference_execute(0, oracle, d, er, options);
-  sam3::execute_video_update_ranks(0, plan, d, ar, options);
+  sam3::execute_video_update_ranks(0, plan, d, ar, options, execution);
   TORCH_CHECK(plan.metadata.ids_per_rank == oracle.metadata.ids_per_rank &&
                   plan.metadata.buckets_per_rank ==
                       oracle.metadata.buckets_per_rank,
@@ -156,8 +156,8 @@ void run(const sam3::WeightStore &store, const std::vector<at::Device> &devices,
   const auto prediction = [&](int64_t frame, bool reverse) {
     auto e = reference_propagate(frame, reverse, er, metadata, device,
                                  options.cleanup_area);
-    auto a = sam3::propagate_video_tracking_ranks(frame, reverse, ar, metadata,
-                                                  device, options.cleanup_area);
+    auto a = sam3::propagate_video_tracking_ranks(
+        frame, reverse, ar, metadata, device, options.cleanup_area, execution);
     TORCH_CHECK(
         a.ids == e.ids && a.masks.scalar_type() == e.masks.scalar_type() &&
             at::equal(a.masks, e.masks) && at::equal(a.logits, e.logits),
@@ -189,7 +189,7 @@ void run(const sam3::WeightStore &store, const std::vector<at::Device> &devices,
                  masks[plan.corrections.ids[1]].gt(0)});
   oracle = plan;
   reference_execute(1, oracle, none, er, options);
-  sam3::execute_video_update_ranks(1, plan, none, ar, options);
+  sam3::execute_video_update_ranks(1, plan, none, ar, options, execution);
   TORCH_CHECK(plan.reconditioned == oracle.reconditioned &&
                   plan.metadata.buckets_per_rank ==
                       oracle.metadata.buckets_per_rank,
@@ -203,7 +203,7 @@ void run(const sam3::WeightStore &store, const std::vector<at::Device> &devices,
                                  p.logits, metadata, options);
   oracle = plan;
   reference_execute(2, oracle, none, er, options);
-  sam3::execute_video_update_ranks(2, plan, none, ar, options);
+  sam3::execute_video_update_ranks(2, plan, none, ar, options, execution);
   TORCH_CHECK(plan.metadata.object_ids().empty(),
               "controlled removal did not remove all objects");
   for (const auto &rank : actual)
@@ -221,8 +221,9 @@ void run(const sam3::WeightStore &store, const std::vector<at::Device> &devices,
 } // namespace
 int main(int argc, char **argv) {
   try {
-    TORCH_CHECK(argc == 5, "usage: video_collective_probe STORE sam3|sam3.1 "
-                           "DEVICE[,DEVICE...] MODE");
+    TORCH_CHECK(argc == 5 || argc == 6,
+                "usage: video_collective_probe STORE sam3|sam3.1 "
+                "DEVICE[,DEVICE...] MODE [PARALLEL]");
     c10::InferenceMode inference;
     at::set_num_threads(4);
     at::globalContext().setAllowTF32CuBLAS(false);
@@ -237,10 +238,16 @@ int main(int argc, char **argv) {
     TORCH_CHECK(!devices.empty(), "at least one device required");
     const sam3::WeightStore store(std::filesystem::u8path(argv[1]));
     if (std::string(argv[2]) == "sam3")
-      run<false>(store, devices, argv[4]);
+      run<false>(store, devices, argv[4],
+                 argc == 6 && std::stoi(argv[5])
+                     ? sam3::VideoRankExecution::Parallel
+                     : sam3::VideoRankExecution::Serial);
     else {
       TORCH_CHECK(std::string(argv[2]) == "sam3.1", "invalid model");
-      run<true>(store, devices, argv[4]);
+      run<true>(store, devices, argv[4],
+                argc == 6 && std::stoi(argv[5])
+                    ? sam3::VideoRankExecution::Parallel
+                    : sam3::VideoRankExecution::Serial);
     }
     return 0;
   } catch (const std::exception &e) {

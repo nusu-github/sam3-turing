@@ -5,8 +5,9 @@ The constructor/context device remains the coordinator for vision, detection,
 global association, output composition and displayed-frame caching. Tracking
 sessions and memory live on their assigned rank's device. All existing semantic,
 point/box/mask, forward/reverse, cached fetch, reset and cancellation routes
-remain available. Execution is currently synchronous and serial across ranks;
-parallel workers and a physical multi-GPU performance validation remain open.
+remain available. Calls are synchronous and rank execution defaults to serial.
+[Opt-in parallel workers](VIDEO_PARALLEL.md) are now available; physical multi-GPU
+performance validation remains open.
 
 ## Configuration
 
@@ -111,7 +112,7 @@ recovery checks 150 CPU / 183 CUDA entries, including every file hash and symlin
 
 No detection count, query count, prompt type or output resolution is reduced.
 No Windows, Turing or two-physical-GPU execution is claimed. No Actions are used.
-Parallel scheduling, broader quality and CPU long-run stability remain open;
+Broader quality, physical multi-GPU performance and CPU long-run stability remain open;
 the complete development goal is active.
 
 ## Reproduction and persistence

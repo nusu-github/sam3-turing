@@ -2,6 +2,7 @@
 #include "sam3/video_update.h"
 
 namespace sam3 {
+enum class VideoRankExecution { Serial, Parallel };
 // Synchronous, same-process transport. Different CUDA devices exchange through
 // CPU memory, so peer access/NCCL is not required. Returned storage is
 // independent.
@@ -38,6 +39,16 @@ SAM3_NATIVE_EXPORT VideoRankPrediction propagate_video_tracking_ranks(
 SAM3_NATIVE_EXPORT VideoRankPrediction propagate_video_tracking_ranks(
     int64_t frame, bool reverse, const std::vector<Sam31VideoRank> &,
     const VideoMetadata &, at::Device destination, int64_t cleanup_area = 0);
+// Parallel overloads require callbacks/factories to be thread-safe across
+// ranks. Work uses each device's caller stream and inherits ATen thread-local
+// state. All workers join before return/error; no frame callback runs on a
+// worker.
+SAM3_NATIVE_EXPORT VideoRankPrediction propagate_video_tracking_ranks(
+    int64_t, bool, const std::vector<Sam3VideoRank> &, const VideoMetadata &,
+    at::Device, int64_t cleanup_area, VideoRankExecution);
+SAM3_NATIVE_EXPORT VideoRankPrediction propagate_video_tracking_ranks(
+    int64_t, bool, const std::vector<Sam31VideoRank> &, const VideoMetadata &,
+    at::Device, int64_t cleanup_area, VideoRankExecution);
 // Execute the global plan on every rank, retaining GLOBAL masks for visibility
 // decisions before selecting local memory rows. Merge bucket/affected-ID
 // updates into the coordinator's plan. A failure stops later ranks; earlier
@@ -51,4 +62,15 @@ execute_video_update_ranks(int64_t frame, VideoUpdatePlan &,
                            const VideoDetections &,
                            const std::vector<Sam31VideoRank> &,
                            const VideoUpdateOptions &options = {});
+// Parallel failures may leave any rank partially updated. All launched work is
+// drained; no rollback is promised. Coordinator metadata merges only on
+// success.
+SAM3_NATIVE_EXPORT void
+execute_video_update_ranks(int64_t, VideoUpdatePlan &, const VideoDetections &,
+                           const std::vector<Sam3VideoRank> &,
+                           const VideoUpdateOptions &, VideoRankExecution);
+SAM3_NATIVE_EXPORT void
+execute_video_update_ranks(int64_t, VideoUpdatePlan &, const VideoDetections &,
+                           const std::vector<Sam31VideoRank> &,
+                           const VideoUpdateOptions &, VideoRankExecution);
 } // namespace sam3
