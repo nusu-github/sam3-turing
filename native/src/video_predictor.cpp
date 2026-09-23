@@ -21,20 +21,20 @@ VideoPredictorOptions video_predictor_defaults(AssociationPolicy policy){
 }
 struct VideoPredictor::Impl {
  WeightStore store;Tokenizer tokenizer;FrameProvider provider;int64_t frames,h,w,cached_index=-1,encodes=0;at::Device device;VideoPredictorOptions options;bool mux;
- std::shared_ptr<VisionEncoder> vision;std::shared_ptr<GroundingDetector> detector;std::shared_ptr<Sam3TrackingFrame> core3;std::shared_ptr<Sam31TrackingFrame> core31;std::unique_ptr<VideoFrameEncoder> encoder;
+ std::shared_ptr<const VisionEncoder> vision;std::shared_ptr<const GroundingDetector> detector;std::shared_ptr<const Sam3TrackingFrame> core3;std::shared_ptr<const Sam31TrackingFrame> core31;std::unique_ptr<VideoFrameEncoder> encoder;
  Sam3VideoSessions sessions3;Sam31VideoSessions sessions31;Sam3SessionFactory factory3;Sam31SessionFactory factory31;VideoFrameFeatures cached;
  VideoMetadata metadata;VideoInteractionState interaction;VideoSuppressionHistory suppressions;std::set<int64_t> initialized;std::optional<int64_t> prompt_frame;
  std::map<int64_t,at::Tensor> image_masks;
  VideoSemanticPrompt semantic;GroundingPrompt encoded;bool has_text=false;std::atomic<bool> cancelled{false};
- Impl(const WeightStore& s,const std::filesystem::path& vocabulary,FrameProvider f,int64_t n,int64_t height,int64_t width,at::Device d,const VideoPredictorOptions& o)
+ Impl(const WeightStore& s,const std::filesystem::path& vocabulary,FrameProvider f,int64_t n,int64_t height,int64_t width,at::Device d,const VideoPredictorOptions& o,const VideoPredictorModules& modules)
   :store(s),tokenizer(vocabulary),provider(std::move(f)),frames(n),h(height),w(width),device(d),options(o),mux(o.model==AssociationPolicy::Sam31),metadata(initialize_video_metadata(1,d)),interaction(o.model,n,height,width){
   TORCH_CHECK(provider && n>0 && h>0 && w>0 && o.output_batch_size>0,"invalid video source/options");TORCH_CHECK(o.mode=="fp32" || o.mode=="fp16" || o.mode=="bf16_reference","invalid neural mode");
   TORCH_CHECK(!o.image_only || n==1,"an image source requires exactly one frame");TORCH_CHECK(std::isfinite(o.image_detection_threshold) && o.image_detection_threshold>=0 && o.image_detection_threshold<=1,"invalid image detection threshold");
   if(mux && o.image_only)options.update.association.new_detection_threshold=o.image_detection_threshold;
   TORCH_CHECK(o.detection.model==o.model && o.update.association.policy==o.model && o.update.recondition.policy==o.model,"video policies must match model");
-  const auto model=mux?"sam3.1":"sam3";vision=std::make_shared<VisionEncoder>(store,model,device);detector=std::make_shared<GroundingDetector>(store,model,device);
-  if(mux){core31=std::make_shared<Sam31TrackingFrame>(store,device);encoder=std::make_unique<VideoFrameEncoder>(vision,detector,core31,device);factory31=[this]{return std::make_unique<Sam31TrackingSession>(core31,[this](int64_t i){return features(i).tracking;},frames,h,w,device,options.mode,options.sam31_session);};}
-  else{core3=std::make_shared<Sam3TrackingFrame>(store,device);encoder=std::make_unique<VideoFrameEncoder>(vision,detector,core3,device);factory3=[this]{return std::make_unique<Sam3TrackingSession>(core3,[this](int64_t i){return features(i).tracking.propagation;},frames,h,w,device,options.mode,options.sam3_session);};}
+  const auto model=mux?"sam3.1":"sam3";vision=modules.vision?modules.vision:std::make_shared<VisionEncoder>(store,model,device);detector=modules.detector?modules.detector:std::make_shared<GroundingDetector>(store,model,device);
+  if(mux){core31=modules.sam31?modules.sam31:std::make_shared<Sam31TrackingFrame>(store,device);encoder=std::make_unique<VideoFrameEncoder>(vision,detector,core31,device);factory31=[this]{return std::make_unique<Sam31TrackingSession>(core31,[this](int64_t i){return features(i).tracking;},frames,h,w,device,options.mode,options.sam31_session);};}
+  else{core3=modules.sam3?modules.sam3:std::make_shared<Sam3TrackingFrame>(store,device);encoder=std::make_unique<VideoFrameEncoder>(vision,detector,core3,device);factory3=[this]{return std::make_unique<Sam3TrackingSession>(core3,[this](int64_t i){return features(i).tracking.propagation;},frames,h,w,device,options.mode,options.sam3_session);};}
  }
  void check(int64_t frame)const{TORCH_CHECK(frame>=0 && frame<frames,"frame outside video");}
  const VideoFrameFeatures& features(int64_t frame){check(frame);if(cached_index!=frame){auto rgb=provider(frame);TORCH_CHECK(rgb.sizes()==at::IntArrayRef({3,h,w}) && rgb.scalar_type()==at::kByte,"frame provider must return U8 RGB [3,H,W]");auto next=encoder->encode_rgb(rgb,options.mode);cached=std::move(next);cached_index=frame;++encodes;}return cached;}
@@ -73,7 +73,8 @@ struct VideoPredictor::Impl {
  VideoRawOutput full(int64_t frame,bool reverse,bool direct){return mux?full(frame,reverse,direct,sessions31,factory31):full(frame,reverse,direct,sessions3,factory3);}
  void ensure_cache(int64_t frame){if(!interaction.cached_frames().count(frame))interaction.record(frame,VideoOutput{});}
 };
-VideoPredictor::VideoPredictor(const WeightStore& s,const std::filesystem::path& vocabulary,FrameProvider provider,int64_t n,int64_t h,int64_t w,at::Device d,const VideoPredictorOptions& o):impl_(std::make_unique<Impl>(s,vocabulary,std::move(provider),n,h,w,d,o)){}
+VideoPredictor::VideoPredictor(const WeightStore& s,const std::filesystem::path& vocabulary,FrameProvider provider,int64_t n,int64_t h,int64_t w,at::Device d,const VideoPredictorOptions& o):VideoPredictor(s,vocabulary,std::move(provider),n,h,w,d,o,VideoPredictorModules{}){}
+VideoPredictor::VideoPredictor(const WeightStore& s,const std::filesystem::path& vocabulary,FrameProvider provider,int64_t n,int64_t h,int64_t w,at::Device d,const VideoPredictorOptions& o,const VideoPredictorModules& modules):impl_(std::make_unique<Impl>(s,vocabulary,std::move(provider),n,h,w,d,o,modules)){}
 VideoPredictor::~VideoPredictor()=default;VideoPredictor::VideoPredictor(VideoPredictor&&) noexcept=default;VideoPredictor& VideoPredictor::operator=(VideoPredictor&&) noexcept=default;
 VideoOutput VideoPredictor::add_prompt(int64_t frame,const VideoSemanticPrompt& p){
  c10::InferenceMode inference;auto& s=*impl_;s.check(frame);TORCH_CHECK(p.text || p.boxes_xywh.defined() || p.visual_features.defined(),"semantic input requires text, boxes or visual tokens");TORCH_CHECK(p.boxes_xywh.defined()==p.box_labels.defined(),"boxes require labels");
@@ -98,12 +99,13 @@ VideoOutput VideoPredictor::fetch(int64_t frame)const{const auto& s=*impl_;const
 void VideoPredictor::propagate(const VideoPredictorPropagation& request,const OutputCallback& callback){
  c10::InferenceMode inference;auto& s=*impl_;TORCH_CHECK(callback,"output callback is required");const auto range=video_processing_range(s.frames,s.initialized,request.start,request.max_steps,request.reverse);const auto route=s.interaction.route(s.metadata.object_ids(),request.force_tracker);s.interaction.append({route.type,request.start,route.ids});s.cancelled.store(false);if(range.empty)return;
  VideoOutputBufferOptions o;o.frame_count=s.frames;o.end_frame=range.end;o.height=s.h;o.width=s.w;o.reverse=request.reverse;o.hotstart_delay=s.options.update.hotstart.delay;o.confirmation_threshold=s.options.update.confirmation_threshold;o.batch_size=s.options.output_batch_size;o.centers=s.options.centers;VideoOutputBuffer buffer(o);
- for(auto frame=range.first;request.reverse?frame>=range.end:frame<=range.end;frame+=range.step){
+ try{for(auto frame=range.first;request.reverse?frame>=range.end:frame<=range.end;frame+=range.step){
   if(s.cancelled.load())break;
-  if(route.type==VideoActionType::Full){for(const auto& emitted:buffer.push(s.full(frame,request.reverse,false))){s.interaction.record(emitted.frame,emitted.output);if(!callback(emitted.frame,emitted.output)){s.cancelled.store(true);break;}}}
+  if(route.type==VideoActionType::Full){for(const auto& emitted:buffer.push(s.full(frame,request.reverse,false))){s.interaction.record(emitted.frame,emitted.output);if(!callback(emitted.frame,emitted.output)){s.cancelled.store(true);break;}if(s.cancelled.load())break;}}
   else if(route.type==VideoActionType::Fetch){if(!callback(frame,fetch(frame)))s.cancelled.store(true);}
   else{TORCH_CHECK(route.type==VideoActionType::Partial && route.ids,"invalid propagation action");s.ensure_cache(frame);RefinedVideoObjects refined;if(s.mux){std::vector<Sam31TrackingSession*> owners;for(auto& x:s.sessions31)owners.push_back(x.get());refined=propagate_video_refinements(frame,request.reverse,*route.ids,owners,s.options.update.cleanup_area);}else{std::vector<Sam3TrackingSession*> owners;for(auto& x:s.sessions3)owners.push_back(x.get());refined=propagate_video_refinements(frame,request.reverse,*route.ids,owners,s.options.update.cleanup_area);}auto out=centers(s.interaction.merge_refined(frame,refined,s.metadata,s.suppressions[frame]),s.h,s.w,s.options.centers);s.initialized.insert(frame);if(!callback(frame,out))s.cancelled.store(true);}
  }
+ }catch(...){s.cancelled.store(true);buffer.cancel();if(s.mux)s.interaction.append({VideoActionType::Cancel,{},{}});throw;}
  if(s.cancelled.load()){buffer.cancel();if(s.mux)s.interaction.append({VideoActionType::Cancel,{},{}});}
 }
 void VideoPredictor::cancel() noexcept{if(impl_)impl_->cancelled.store(true);}

@@ -130,12 +130,13 @@ does not exercise this owner's new semantic replacements.
 
 This is a development C++ API, not the finished full-function distribution.
 Explicit image mode, original-mask restoration and SAM3.1 high-level exact-mask
-edits are described in [IMAGE_PREDICTOR.md](IMAGE_PREDICTOR.md). Complete video C ABI, codecs,
+edits are described in [IMAGE_PREDICTOR.md](IMAGE_PREDICTOR.md). Its owning C ABI is now available; see [PREDICTOR_C_API.md](PREDICTOR_C_API.md). Codecs,
 multi-GPU transport, resumed-session checkpoints, portable SDK packaging and broader
 quality/performance remain. Caller-encoded visual tokens and reverse scheduling
 are available through the owner but are not newly compared by this semantic fixture.
-Single-model cores are shared within one owner; independent owners currently load
-independent cores. No Python/Triton process is needed by the standalone executable.
+Single-model cores are shared within an owner. The optional `VideoPredictorModules`
+constructor also shares immutable cores across owners; the C API does this automatically
+for children of the same context. Per-owner features and state remain separate. No Python/Triton process is needed by the standalone executable.
 The current binaries still depend on this development environment's LibTorch.
 
 CTest passes28 CUDA-enabled and16 custom-CUDA-disabled tests (the latter build

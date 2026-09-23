@@ -19,6 +19,13 @@ int main(void){
   CHECK(sam3_video_options_init(&video,SAM3_MODEL_3)==SAM3_OK && video.non_overlap_output==0 && video.clear_near_input==1);
   sam3_interactive_request interactive;CHECK(sam3_interactive_request_init(&interactive)==SAM3_OK && interactive.multimask==1);
   sam3_grounding_request grounding;CHECK(sam3_grounding_request_init(&grounding)==SAM3_OK && grounding.resize_chunk==8);
+  sam3_predictor_options predictor;sam3_predictor* owner=(sam3_predictor*)1;sam3_semantic_prompt semantic;
+  CHECK(sam3_predictor_options_init(&predictor,SAM3_MODEL_31)==SAM3_OK && predictor.tracking.all_edits_conditioning==0 && predictor.output_batch_size==16 && predictor.image_detection_threshold==.5);
+  CHECK(sam3_predictor_options_init(&predictor,SAM3_MODEL_3)==SAM3_OK && predictor.tracking.select_by_score==1 && predictor.new_detection_threshold==.7);
+  CHECK(sam3_predictor_create(NULL,&predictor,&owner)==SAM3_INVALID_ARGUMENT && owner==NULL);
+  CHECK(sam3_predictor_cancel(NULL)==SAM3_INVALID_ARGUMENT);
+  CHECK(sam3_semantic_prompt_init(&semantic)==SAM3_OK && semantic.struct_size==sizeof(semantic) && semantic.text==NULL);
+  sam3_predictor_release(NULL);
   sam3_context_release(NULL);sam3_image_release(NULL);sam3_video_release(NULL);sam3_result_release(NULL);
   puts("pure C API: ABI/defaults/NULL/invalid options/exception translation passed");return 0;
 }

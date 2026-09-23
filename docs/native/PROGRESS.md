@@ -2073,3 +2073,33 @@ passes. See IMAGE_PREDICTOR.md and image-predictor-validation.json. Owning C ABI
 codecs, multi-GPU transport, portable SDK/CPU stability and broad quality/performance
 remain; the 120-pixel reverse-edit discrepancy is unresolved. No Actions or physical
 Windows/Turing tests were used. The overall goal remains active.
+
+## Owning C ABI and shared predictor cores
+
+Added the C11-compatible sam3_predictor handle for semantic image/video inference,
+point/mask editing, fetch, forward/reverse propagation, cancellation, removal and
+reset. Counted UTF-8 and caller-encoded visual prompts remain dynamic. Existing
+ABI 1 layouts and low-level sam3_video are preserved. Results include display
+fields and pre-overlap cached masks and can outlive all contexts/sessions.
+
+C API children now share immutable vision/detector/tracker cores. Direct C++ users
+can supply VideoPredictorModules. Real CUDA allocator measurements show no added
+active bytes for a second owner: one SAM3 owner uses 2,045,219,328 bytes and SAM3.1
+uses 2,096,884,224 before inference. Modules survive parent/first-owner destruction
+and release after the final owner. These measurements exclude features/history
+and temporary text weights. Distribution still uses the same modular store.
+
+Fixed a cancellation defect: cancel() from a full-propagation callback previously
+allowed the rest of its buffered batch to emit. It now stops that batch immediately.
+Propagation errors also discard pending emissions and record the SAM3.1 cancel
+action before C exception translation. C11 tests cover callback stop/error forms,
+provider errors, reentry BUSY, ownership, reset and state isolation.
+
+All 10 SAM3.1 image outputs and 13 video outputs per model match retained C++ owner
+results exactly; video emission timing also matches. These are C-boundary checks
+with existing original-reference provenance, not new broad upstream equivalence.
+Legacy C tracker comparison retains 86 exact checks. CTest passes 28/16. See
+PREDICTOR_C_API.md and predictor-c-validation.json. Native clients run with no
+Python on PATH or Python shared-library linkage. Codecs/multiGPU/portableSDK, CPU
+stability, broader quality/performance and the earlier 120-pixel reverse discrepancy
+remain. No Actions or Windows/Turing physical tests. Goal remains active.

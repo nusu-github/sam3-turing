@@ -25,6 +25,7 @@ enum {SAM3_IMAGE_GROUNDING=1,SAM3_IMAGE_INTERACTIVE=2,SAM3_IMAGE_ALL=3};
 typedef struct sam3_context sam3_context;
 typedef struct sam3_image sam3_image;
 typedef struct sam3_video sam3_video;
+typedef struct sam3_predictor sam3_predictor;
 typedef struct sam3_result sam3_result;
 /* Contiguous row-major tensor. Dimensions may be zero. NULL optional view
  * pointers mean absent, not an empty tensor. A nonempty tensor needs data.
@@ -140,6 +141,65 @@ SAM3_NATIVE_EXPORT sam3_status sam3_video_clear_input(sam3_video*,int64_t frame,
 SAM3_NATIVE_EXPORT sam3_status sam3_video_remove_object(sam3_video*,int64_t object,int32_t strict,sam3_output_callback,void*) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_video_object_ids(sam3_video*,sam3_result**) SAM3_NOEXCEPT;
 SAM3_NATIVE_EXPORT sam3_status sam3_video_reset(sam3_video*) SAM3_NOEXCEPT;
+
+/* Owning semantic image/video predictor. Distinct from sam3_video's low-level
+ * tracker: owns detection, IDs, edit routing, output buffering and image policy.
+ * tracking supplies source dimensions/provider and temporal tracker options.
+ * Initialize with the context's model; create rejects a model mismatch. */
+typedef struct sam3_predictor_options {
+  uint32_t struct_size;int32_t model;
+  sam3_video_options tracking;
+  int32_t centers,image_only;int64_t output_batch_size;
+  double image_detection_threshold;
+  int32_t nms; /* 0 greedy, 1 SAM3.1 perflib, 2 SAM3.1 batched */
+  double detection_score_threshold,nms_threshold,detection_boundary_margin;
+  int32_t detection_use_iom,detection_boundary_filter;
+  /* Counts use FP32 by default; FP16 requests source overflow compatibility. */
+  int32_t policy_precision;
+  double new_detection_threshold,track_match_threshold,detection_match_threshold;
+  double high_confidence_threshold,iom_recondition_threshold,iou_recondition_threshold;
+  int32_t association_use_iom;int64_t pad_tracks_to;
+  int64_t hotstart_delay,unmatched_threshold,duplicate_threshold;
+  int64_t initial_keep_alive,min_keep_alive,max_keep_alive;
+  int32_t suppress_only_within_hotstart,decrease_for_empty;
+  int64_t recondition_period;
+  double recondition_box_iou_threshold,recondition_detection_score_threshold;
+  int32_t boundary_filter,confirmation_enabled,warmup_complete;
+  int32_t allow_unoccluded_suppression,reapply_no_object_pointer;
+  double boundary_margin,occlusion_threshold;
+  int64_t confirmation_threshold,cleanup_area,bucket_capacity;
+} sam3_predictor_options;
+typedef struct sam3_semantic_prompt {
+  uint32_t struct_size;
+  const sam3_utf8_view* text; /* NULL=absent, non-NULL empty text is a prompt */
+  const sam3_tensor_view *boxes_xywh,*box_labels; /* normalized [N,4], int64[N] */
+  const sam3_tensor_view *visual_features,*visual_padding; /* [N,1,256], bool[1,N] */
+} sam3_semantic_prompt;
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_options_init(sam3_predictor_options*,int32_t model) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_semantic_prompt_init(sam3_semantic_prompt*) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_create(sam3_context*,const sam3_predictor_options*,sam3_predictor**) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT void sam3_predictor_release(sam3_predictor*) SAM3_NOEXCEPT;
+/* Results: frame, ids, probabilities, boxes_xywh, bool masks[N,H,W], optional
+ * normalized centers[N,2]; cached_ids and cached_masks/ID retain pre-overlap
+ * bool[1,H,W] inputs including empty masks. Optional stats/NAME are int64.
+ * IDs/probabilities/boxes/masks follow the same order. Views borrow the result.
+ * Semantic replacement resets observations; execution errors are not a rollback. */
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_add_prompt(sam3_predictor*,int64_t frame,const sam3_semantic_prompt*,sam3_result**) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_add_points(sam3_predictor*,int64_t frame,int64_t object,
+    const sam3_tensor_view* points,const sam3_tensor_view* labels,const sam3_tensor_view* box,
+    int32_t normalized,int32_t clear_old,int32_t use_previous,int32_t stateless,sam3_result**) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_add_mask(sam3_predictor*,int64_t frame,int64_t object,const sam3_tensor_view*,sam3_result**) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_fetch(sam3_predictor*,int64_t frame,sam3_result**) SAM3_NOEXCEPT;
+/* start/steps=-1 select source defaults. Forward includes start, reverse starts
+ * at start-1 (unlike low-level tracker propagation). force_tracker is SAM3-only.
+ * Callbacks may retain results; return 0=continue, 1=cancel, other=error.
+ * Cancellation stops buffered emissions too, without interrupting a CUDA kernel. */
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_propagate(sam3_predictor*,int64_t start,int64_t steps,int32_t reverse,int32_t force_tracker,sam3_output_callback,void*) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_cancel(sam3_predictor*) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_remove_object(sam3_predictor*,int64_t object) SAM3_NOEXCEPT;
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_reset(sam3_predictor*) SAM3_NOEXCEPT;
+/* Diagnostic fields: ids, visual_encodes, cached_frames, action_count. */
+SAM3_NATIVE_EXPORT sam3_status sam3_predictor_info(sam3_predictor*,sam3_result**) SAM3_NOEXCEPT;
 #ifdef __cplusplus
 }
 #endif

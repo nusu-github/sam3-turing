@@ -8,6 +8,7 @@
 #include "sam3/tracking_vision.h"
 #include "sam3/multiplex_vision.h"
 #include "sam3/preprocess.h"
+#include "sam3/video_predictor.h"
 #include <c10/core/InferenceMode.h>
 #include <atomic>
 #include <cstring>
@@ -39,6 +40,10 @@ inline BusyGuard lock(std::atomic_flag& flag){return BusyGuard(flag);}
 at::Tensor tensor(const sam3_tensor_view*);
 at::Tensor rgb(const sam3_rgb_view&);
 int32_t dtype(at::ScalarType);
+void validate_video_options(const sam3_video_options&);
+TrackingSessionOptions tracking_options(const sam3_video_options&);
+MultiplexSessionOptions multiplex_options(const sam3_video_options&);
+VideoPredictor::FrameProvider frame_provider(const sam3_video_options&);
 struct Context {
   WeightStore store;std::string model,mode;at::Device device;std::filesystem::path vocabulary;
   std::mutex mutex;std::shared_ptr<const VisionEncoder> vision_cache;
@@ -73,6 +78,10 @@ struct sam3_image {
   std::vector<int64_t> heights,widths;
   std::shared_ptr<const sam3::InteractiveImageSession> prototype;
   std::unique_ptr<sam3::InteractiveImageSession> interactive;
+};
+struct sam3_predictor {
+  std::shared_ptr<sam3::api::Context> context;std::atomic_flag mutex=ATOMIC_FLAG_INIT;
+  std::unique_ptr<sam3::VideoPredictor> value;
 };
 struct sam3_video {
   std::shared_ptr<sam3::api::Context> context;std::atomic_flag mutex=ATOMIC_FLAG_INIT;

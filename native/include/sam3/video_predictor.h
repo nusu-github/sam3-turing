@@ -24,6 +24,15 @@ struct VideoPredictorPropagation {
   std::optional<int64_t> start,max_steps;
   bool reverse=false,force_tracker=false;
 };
+// Optional immutable modules shared across owners on the same model/device.
+// Missing modules are loaded from the supplied store. Callers must match the
+// selected model/device; sessions retain shared ownership independently.
+struct VideoPredictorModules {
+  std::shared_ptr<const VisionEncoder> vision;
+  std::shared_ptr<const GroundingDetector> detector;
+  std::shared_ptr<const Sam3TrackingFrame> sam3;
+  std::shared_ptr<const Sam31TrackingFrame> sam31;
+};
 // Owns one local video: prompts, shared modules/features, neural sessions,
 // metadata, displayed-frame cache and action/output scheduling. The frame
 // provider returns U8 RGB [3,H,W]; codecs and distributed transport are separate.
@@ -35,6 +44,9 @@ class SAM3_NATIVE_EXPORT VideoPredictor {
   VideoPredictor(const WeightStore&,const std::filesystem::path& vocabulary,
       FrameProvider,int64_t frames,int64_t height,int64_t width,at::Device,
       const VideoPredictorOptions&);
+  VideoPredictor(const WeightStore&,const std::filesystem::path& vocabulary,
+      FrameProvider,int64_t frames,int64_t height,int64_t width,at::Device,
+      const VideoPredictorOptions&,const VideoPredictorModules&);
   ~VideoPredictor();
   VideoPredictor(VideoPredictor&&) noexcept;
   VideoPredictor& operator=(VideoPredictor&&) noexcept;

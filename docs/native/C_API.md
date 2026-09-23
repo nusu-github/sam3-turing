@@ -1,12 +1,13 @@
 # Native C API (ABI 1)
 
-`native/include/sam3/c_api.h` exposes the implemented image and low-level video
-inference modules through an ordinary C ABI. A client needs that header and the
+`native/include/sam3/c_api.h` exposes the implemented image, low-level video and owning semantic
+predictor modules through an ordinary C ABI. A client needs that header and the
 generated `sam3_native_export.h`, plus the native shared library at link/runtime.
 It does not need Torch headers, C++ source, Python or Triton. The shared library
 still needs its LibTorch/CUDA/ICU/zlib dependencies; a relocatable distribution
-is separate work. High-level text-guided video association is not implemented
-by this API yet. The goal of full SAM3/SAM3.1 feature parity remains open.
+is separate work. The owning semantic API is documented in
+[PREDICTOR_C_API.md](PREDICTOR_C_API.md). The goal of full SAM3/SAM3.1 feature
+parity remains open.
 
 ## Ownership and errors
 
@@ -23,7 +24,7 @@ covers wrapper validation; model-side Torch validation can report
 before another API call on that thread. Null releases are safe. Foreign invalid
 pointers or destroyed handles are caller errors, not recoverable exceptions.
 
-Context, image, video and result handles are opaque. Image/video children retain
+Context, image, video, predictor and result handles are opaque. Image/video/predictor children retain
 their context, so releasing the caller's context handle does not invalidate
 live children. Context modules load lazily and are shared across sessions of the
 same type. The visual backbone is shared across image/video sessions. Image
@@ -48,9 +49,9 @@ must keep it valid until the next provider call or the enclosing API returns.
 
 ## Concurrency and callbacks
 
-Serialize calls on each image/video handle. An atomic guard returns `SAM3_BUSY`
+Serialize calls on each image/video/predictor handle. An atomic guard returns `SAM3_BUSY`
 for simultaneous calls or callback reentry; it does not recursively lock a
-mutex. `sam3_video_cancel` is the exception and can be called concurrently or
+mutex. `sam3_video_cancel` and `sam3_predictor_cancel` are exceptions and can be called concurrently or
 from an output callback. It stops propagation after a consistent completed
 frame. Do not destroy a handle during a call.
 
