@@ -1,5 +1,6 @@
 #include "sam3/video_frame.h"
 #include "sam3/video_output.h"
+#include "sam3/video_interaction.h"
 #include "sam3/multiplex_storage.h"
 #include "sam3/text_encoder.h"
 #include "sam3/tokenizer.h"
@@ -13,7 +14,7 @@
 #include <type_traits>
 namespace {
 void binary(const std::filesystem::path& path,const at::Tensor& tensor){const auto x=tensor.cpu().contiguous();std::ofstream f(path,std::ios::binary);f.write(static_cast<const char*>(x.const_data_ptr()),x.nbytes());TORCH_CHECK(f,"cannot write tensor output");}
-template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,const std::string& mode,const std::vector<std::filesystem::path>& files,const sam3::GroundingPrompt& prompt,const std::filesystem::path& root,bool trace){
+template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,const std::string& mode,const std::vector<std::filesystem::path>& files,const sam3::GroundingPrompt& prompt,const std::filesystem::path& root,bool trace,bool partial_probe){
   const std::string model=Mux?"sam3.1":"sam3";const auto vision=std::make_shared<sam3::VisionEncoder>(store,model,device);const auto detector=std::make_shared<sam3::GroundingDetector>(store,model,device);
   using Core=std::conditional_t<Mux,sam3::Sam31TrackingFrame,sam3::Sam3TrackingFrame>;using Session=std::conditional_t<Mux,sam3::Sam31TrackingSession,sam3::Sam3TrackingSession>;using Options=std::conditional_t<Mux,sam3::MultiplexSessionOptions,sam3::TrackingSessionOptions>;
   const auto core=std::make_shared<Core>(store,device);const sam3::VideoFrameEncoder encoder(vision,detector,core,device);
@@ -35,6 +36,7 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
   auto metadata=sam3::initialize_video_metadata(1,device);const auto opts=at::TensorOptions().device(device).dtype(at::kFloat);std::filesystem::create_directories(root);
   sam3::VideoOutputBufferOptions output_options;output_options.frame_count=files.size();output_options.end_frame=files.size()-1;output_options.height=h;output_options.width=w;output_options.batch_size=Mux?16:1;
   sam3::VideoOutputBuffer output_buffer(output_options);
+  sam3::VideoInteractionState interaction(detection_options.model,files.size(),h,w);std::map<int64_t,std::set<int64_t>> suppressed_per_frame;
   for(size_t index=0;index<files.size();++index){
     const auto& visual=features(index);auto raw=encoder.detect(visual,prompt,mode);auto detected=sam3::postprocess_video_detections(raw.detection,detection_options);TORCH_CHECK(detected.size()==1,"this probe accepts one runtime text prompt");auto& detections=detected[0];
     std::vector<at::Tensor> masks,scores;std::vector<int64_t> ids;sam3::TrackingPropagation request;request.start=index;request.max_steps=0;request.encode_memory=false;
@@ -47,7 +49,9 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
     if constexpr(Mux){const auto suppressed=plan.suppressed.cpu();for(size_t i=0;i<plan.previous_ids.size();++i)if(suppressed[i].template item<bool>())final_raw.suppressed.insert(plan.previous_ids[i]);}
     else if(metadata.host.suppressed.count(index))final_raw.suppressed=metadata.host.suppressed.at(index);
     final_raw.unconfirmed=std::set<int64_t>{};if(update.confirmation_enabled){const auto all_ids=metadata.object_ids();for(size_t i=0;i<all_ids.size();++i)if(metadata.confirmation.status[i]==1)final_raw.unconfirmed->insert(all_ids[i]);}
+    suppressed_per_frame[index]=final_raw.suppressed;
     for(const auto& emitted:output_buffer.push(final_raw)){
+      interaction.record(emitted.frame,emitted.output);
       const auto prefix=std::to_string(emitted.frame)+".final.";const auto& value=emitted.output;
       binary(root/(prefix+"ids.i64.bin"),value.ids);binary(root/(prefix+"scores.f32.bin"),value.probabilities);binary(root/(prefix+"boxes.f32.bin"),value.boxes_xywh);binary(root/(prefix+"masks.bin"),sam3::pack_masks(value.masks));
       std::ofstream timing(root/(prefix+"json"));timing<<"{\"emitted_at\":"<<index<<",\"count\":"<<value.ids.numel()<<"}\n";TORCH_CHECK(timing,"cannot write final metadata");
@@ -64,11 +68,22 @@ template<bool Mux> void run(const sam3::WeightStore& store,at::Device device,con
     std::cout<<"frame="<<index<<" queries="<<raw.detection.logits.size(1)<<" candidates="<<detections.keep.sum().template item<int64_t>()<<" tracked="<<metadata.object_ids().size()<<" masks="<<output.size()<<" encodes="<<encodes<<"\n";
   }
   TORCH_CHECK(output_buffer.pending()==0,"final output buffer was not drained");
-  TORCH_CHECK(encodes==int64_t(files.size()),"sequential pipeline repeated a visual trunk evaluation");std::cout<<"shared-trunk detector/tracker pipeline completed; raw outputs, no Python\n";
+  TORCH_CHECK(encodes==int64_t(files.size()),"sequential pipeline repeated a visual trunk evaluation");
+  if(partial_probe){
+    TORCH_CHECK(files.size()>18 && !metadata.object_ids().empty(),"partial regression probe requires at least 19 frames and an existing object");const std::vector<int64_t> selected{metadata.object_ids().front()};
+    interaction.append({sam3::VideoActionType::Refine,18,selected});const auto route=interaction.route();TORCH_CHECK(route.type==sam3::VideoActionType::Partial && route.ids,"partial route missing");interaction.append({route.type,18,route.ids});
+    const auto range=sam3::video_processing_range(files.size(),{},18,3,true);std::vector<Session*> local;for(auto& session:sessions)local.push_back(session.get());
+    for(auto frame=range.first;!range.empty && frame>=range.end;frame+=range.step){
+      const auto refined=sam3::propagate_video_refinements(frame,true,*route.ids,local,update.cleanup_area);const auto output=interaction.merge_refined(frame,refined,metadata,suppressed_per_frame[frame]);
+      const auto prefix=std::to_string(frame)+".partial.";binary(root/(prefix+"ids.i64.bin"),output.ids);binary(root/(prefix+"scores.f32.bin"),output.probabilities);binary(root/(prefix+"boxes.f32.bin"),output.boxes_xywh);binary(root/(prefix+"masks.bin"),sam3::pack_masks(output.masks));
+      const auto fetched=interaction.fetch(frame,metadata,suppressed_per_frame[frame]);TORCH_CHECK(at::equal(fetched.masks,output.masks) && at::equal(fetched.ids,output.ids),"cache fetch changed partial output");std::cout<<"partial frame="<<frame<<" selected="<<selected.front()<<" masks="<<output.ids.numel()<<" encodes="<<encodes<<"\n";
+    }
+  }
+std::cout<<"shared-trunk detector/tracker pipeline completed; raw outputs, no Python\n";
 }
 }
 int main(int argc,char** argv){try{
-  TORCH_CHECK(argc==9 || argc==10,"usage: sam3_video_pipeline_probe STORE sam3|sam3.1 DEVICE MODE FRAMES.txt BPE.gz PROMPT.txt OUTPUT [--trace]");TORCH_CHECK(argc!=10 || std::string(argv[9])=="--trace","unknown probe option");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
+  TORCH_CHECK(argc==9 || argc==10,"usage: sam3_video_pipeline_probe STORE sam3|sam3.1 DEVICE MODE FRAMES.txt BPE.gz PROMPT.txt OUTPUT [--trace|--partial-probe]");const std::string option=argc==10?argv[9]:"";TORCH_CHECK(option.empty() || option=="--trace" || option=="--partial-probe","unknown probe option");at::set_num_threads(4);at::globalContext().setAllowTF32CuBLAS(false);at::globalContext().setAllowTF32CuDNN(false);
   const sam3::WeightStore store(std::filesystem::u8path(argv[1]));const std::string model=argv[2],mode=argv[4];const at::Device device(argv[3]);TORCH_CHECK(model=="sam3" || model=="sam3.1","invalid model");
   const auto manifest=std::filesystem::u8path(argv[5]);std::ifstream input(manifest);TORCH_CHECK(input,"cannot read frame manifest");std::vector<std::filesystem::path> files;std::string line;
   while(std::getline(input,line)){if(!line.empty() && line.back()=='\r')line.pop_back();if(line.empty() || line[0]=='#')continue;auto p=std::filesystem::u8path(line);files.push_back(p.is_absolute()?p:manifest.parent_path()/p);}TORCH_CHECK(!files.empty(),"empty frame manifest");
@@ -76,5 +91,5 @@ int main(int argc,char** argv){try{
   sam3::GroundingPrompt prompt;const auto opts=at::TensorOptions().device(device);prompt.image_ids=prompt.text_ids=at::zeros({1},opts.dtype(at::kLong));
   {sam3::TextEncoder encoder(store,model,device);const auto encoded=encoder.forward([&]{std::vector<at::Tensor> rows;for(const auto& ids:tokenizer.tokenize(model=="sam3.1"?std::vector<std::string>{text,"visual","geometric"}:std::vector<std::string>{text,"visual"}))rows.push_back(at::tensor(ids,opts.dtype(at::kLong)));return at::stack(rows);}(),mode);prompt.text_padding=std::get<0>(encoded);prompt.text_features=std::get<1>(encoded);}
   const auto labels=at::empty({0,1},opts.dtype(at::kLong)),padding=at::empty({1,0},opts.dtype(at::kBool));prompt.geometry={at::empty({0,1,2},opts),labels,padding,at::empty({0,1,4},opts),labels,padding};
-  if(model=="sam3")run<false>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),argc==10);else run<true>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),argc==10);return 0;
+  if(model=="sam3")run<false>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),option=="--trace",option=="--partial-probe");else run<true>(store,device,mode,files,prompt,std::filesystem::u8path(argv[8]),option=="--trace",option=="--partial-probe");return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}

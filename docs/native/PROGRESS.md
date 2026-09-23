@@ -1898,3 +1898,29 @@ See [video output details](VIDEO_OUTPUT.md) for API behavior, evidence and limit
 No Actions or physical Windows/Turing tests were used. This is not full action
 routing/prompt lifecycle, full C ABI, codec/multi-GPU or portable SDK completion.
 Those integrations, CPU runtime stability and quality/performance work remain.
+
+## Connect action routing, selected-object propagation and cached outputs
+
+Added `video_interaction.h`: source action-history route selection, refined-ID
+recognition, propagation bounds with reverse-start exclusion, displayed-frame
+cache snapshots, partial merge/fetch/reset and local neural partial execution.
+The executor runs sessions containing selected IDs with memory encoding but only
+merges requested IDs into prior cached masks. Existing weights/cores are shared.
+Semantic prompt replacement and actual instance edit orchestration remain open.
+
+Actual source routing/range and merge/cache methods match on CPU and CUDA: each
+run covers 998 histories, two rejected malformed cancellation sequences and
+5,106 exact merge/output/score checks across three precisions and up to257objects.
+CTest passes28/16. Source quirks, including missing SAM3.1 cache behavior and raw
+partial-path scores, are documented in [VIDEO_INTERACTION.md](VIDEO_INTERACTION.md).
+
+Both real-neural coherent probes retain exact34-frame forward raw/final outputs,
+then match the original high-level predictor on reverse partial frames17,16,15
+for one requested ID while preserving three other cached objects. BF16/noTF32;
+SAM3.1 batch-one grounding/complexRoPE, outputbatch16. Native processes run with
+PATH=/nonexistent and no Python linkage. This regression records a refine action
+but injects no new point/mask edit; it does not prove full interactivity complete.
+Code/reports and private runtime/reference snapshots are persisted. No Actions or
+physical Windows/Turing tests. Next integrate actual point/mask edits and semantic
+text/geometry/visual prompt lifecycle, then full C ABI, codecs, multi-GPU, portable
+SDK, broad quality/performance and unresolved CPU runtime stability.

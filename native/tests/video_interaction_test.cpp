@@ -1,0 +1,9 @@
+#include "sam3/video_interaction.h"
+#include <ATen/Parallel.h>
+#include <iostream>
+int main(){try{
+ at::set_num_threads(1);sam3::VideoInteractionState state(sam3::AssociationPolicy::Sam3,10,3,5);
+ TORCH_CHECK(state.route().type==sam3::VideoActionType::Full,"initial route");state.append({sam3::VideoActionType::Refine,3,std::vector<int64_t>{7,2,7}});TORCH_CHECK(state.route().ids==std::optional<std::vector<int64_t>>({2,7}),"partial IDs");TORCH_CHECK(sam3::video_object_was_refined(state.actions(),7),"refined history");state.append({sam3::VideoActionType::Partial,0,std::vector<int64_t>{7,2}});TORCH_CHECK(state.route().type==sam3::VideoActionType::Fetch,"boundary fetch");TORCH_CHECK(state.route({7},true).type==sam3::VideoActionType::Partial && state.route({},true).type==sam3::VideoActionType::Full,"forced propagation");
+ sam3::VideoOutput out;out.cached_masks[7]=at::ones({1,3,5},at::kBool);state.record(3,out);out.cached_masks[7].zero_();sam3::VideoMetadata metadata;metadata.object_scores[7]=1.;TORCH_CHECK(state.fetch(3,metadata).masks.all().item<bool>(),"cache not isolated");state.forget_object(7);TORCH_CHECK(state.fetch(3,metadata).ids.numel()==0,"removed cached ID");state.reset();TORCH_CHECK(state.actions().empty() && state.cached_frames().empty(),"reset");const auto range=sam3::video_processing_range(10,{3},{},{},true);TORCH_CHECK(range.first==2 && range.end==0 && range.step==-1,"reverse excludes start");
+ sam3::VideoInteractionState mux(sam3::AssociationPolicy::Sam31,10,3,5);mux.append({sam3::VideoActionType::Cancel,{},{}});TORCH_CHECK(mux.route().type==sam3::VideoActionType::Full,"cancel-only route");bool rejected=false;try{mux.fetch(0,metadata);}catch(const c10::Error&){rejected=true;}TORCH_CHECK(rejected,"SAM31 missing cache fetch");std::cout<<"interaction routing/cache/reset passed\n";return 0;
+}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

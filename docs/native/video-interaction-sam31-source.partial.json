@@ -1,0 +1,44 @@
+{
+  "model": "sam3.1",
+  "mode": "bf16_reference",
+  "scope": "Full real-neural forward pass and original base output stage, followed by a refine action selecting the first tracked ID and original high-level partial reverse propagation over17,16,15. No new point/mask edit is applied in this regression. Standalone C++ selects actual sessions, encodes memories and merges only selected IDs into prior cached outputs.",
+  "cases": [
+    {
+      "frame": 17,
+      "selected": 0,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "frame": 16,
+      "selected": 0,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "frame": 15,
+      "selected": 0,
+      "objects": 4,
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    }
+  ],
+  "exact": true
+}

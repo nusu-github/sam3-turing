@@ -820,3 +820,14 @@ writes `FRAME.final.*` files. Fresh 34-frame real-source comparisons pass for bo
 models, including exact final outputs and emission timing. This supersedes the
 raw-only status above for this sequential probe, while action/prompt integration
 remains incomplete. See [VIDEO_OUTPUT.md](VIDEO_OUTPUT.md) for behavior and tests.
+
+## Action-selected partial propagation and cache fetch
+
+The probe now records displayed-frame masks in `VideoInteractionState`. Optional
+`--partial-probe` exercises action routing, selected-session neural propagation
+with memory, requested-ID-only cache merge and cache fetch after the full pass.
+Both models match original real-neural forward34frames and reverse partial17/16/15.
+The library supports arbitrary valid IDs/bounds; this probe scenario is a regression
+fixture. No new point/mask edit is applied yet. See
+[VIDEO_INTERACTION.md](VIDEO_INTERACTION.md) for semantics, source quirks and
+remaining prompt/edit orchestration.
