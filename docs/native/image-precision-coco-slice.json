@@ -1,0 +1,599 @@
+{
+  "evaluator_environment": {
+    "python": "3.12.3",
+    "numpy": "1.26.4",
+    "pycocotools": "2.0.11",
+    "cocoeval_sha256": "988485f79624cd42ceed9335d284df4cdcdf7b3d583e052fcbed2dd6bccf0267"
+  },
+  "selection": {
+    "seed": 20260923,
+    "selection": "Python random.Random(seed).sample of image-ID-sorted COCO val2017, sorted after selection; fixed before inference",
+    "images": 8,
+    "annotations": 38,
+    "categories": [
+      {
+        "supercategory": "person",
+        "id": 1,
+        "name": "person"
+      },
+      {
+        "supercategory": "animal",
+        "id": 17,
+        "name": "cat"
+      },
+      {
+        "supercategory": "animal",
+        "id": 21,
+        "name": "cow"
+      },
+      {
+        "supercategory": "sports",
+        "id": 42,
+        "name": "surfboard"
+      },
+      {
+        "supercategory": "sports",
+        "id": 43,
+        "name": "tennis racket"
+      },
+      {
+        "supercategory": "kitchen",
+        "id": 44,
+        "name": "bottle"
+      },
+      {
+        "supercategory": "kitchen",
+        "id": 47,
+        "name": "cup"
+      },
+      {
+        "supercategory": "kitchen",
+        "id": 48,
+        "name": "fork"
+      },
+      {
+        "supercategory": "kitchen",
+        "id": 51,
+        "name": "bowl"
+      },
+      {
+        "supercategory": "food",
+        "id": 52,
+        "name": "banana"
+      },
+      {
+        "supercategory": "food",
+        "id": 56,
+        "name": "broccoli"
+      },
+      {
+        "supercategory": "food",
+        "id": 57,
+        "name": "carrot"
+      },
+      {
+        "supercategory": "furniture",
+        "id": 64,
+        "name": "potted plant"
+      },
+      {
+        "supercategory": "furniture",
+        "id": 65,
+        "name": "bed"
+      },
+      {
+        "supercategory": "furniture",
+        "id": 67,
+        "name": "dining table"
+      },
+      {
+        "supercategory": "furniture",
+        "id": 70,
+        "name": "toilet"
+      },
+      {
+        "supercategory": "electronic",
+        "id": 73,
+        "name": "laptop"
+      },
+      {
+        "supercategory": "electronic",
+        "id": 77,
+        "name": "cell phone"
+      },
+      {
+        "supercategory": "appliance",
+        "id": 81,
+        "name": "sink"
+      },
+      {
+        "supercategory": "indoor",
+        "id": 84,
+        "name": "book"
+      },
+      {
+        "supercategory": "indoor",
+        "id": 85,
+        "name": "clock"
+      }
+    ],
+    "prompts": 168,
+    "downloads": [
+      {
+        "image_id": 190307,
+        "file": "000000190307.jpg",
+        "url": "https://s3.amazonaws.com/images.cocodataset.org/val2017/000000190307.jpg",
+        "bytes": 273737,
+        "sha256": "462b4190845ca027dc5d201f98ac07b4a90dd85a68108aea85167acdf475554e",
+        "license": 1,
+        "flickr_url": "http://farm6.staticflickr.com/5265/5638620761_1f4523914c_z.jpg"
+      },
+      {
+        "image_id": 231097,
+        "file": "000000231097.jpg",
+        "url": "https://s3.amazonaws.com/images.cocodataset.org/val2017/000000231097.jpg",
+        "bytes": 94833,
+        "sha256": "c68ddbcec601c1b7fab277f9294cf321bf83d22914e765e183b398ebf84ab53b",
+        "license": 5,
+        "flickr_url": "http://farm1.staticflickr.com/87/269735183_d7e708519f_z.jpg"
+      },
+      {
+        "image_id": 231549,
+        "file": "000000231549.jpg",
+        "url": "https://s3.amazonaws.com/images.cocodataset.org/val2017/000000231549.jpg",
+        "bytes": 139244,
+        "sha256": "9e6d5c06414b2a61fa85e4ac991dd8e7f43c05bdb652cbcd6045d843c16e68d8",
+        "license": 5,
+        "flickr_url": "http://farm9.staticflickr.com/8220/8256493366_f50131fb10_z.jpg"
+      },
+      {
+        "image_id": 278463,
+        "file": "000000278463.jpg",
+        "url": "https://s3.amazonaws.com/images.cocodataset.org/val2017/000000278463.jpg",
+        "bytes": 106293,
+        "sha256": "991fe427551c787dcae0a60952f6506de50cd9d4e16040072929108f34c5eebd",
+        "license": 2,
+        "flickr_url": "http://farm2.staticflickr.com/1376/1280232774_517c04b85b_z.jpg"
+      },
+      {
+        "image_id": 327617,
+        "file": "000000327617.jpg",
+        "url": "https://s3.amazonaws.com/images.cocodataset.org/val2017/000000327617.jpg",
+        "bytes": 160241,
+        "sha256": "ee9b8e35b94f07d4afeb109342e3f8c7cb11e46c540efc9f6b0daf84ce105b0d",
+        "license": 1,
+        "flickr_url": "http://farm7.staticflickr.com/6070/6027826455_2453fbc738_z.jpg"
+      },
+      {
+        "image_id": 350833,
+        "file": "000000350833.jpg",
+        "url": "https://s3.amazonaws.com/images.cocodataset.org/val2017/000000350833.jpg",
+        "bytes": 144616,
+        "sha256": "16be7196e6984ab797a65dd0b8ed3ba5f70d13c558f3bd44f112f8f91390c7ac",
+        "license": 1,
+        "flickr_url": "http://farm5.staticflickr.com/4057/4569565001_3f0c7dee51_z.jpg"
+      },
+      {
+        "image_id": 399764,
+        "file": "000000399764.jpg",
+        "url": "https://s3.amazonaws.com/images.cocodataset.org/val2017/000000399764.jpg",
+        "bytes": 167530,
+        "sha256": "4718432b741cb83a5b7720e96d22a9e58d3f7d7b274d033c153ad30b50b4f8ad",
+        "license": 5,
+        "flickr_url": "http://farm6.staticflickr.com/5027/5777469905_789a18095a_z.jpg"
+      },
+      {
+        "image_id": 466835,
+        "file": "000000466835.jpg",
+        "url": "https://s3.amazonaws.com/images.cocodataset.org/val2017/000000466835.jpg",
+        "bytes": 372192,
+        "sha256": "8e35c6451c5836659e3622553c8ceb9ff72fb38e3d9329422eeb5823676bd4d4",
+        "license": 6,
+        "flickr_url": "http://farm6.staticflickr.com/5289/5288490092_826c8e824a_z.jpg"
+      }
+    ],
+    "annotations_sha256": "113a836d90195ee1f884e704da6304dfaaecff1f023f49b6ca93c4aaae470268",
+    "scope": "Evaluate each category present in the slice on EVERY selected image, including negatives. All original annotations (including crowd) and per-image license/Flickr metadata retained. Not representative/full COCO AP; inference retains all200 queries."
+  },
+  "runs": {
+    "sam3-fp16": {
+      "summary": {
+        "model": "sam3",
+        "mode": "fp16",
+        "cases": 168,
+        "visual_encodes": 8,
+        "text_prompts": 21,
+        "setup_seconds": 11.55,
+        "warmup_detector_calls": 2,
+        "threshold": -1,
+        "tf32": false
+      },
+      "quality": {
+        "bbox": {
+          "AP": 0.7701421517895396,
+          "AP50": 0.8755280219019547,
+          "AP75": 0.8087425952692942,
+          "AP_small": 0.6013965239984459,
+          "AP_medium": 0.8361412927006986,
+          "AP_large": 0.8853960396039604,
+          "AR1": 0.6815476190476191,
+          "AR10": 0.7952380952380952,
+          "AR100": 0.8839285714285714,
+          "AR_small": 0.7666666666666667,
+          "AR_medium": 0.9025000000000001,
+          "AR_large": 0.8875
+        },
+        "segm": {
+          "AP": 0.5715209894717643,
+          "AP50": 0.8745232434149712,
+          "AP75": 0.640701640445169,
+          "AP_small": 0.504813315339631,
+          "AP_medium": 0.7018429760936756,
+          "AP_large": 0.6113242574257426,
+          "AR1": 0.4986111111111111,
+          "AR10": 0.6093253968253968,
+          "AR100": 0.6753968253968253,
+          "AR_small": 0.6166666666666667,
+          "AR_medium": 0.7391666666666666,
+          "AR_large": 0.6145833333333334
+        }
+      },
+      "candidates": 33600,
+      "output_sha256": "30f2c0c47853c327d88965a894173b86fb7618ebd2bf9162c897ede26e7ba97a",
+      "all_finite": true,
+      "performance": {
+        "image_seconds": {
+          "min": 0.060061383,
+          "median": 0.060623337,
+          "p90": 0.16811376209999995,
+          "max": 0.412201289
+        },
+        "detector_postprocess_seconds": {
+          "min": 0.028946745,
+          "median": 0.030085904,
+          "p90": 0.0312917076,
+          "max": 0.034209345
+        },
+        "peak_allocated_bytes": {
+          "min": 3841823744.0,
+          "median": 3906463744.0,
+          "p90": 3945482240.0,
+          "max": 3945482240.0
+        },
+        "peak_reserved_bytes": {
+          "min": 4443865088.0,
+          "median": 4443865088.0,
+          "p90": 4443865088.0,
+          "max": 4443865088.0
+        }
+      }
+    },
+    "sam3-bf16_reference": {
+      "summary": {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "cases": 168,
+        "visual_encodes": 8,
+        "text_prompts": 21,
+        "setup_seconds": 11.379,
+        "warmup_detector_calls": 2,
+        "threshold": -1,
+        "tf32": false
+      },
+      "quality": {
+        "bbox": {
+          "AP": 0.7701634323551181,
+          "AP50": 0.8760026298400322,
+          "AP75": 0.8093767951348828,
+          "AP_small": 0.5957688983184032,
+          "AP_medium": 0.8387364606025819,
+          "AP_large": 0.8978960396039604,
+          "AR1": 0.6815476190476191,
+          "AR10": 0.7952380952380952,
+          "AR100": 0.8857142857142857,
+          "AR_small": 0.7388888888888888,
+          "AR_medium": 0.9025000000000001,
+          "AR_large": 0.9
+        },
+        "segm": {
+          "AP": 0.5731868024469955,
+          "AP50": 0.8751364888041598,
+          "AP75": 0.6407147491305906,
+          "AP_small": 0.4881521986785144,
+          "AP_medium": 0.704302724390086,
+          "AP_large": 0.6238242574257425,
+          "AR1": 0.5009920634920635,
+          "AR10": 0.6033730158730158,
+          "AR100": 0.6789682539682539,
+          "AR_small": 0.6,
+          "AR_medium": 0.7391666666666666,
+          "AR_large": 0.6270833333333334
+        }
+      },
+      "candidates": 33600,
+      "output_sha256": "8805557d9acd5fb1b02f472302cc6e19da6d5aedce15cce8b564ade644ba5fa9",
+      "all_finite": true,
+      "performance": {
+        "image_seconds": {
+          "min": 0.056399067,
+          "median": 0.0567195135,
+          "p90": 0.14047293139999997,
+          "max": 0.329355253
+        },
+        "detector_postprocess_seconds": {
+          "min": 0.029460582,
+          "median": 0.030272694500000003,
+          "p90": 0.030741561,
+          "max": 0.032544368
+        },
+        "peak_allocated_bytes": {
+          "min": 3841823744.0,
+          "median": 3906275328.0,
+          "p90": 3945482240.0,
+          "max": 3945482240.0
+        },
+        "peak_reserved_bytes": {
+          "min": 4418699264.0,
+          "median": 4418699264.0,
+          "p90": 4418699264.0,
+          "max": 4418699264.0
+        }
+      }
+    },
+    "sam3.1-fp16": {
+      "summary": {
+        "model": "sam3.1",
+        "mode": "fp16",
+        "cases": 168,
+        "visual_encodes": 8,
+        "text_prompts": 21,
+        "setup_seconds": 10.5652,
+        "warmup_detector_calls": 2,
+        "threshold": -1,
+        "tf32": false
+      },
+      "quality": {
+        "bbox": {
+          "AP": 0.7692888648258654,
+          "AP50": 0.8725622874844938,
+          "AP75": 0.8082367716779897,
+          "AP_small": 0.5913610915747445,
+          "AP_medium": 0.837122116683213,
+          "AP_large": 0.8103960396039604,
+          "AR1": 0.6815476190476191,
+          "AR10": 0.7952380952380952,
+          "AR100": 0.8607142857142858,
+          "AR_small": 0.7944444444444444,
+          "AR_medium": 0.9008333333333333,
+          "AR_large": 0.8125
+        },
+        "segm": {
+          "AP": 0.5737372922682716,
+          "AP50": 0.8739205422373739,
+          "AP75": 0.6403606930598835,
+          "AP_small": 0.5207130730050933,
+          "AP_medium": 0.7042743896238364,
+          "AP_large": 0.5613242574257425,
+          "AR1": 0.5009920634920635,
+          "AR10": 0.610515873015873,
+          "AR100": 0.6521825396825396,
+          "AR_small": 0.6166666666666667,
+          "AR_medium": 0.7375,
+          "AR_large": 0.5645833333333334
+        }
+      },
+      "candidates": 33600,
+      "output_sha256": "480ebbbc5f77508398e89d83b2b2822ef3c310b1198186f74d2b1c1d18e31867",
+      "all_finite": true,
+      "performance": {
+        "image_seconds": {
+          "min": 0.059734852,
+          "median": 0.060402845,
+          "p90": 0.13454563699999994,
+          "max": 0.300861024
+        },
+        "detector_postprocess_seconds": {
+          "min": 0.029169872,
+          "median": 0.0298604755,
+          "p90": 0.03212288920000001,
+          "max": 0.035388775
+        },
+        "peak_allocated_bytes": {
+          "min": 3862592512.0,
+          "median": 3927232512.0,
+          "p90": 3966251008.0,
+          "max": 3966251008.0
+        },
+        "peak_reserved_bytes": {
+          "min": 4462739456.0,
+          "median": 4462739456.0,
+          "p90": 4462739456.0,
+          "max": 4462739456.0
+        }
+      }
+    },
+    "sam3.1-bf16_reference": {
+      "summary": {
+        "model": "sam3.1",
+        "mode": "bf16_reference",
+        "cases": 168,
+        "visual_encodes": 8,
+        "text_prompts": 21,
+        "setup_seconds": 9.91893,
+        "warmup_detector_calls": 2,
+        "threshold": -1,
+        "tf32": false
+      },
+      "quality": {
+        "bbox": {
+          "AP": 0.7707344180900131,
+          "AP50": 0.8713491951721897,
+          "AP75": 0.8076798690559045,
+          "AP_small": 0.5848986773677367,
+          "AP_medium": 0.8433609367034265,
+          "AP_large": 0.8125,
+          "AR1": 0.6821428571428572,
+          "AR10": 0.7958333333333333,
+          "AR100": 0.856547619047619,
+          "AR_small": 0.7555555555555554,
+          "AR_medium": 0.9008333333333333,
+          "AR_large": 0.8125
+        },
+        "segm": {
+          "AP": 0.5784762175626996,
+          "AP50": 0.8739205422373739,
+          "AP75": 0.639946790597427,
+          "AP_small": 0.5200702678963548,
+          "AP_medium": 0.7041494922447769,
+          "AP_large": 0.5738242574257426,
+          "AR1": 0.5057539682539682,
+          "AR10": 0.6152777777777777,
+          "AR100": 0.6569444444444443,
+          "AR_small": 0.6166666666666667,
+          "AR_medium": 0.7375,
+          "AR_large": 0.5770833333333334
+        }
+      },
+      "candidates": 33600,
+      "output_sha256": "32b936c359416a0630d21df941b8751295ec5e4b329621a7c6280c9dcc1c4d04",
+      "all_finite": true,
+      "performance": {
+        "image_seconds": {
+          "min": 0.056003104,
+          "median": 0.0566721665,
+          "p90": 0.12882665319999995,
+          "max": 0.290712716
+        },
+        "detector_postprocess_seconds": {
+          "min": 0.026995497,
+          "median": 0.0293621635,
+          "p90": 0.029659344,
+          "max": 0.029945049
+        },
+        "peak_allocated_bytes": {
+          "min": 3862592512.0,
+          "median": 3927044096.0,
+          "p90": 3966251008.0,
+          "max": 3966251008.0
+        },
+        "peak_reserved_bytes": {
+          "min": 4437573632.0,
+          "median": 4437573632.0,
+          "p90": 4437573632.0,
+          "max": 4437573632.0
+        }
+      }
+    }
+  },
+  "fp16_minus_bf16": {
+    "sam3": {
+      "bbox": {
+        "AP": -2.1280565578485344e-05,
+        "AP50": -0.00047460793807752033,
+        "AP75": -0.0006341998655886583,
+        "AP_small": 0.005627625680042714,
+        "AP_medium": -0.0025951679018832996,
+        "AP_large": -0.012499999999999956,
+        "AR1": 0.0,
+        "AR10": 0.0,
+        "AR100": -0.0017857142857142794,
+        "AR_small": 0.0277777777777779,
+        "AR_medium": 0.0,
+        "AR_large": -0.012500000000000067
+      },
+      "segm": {
+        "AP": -0.0016658129752311623,
+        "AP50": -0.0006132453891886103,
+        "AP75": -1.310868542159227e-05,
+        "AP_small": 0.016661116661116637,
+        "AP_medium": -0.00245974829641038,
+        "AP_large": -0.012499999999999956,
+        "AR1": -0.0023809523809523725,
+        "AR10": 0.005952380952380931,
+        "AR100": -0.0035714285714285587,
+        "AR_small": 0.01666666666666672,
+        "AR_medium": 0.0,
+        "AR_large": -0.012500000000000067
+      }
+    },
+    "sam3.1": {
+      "bbox": {
+        "AP": -0.0014455532641476365,
+        "AP50": 0.0012130923123041537,
+        "AP75": 0.0005569026220851869,
+        "AP_small": 0.006462414207007772,
+        "AP_medium": -0.006238820020213476,
+        "AP_large": -0.0021039603960395503,
+        "AR1": -0.0005952380952380931,
+        "AR10": -0.0005952380952380931,
+        "AR100": 0.004166666666666763,
+        "AR_small": 0.03888888888888897,
+        "AR_medium": 0.0,
+        "AR_large": 0.0
+      },
+      "segm": {
+        "AP": -0.004738925294427987,
+        "AP50": 0.0,
+        "AP75": 0.00041390246245653906,
+        "AP_small": 0.0006428051087384867,
+        "AP_medium": 0.0001248973790595187,
+        "AP_large": -0.012500000000000067,
+        "AR1": -0.004761904761904745,
+        "AR10": -0.004761904761904745,
+        "AR100": -0.004761904761904745,
+        "AR_small": 0.0,
+        "AR_medium": 0.0,
+        "AR_large": -0.012499999999999956
+      }
+    }
+  },
+  "metric_max_detections": [
+    1,
+    10,
+    100
+  ],
+  "scope": "Small predetermined COCO slice, not full COCO or representative quality. All 200 native candidates retained; standard metric maxDets=100. Native FP16 versus native BF16, not an unmodified source parity claim. Local Blackwell hardware; Windows/Turing execution remains user-owned. Allocator peaks include live model/cache and validation intermediates; exclude driver/context and allocations outside the PyTorch allocator. Timing excludes validation, packing and file output; text is cached. Two detector warmups; image times include cold first image and decode.",
+  "environment": {
+    "gpu": "NVIDIA RTX PRO 4500 Blackwell 32GB (sm120)",
+    "driver": "580.159.04",
+    "libtorch": "2.10.0+cu130 official standalone",
+    "inference_python": false,
+    "inference_triton": false,
+    "inference_PATH": "/nonexistent",
+    "LD_LIBRARY_PATH": "unset",
+    "threads": 4
+  },
+  "validation": {
+    "evaluator_tests": 4,
+    "installed_sdk": [
+      {
+        "run": "sam3-fp16",
+        "all_candidates_exact": true,
+        "all_masks_exact": true
+      },
+      {
+        "run": "sam3-bf16_reference",
+        "all_candidates_exact": true,
+        "all_masks_exact": true
+      },
+      {
+        "run": "sam3.1-fp16",
+        "all_candidates_exact": true,
+        "all_masks_exact": true
+      },
+      {
+        "run": "sam3.1-bf16_reference",
+        "all_candidates_exact": true,
+        "all_masks_exact": true
+      }
+    ],
+    "nvidia_evaluator_max_metric_difference": 0.0,
+    "cuda_inference_cases": 672,
+    "emitted_candidates": 134400,
+    "windows_turing_execution": false,
+    "github_actions": false,
+    "cpu_sdk": "compile/link/load only; no new CPU model inference",
+    "recovered_sdk_sam31_fp16_exact": true,
+    "recovered_sdk_model_media_libraries": 25
+  }
+}

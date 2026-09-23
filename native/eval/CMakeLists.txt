@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.21)
+project(sam3_image_benchmark LANGUAGES CXX)
+find_package(Sam3Native CONFIG REQUIRED COMPONENTS CPP)
+option(SAM3_BENCHMARK_CUDA "Collect CUDA allocator statistics" OFF)
+add_executable(sam3_image_benchmark ../tools/image_benchmark.cpp)
+target_link_libraries(sam3_image_benchmark PRIVATE sam3::cpp)
+if(SAM3_BENCHMARK_CUDA)
+  target_compile_definitions(sam3_image_benchmark PRIVATE SAM3_BENCH_CUDA)
+endif()
+set_target_properties(sam3_image_benchmark PROPERTIES
+  INSTALL_RPATH "$ORIGIN/../${Sam3Native_RUNTIME_LIBDIR}")
+sam3_copy_runtime(sam3_image_benchmark)
+install(TARGETS sam3_image_benchmark RUNTIME DESTINATION bin)

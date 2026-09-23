@@ -2244,3 +2244,28 @@ full SAM3.1 OpenCV-compatible video inference. See VIDEO_PREPROCESS.md and repor
 Remaining work includes broad codec/quality coverage and CPU arithmetic effects,
 input indexing costs, video writing, multiGPU and CPU long-run stability. No
 Actions or Windows/Turing execution. Full goal remains active.
+
+## Annotated image FP16 audit
+
+Added a Python-free C++ image benchmark plus a separate pinned offline COCO
+scorer. Eight COCO val2017 images were sampled deterministically before inference;
+all21 categories present in the annotations were queried on every image,
+including negatives. Both models/precisions retain all200 candidates and full1008
+encoding:672 cases/134,400 candidates, all finite. COCO's metric uses standard
+maxDets100 without changing inference output. This small slice is not full COCO.
+
+Mask AP FP16/BF16 is57.1521/57.3187 forSAM3 and57.3737/57.8476 forSAM3.1 on the
+0–100 scale. All96 metrics agree between pinned pycocotools2.0.11 and the existing
+NVIDIA evaluator. Four integrity tests include a known perfect AP result.
+Local Blackwell detector/postprocess medians are29.4–30.3ms with cached features;
+PyTorch allocation peaks are3,945,482,240/3,966,251,008bytes forSAM3/SAM3.1. These
+exclude driver/context allocations and do not establish Turing memory fit/speed.
+
+CPU/CUDA installed-SDK consumers compile/load. Four CUDA image/prompt checks
+(one per model/precision) match all development outputs exactly with Python absent
+fromPATH. Small tool-only SDK archives reuse the existing runtime/weight layers.
+Raw outputs, selected licensed data and reproducibility evidence are private;
+see IMAGE_PRECISION_AUDIT.md and image-precision-coco-slice.json. No production
+arithmetic or threshold was changed. Broader image/video quality, Windows/Turing
+physical testing (user-owned), multiGPU and the previous open items remain.
+No Actions. Goal remains active.
