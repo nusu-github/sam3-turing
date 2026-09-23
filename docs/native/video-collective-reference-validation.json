@@ -1,0 +1,576 @@
+{
+  "scope": "SAM3 original semantic lifecycle replay versus unchanged 080038b native outputs; sequential logical ranks on one Blackwell GPU; not physical distributed execution.",
+  "native_commit": "080038b6ce4ef0f85080d6d335c5fc6427787c88",
+  "hardware": "RTX PRO 4500 Blackwell, driver 580.159.04",
+  "reference_runtime": "NVIDIA PyTorch 2.10.0a0+b558c986e8.nv25.11 except official wheel diagnostic",
+  "native_runtime": "Standalone LibTorch 2.10.0 cu130",
+  "source_sha256": {
+    "native/tests/video_predictor_parity.py": "605350700e27de0ece0a87f24f532403496a848fec83d23bda34980d2781ef26",
+    "native/tests/video_collective_reference.py": "481ebdbd5bad86e660d18bc38b453d80f937c9997be8a9b2f1bcf228c89f3662",
+    "native/tests/test_video_collective_reference.py": "5e0f8d50acea2aa6d12a5f26fcea000e5c05f0d4d7eeba1461de725ee273e8bd",
+    "sam3/model/sam3_video_base.py": "7ffae0a8c15f17814ce438078b6a00cc052be21ad16c8a59205df859c3df52c4",
+    "sam3/model/sam3_video_inference.py": "a502cd76a845292aaf022f64667c176bad919a1bd0cfd9b542d2aa58a7d561fe"
+  },
+  "cases": [
+    {
+      "evidence": "bf16-control",
+      "report_sha256": "58a9b949ef0d604abf5095898bd6a159b6c840474bff3a01d5484348cb6c2ff4",
+      "mode": "bf16_reference",
+      "reference": "single",
+      "native": "single",
+      "outputs": 11,
+      "exact": true,
+      "mask_mismatches": 0,
+      "different_mask_outputs": 0,
+      "all_other_fields_exact": true,
+      "per_output": [
+        {
+          "tag": "0.person",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.person_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.person_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.person_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "3.person_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.box_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.box_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.text_box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.fetch",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.reset_person",
+          "mask_mismatches": 0
+        }
+      ]
+    },
+    {
+      "evidence": "bf16-promoted",
+      "report_sha256": "253a6cd14e4b7b06036260e17ee6168f4f11962afd08bbe39c67a104f9e62f2a",
+      "mode": "bf16_reference",
+      "reference": "empty_peer",
+      "native": "two_ranks",
+      "outputs": 11,
+      "exact": false,
+      "mask_mismatches": 133,
+      "different_mask_outputs": 5,
+      "all_other_fields_exact": true,
+      "per_output": [
+        {
+          "tag": "0.person",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.person_track",
+          "mask_mismatches": 7
+        },
+        {
+          "tag": "1.person_track",
+          "mask_mismatches": 37
+        },
+        {
+          "tag": "2.person_track",
+          "mask_mismatches": 30
+        },
+        {
+          "tag": "3.person_track",
+          "mask_mismatches": 30
+        },
+        {
+          "tag": "1.box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.box_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.box_track",
+          "mask_mismatches": 29
+        },
+        {
+          "tag": "2.text_box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.fetch",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.reset_person",
+          "mask_mismatches": 0
+        }
+      ]
+    },
+    {
+      "evidence": "bf16-partitioned",
+      "report_sha256": "0fb78d8095c4ab66bf856b8522ec01b8603ab34835155e81cb997d8b983b932a",
+      "mode": "bf16_reference",
+      "reference": "partitioned",
+      "native": "two_ranks",
+      "outputs": 11,
+      "exact": true,
+      "mask_mismatches": 0,
+      "different_mask_outputs": 0,
+      "all_other_fields_exact": true,
+      "per_output": [
+        {
+          "tag": "0.person",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.person_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.person_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.person_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "3.person_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.box_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.box_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.text_box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.fetch",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.reset_person",
+          "mask_mismatches": 0
+        }
+      ]
+    },
+    {
+      "evidence": "fp16-control",
+      "report_sha256": "30e0eb89f8bc942729cd6b264c9d1acf4d5fab1f8a64576cece75ba49f672d69",
+      "mode": "fp16",
+      "reference": "single",
+      "native": "single",
+      "outputs": 11,
+      "exact": false,
+      "mask_mismatches": 30,
+      "different_mask_outputs": 4,
+      "all_other_fields_exact": true,
+      "per_output": [
+        {
+          "tag": "0.person",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.person_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.person_track",
+          "mask_mismatches": 5
+        },
+        {
+          "tag": "2.person_track",
+          "mask_mismatches": 11
+        },
+        {
+          "tag": "3.person_track",
+          "mask_mismatches": 8
+        },
+        {
+          "tag": "1.box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.box_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.box_track",
+          "mask_mismatches": 6
+        },
+        {
+          "tag": "2.text_box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.fetch",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.reset_person",
+          "mask_mismatches": 0
+        }
+      ]
+    },
+    {
+      "evidence": "fp16-promoted",
+      "report_sha256": "b7ae76b34b9546ce74fd6eeda12caf1bc3ce225f3faf3cbbe96c797bd548d225",
+      "mode": "fp16",
+      "reference": "empty_peer",
+      "native": "two_ranks",
+      "outputs": 11,
+      "exact": false,
+      "mask_mismatches": 32,
+      "different_mask_outputs": 5,
+      "all_other_fields_exact": true,
+      "per_output": [
+        {
+          "tag": "0.person",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.person_track",
+          "mask_mismatches": 9
+        },
+        {
+          "tag": "1.person_track",
+          "mask_mismatches": 5
+        },
+        {
+          "tag": "2.person_track",
+          "mask_mismatches": 5
+        },
+        {
+          "tag": "3.person_track",
+          "mask_mismatches": 7
+        },
+        {
+          "tag": "1.box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.box_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.box_track",
+          "mask_mismatches": 6
+        },
+        {
+          "tag": "2.text_box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.fetch",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.reset_person",
+          "mask_mismatches": 0
+        }
+      ]
+    },
+    {
+      "evidence": "fp16-partitioned",
+      "report_sha256": "da005998edc92dc260bbb17206f98fad9760319e61f024374ad433b7e6161d14",
+      "mode": "fp16",
+      "reference": "partitioned",
+      "native": "two_ranks",
+      "outputs": 11,
+      "exact": false,
+      "mask_mismatches": 26,
+      "different_mask_outputs": 4,
+      "all_other_fields_exact": true,
+      "per_output": [
+        {
+          "tag": "0.person",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.person_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.person_track",
+          "mask_mismatches": 7
+        },
+        {
+          "tag": "2.person_track",
+          "mask_mismatches": 7
+        },
+        {
+          "tag": "3.person_track",
+          "mask_mismatches": 6
+        },
+        {
+          "tag": "1.box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.box_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.box_track",
+          "mask_mismatches": 6
+        },
+        {
+          "tag": "2.text_box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.fetch",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.reset_person",
+          "mask_mismatches": 0
+        }
+      ]
+    },
+    {
+      "evidence": "fp16-matched-control",
+      "report_sha256": "1cc846fffa21271a9cdbfff901012cb756b09531f6a93e111d5b3cae96ce2ca9",
+      "mode": "fp16",
+      "reference": "official_python_wheel_single",
+      "native": "single",
+      "outputs": 11,
+      "exact": false,
+      "mask_mismatches": 32,
+      "different_mask_outputs": 4,
+      "all_other_fields_exact": true,
+      "per_output": [
+        {
+          "tag": "0.person",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.person_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.person_track",
+          "mask_mismatches": 6
+        },
+        {
+          "tag": "2.person_track",
+          "mask_mismatches": 12
+        },
+        {
+          "tag": "3.person_track",
+          "mask_mismatches": 8
+        },
+        {
+          "tag": "1.box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "1.box_track",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.box_track",
+          "mask_mismatches": 6
+        },
+        {
+          "tag": "2.text_box",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "2.fetch",
+          "mask_mismatches": 0
+        },
+        {
+          "tag": "0.reset_person",
+          "mask_mismatches": 0
+        }
+      ]
+    }
+  ],
+  "collection_only_comparisons": [
+    {
+      "mode": "bf16",
+      "control_vs_empty_peer": [
+        {
+          "name": "0.person.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "0.person_track.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "0.reset_person.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "1.box.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "1.box_track.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "1.person_track.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "2.box_track.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "2.fetch.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "2.person_track.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "2.text_box.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "3.person_track.npz",
+          "all_arrays_exact": true
+        }
+      ]
+    },
+    {
+      "mode": "fp16",
+      "control_vs_empty_peer": [
+        {
+          "name": "0.person.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "0.person_track.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "0.reset_person.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "1.box.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "1.box_track.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "1.person_track.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "2.box_track.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "2.fetch.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "2.person_track.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "2.text_box.npz",
+          "all_arrays_exact": true
+        },
+        {
+          "name": "3.person_track.npz",
+          "all_arrays_exact": true
+        }
+      ]
+    }
+  ],
+  "integrity_tests": {
+    "tests": 3,
+    "tensor_subcases": 32,
+    "all_pass": true,
+    "cached_partitioned_bf16_exact": true
+  },
+  "runtime_diagnostic": {
+    "evidence": "fp16-matched-control",
+    "actual_meaning": "Official CPython 3.12 torch 2.10.0+cu130 / torchvision 0.25.0+cu130 wheels; loader trace confirmed wheel core libraries, not identical standalone LibTorch binaries.",
+    "numpy": "1.26.4",
+    "mask_mismatches": 32,
+    "same_standalone_core_experiment": "Failed before inference: wheel wrapper needs missing c10d::nvshmem_extension::is_nvshmem_available symbol; standalone wrapper needs unavailable _PyCode_SetExtra symbol. No same-binary source inference result.",
+    "no_native_sdk_changes": true,
+    "core_sha256": {
+      "libc10.so": {
+        "standalone": "c94dfc122e551e3b4446e50e0a52c389d76553df4c96bb03e1e1fda6d9ac0e8b",
+        "python_wheel": "b52648b95093e615ae22e389b04b36447658d28bb96f3edc62ee7af93596e3b7"
+      },
+      "libtorch_cpu.so": {
+        "standalone": "a6c239a288571608ded27f42ec06f1079c6a1fcb98245028cf4ddd103109ab2a",
+        "python_wheel": "018d1922295dc11af2d0dcf4a7c4391eefe6d8188dc69e27b5545f08eb110a83"
+      },
+      "libtorch_cuda.so": {
+        "standalone": "21373c3c30314dd85c1c2930ce55527772e55dd2d0c57dc3c6b31b8d7e5401a5",
+        "python_wheel": "2c28bf7f912baa8c1849f1c3eda6f90f2fc6c9dfd22326d183c6f6daabab4fd2"
+      },
+      "libtorch.so": {
+        "standalone": "2d8f0fc43ddec38fa64ac9dd0610a9311912f904e5465a071c86a2c54ba23c41",
+        "python_wheel": "c1840a555e30043ef02c02ee22b21d0687342a3ce82bc971ef2280520c20cd22"
+      }
+    },
+    "vendor_libraries": "Loader trace: cuBLAS/cuDNN/cudart from standalone SDK aliases; cuSPARSE and nvrtc-builtins from system CUDA; torchvision also loads its packaged cudart. This is an isolated diagnostic, not a deployment runtime."
+  },
+  "conclusions": [
+    "Original collection-only empty-peer replay preserves all reference arrays in FP16 and BF16 on this fixture. Input masks are already FP32.",
+    "Original rank-partitioned BF16 reproduces all 11 native two-rank outputs exactly. Session partitioning/global order is relevant; batch size versus ordering effects are not independently isolated.",
+    "FP16 residual differences remain: 30 mask pixels with one rank, 26 with partitioned two-rank reference. No tolerance was used to relabel these as exact."
+  ],
+  "limitations": [
+    "One four-frame fixture with semantic prompt replacement, full propagation, fetch and reset.",
+    "Partition adapter does not cover distributed instance edits, physical collectives, actual multi-GPU scheduling or failures.",
+    "FP16 source vision MLP is explicitly adapted to native precision policy.",
+    "No Windows/Turing execution; no Actions; no speed improvement claimed."
+  ],
+  "persistence": {
+    "bucket": "RamRom/sam3-turing-native-20260922",
+    "private": true,
+    "prefix": "native-foundation/video-collective-reference",
+    "native_output_reuse": "native-foundation/video-multidevice-linux/multidevice-owner.tar.gz",
+    "fixture_reuse": "native-foundation/video-collective-linux/owner-input-frames.tar.gz",
+    "sdk_reuse": "video-multidevice-sdk-overlay/overlays.json",
+    "new_weights": false,
+    "new_sdk": false
+  }
+}

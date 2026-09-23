@@ -2350,3 +2350,22 @@ weights and dependency layers.
 Physical multiGPU execution, parallel scheduling, broader quality and CPU
 long-run stability remain open. Windows/Turing tests remain user-owned. No Actions.
 Goal remains active.
+
+## Original-source logical-rank reference
+
+Added a test-only original collection replay and actual rank-local neural-session
+replay for the SAM3 semantic lifecycle fixture. Collection-only promotion leaves
+all original arrays unchanged in both precisions. Partitioned original BF16
+matches all 11 native two-rank outputs exactly, explaining the earlier BF16
+rank-dependent result without altering native output or tolerances. Session
+partitioning and object order were not independently isolated.
+
+FP16 remains non-exact: 30 mask pixels against a one-rank reference, 26 against
+a two-rank partitioned reference. IDs, scores, boxes and emission timing match.
+Official Python 2.10.0 cu130 also retains a difference; its core libraries differ
+from standalone LibTorch, and an attempted identical-core bridge failed at import.
+No same-binary reference result is claimed. Three integrity tests and the saved
+BF16 comparison pass. See VIDEO_COLLECTIVE_REFERENCE.md and its validation JSON.
+Only tests/docs change; deployable SDK, dependencies and weights are reused.
+Private reference evidence is persisted separately. No Actions or Windows/Turing
+execution. Goal remains active, including parallel workers and unresolved FP16.

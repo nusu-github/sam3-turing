@@ -98,7 +98,9 @@ Default output matches all 266 files exactly. Two-rank SAM3.1 output also matche
 this fixture exactly; SAM3 changes masks in five frames per precision, 159 pixels
 in total across both precisions, with minimum per-object IoU 0.99976113699.
 These differences are retained in the report, not accepted under a hidden
-comparison tolerance. Exact distributed-source numerical parity remains open.
+comparison tolerance. A subsequent [source logical-rank replay](VIDEO_COLLECTIVE_REFERENCE.md)
+reproduces the BF16 two-rank outputs exactly; FP16 and physical distributed-source
+validation remain open.
 
 Pure C probes pass for SAM3/SAM3.1 video and SAM3.1 image in FP16 with two logical
 ranks. CPU/CUDA CTest suites pass 19/33 tests. C11 consumers compile against only
