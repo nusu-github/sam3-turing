@@ -1,0 +1,9 @@
+Test project D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+    Start 14: qkv_calibration_cpu
+1/2 Test #14: qkv_calibration_cpu ..............   Passed    1.01 sec
+    Start 15: qkv_calibration_cuda
+2/2 Test #15: qkv_calibration_cuda .............   Passed    1.99 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   3.00 sec

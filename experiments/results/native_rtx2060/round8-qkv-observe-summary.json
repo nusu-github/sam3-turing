@@ -1,0 +1,11 @@
+[
+  {
+    "run": "r8-qkv-error-observe",
+    "kind": "observe",
+    "mode": "fp16",
+    "completed": 32,
+    "process_wall_seconds": 285.25854563713074,
+    "max_peak_allocated_bytes": 2339337728,
+    "max_sampled_whole_gpu_bytes": 3944693760
+  }
+]

@@ -99,6 +99,36 @@ inline at::Tensor read_qkv_data(int layer, const std::filesystem::path& root,
   return values.to(device);
 }
 
+inline at::Tensor read_qkv_output_bias(int layer, const std::filesystem::path& root,
+    at::Device device) {
+  constexpr int64_t width=3072;
+  TORCH_CHECK(layer>=0 && layer<32,"invalid QKV output bias layer");
+  const auto path=root/"qkv-output-bias.f32.bin";
+  TORCH_CHECK(std::filesystem::file_size(path)==32*width*sizeof(float),"invalid QKV output bias size");
+  auto values=at::empty({width},at::TensorOptions().dtype(at::kFloat).device(at::kCPU));
+  std::ifstream in(path,std::ios::binary);
+  in.seekg(layer*width*sizeof(float));
+  in.read(static_cast<char*>(values.mutable_data_ptr()),values.nbytes());
+  TORCH_CHECK(in && at::isfinite(values).all().item<bool>(),"invalid QKV output bias data");
+  values=values.to(device,at::kHalf).contiguous();
+  TORCH_CHECK(at::isfinite(values).all().item<bool>(),"QKV output bias overflows FP16");
+  return values;
+}
+
+// Sufficient statistics of the actual rounded projection outputs, before RoPE.
+// Rows: mean error, mean squared error, reference mean, candidate mean, base bias.
+inline at::Tensor qkv_error_statistics(const at::Tensor& reference,
+    const at::Tensor& candidate,const at::Tensor& bias) {
+  TORCH_CHECK(reference.dim()==2 && reference.sizes()==candidate.sizes() &&
+      reference.size(0)>0 && bias.dim()==1 && bias.size(0)==reference.size(1),
+      "QKV output statistics shape mismatch");
+  const auto ref=reference.to(at::kFloat),actual=candidate.to(at::kFloat);
+  const auto diff=ref-actual;
+  auto stats=at::stack({diff.mean(0),diff.square().mean(0),ref.mean(0),actual.mean(0),bias.to(at::kFloat)});
+  TORCH_CHECK(at::isfinite(stats).all().item<bool>(),"nonfinite QKV output statistics");
+  return stats;
+}
+
 // LN'(u) = LN(u)/r - shift in exact arithmetic. The fused normalization
 // rounds only after this transformed affine, unlike transforming a Half LN.
 inline std::pair<at::Tensor,at::Tensor> fold_qkv_norm(const at::Tensor& gamma,

@@ -3,7 +3,9 @@
 #include <ATen/Parallel.h>
 #include <c10/core/InferenceMode.h>
 #include <cmath>
+#include <chrono>
 #include <iostream>
+#include <limits>
 #ifdef SAM3_WITH_CUDA
 #include "../src/approx_kernels.h"
 #include <c10/cuda/CUDAGuard.h>
@@ -46,6 +48,57 @@ void cpu_checks() {
   const double mean_error=(target-actual).mean(0).abs().max().item<double>();
   TORCH_CHECK(mean_error<2e-5,"QKV corrected weight mean disagrees with FP64 oracle");
   std::cout<<"fp64_equivalence_max="<<equivalence<<" compensated_mean_max="<<mean_error<<std::endl;
+}
+
+void output_statistics_checks() {
+  auto opts=at::TensorOptions().dtype(at::kFloat);
+  auto reference=(at::randn({37,11},opts)*2).to(at::kHalf);
+  auto candidate=(reference.to(at::kFloat)+.125+at::randn({37,11},opts)*.01).to(at::kHalf);
+  auto bias=(at::randn({11},opts)*.02).to(at::kHalf);
+  auto stats=sam3::detail::qkv_error_statistics(reference,candidate,bias);
+  // Independent scalar accumulation in FP64, not the statistics helper's reductions.
+  auto r=reference.to(at::kDouble),c=candidate.to(at::kDouble);
+  auto expected=at::zeros({5,11},opts.dtype(at::kDouble));
+  auto* e=expected.mutable_data_ptr<double>();
+  for(int col=0;col<11;++col) {
+    for(int row=0;row<37;++row) {
+      const double rv=r.const_data_ptr<double>()[row*11+col],cv=c.const_data_ptr<double>()[row*11+col];
+      e[col]+=(rv-cv)/37;e[11+col]+=(rv-cv)*(rv-cv)/37;
+      e[22+col]+=rv/37;e[33+col]+=cv/37;
+    }
+    e[44+col]=bias.to(at::kDouble).const_data_ptr<double>()[col];
+  }
+  const auto difference=(stats.to(at::kDouble)-expected).abs().max().item<double>();
+  TORCH_CHECK(difference<2e-6,"QKV error statistics differ from scalar oracle");
+  const auto delta=stats[0].to(at::kDouble);
+  const double before=(r-c).square().mean().item<double>();
+  const double after=(r-c-delta).square().mean().item<double>();
+  TORCH_CHECK(after<before*.02,"mean output correction did not remove known channel offset");
+  rejects([&]{sam3::detail::qkv_error_statistics(reference,candidate.slice(0,0,3),bias);});
+  rejects([&]{sam3::detail::qkv_error_statistics(reference,candidate,bias.slice(0,0,3));});
+  rejects([&]{sam3::detail::qkv_error_statistics(reference,candidate.clone().fill_(INFINITY),bias);});
+  rejects([&]{sam3::detail::read_qkv_output_bias(32,{},at::kCPU);});
+  const auto folder=std::filesystem::temp_directory_path()/
+      ("sam3-qkv-bias-"+std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+  std::filesystem::create_directory(folder);
+  const auto file=folder/"qkv-output-bias.f32.bin";
+  const auto write=[&](const at::Tensor& value) {
+    std::ofstream out(file,std::ios::binary|std::ios::trunc);
+    out.write(static_cast<const char*>(value.const_data_ptr()),value.nbytes());
+    TORCH_CHECK(out,"test bias fixture write failed");
+  };
+  auto values=at::randn({32,3072},opts);
+  write(values);
+  TORCH_CHECK(at::equal(sam3::detail::read_qkv_output_bias(3,folder,at::kCPU),values[3].to(at::kHalf)),
+      "QKV output bias reader loaded wrong layer or dtype");
+  write(values[0]);
+  rejects([&]{sam3::detail::read_qkv_output_bias(0,folder,at::kCPU);});
+  write(values.fill_(std::numeric_limits<float>::quiet_NaN()));
+  rejects([&]{sam3::detail::read_qkv_output_bias(0,folder,at::kCPU);});
+  write(values.fill_(70000));
+  rejects([&]{sam3::detail::read_qkv_output_bias(0,folder,at::kCPU);});
+  std::filesystem::remove(file);std::filesystem::remove(folder);
+  std::cout<<"output_stats_scalar_max="<<difference<<" corrected_mse_ratio="<<after/before<<std::endl;
 }
 
 #ifdef SAM3_WITH_CUDA
@@ -93,7 +146,21 @@ void cuda_checks() {
     auto od=output.slice(0,0,8).cpu().to(at::kDouble)-restored;
     const double restore_error=od.abs().max().item<double>();
     TORCH_CHECK(restore_error<.004,"QKV restore differs from independent integer-dot/bias oracle");
-    std::cout<<"windowed="<<windowed<<" norm_max="<<maxerr<<" norm_rmse="<<rmse<<" restore_max="<<restore_error<<std::endl;
+    auto fp16_reference=at::linear(base.reshape({5184,1024}),weight,bias);
+    // A known bias perturbation makes this a sensitive compensation regression.
+    auto perturbed=(corrected.to(at::kFloat)+.125).to(at::kHalf);
+    approx_restore(acc,sa,sw,perturbed,output,false);
+    auto stats=sam3::detail::qkv_error_statistics(fp16_reference,output,perturbed);
+    auto cpu_error=fp16_reference.cpu().to(at::kDouble)-output.cpu().to(at::kDouble);
+    const double mean_stats_error=(stats[0].cpu().to(at::kDouble)-cpu_error.mean(0)).abs().max().item<double>();
+    TORCH_CHECK(mean_stats_error<2e-6,"CUDA mean output error disagrees with FP64 oracle");
+    auto empirical=(perturbed.to(at::kFloat)+stats[0]).to(at::kHalf).contiguous();
+    approx_restore(acc,sa,sw,empirical,output,false);
+    const auto post=sam3::detail::qkv_error_statistics(fp16_reference,output,empirical);
+    const double before_mean=stats[0].abs().max().item<double>(),after_mean=post[0].abs().max().item<double>();
+    TORCH_CHECK(after_mean<.001 && after_mean<before_mean*.02,"empirical QKV correction failed after actual Half restore");
+    std::cout<<"windowed="<<windowed<<" norm_max="<<maxerr<<" norm_rmse="<<rmse<<" restore_max="<<restore_error
+      <<" empirical_mean_before="<<before_mean<<" empirical_mean_after="<<after_mean<<" stats_error="<<mean_stats_error<<std::endl;
   }
   c10::cuda::getCurrentCUDAStream().synchronize();
 }
@@ -103,6 +170,7 @@ int main(int argc,char** argv) {try {
   TORCH_CHECK(argc==2,"usage: qkv_calibration_test cpu|cuda");
   c10::InferenceMode guard;at::set_num_threads(4);at::manual_seed(7431);
   cpu_checks();
+  output_statistics_checks();
   const std::string mode=argv[1];
 #ifdef SAM3_WITH_CUDA
   if(mode=="cuda")cuda_checks();

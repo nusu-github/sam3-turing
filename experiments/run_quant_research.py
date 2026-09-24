@@ -54,9 +54,11 @@ def main():
     parser.add_argument('--projection-scope',help='Quantized projection blocks: all, firstN, lastN, global, local, mask:0xHEX')
     parser.add_argument('--mlp-part',choices=['both','fc1','fc2'],help='Quantize only the selected MLP linear(s)')
     parser.add_argument('--mean-bias',action='store_true',help='Compensate FC2 weight quantization mean error using calibration data')
-    parser.add_argument('--observe-target',choices=['fc2','qkv'],help='Calibration observations; defaults to fc2')
+    parser.add_argument('--observe-target',choices=['fc2','qkv','qkv_error'],help='Calibration observations; defaults to fc2')
+    parser.add_argument('--qkv-shadow-calibration',type=Path,help='QKV error observer initial affine and weight mean data')
     parser.add_argument('--qkv-calibration',type=Path,help='QKV scale/shift folded into norm1 and QKV weights')
     parser.add_argument('--qkv-mean-bias',action='store_true',help='Compensate QKV weight mean error')
+    parser.add_argument('--qkv-output-bias',action='store_true',help='Replace QKV mean bias with empirical calibrated output bias')
     parser.add_argument('--qkv-rope',choices=['exact','fused'],help='QKV restore/RoPE implementation override')
     args = parser.parse_args()
     if args.role=='holdout' and args.kind!='quality':
@@ -65,11 +67,15 @@ def main():
         parser.error('observations require calibration split and fp16')
     if args.observe_target is not None and args.kind!='observe':
         parser.error('observation target requires observe mode')
+    if (args.observe_target=='qkv_error') != (args.qkv_shadow_calibration is not None):
+        parser.error('QKV error observations and shadow calibration must be specified together')
     if args.qkv_calibration is not None and (args.mode=='fp16' or args.projection=='exact' or
             (args.mode=='attention' and args.projection!='qkv')):
         parser.error('QKV calibration requires a QKV INT8 mode')
     if args.qkv_mean_bias and args.qkv_calibration is None:
         parser.error('QKV mean bias requires QKV calibration')
+    if args.qkv_output_bias and not args.qkv_mean_bias:
+        parser.error('QKV output bias requires QKV weight mean bias and calibration')
     if args.qkv_rope is not None and (args.mode=='fp16' or args.projection=='exact' or
             (args.mode=='attention' and args.projection!='qkv')):
         parser.error('QKV RoPE selection requires a QKV INT8 mode')
@@ -107,6 +113,8 @@ def main():
     if args.mean_bias: env['SAM3_EXPERIMENT_FC2_MEAN_BIAS']='enabled'
     if args.qkv_calibration: env['SAM3_EXPERIMENT_QKV_CALIBRATION']=str(args.qkv_calibration)
     if args.qkv_mean_bias: env['SAM3_EXPERIMENT_QKV_MEAN_BIAS']='enabled'
+    if args.qkv_output_bias: env['SAM3_EXPERIMENT_QKV_OUTPUT_BIAS']='enabled'
+    if args.qkv_shadow_calibration: env['SAM3_EXPERIMENT_QKV_SHADOW_CALIBRATION']=str(args.qkv_shadow_calibration)
     if args.projection_scope is not None: env['SAM3_EXPERIMENT_PROJECTION_SCOPE']=args.projection_scope
     if args.projection is not None:
         env['SAM3_EXPERIMENT_PROJECTION']=args.projection
@@ -119,14 +127,20 @@ def main():
                    binary_sha256=hashlib.sha256(EXE.read_bytes()).hexdigest(),
                    runtime_sha256=hashlib.sha256((EXE.parent/'sam3_native.dll').read_bytes()).hexdigest(),
                    environment={k:v for k,v in env.items() if k.startswith(('SAM3_','TORCH_BLAS'))})
-    for optional in ['image_id','attention','projection','mlp_part','projection_scope','attention_scope','kitchen_center','kitchen_center_scope','observe_target','qkv_calibration','qkv_rope']:
+    for optional in ['image_id','attention','projection','mlp_part','projection_scope','attention_scope','kitchen_center','kitchen_center_scope','observe_target','qkv_calibration','qkv_rope','qkv_shadow_calibration']:
         if getattr(args,optional) is None: signature['args'].pop(optional)
     if not args.mean_bias: signature['args'].pop('mean_bias')
     if not args.qkv_mean_bias: signature['args'].pop('qkv_mean_bias')
+    if not args.qkv_output_bias: signature['args'].pop('qkv_output_bias')
+    if args.qkv_shadow_calibration:
+        signature['qkv_shadow_affine_sha256']=hashlib.sha256((args.qkv_shadow_calibration/'qkv-affine.f32.bin').read_bytes()).hexdigest()
+        signature['qkv_shadow_mean_sha256']=hashlib.sha256((args.qkv_shadow_calibration/'qkv-mean.f32.bin').read_bytes()).hexdigest()
     if args.qkv_calibration:
         signature['qkv_calibration_sha256']=hashlib.sha256((args.qkv_calibration/'qkv-affine.f32.bin').read_bytes()).hexdigest()
         if args.qkv_mean_bias:
             signature['qkv_mean_sha256']=hashlib.sha256((args.qkv_calibration/'qkv-mean.f32.bin').read_bytes()).hexdigest()
+        if args.qkv_output_bias:
+            signature['qkv_output_bias_sha256']=hashlib.sha256((args.qkv_calibration/'qkv-output-bias.f32.bin').read_bytes()).hexdigest()
     if args.calibration:
         signature['calibration_sha256']=hashlib.sha256((args.calibration/'fc2-affine.f32.bin').read_bytes()).hexdigest()
         if args.mean_bias:

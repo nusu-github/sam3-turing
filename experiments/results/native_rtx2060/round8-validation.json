@@ -1,0 +1,80 @@
+{
+  "ctest": {
+    "passed": 62,
+    "total": 62,
+    "seconds": 183.88
+  },
+  "operator": {
+    "cpu_cuda_passed": 2,
+    "memcheck_errors": 0,
+    "cli_invalid_rejected": 4
+  },
+  "controls": {
+    "observer_images_byte_equal": 32,
+    "smoke_images_byte_equal": 1,
+    "integration_pairs_byte_equal": 8,
+    "development_repeat_pairs_byte_equal": 2
+  },
+  "development": {
+    "run": "r8-qkv-output-development",
+    "kind": "quality",
+    "mode": "calibrated",
+    "completed": 33,
+    "process_wall_seconds": 317.91985750198364,
+    "max_peak_allocated_bytes": 2694219264,
+    "max_sampled_whole_gpu_bytes": 4436537344,
+    "compared": 33,
+    "passed": 31,
+    "nonempty": 25,
+    "nonempty_passed": 23,
+    "count_changes": 1,
+    "failed_cases": [
+      "coco-val-000000004795-p0",
+      "coco-val-000000009590-p0"
+    ],
+    "min_mask_iou": 0.9810126582278481,
+    "max_score_error": 0.02392578125,
+    "max_box_error_px": 0.764251708984375
+  },
+  "groups": {
+    "observe": {
+      "processes": 33,
+      "runs": 2,
+      "images": 32,
+      "wall_seconds": 294.14366912841797,
+      "setup_seconds_range": [
+        5.480717,
+        6.0576966
+      ],
+      "max_cold_peak_allocated_bytes": 2339337728,
+      "max_whole_gpu_sampled_bytes": 3944693760
+    },
+    "quality": {
+      "processes": 45,
+      "runs": 7,
+      "images": 16,
+      "wall_seconds": 417.0565617084503,
+      "setup_seconds_range": [
+        5.5419036,
+        9.3388741
+      ],
+      "max_cold_peak_allocated_bytes": 2694219264,
+      "max_whole_gpu_sampled_bytes": 4436537344
+    }
+  },
+  "binaries": {
+    "sam3_native.dll": "fbe9c54661b539933858f97fdd300c4ceccfdbea4fede90ae995f602ddef306b",
+    "sam3_image_latency.exe": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "sam3_qkv_calibration_test.exe": "d56ca9c4878ff6c2b31f3125bf8ab1994d83ed19215bdb3365fab761b639e2f6"
+  },
+  "weight_manifest_sha256": "e3648c574e4014dfe62c6f9b09c1660ea99dee7b546b2738231d27bed6de06e9",
+  "data_manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+  "cuda_kernel_body_changed": false,
+  "default_runtime_options_changed": false,
+  "model_timing_processes": 0,
+  "holdout_used": false,
+  "accepted_candidate": null,
+  "python_syntax_checks": true,
+  "diff_check": true,
+  "remaining": "Independent quality and paired latency are not established. SAM3.1 and INT4 efficacy are not established by this round."
+}

@@ -1,0 +1,559 @@
+{
+  "summary": {
+    "float16": {
+      "mse_reduction_percent": 0.00042662776394974955,
+      "loo_reduction_percent": -0.11763608890626998
+    },
+    "float32": {
+      "mse_reduction_percent": 0.039015215505455725,
+      "loo_reduction_percent": -0.07976495337160827
+    }
+  },
+  "layers": [
+    {
+      "layer": 0,
+      "applied": true,
+      "before": 4.4918135093253986e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 4.491728285482281e-05,
+          "loo_mse_estimate": 4.503652776185159e-05,
+          "max_abs_residual_mean": 0.003350104823766742
+        },
+        "float32": {
+          "mse_estimate": 4.483446181201024e-05,
+          "loo_mse_estimate": 4.49481393144412e-05,
+          "max_abs_residual_mean": 4.70965460408479e-07
+        }
+      }
+    },
+    {
+      "layer": 1,
+      "applied": true,
+      "before": 2.6600237234243134e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 2.660013641580741e-05,
+          "loo_mse_estimate": 2.6652660544445698e-05,
+          "max_abs_residual_mean": 0.0019411393295740709
+        },
+        "float32": {
+          "mse_estimate": 2.6578807684383027e-05,
+          "loo_mse_estimate": 2.6631241627381172e-05,
+          "max_abs_residual_mean": 1.589413045621768e-07
+        }
+      }
+    },
+    {
+      "layer": 2,
+      "applied": true,
+      "before": 3.428812086968732e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 3.428795107780158e-05,
+          "loo_mse_estimate": 3.43338740706569e-05,
+          "max_abs_residual_mean": 0.0019404781551202177
+        },
+        "float32": {
+          "mse_estimate": 3.426410306726032e-05,
+          "loo_mse_estimate": 3.431062429179399e-05,
+          "max_abs_residual_mean": 2.2959306988923345e-07
+        }
+      }
+    },
+    {
+      "layer": 3,
+      "applied": true,
+      "before": 3.165912257020268e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 3.165899734135777e-05,
+          "loo_mse_estimate": 3.169870967491581e-05,
+          "max_abs_residual_mean": 0.0019004374616997666
+        },
+        "float32": {
+          "mse_estimate": 3.1625668621658456e-05,
+          "loo_mse_estimate": 3.166514179783036e-05,
+          "max_abs_residual_mean": 2.3545089788967744e-07
+        }
+      }
+    },
+    {
+      "layer": 4,
+      "applied": true,
+      "before": 4.1419845242668396e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 4.14196639941915e-05,
+          "loo_mse_estimate": 4.147196885238163e-05,
+          "max_abs_residual_mean": 0.0036626274340960663
+        },
+        "float32": {
+          "mse_estimate": 4.136991642979506e-05,
+          "loo_mse_estimate": 4.1422619848809274e-05,
+          "max_abs_residual_mean": 4.591694846567407e-07
+        }
+      }
+    },
+    {
+      "layer": 5,
+      "applied": true,
+      "before": 4.615998938915326e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 4.615979242082699e-05,
+          "loo_mse_estimate": 4.620912385376222e-05,
+          "max_abs_residual_mean": 0.0018216828037509458
+        },
+        "float32": {
+          "mse_estimate": 4.612728100826769e-05,
+          "loo_mse_estimate": 4.6176944320217196e-05,
+          "max_abs_residual_mean": 2.2957817691349192e-07
+        }
+      }
+    },
+    {
+      "layer": 6,
+      "applied": false,
+      "before": 4.293056693040661e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 4.293040391523302e-05,
+          "loo_mse_estimate": 4.297832486155e-05,
+          "max_abs_residual_mean": 0.0037695331848226488
+        },
+        "float32": {
+          "mse_estimate": 4.2875131659455384e-05,
+          "loo_mse_estimate": 4.292561201356615e-05,
+          "max_abs_residual_mean": 4.591813649312826e-07
+        }
+      }
+    },
+    {
+      "layer": 7,
+      "applied": true,
+      "before": 9.762055248196029e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 9.762019509075515e-05,
+          "loo_mse_estimate": 9.772356250321852e-05,
+          "max_abs_residual_mean": 0.002413690828689141
+        },
+        "float32": {
+          "mse_estimate": 9.758343881528725e-05,
+          "loo_mse_estimate": 9.76887155706437e-05,
+          "max_abs_residual_mean": 2.354659045522567e-07
+        }
+      }
+    },
+    {
+      "layer": 8,
+      "applied": true,
+      "before": 8.233359213958662e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 8.233316669588255e-05,
+          "loo_mse_estimate": 8.243104993075504e-05,
+          "max_abs_residual_mean": 0.006374029533617431
+        },
+        "float32": {
+          "mse_estimate": 8.227410887021148e-05,
+          "loo_mse_estimate": 8.237226700469867e-05,
+          "max_abs_residual_mean": 4.238395092670544e-07
+        }
+      }
+    },
+    {
+      "layer": 9,
+      "applied": true,
+      "before": 9.817698007251001e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 9.817657628379002e-05,
+          "loo_mse_estimate": 9.828068258293642e-05,
+          "max_abs_residual_mean": 0.0019484155236568768
+        },
+        "float32": {
+          "mse_estimate": 9.813713131378618e-05,
+          "loo_mse_estimate": 9.823661808964288e-05,
+          "max_abs_residual_mean": 2.3548187755295658e-07
+        }
+      }
+    },
+    {
+      "layer": 10,
+      "applied": true,
+      "before": 0.0001070238961045078,
+      "modes": {
+        "float16": {
+          "mse_estimate": 0.00010702342836061691,
+          "loo_mse_estimate": 0.00010712973738492383,
+          "max_abs_residual_mean": 0.00165772144237053
+        },
+        "float32": {
+          "mse_estimate": 0.0001070027322342032,
+          "loo_mse_estimate": 0.00010710986002042333,
+          "max_abs_residual_mean": 2.3548045646748506e-07
+        }
+      }
+    },
+    {
+      "layer": 11,
+      "applied": true,
+      "before": 9.278935563681683e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 9.27889621919714e-05,
+          "loo_mse_estimate": 9.287785175161157e-05,
+          "max_abs_residual_mean": 0.0019049938846364967
+        },
+        "float32": {
+          "mse_estimate": 9.276773788704776e-05,
+          "loo_mse_estimate": 9.285729234853254e-05,
+          "max_abs_residual_mean": 2.3000393412075937e-07
+        }
+      }
+    },
+    {
+      "layer": 12,
+      "applied": true,
+      "before": 8.574674174493165e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 8.57463678376311e-05,
+          "loo_mse_estimate": 8.582209769391503e-05,
+          "max_abs_residual_mean": 0.0026679098009481095
+        },
+        "float32": {
+          "mse_estimate": 8.571289088943448e-05,
+          "loo_mse_estimate": 8.579171557446794e-05,
+          "max_abs_residual_mean": 4.7094414412640617e-07
+        }
+      }
+    },
+    {
+      "layer": 13,
+      "applied": true,
+      "before": 8.96417946285033e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 8.964142281556264e-05,
+          "loo_mse_estimate": 8.972448161697786e-05,
+          "max_abs_residual_mean": 0.0017977349561988376
+        },
+        "float32": {
+          "mse_estimate": 8.962226929582948e-05,
+          "loo_mse_estimate": 8.970507400443054e-05,
+          "max_abs_residual_mean": 2.3547318050987087e-07
+        }
+      }
+    },
+    {
+      "layer": 14,
+      "applied": true,
+      "before": 9.652860127136916e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 9.652819515275379e-05,
+          "loo_mse_estimate": 9.661845092659563e-05,
+          "max_abs_residual_mean": 0.0015075648418587662
+        },
+        "float32": {
+          "mse_estimate": 9.651190764139077e-05,
+          "loo_mse_estimate": 9.660458954227028e-05,
+          "max_abs_residual_mean": 1.942523795150919e-07
+        }
+      }
+    },
+    {
+      "layer": 15,
+      "applied": true,
+      "before": 0.00010233693538878412,
+      "modes": {
+        "float16": {
+          "mse_estimate": 0.00010233653701772939,
+          "loo_mse_estimate": 0.00010244368475821944,
+          "max_abs_residual_mean": 0.0019059608039810882
+        },
+        "float32": {
+          "mse_estimate": 0.00010230192801812266,
+          "loo_mse_estimate": 0.0001024100607013641,
+          "max_abs_residual_mean": 2.099443463521311e-07
+        }
+      }
+    },
+    {
+      "layer": 16,
+      "applied": true,
+      "before": 8.625229224113833e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 8.625190761619855e-05,
+          "loo_mse_estimate": 8.635932855174e-05,
+          "max_abs_residual_mean": 0.0019306360236441833
+        },
+        "float32": {
+          "mse_estimate": 8.62309840664461e-05,
+          "loo_mse_estimate": 8.633924877483777e-05,
+          "max_abs_residual_mean": 2.060314443497191e-07
+        }
+      }
+    },
+    {
+      "layer": 17,
+      "applied": true,
+      "before": 8.532840101325527e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 8.532801535943376e-05,
+          "loo_mse_estimate": 8.544580684914756e-05,
+          "max_abs_residual_mean": 0.0019340515118528856
+        },
+        "float32": {
+          "mse_estimate": 8.530216942977734e-05,
+          "loo_mse_estimate": 8.541559061702326e-05,
+          "max_abs_residual_mean": 2.2371000341081526e-07
+        }
+      }
+    },
+    {
+      "layer": 18,
+      "applied": true,
+      "before": 8.665632510985548e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 8.665599617347246e-05,
+          "loo_mse_estimate": 8.676107522098903e-05,
+          "max_abs_residual_mean": 0.0019426699282121263
+        },
+        "float32": {
+          "mse_estimate": 8.663802236733989e-05,
+          "loo_mse_estimate": 8.6744498407208e-05,
+          "max_abs_residual_mean": 2.2969152269070037e-07
+        }
+      }
+    },
+    {
+      "layer": 19,
+      "applied": true,
+      "before": 8.322992664209587e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 8.322961801515294e-05,
+          "loo_mse_estimate": 8.334003175842338e-05,
+          "max_abs_residual_mean": 0.0019326151314089657
+        },
+        "float32": {
+          "mse_estimate": 8.321083104133672e-05,
+          "loo_mse_estimate": 8.331959654191785e-05,
+          "max_abs_residual_mean": 2.3841107577027287e-07
+        }
+      }
+    },
+    {
+      "layer": 20,
+      "applied": true,
+      "before": 8.498222829269227e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 8.498195790724737e-05,
+          "loo_mse_estimate": 8.508831765077973e-05,
+          "max_abs_residual_mean": 0.0019268577743787318
+        },
+        "float32": {
+          "mse_estimate": 8.496645867059215e-05,
+          "loo_mse_estimate": 8.507442774562708e-05,
+          "max_abs_residual_mean": 2.1931782612227835e-07
+        }
+      }
+    },
+    {
+      "layer": 21,
+      "applied": true,
+      "before": 7.848112439131268e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 7.848083606394397e-05,
+          "loo_mse_estimate": 7.857751609388227e-05,
+          "max_abs_residual_mean": 0.0018522945536005864
+        },
+        "float32": {
+          "mse_estimate": 7.846657450275925e-05,
+          "loo_mse_estimate": 7.856525651540044e-05,
+          "max_abs_residual_mean": 2.354744310650858e-07
+        }
+      }
+    },
+    {
+      "layer": 22,
+      "applied": true,
+      "before": 7.365810282107994e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 7.365783130143298e-05,
+          "loo_mse_estimate": 7.37538805963069e-05,
+          "max_abs_residual_mean": 0.0018352409060753416
+        },
+        "float32": {
+          "mse_estimate": 7.363880851669016e-05,
+          "loo_mse_estimate": 7.373409322695179e-05,
+          "max_abs_residual_mean": 2.3548250283056404e-07
+        }
+      }
+    },
+    {
+      "layer": 23,
+      "applied": true,
+      "before": 8.82833568016846e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 8.828305949936836e-05,
+          "loo_mse_estimate": 8.838525363468837e-05,
+          "max_abs_residual_mean": 0.0018893583380759083
+        },
+        "float32": {
+          "mse_estimate": 8.826222413410116e-05,
+          "loo_mse_estimate": 8.836892116158476e-05,
+          "max_abs_residual_mean": 2.3547136152046733e-07
+        }
+      }
+    },
+    {
+      "layer": 24,
+      "applied": true,
+      "before": 6.522083418771436e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 6.52206197183789e-05,
+          "loo_mse_estimate": 6.531947720478878e-05,
+          "max_abs_residual_mean": 0.0019344047304912237
+        },
+        "float32": {
+          "mse_estimate": 6.519647645995221e-05,
+          "loo_mse_estimate": 6.529855561674266e-05,
+          "max_abs_residual_mean": 2.2371887098415755e-07
+        }
+      }
+    },
+    {
+      "layer": 25,
+      "applied": true,
+      "before": 6.0786648538665076e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 6.0786478004687255e-05,
+          "loo_mse_estimate": 6.0878800270498444e-05,
+          "max_abs_residual_mean": 0.0018962577627235078
+        },
+        "float32": {
+          "mse_estimate": 6.0769512222449494e-05,
+          "loo_mse_estimate": 6.08622780054546e-05,
+          "max_abs_residual_mean": 2.1722371457144618e-07
+        }
+      }
+    },
+    {
+      "layer": 26,
+      "applied": true,
+      "before": 5.738579879482897e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 5.73855927277405e-05,
+          "loo_mse_estimate": 5.746178335209207e-05,
+          "max_abs_residual_mean": 0.0019309255943653625
+        },
+        "float32": {
+          "mse_estimate": 5.7367519176144385e-05,
+          "loo_mse_estimate": 5.7448854018293356e-05,
+          "max_abs_residual_mean": 2.2958465706324205e-07
+        }
+      }
+    },
+    {
+      "layer": 27,
+      "applied": true,
+      "before": 5.431684135742687e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 5.431663281054297e-05,
+          "loo_mse_estimate": 5.4382382890473595e-05,
+          "max_abs_residual_mean": 0.001904169743284001
+        },
+        "float32": {
+          "mse_estimate": 5.429965755896589e-05,
+          "loo_mse_estimate": 5.436625450612441e-05,
+          "max_abs_residual_mean": 2.3547636374132708e-07
+        }
+      }
+    },
+    {
+      "layer": 28,
+      "applied": true,
+      "before": 5.6708668898323524e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 5.670841992252005e-05,
+          "loo_mse_estimate": 5.6769252312803136e-05,
+          "max_abs_residual_mean": 0.001939797122759046
+        },
+        "float32": {
+          "mse_estimate": 5.6685172958010446e-05,
+          "loo_mse_estimate": 5.6745572114651064e-05,
+          "max_abs_residual_mean": 2.3546976990473922e-07
+        }
+      }
+    },
+    {
+      "layer": 29,
+      "applied": true,
+      "before": 5.2960125599151496e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 5.295994861718956e-05,
+          "loo_mse_estimate": 5.300991011570908e-05,
+          "max_abs_residual_mean": 0.001906948346459103
+        },
+        "float32": {
+          "mse_estimate": 5.2937026519704664e-05,
+          "loo_mse_estimate": 5.298851824087389e-05,
+          "max_abs_residual_mean": 2.2959920897847041e-07
+        }
+      }
+    },
+    {
+      "layer": 30,
+      "applied": true,
+      "before": 5.184656172198728e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 5.184639241080154e-05,
+          "loo_mse_estimate": 5.18921698954834e-05,
+          "max_abs_residual_mean": 0.0018571453299500718
+        },
+        "float32": {
+          "mse_estimate": 5.181859474519976e-05,
+          "loo_mse_estimate": 5.186592982372559e-05,
+          "max_abs_residual_mean": 2.354767616452591e-07
+        }
+      }
+    },
+    {
+      "layer": 31,
+      "applied": true,
+      "before": 5.316775310815203e-05,
+      "modes": {
+        "float16": {
+          "mse_estimate": 5.316753677117106e-05,
+          "loo_mse_estimate": 5.321332623252445e-05,
+          "max_abs_residual_mean": 0.0018719331819738727
+        },
+        "float32": {
+          "mse_estimate": 5.3147500752593895e-05,
+          "loo_mse_estimate": 5.319243430560257e-05,
+          "max_abs_residual_mean": 2.237079002043174e-07
+        }
+      }
+    }
+  ],
+  "caveat": "Counterfactual calibration-statistics calculation only. FP32 bias native inference is not implemented or evaluated here. Omits output re-rounding and upstream quantization drift."
+}

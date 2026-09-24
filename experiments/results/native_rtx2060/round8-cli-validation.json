@@ -1,0 +1,51 @@
+[
+  {
+    "arguments": [
+      "quality",
+      "--mode",
+      "fp16",
+      "--qkv-output-bias"
+    ],
+    "exit_code": 2,
+    "error": "run_quant_research.py: error: QKV output bias requires QKV weight mean bias and calibration"
+  },
+  {
+    "arguments": [
+      "observe",
+      "--mode",
+      "fp16",
+      "--role",
+      "calibration",
+      "--observe-target",
+      "qkv_error"
+    ],
+    "exit_code": 2,
+    "error": "run_quant_research.py: error: QKV error observations and shadow calibration must be specified together"
+  },
+  {
+    "arguments": [
+      "observe",
+      "--mode",
+      "fp16",
+      "--role",
+      "calibration",
+      "--qkv-shadow-calibration",
+      "unused"
+    ],
+    "exit_code": 2,
+    "error": "run_quant_research.py: error: QKV error observations and shadow calibration must be specified together"
+  },
+  {
+    "arguments": [
+      "quality",
+      "--mode",
+      "fp16",
+      "--observe-target",
+      "qkv_error",
+      "--qkv-shadow-calibration",
+      "unused"
+    ],
+    "exit_code": 2,
+    "error": "run_quant_research.py: error: observation target requires observe mode"
+  }
+]

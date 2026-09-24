@@ -1,0 +1,42 @@
+{
+  "scope": "Targeted bias-compensation follow-up; sources do not establish SAM3/SM75 speed or independent quality.",
+  "bc": {
+    "url": "https://arxiv.org/html/2404.01892",
+    "read": "Sections 3.2, 4.2, 4.3, 5.1.2 and 5.1.3",
+    "published": "2024-04-02",
+    "observed": "Equation 11 averages floating minus quantized outputs. Section 5.1.2 uses 32 ImageNet calibration images. Section 5.1.3 retains both sequence and token dimensions for its ViT bias, while the current SAM3 experiment averages tokens and retains only output channels.",
+    "applicability": "This experiment adapts channel-only compensation and folds it into the existing FP16 bias before output rounding. It is not a full reproduction of the paper's spatial bias or proof of task-level quality.",
+    "github_readme": {
+      "url": "https://github.com/GongCheng1919/bias-compensation/blob/main/README.md",
+      "blob_sha": "cf72aff2c16a2e0ada60171d02336c0e6c52432e"
+    },
+    "github_script": "README-referenced script/vits/run-vit-deit-swin.sh returned 404; not used as executable evidence."
+  },
+  "scite_query": "(\"bias compensation\" OR \"bias correction\") AND \"quantization\" AND (\"vision transformer\" OR \"segment anything\")",
+  "scite_date_from": "2025-01-01",
+  "scite_hits": [
+    {
+      "doi": "10.48550/arxiv.2608.17657",
+      "title": "Denoised Variance-Based Pruning with Optimal Brain Bias Compensation",
+      "year": 2026
+    },
+    {
+      "doi": "10.48550/arxiv.2510.20673",
+      "title": "Efficient Multi-bit Quantization Network Training via Weight Bias Correction and Bit-wise Coreset Sampling",
+      "year": 2025
+    },
+    {
+      "doi": "10.1177/18724981251356644",
+      "title": "Abnormal detection method of hydro-turbine generator based on vision transformer",
+      "year": 2025
+    }
+  ],
+  "new_followup": {
+    "url": "https://arxiv.org/abs/2608.17657",
+    "published": "2026-08-18",
+    "read": "Abstract",
+    "decision": "Structural pruning with covariance-based remaining-weight correction on DeiT/Swin/ConvNeXt. Excluded from the current quantization-only intervention; does not validate SAM3 or SM75 inference."
+  },
+  "other_hits": "2510.20673 was not followed up because the title concerns multi-bit network training, outside this no-training experiment. The hydro-turbine detection hit was unrelated.",
+  "hf": "paper_search connector reported unavailable method; official papers API confirms 2404.01892 metadata. API for 2608.17657 returned 404, not evidence that the paper does not exist."
+}

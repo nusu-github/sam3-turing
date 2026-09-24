@@ -1,0 +1,16 @@
+{
+  "model": "facebook/sam3.1",
+  "url": "https://huggingface.co/facebook/sam3.1",
+  "source": "Hugging Face hub_repo_details connector",
+  "checked_date": "2026-09-24",
+  "observed_metadata": {
+    "architecture": "sam3_video",
+    "library": "checkpoint",
+    "task": "mask-generation",
+    "gated": true,
+    "updated": "2026-03-27"
+  },
+  "local_state": "Current native weight manifest contains SAM3 only. image_latency.cpp uses the sam3 label. No sam3.1 directory was found at the default local Hugging Face model cache path. This does not establish whether an alternate cache or account access exists.",
+  "required_followup": "Obtain and inventory the authorized official SAM3.1 checkpoint, parameterize the image benchmark model label, verify exact weight sharing if present, and evaluate the model rather than transferring SAM3 results by assumption.",
+  "completed": false
+}

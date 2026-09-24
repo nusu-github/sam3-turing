@@ -39,6 +39,8 @@ def main():
         assert candidate['qkv_calibration_sha256'] == sha(qkv_cal / 'qkv-affine.f32.bin')
         if 'qkv_mean_sha256' in candidate:
             assert candidate['qkv_mean_sha256'] == sha(qkv_cal / 'qkv-mean.f32.bin')
+        if 'qkv_output_bias_sha256' in candidate:
+            assert candidate['qkv_output_bias_sha256'] == sha(qkv_cal / 'qkv-output-bias.f32.bin')
     if 'calibration_sha256' in candidate:
         cal = Path(candidate['args']['calibration'])
         assert candidate['calibration_sha256'] == sha(cal / 'fc2-affine.f32.bin')

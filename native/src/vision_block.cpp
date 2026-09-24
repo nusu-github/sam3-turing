@@ -10,6 +10,7 @@
 #include "vision_calibration.h"
 #ifdef SAM3_WITH_CUDA
 #include "vision_quantization.h"
+#include "vision_qkv_observer.h"
 #endif
 
 namespace sam3 {
@@ -38,6 +39,10 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
     x = x.view({b,hp/24,24,wp/24,24,1024}).permute({0,1,3,2,4,5}).reshape({-1,24,24,1024});
   }
   detail::observe_qkv(x,weight(prefix+".attn.qkv.weight"),int(layer));
+#ifdef SAM3_WITH_CUDA
+  detail::observe_qkv_error(input,x,weight(prefix+".norm1.weight"),weight(prefix+".norm1.bias"),
+      weight(prefix+".attn.qkv.weight"),weight(prefix+".attn.qkv.bias"),int(layer),windowed);
+#endif
   x = attention(x, prefix + ".attn");
   at::Tensor normalized;
   if (fuse_norm) {

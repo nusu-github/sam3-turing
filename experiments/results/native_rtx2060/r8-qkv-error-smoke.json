@@ -1,0 +1,34 @@
+{
+  "signature": {
+    "args": {
+      "kind": "observe",
+      "role": "calibration",
+      "mode": "fp16",
+      "name": "r8-qkv-error-smoke",
+      "scope": "all",
+      "calibration": null,
+      "limit_images": 1,
+      "primary_only": false,
+      "observe_target": "qkv_error",
+      "qkv_shadow_calibration": ".cache\\quant-research-20260924\\calibrations\\qkv-a050-mean"
+    },
+    "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+    "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "runtime_sha256": "fbe9c54661b539933858f97fdd300c4ceccfdbea4fede90ae995f602ddef306b",
+    "environment": {
+      "TORCH_BLAS_PREFER_CUBLASLT": "0",
+      "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+      "SAM3_EXPERIMENT_QKV_SHADOW_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\qkv-a050-mean"
+    },
+    "qkv_shadow_affine_sha256": "a413d2d77029fc4e7dfefe764435ce475adbac6f73b76c8251b41faaa5edda4d",
+    "qkv_shadow_mean_sha256": "79dcdfbce6b4c785b4675d59bc96b3abede7f3f268e74cfdbfa196b3ea309981"
+  },
+  "results": [
+    {
+      "case": "coco-train-000000000241-p0",
+      "image_id": 241,
+      "mode": "fp16",
+      "count": 5
+    }
+  ]
+}

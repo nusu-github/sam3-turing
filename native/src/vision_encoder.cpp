@@ -126,10 +126,21 @@ VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
   TORCH_CHECK(qkv_calibration.empty() || projection_mode=="qkv" || projection_mode=="both",
       "QKV calibration requires QKV INT8 mode");
   TORCH_CHECK(!qkv_mean_bias || !qkv_calibration.empty(),"QKV mean bias requires calibration data");
+  const bool qkv_output_bias=detail::checked_experiment("SAM3_EXPERIMENT_QKV_OUTPUT_BIAS",
+      {"exact","enabled"},"invalid QKV output bias experiment: ")=="enabled";
+  TORCH_CHECK(!qkv_output_bias || qkv_mean_bias,"QKV output bias requires calibrated weight mean bias");
   TORCH_CHECK(detail::read_experiment("SAM3_EXPERIMENT_OBSERVE_QKV", "").empty() ||
       (compute_storage==at::kHalf && projection_mode=="exact" && experiment=="exact" &&
        detail::read_experiment("SAM3_EXPERIMENT_ATTENTION")=="exact" && qkv_calibration.empty()),
       "QKV observations require the unquantized FP16 path");
+  const bool qkv_error_observer=!detail::read_experiment("SAM3_EXPERIMENT_OBSERVE_QKV_ERROR", "").empty();
+  const bool qkv_shadow_calibration=!detail::read_experiment("SAM3_EXPERIMENT_QKV_SHADOW_CALIBRATION", "").empty();
+  TORCH_CHECK(qkv_error_observer==qkv_shadow_calibration,"QKV shadow calibration requires QKV error observations");
+  TORCH_CHECK(!qkv_error_observer || (device.is_cuda() && compute_storage==at::kHalf &&
+      projection_mode=="exact" && experiment=="exact" && qkv_calibration.empty() &&
+      detail::read_experiment("SAM3_EXPERIMENT_ATTENTION")=="exact" &&
+      detail::read_experiment("SAM3_EXPERIMENT_OBSERVE_QKV", "").empty()),
+      "QKV error observations require the unquantized FP16 path");
   if(projection_mode!="exact") {
     TORCH_CHECK(device.is_cuda() && compute_storage==at::kHalf,
                 "experimental projection INT8 requires CUDA FP16 compute storage");
@@ -162,6 +173,10 @@ VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
             mean,r,shift).to(at::kHalf).contiguous();
         TORCH_CHECK(at::isfinite(bias).all().item<bool>(),"QKV mean bias overflows FP16");
         weights_.at(name+".calib_bias")=std::move(bias);
+      }
+      if(part=="qkv" && qkv_output_bias) {
+        weights_.at(name+".calib_bias")=detail::read_qkv_output_bias(layer,
+            std::filesystem::u8path(qkv_calibration),device);
       }
       weights_.emplace(name+".int8",std::move(q));
       weights_.emplace(name+".scale",std::move(scales));
