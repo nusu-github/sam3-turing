@@ -1,0 +1,167 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cpu",
+  "selection_cases": 600,
+  "cases": [
+    {
+      "mode": "fp32",
+      "case": "forward",
+      "grid": 8,
+      "reverse": false,
+      "pointer_tokens": 44,
+      "max_errors": {
+        "conditioned_features": 0.0,
+        "memory": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "reverse_stride",
+      "grid": 8,
+      "reverse": true,
+      "pointer_tokens": 40,
+      "max_errors": {
+        "conditioned_features": 0.0,
+        "memory": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "score_filter",
+      "grid": 8,
+      "reverse": false,
+      "pointer_tokens": 12,
+      "max_errors": {
+        "conditioned_features": 0.0,
+        "memory": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "score_filter_reverse",
+      "grid": 8,
+      "reverse": true,
+      "pointer_tokens": 16,
+      "max_errors": {
+        "conditioned_features": 0.0,
+        "memory": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "near_start",
+      "grid": 8,
+      "reverse": false,
+      "pointer_tokens": 4,
+      "max_errors": {
+        "conditioned_features": 0.0,
+        "memory": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "at_start_filtered",
+      "grid": 8,
+      "reverse": false,
+      "pointer_tokens": 4,
+      "max_errors": {
+        "conditioned_features": 0.0,
+        "memory": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "at_end_filtered",
+      "grid": 8,
+      "reverse": true,
+      "pointer_tokens": 4,
+      "max_errors": {
+        "conditioned_features": 0.0,
+        "memory": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "unlimited_cond",
+      "grid": 8,
+      "reverse": false,
+      "pointer_tokens": 24,
+      "max_errors": {
+        "conditioned_features": 0.0,
+        "memory": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "initial",
+      "grid": 8,
+      "reverse": false,
+      "pointer_tokens": 0,
+      "max_errors": {
+        "conditioned_features": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "skip_previous",
+      "grid": 8,
+      "reverse": false,
+      "pointer_tokens": 0,
+      "max_errors": {
+        "conditioned_features": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "memory_disabled",
+      "grid": 8,
+      "reverse": false,
+      "pointer_tokens": 0,
+      "max_errors": {
+        "conditioned_features": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "full_grid",
+      "grid": 72,
+      "reverse": false,
+      "pointer_tokens": 16,
+      "max_errors": {
+        "conditioned_features": 0.0,
+        "memory": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "memory_confidence",
+      "iou_shape": [
+        3,
+        3
+      ],
+      "max_errors": {
+        "score": 0.0
+      }
+    },
+    {
+      "mode": "fp32",
+      "case": "memory_confidence",
+      "iou_shape": [
+        3
+      ],
+      "max_errors": {
+        "score": 0.0
+      }
+    }
+  ],
+  "scope": "Original SAM3 inference frame selection, memory/pointer assembly and attention. CPU reference redirects only hard-coded spatial .cuda() transfers and computes rotary caches on CPU. SAM3.1 temporal host not tested."
+}

@@ -1,0 +1,409 @@
+{
+  "ctest": {
+    "passed": 62,
+    "total": 62,
+    "seconds": 185.32,
+    "log": "round7-ctest.log"
+  },
+  "operator_checks": {
+    "cpu_cuda_passed": 2,
+    "detail": "round7-qkv-operator-detail.log",
+    "memcheck_errors": 0
+  },
+  "fc2_shared_helper_regression": {
+    "cases": 7,
+    "report": "round7-fc2-boundary.json",
+    "max_weight_mean_error": 1.99671e-06
+  },
+  "model_controls": {
+    "observer_byte_equal": 32,
+    "parameter_and_path_pairs_byte_equal": 8,
+    "screen_repeat_pairs_byte_equal": 15,
+    "reports": [
+      "round7-observer-controls.json",
+      "r7-qkv-controls-summary.json",
+      "round7-repeat-controls.json"
+    ]
+  },
+  "screens": {
+    "r7-qkv-screen": [
+      {
+        "variant": "identity_bias",
+        "passed": 11,
+        "total": 15,
+        "nonempty": 12,
+        "nonempty_passed": 8,
+        "failed": [
+          {
+            "case": "coco-val-000000001584-p1",
+            "image_id": 1584,
+            "mode": "calibrated",
+            "count": 9,
+            "comparison": {
+              "reference_count": 9,
+              "candidate_count": 9,
+              "min_mask_iou": 0.9756592292089249,
+              "max_score_error": 0.00634765625,
+              "max_box_error_px": 0.2253265380859375,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          },
+          {
+            "case": "coco-val-000000004795-p0",
+            "image_id": 4795,
+            "mode": "calibrated",
+            "count": 1,
+            "comparison": {
+              "reference_count": 1,
+              "candidate_count": 1,
+              "min_mask_iou": 0.998866452067635,
+              "max_score_error": 0.044921875,
+              "max_box_error_px": 0.121734619140625,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          },
+          {
+            "case": "coco-val-000000009590-p0",
+            "image_id": 9590,
+            "mode": "calibrated",
+            "count": 6,
+            "comparison": {
+              "reference_count": 5,
+              "candidate_count": 6,
+              "min_mask_iou": 0.9567782504161273,
+              "max_score_error": 0.0224609375,
+              "max_box_error_px": 0.28614044189453125,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          },
+          {
+            "case": "coco-val-000000009590-p1",
+            "image_id": 9590,
+            "mode": "calibrated",
+            "count": 1,
+            "comparison": {
+              "reference_count": 1,
+              "candidate_count": 1,
+              "min_mask_iou": 0.9856115107913669,
+              "max_score_error": 0.02197265625,
+              "max_box_error_px": 0.21136474609375,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          }
+        ]
+      },
+      {
+        "variant": "scale",
+        "passed": 12,
+        "total": 15,
+        "nonempty": 12,
+        "nonempty_passed": 9,
+        "failed": [
+          {
+            "case": "coco-val-000000007574-p1",
+            "image_id": 7574,
+            "mode": "calibrated",
+            "count": 4,
+            "comparison": {
+              "reference_count": 4,
+              "candidate_count": 4,
+              "min_mask_iou": 0.9946236559139785,
+              "max_score_error": 0.02099609375,
+              "max_box_error_px": 0.067474365234375,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          },
+          {
+            "case": "coco-val-000000001425-p1",
+            "image_id": 1425,
+            "mode": "calibrated",
+            "count": 1,
+            "comparison": {
+              "reference_count": 1,
+              "candidate_count": 1,
+              "min_mask_iou": 0.9945995080740028,
+              "max_score_error": 0.00439453125,
+              "max_box_error_px": 1.940582275390625,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          },
+          {
+            "case": "coco-val-000000009590-p1",
+            "image_id": 9590,
+            "mode": "calibrated",
+            "count": 1,
+            "comparison": {
+              "reference_count": 1,
+              "candidate_count": 1,
+              "min_mask_iou": 0.9583333333333334,
+              "max_score_error": 0.0234375,
+              "max_box_error_px": 0.218292236328125,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          }
+        ]
+      },
+      {
+        "variant": "scale_bias",
+        "passed": 12,
+        "total": 15,
+        "nonempty": 12,
+        "nonempty_passed": 9,
+        "failed": [
+          {
+            "case": "coco-val-000000001584-p1",
+            "image_id": 1584,
+            "mode": "calibrated",
+            "count": 9,
+            "comparison": {
+              "reference_count": 9,
+              "candidate_count": 9,
+              "min_mask_iou": 0.9656565656565657,
+              "max_score_error": 0.0283203125,
+              "max_box_error_px": 0.369659423828125,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          },
+          {
+            "case": "coco-val-000000004795-p0",
+            "image_id": 4795,
+            "mode": "calibrated",
+            "count": 1,
+            "comparison": {
+              "reference_count": 1,
+              "candidate_count": 1,
+              "min_mask_iou": 0.9989099946226402,
+              "max_score_error": 0.02685546875,
+              "max_box_error_px": 0.837615966796875,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          },
+          {
+            "case": "coco-val-000000009590-p0",
+            "image_id": 9590,
+            "mode": "calibrated",
+            "count": 6,
+            "comparison": {
+              "reference_count": 5,
+              "candidate_count": 6,
+              "min_mask_iou": 0.9914487018627546,
+              "max_score_error": 0.0107421875,
+              "max_box_error_px": 0.4090576171875,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          }
+        ]
+      },
+      {
+        "variant": "shift_bias",
+        "passed": 14,
+        "total": 15,
+        "nonempty": 12,
+        "nonempty_passed": 11,
+        "failed": [
+          {
+            "case": "coco-val-000000001584-p1",
+            "image_id": 1584,
+            "mode": "calibrated",
+            "count": 9,
+            "comparison": {
+              "reference_count": 9,
+              "candidate_count": 9,
+              "min_mask_iou": 0.9696356275303644,
+              "max_score_error": 0.01318359375,
+              "max_box_error_px": 0.355682373046875,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          }
+        ]
+      }
+    ],
+    "r7-qkv-fp16-attention": [
+      {
+        "variant": "shift_bias",
+        "passed": 12,
+        "total": 15,
+        "nonempty": 12,
+        "nonempty_passed": 9,
+        "failed": [
+          {
+            "case": "coco-val-000000007574-p1",
+            "image_id": 7574,
+            "mode": "calibrated",
+            "count": 4,
+            "comparison": {
+              "reference_count": 4,
+              "candidate_count": 4,
+              "min_mask_iou": 0.9957983193277311,
+              "max_score_error": 0.02783203125,
+              "max_box_error_px": 0.0525970458984375,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          },
+          {
+            "case": "coco-val-000000009590-p0",
+            "image_id": 9590,
+            "mode": "calibrated",
+            "count": 6,
+            "comparison": {
+              "reference_count": 5,
+              "candidate_count": 6,
+              "min_mask_iou": 0.9937658739321172,
+              "max_score_error": 0.0068359375,
+              "max_box_error_px": 0.159210205078125,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          },
+          {
+            "case": "coco-val-000000009590-p1",
+            "image_id": 9590,
+            "mode": "calibrated",
+            "count": 1,
+            "comparison": {
+              "reference_count": 1,
+              "candidate_count": 1,
+              "min_mask_iou": 0.9787234042553191,
+              "max_score_error": 0.01025390625,
+              "max_box_error_px": 0.180877685546875,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          }
+        ]
+      }
+    ],
+    "r7-qkv-global-attention": [
+      {
+        "variant": "shift_bias",
+        "passed": 13,
+        "total": 15,
+        "nonempty": 12,
+        "nonempty_passed": 10,
+        "failed": [
+          {
+            "case": "coco-val-000000001425-p1",
+            "image_id": 1425,
+            "mode": "calibrated",
+            "count": 1,
+            "comparison": {
+              "reference_count": 1,
+              "candidate_count": 1,
+              "min_mask_iou": 0.9933244325767691,
+              "max_score_error": 0.00390625,
+              "max_box_error_px": 1.7224884033203125,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          },
+          {
+            "case": "coco-val-000000009590-p1",
+            "image_id": 9590,
+            "mode": "calibrated",
+            "count": 1,
+            "comparison": {
+              "reference_count": 1,
+              "candidate_count": 1,
+              "min_mask_iou": 0.9785714285714285,
+              "max_score_error": 0.0078125,
+              "max_box_error_px": 0.12762451171875,
+              "finite": true,
+              "gate_pass": false,
+              "byte_equal": false
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "groups": {
+    "observe": {
+      "processes": 32,
+      "runs": 1,
+      "images": 32,
+      "wall_seconds": 295.85036063194275,
+      "setup_seconds_range": [
+        5.9477286,
+        6.4203693
+      ],
+      "max_cold_peak_allocated_bytes": 2291008512,
+      "max_whole_gpu_sampled_bytes": 3709480960
+    },
+    "quality": {
+      "processes": 135,
+      "runs": 49,
+      "images": 16,
+      "wall_seconds": 1256.6839554309845,
+      "setup_seconds_range": [
+        5.7127056,
+        7.2975474
+      ],
+      "max_cold_peak_allocated_bytes": 2694579712,
+      "max_whole_gpu_sampled_bytes": 4256161792
+    }
+  },
+  "binaries": {
+    "sam3_native.dll": "c87c030a417a7e9f1276b3fd56cff076fc4c68cc1cd87b9cfa8bee30155d6dba",
+    "sam3_image_latency.exe": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "sam3_qkv_calibration_test.exe": "fb22e7b480a7f9986066578e39668ee939c6aaad0c2819fba2d065df372ac8b6",
+    "sam3_boundary_bench.exe": "2c6885a6d226e7531ef5412bbfab0e092c6aefc6f1980b4b2b45020297572bac"
+  },
+  "weight_manifest_sha256": "e3648c574e4014dfe62c6f9b09c1660ea99dee7b546b2738231d27bed6de06e9",
+  "data_manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+  "cuda_kernel_body_changed": false,
+  "default_runtime_options_changed": false,
+  "holdout_used": false,
+  "accepted_candidate": null,
+  "full_development_evaluation_this_round": true,
+  "model_timing_processes": 0,
+  "development_candidate": {
+    "run": "r7-qkv-shift-development",
+    "kind": "quality",
+    "mode": "calibrated",
+    "completed": 33,
+    "process_wall_seconds": 298.4633550643921,
+    "max_peak_allocated_bytes": 2694219264,
+    "max_sampled_whole_gpu_bytes": 4212228096,
+    "compared": 33,
+    "passed": 32,
+    "nonempty": 25,
+    "nonempty_passed": 24,
+    "count_changes": 0,
+    "failed_cases": [
+      "coco-val-000000001584-p1"
+    ],
+    "min_mask_iou": 0.9696356275303644,
+    "max_score_error": 0.01708984375,
+    "max_box_error_px": 0.97412109375
+  },
+  "python_syntax_checks": true,
+  "diff_check": true,
+  "remaining": "The best candidate passed 32 of 33 development cases and is not accepted. Legacy/independent quality and paired speed still require a passing candidate. INT4 and SAM3.1 efficacy is not established by this round."
+}

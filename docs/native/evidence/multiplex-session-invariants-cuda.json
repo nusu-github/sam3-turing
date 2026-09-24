@@ -1,0 +1,18 @@
+{
+  "device": "cuda",
+  "mode": "fp16",
+  "cancellation_exact_tensor_comparisons": 44,
+  "dynamic_operations": 11,
+  "retained_points": 18,
+  "checks": [
+    "cancel/resume equals uninterrupted outputs and history",
+    "midstream ID growth and removal",
+    "unchanged old bucket memory/pointers",
+    "historical absence for new object",
+    "reverse propagation",
+    "point accumulation",
+    "reset",
+    "remaining annotation promoted after last conditioning input cleared"
+  ],
+  "scope": "Native policy invariants with full-grid synthetic features; not upstream multi-object demo parity."
+}

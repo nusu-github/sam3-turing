@@ -1,0 +1,83 @@
+{
+  "cases": [
+    {
+      "model": "sam3",
+      "frame": 0,
+      "queries": 200,
+      "objects": 4,
+      "mask_pixels": [
+        72240,
+        33294,
+        94646,
+        20788
+      ],
+      "tracker_values": 0
+    },
+    {
+      "model": "sam3",
+      "frame": 1,
+      "queries": 200,
+      "objects": 4,
+      "mask_pixels": [
+        73124,
+        33589,
+        92053,
+        21981
+      ],
+      "tracker_values": 331776
+    },
+    {
+      "model": "sam3",
+      "frame": 2,
+      "queries": 200,
+      "objects": 4,
+      "mask_pixels": [
+        73905,
+        33856,
+        89996,
+        23203
+      ],
+      "tracker_values": 331776
+    },
+    {
+      "model": "sam3.1",
+      "frame": 0,
+      "queries": 200,
+      "objects": 4,
+      "mask_pixels": [
+        72388,
+        33268,
+        94403,
+        20791
+      ],
+      "tracker_values": 0
+    },
+    {
+      "model": "sam3.1",
+      "frame": 1,
+      "queries": 200,
+      "objects": 4,
+      "mask_pixels": [
+        73202,
+        33872,
+        91722,
+        21997
+      ],
+      "tracker_values": 331776
+    },
+    {
+      "model": "sam3.1",
+      "frame": 2,
+      "queries": 200,
+      "objects": 4,
+      "mask_pixels": [
+        73602,
+        34040,
+        89714,
+        23438
+      ],
+      "tracker_values": 331776
+    }
+  ],
+  "scope": "Actual decoded source video frames 0,1,2, runtime text person, FP16, CUDA Blackwell. Standalone process PATH=/nonexistent. Detector/tracker pipeline produced finite logits and nonempty raw masks, one trunk evaluation per frame. This verifies execution, not complete source video output parity or temporal filtering."
+}

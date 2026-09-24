@@ -1,0 +1,1361 @@
+{
+  "model": "sam3.1",
+  "source_capture_frames": [
+    0,
+    1
+  ],
+  "source_neural_mode": "bf16_reference",
+  "source_constructor_enables_tf32": true,
+  "flags_recorded_during_capture": false,
+  "native_tf32_disabled_cases": [
+    {
+      "frame": 0,
+      "key": "layers.0.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.norm3",
+      "max_error": 0.001112222671508789,
+      "different": 51434,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.ca_text",
+      "max_error": 0.0625,
+      "different": 25344,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.catext_norm",
+      "max_error": 0.023970365524291992,
+      "different": 51452,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.cross_attn",
+      "max_error": 0.103515625,
+      "different": 26597,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.norm1",
+      "max_error": 0.11975792050361633,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.norm2",
+      "max_error": 0.01956343650817871,
+      "different": 51451,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.norm3",
+      "max_error": 0.10833722352981567,
+      "different": 51455,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.self_attn",
+      "max_error": 0.03125,
+      "different": 20148,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.ca_text",
+      "max_error": 0.0498046875,
+      "different": 39021,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.catext_norm",
+      "max_error": 0.07864189147949219,
+      "different": 51455,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.cross_attn",
+      "max_error": 0.177734375,
+      "different": 35342,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.norm1",
+      "max_error": 0.17160476744174957,
+      "different": 51455,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.norm2",
+      "max_error": 0.08100864291191101,
+      "different": 51455,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.norm3",
+      "max_error": 0.16720575094223022,
+      "different": 51455,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.self_attn",
+      "max_error": 0.046875,
+      "different": 33186,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.ca_text",
+      "max_error": 0.0859375,
+      "different": 41552,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.catext_norm",
+      "max_error": 0.1753356158733368,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.cross_attn",
+      "max_error": 0.1796875,
+      "different": 40525,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.norm1",
+      "max_error": 0.1715562641620636,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.norm2",
+      "max_error": 0.19129112362861633,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.norm3",
+      "max_error": 0.19627118110656738,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.self_attn",
+      "max_error": 0.046875,
+      "different": 38094,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.ca_text",
+      "max_error": 0.05859375,
+      "different": 43673,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.catext_norm",
+      "max_error": 0.20000611245632172,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.cross_attn",
+      "max_error": 0.349609375,
+      "different": 42350,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.norm1",
+      "max_error": 0.3181324899196625,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.norm2",
+      "max_error": 0.2174571454524994,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.norm3",
+      "max_error": 0.24669933319091797,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.self_attn",
+      "max_error": 0.07421875,
+      "different": 40292,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.ca_text",
+      "max_error": 0.0625,
+      "different": 41864,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.catext_norm",
+      "max_error": 0.23079049587249756,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.cross_attn",
+      "max_error": 0.205078125,
+      "different": 42116,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.norm1",
+      "max_error": 0.2743184566497803,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.norm2",
+      "max_error": 0.2218751311302185,
+      "different": 51455,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.norm3",
+      "max_error": 0.30017054080963135,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.self_attn",
+      "max_error": 0.0703125,
+      "different": 40282,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.norm3",
+      "max_error": 0.0009535551071166992,
+      "different": 51441,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.ca_text",
+      "max_error": 0.0625,
+      "different": 28573,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.catext_norm",
+      "max_error": 0.027898311614990234,
+      "different": 51453,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.cross_attn",
+      "max_error": 0.0703125,
+      "different": 27753,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.norm1",
+      "max_error": 0.0647575855255127,
+      "different": 51453,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.norm2",
+      "max_error": 0.03273630142211914,
+      "different": 51450,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.norm3",
+      "max_error": 0.09301574528217316,
+      "different": 51454,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.self_attn",
+      "max_error": 0.03125,
+      "different": 22819,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.ca_text",
+      "max_error": 0.0546875,
+      "different": 38842,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.catext_norm",
+      "max_error": 0.12051951885223389,
+      "different": 51455,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.cross_attn",
+      "max_error": 0.134765625,
+      "different": 36790,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.norm1",
+      "max_error": 0.14063270390033722,
+      "different": 51454,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.norm2",
+      "max_error": 0.11775720119476318,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.norm3",
+      "max_error": 0.16166552901268005,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.self_attn",
+      "max_error": 0.0390625,
+      "different": 34597,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.ca_text",
+      "max_error": 0.265625,
+      "different": 42297,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.catext_norm",
+      "max_error": 0.28896456956863403,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.cross_attn",
+      "max_error": 0.29296875,
+      "different": 40654,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.norm1",
+      "max_error": 0.2647784352302551,
+      "different": 51455,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.norm2",
+      "max_error": 0.16219711303710938,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.norm3",
+      "max_error": 0.46276652812957764,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.self_attn",
+      "max_error": 0.09765625,
+      "different": 37845,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.ca_text",
+      "max_error": 1.046875,
+      "different": 44176,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.catext_norm",
+      "max_error": 1.3575727939605713,
+      "different": 51454,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.cross_attn",
+      "max_error": 0.625,
+      "different": 42802,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.norm1",
+      "max_error": 1.536306619644165,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.norm2",
+      "max_error": 0.6015735268592834,
+      "different": 51455,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.norm3",
+      "max_error": 2.4135560989379883,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.self_attn",
+      "max_error": 0.296875,
+      "different": 41981,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.ca_text",
+      "max_error": 0.7109375,
+      "different": 43515,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.catext_norm",
+      "max_error": 2.907496452331543,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.cross_attn",
+      "max_error": 0.322265625,
+      "different": 42889,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.norm1",
+      "max_error": 2.7793936729431152,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.norm2",
+      "max_error": 2.6690666675567627,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.norm3",
+      "max_error": 2.7932026386260986,
+      "different": 51456,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.self_attn",
+      "max_error": 0.734375,
+      "different": 44443,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    }
+  ],
+  "native_tf32_enabled_cases": [
+    {
+      "frame": 0,
+      "key": "layers.0.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.0.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.1.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.2.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.3.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.4.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 0,
+      "key": "layers.5.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.0.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.1.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.2.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.3.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.4.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.ca_text",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.catext_norm",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.cross_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.norm1",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.norm2",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.norm3",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.float32",
+      "source_dtype": "torch.float32"
+    },
+    {
+      "frame": 1,
+      "key": "layers.5.self_attn",
+      "max_error": 0.0,
+      "different": 0,
+      "native_dtype": "torch.bfloat16",
+      "source_dtype": "torch.bfloat16"
+    }
+  ],
+  "enabled_exact_tensors": 84,
+  "enabled_max_error": 0.0,
+  "scope": "Controlled decoder replay from captured original decoder inputs with actual shared native decoder weights. Native TF32-disabled replay first differs at the FP32 FFN/norm3 after exactly matching first-layer attention and norm1; enabling native TF32 matches all84 recorded layer tensors. This diagnoses the earlier unequal-precision semantic comparison, not a recommendation to enable TF32 on Turing or a full-pipeline test. Source constructor behavior is inspected in code; new semantic runs independently record/assert TF32 disabled after construction."
+}

@@ -1,0 +1,62 @@
+{
+  "signature": {
+    "args": {
+      "kind": "quality",
+      "role": "development",
+      "mode": "calibrated",
+      "name": "r7-qkv-screen-scale_bias-5992",
+      "scope": "mask:0xfffffffe",
+      "calibration": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+      "limit_images": null,
+      "primary_only": false,
+      "image_id": 5992,
+      "attention_scope": "mask:0xfffffffe",
+      "projection_scope": "mask:0xffffffbf",
+      "mean_bias": true,
+      "qkv_calibration": ".cache\\quant-research-20260924\\calibrations\\qkv-a050-none",
+      "qkv_mean_bias": true
+    },
+    "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+    "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "runtime_sha256": "c87c030a417a7e9f1276b3fd56cff076fc4c68cc1cd87b9cfa8bee30155d6dba",
+    "environment": {
+      "TORCH_BLAS_PREFER_CUBLASLT": "0",
+      "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+      "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+      "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+      "SAM3_EXPERIMENT_MLP": "int8_boundary",
+      "SAM3_EXPERIMENT_PROJECTION": "qkv",
+      "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+      "SAM3_EXPERIMENT_FC2_NORM": "fused",
+      "SAM3_EXPERIMENT_MLP_SCOPE": "mask:0xfffffffe",
+      "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+      "SAM3_EXPERIMENT_ATTENTION_SCOPE": "mask:0xfffffffe",
+      "SAM3_EXPERIMENT_FC2_MEAN_BIAS": "enabled",
+      "SAM3_EXPERIMENT_QKV_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\qkv-a050-none",
+      "SAM3_EXPERIMENT_QKV_MEAN_BIAS": "enabled",
+      "SAM3_EXPERIMENT_PROJECTION_SCOPE": "mask:0xffffffbf"
+    },
+    "qkv_calibration_sha256": "ea08882ad4e47878516dee0f9c5dd1a9e323a068eda65efafb7fd5c80e35a72a",
+    "qkv_mean_sha256": "79dcdfbce6b4c785b4675d59bc96b3abede7f3f268e74cfdbfa196b3ea309981",
+    "calibration_sha256": "07de8545359fc39cd350d3086501f0a5544d20f6c574e3ba02ee3bfd2981292e",
+    "mean_sha256": "67d2fc4002b37dc614219a18bcff803e5bd0f958cb68b7f47d9e1d1a3481f0aa"
+  },
+  "results": [
+    {
+      "case": "coco-val-000000005992-p0",
+      "image_id": 5992,
+      "mode": "calibrated",
+      "count": 8,
+      "comparison": {
+        "reference_count": 8,
+        "candidate_count": 8,
+        "min_mask_iou": 0.9909255898366606,
+        "max_score_error": 0.01416015625,
+        "max_box_error_px": 0.86749267578125,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    }
+  ]
+}

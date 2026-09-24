@@ -1,0 +1,23 @@
+[
+  {
+    "run": "r6-mean-half-development",
+    "kind": "quality",
+    "mode": "calibrated",
+    "completed": 33,
+    "process_wall_seconds": 214.4921600818634,
+    "max_peak_allocated_bytes": 2691931648,
+    "max_sampled_whole_gpu_bytes": 3744378880,
+    "compared": 33,
+    "passed": 31,
+    "nonempty": 25,
+    "nonempty_passed": 23,
+    "count_changes": 1,
+    "failed_cases": [
+      "coco-val-000000005992-p0",
+      "coco-val-000000009590-p0"
+    ],
+    "min_mask_iou": 0.982,
+    "max_score_error": 0.01953125,
+    "max_box_error_px": 1.65191650390625
+  }
+]

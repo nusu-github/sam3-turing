@@ -1,0 +1,55 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "precision": "bf16_reference",
+  "scope": "Connected detector from saved visual/text features; excludes native vision/text execution.",
+  "cases": [
+    {
+      "case": "text-0",
+      "queries": 200,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_boxes": 0.0,
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "presence_logit_dec": 0.0
+      }
+    },
+    {
+      "case": "text-1",
+      "queries": 200,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_boxes": 0.0,
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "presence_logit_dec": 0.0
+      }
+    },
+    {
+      "case": "text-2",
+      "queries": 200,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_boxes": 0.0,
+        "pred_logits": 0.0,
+        "pred_masks": 0.0,
+        "presence_logit_dec": 0.0
+      }
+    }
+  ]
+}

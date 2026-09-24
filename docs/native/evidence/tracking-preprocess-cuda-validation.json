@@ -1,0 +1,515 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "pillow": "12.2.0",
+  "cuda_input": true,
+  "cases": [
+    {
+      "input": [
+        1,
+        1
+      ],
+      "output": [
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1,
+        1
+      ],
+      "output": [
+        7,
+        9
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1,
+        1
+      ],
+      "output": [
+        32,
+        31
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1,
+        1
+      ],
+      "output": [
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1,
+        1
+      ],
+      "output": [
+        1008,
+        1008
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1,
+        37
+      ],
+      "output": [
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1,
+        37
+      ],
+      "output": [
+        7,
+        9
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1,
+        37
+      ],
+      "output": [
+        32,
+        31
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1,
+        37
+      ],
+      "output": [
+        1,
+        37
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1,
+        37
+      ],
+      "output": [
+        1008,
+        1008
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        29,
+        1
+      ],
+      "output": [
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        29,
+        1
+      ],
+      "output": [
+        7,
+        9
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        29,
+        1
+      ],
+      "output": [
+        32,
+        31
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        29,
+        1
+      ],
+      "output": [
+        29,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        29,
+        1
+      ],
+      "output": [
+        1008,
+        1008
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        3,
+        5
+      ],
+      "output": [
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        3,
+        5
+      ],
+      "output": [
+        7,
+        9
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        3,
+        5
+      ],
+      "output": [
+        32,
+        31
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        3,
+        5
+      ],
+      "output": [
+        3,
+        5
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        3,
+        5
+      ],
+      "output": [
+        1008,
+        1008
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        31,
+        47
+      ],
+      "output": [
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        31,
+        47
+      ],
+      "output": [
+        7,
+        9
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        31,
+        47
+      ],
+      "output": [
+        32,
+        31
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        31,
+        47
+      ],
+      "output": [
+        31,
+        47
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        31,
+        47
+      ],
+      "output": [
+        1008,
+        1008
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        137,
+        193
+      ],
+      "output": [
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        137,
+        193
+      ],
+      "output": [
+        7,
+        9
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        137,
+        193
+      ],
+      "output": [
+        32,
+        31
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        137,
+        193
+      ],
+      "output": [
+        137,
+        193
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        137,
+        193
+      ],
+      "output": [
+        1008,
+        1008
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        720,
+        1280
+      ],
+      "output": [
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        720,
+        1280
+      ],
+      "output": [
+        7,
+        9
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        720,
+        1280
+      ],
+      "output": [
+        32,
+        31
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        720,
+        1280
+      ],
+      "output": [
+        720,
+        1280
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        720,
+        1280
+      ],
+      "output": [
+        1008,
+        1008
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1200,
+        1800
+      ],
+      "output": [
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1200,
+        1800
+      ],
+      "output": [
+        7,
+        9
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1200,
+        1800
+      ],
+      "output": [
+        32,
+        31
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1200,
+        1800
+      ],
+      "output": [
+        1200,
+        1800
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1200,
+        1800
+      ],
+      "output": [
+        1008,
+        1008
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1008,
+        1008
+      ],
+      "output": [
+        1,
+        1
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1008,
+        1008
+      ],
+      "output": [
+        7,
+        9
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1008,
+        1008
+      ],
+      "output": [
+        32,
+        31
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1008,
+        1008
+      ],
+      "output": [
+        1008,
+        1008
+      ],
+      "exact": true
+    },
+    {
+      "input": [
+        1008,
+        1008
+      ],
+      "output": [
+        1008,
+        1008
+      ],
+      "exact": true
+    },
+    {
+      "image": "assets/videos/0001/0.jpg",
+      "preprocess_exact": true
+    },
+    {
+      "image": "assets/videos/0001/1.jpg",
+      "preprocess_exact": true
+    },
+    {
+      "image": "assets/images/truck.jpg",
+      "preprocess_exact": true
+    }
+  ],
+  "scope": "Decoded RGB to original synchronous JPEG-frame preprocessing; does not compare JPEG or video bitstream decoding."
+}

@@ -1,0 +1,33 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cuda",
+  "cases": [
+    {
+      "mode": "fp16",
+      "case": "forward",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "propagate_correct_multi",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "stability",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 13,
+      "exact": true
+    }
+  ],
+  "math_fallback": true,
+  "scope": "Original VideoTrackingMultiplex.track_step inference with no ground-truth training correction loop. Synthetic full-grid cached features; dynamic insert/recondition and demo session singleton extraction/merge remain separate.",
+  "adaptations": "CUDA FP32 removes the source Flash-only context. CPU redirects CUDA transfers and rotary caches."
+}

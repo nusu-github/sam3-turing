@@ -1,0 +1,37 @@
+{
+  "signature": {
+    "args": {
+      "kind": "timing",
+      "role": "development",
+      "mode": "selective",
+      "name": "timing-0-1425-selective",
+      "scope": "all",
+      "calibration": null,
+      "limit_images": null,
+      "primary_only": true,
+      "image_id": 1425
+    },
+    "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+    "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "runtime_sha256": "b3150e8ecb621cb612ee4cb6b2d9b06ffd53c2fb957307c3f58e9b2dadb85ef9",
+    "environment": {
+      "TORCH_BLAS_PREFER_CUBLASLT": "0",
+      "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+      "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+      "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+      "SAM3_EXPERIMENT_MLP": "int8_boundary",
+      "SAM3_EXPERIMENT_PROJECTION": "qkv",
+      "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+      "SAM3_EXPERIMENT_FC2_NORM": "fused",
+      "SAM3_EXPERIMENT_MLP_SCOPE": "global"
+    }
+  },
+  "results": [
+    {
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "mode": "selective",
+      "count": 2
+    }
+  ]
+}

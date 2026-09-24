@@ -1,0 +1,62 @@
+{
+  "dance0-person/mlp_only": {
+    "reference_count": 4,
+    "candidate_count": 4,
+    "min_mask_iou": 0.9985842520633773,
+    "max_score_error": 0.0009765625,
+    "max_box_error_px": 0.388458251953125,
+    "finite": true,
+    "gate_pass": true,
+    "byte_equal": false
+  },
+  "dance0-person/qkv_only": {
+    "reference_count": 4,
+    "candidate_count": 4,
+    "min_mask_iou": 0.9989150090415914,
+    "max_score_error": 0.00146484375,
+    "max_box_error_px": 0.785003662109375,
+    "finite": true,
+    "gate_pass": true,
+    "byte_equal": false
+  },
+  "dance50-shirt/mlp_only": {
+    "reference_count": 2,
+    "candidate_count": 1,
+    "min_mask_iou": 0.9971291866028709,
+    "max_score_error": 0.02783203125,
+    "max_box_error_px": 0.09051513671875,
+    "finite": true,
+    "gate_pass": false,
+    "byte_equal": false
+  },
+  "dance50-shirt/qkv_only": {
+    "reference_count": 2,
+    "candidate_count": 2,
+    "min_mask_iou": 0.9986501808757626,
+    "max_score_error": 0.00439453125,
+    "max_box_error_px": 0.035491943359375,
+    "finite": true,
+    "gate_pass": true,
+    "byte_equal": false
+  },
+  "truck-window/mlp_only": {
+    "reference_count": 6,
+    "candidate_count": 5,
+    "min_mask_iou": 0.9935613682092556,
+    "max_score_error": 0.013671875,
+    "max_box_error_px": 0.1703948974609375,
+    "finite": true,
+    "gate_pass": false,
+    "byte_equal": false
+  },
+  "truck-window/qkv_only": {
+    "reference_count": 6,
+    "candidate_count": 6,
+    "min_mask_iou": 0.9993071593533487,
+    "max_score_error": 0.0029296875,
+    "max_box_error_px": 0.2147216796875,
+    "finite": true,
+    "gate_pass": true,
+    "byte_equal": false
+  }
+}

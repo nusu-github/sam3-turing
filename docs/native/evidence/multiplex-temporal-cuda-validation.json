@@ -1,0 +1,1061 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cuda",
+  "cases": [
+    {
+      "mode": "fp32",
+      "case": "forward",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "reverse_stride",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 192,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "past_signed",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 176,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "score_filter",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 80,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "reverse_score_filter",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 80,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "start",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 64,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "reverse_end",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 64,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "v1_time",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "dummy_pointer_time",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "no_pointers",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "missing_pointer_entries",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "missing_some_spatial",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "cleared_memory",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": false,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "pointer_only_fallback",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": false,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "zero_batch_memory",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": false,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "legacy_5d",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "unlimited_conditioning",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 144,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "disabled_memory",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": false,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "full_grid",
+      "grid": 72,
+      "buckets": 1,
+      "pointer_tokens": 32,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "forward",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "reverse_stride",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 192,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "past_signed",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 176,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "score_filter",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 80,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "reverse_score_filter",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 80,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "start",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 64,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "reverse_end",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 64,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "v1_time",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "dummy_pointer_time",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "no_pointers",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "missing_pointer_entries",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "missing_some_spatial",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "cleared_memory",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": false,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "pointer_only_fallback",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": false,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "zero_batch_memory",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": false,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "legacy_5d",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "unlimited_conditioning",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 144,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "disabled_memory",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": false,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "full_grid",
+      "grid": 72,
+      "buckets": 1,
+      "pointer_tokens": 32,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "math_full_grid",
+      "grid": 72,
+      "buckets": 1,
+      "pointer_tokens": 32,
+      "fuse": true,
+      "source_flash_only_context_removed": true,
+      "math_only_verified": true,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "forward",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "reverse_stride",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 192,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "past_signed",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 176,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "score_filter",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 80,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "reverse_score_filter",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 80,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "start",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 64,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "reverse_end",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 64,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "v1_time",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "dummy_pointer_time",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "no_pointers",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "missing_pointer_entries",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "missing_some_spatial",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "cleared_memory",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": false,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "pointer_only_fallback",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": false,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "zero_batch_memory",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": false,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "legacy_5d",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 208,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "unlimited_conditioning",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 144,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "disabled_memory",
+      "grid": 8,
+      "buckets": 2,
+      "pointer_tokens": 0,
+      "fuse": false,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0
+      },
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "full_grid",
+      "grid": 72,
+      "buckets": 1,
+      "pointer_tokens": 32,
+      "fuse": true,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "features": 0.0,
+        "counts": 0.0,
+        "memory": 0.0,
+        "position": 0.0,
+        "image": 0.0,
+        "image_position": 0.0
+      },
+      "exact": true
+    }
+  ],
+  "scope": "Original SAM3.1 inference temporal selection, spatial/image/pointer assembly, legacy 5D normalization and conditioned features. CUDA FP32/math reference removes only Flash-only context; CPU redirects hard-coded CUDA transfers and recomputes rotary caches on CPU. No complete video session or dynamic history rebucketing tested."
+}

@@ -1,0 +1,11 @@
+{
+  "run": "r8-qkv-error-smoke",
+  "results": [
+    {
+      "case": "coco-train-000000000241-p0",
+      "fp16_byte_equal": true,
+      "finite_layers": 32,
+      "max_abs_mean_error": 0.010560136288404465
+    }
+  ]
+}

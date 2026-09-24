@@ -1,0 +1,152 @@
+{
+  "observation_layers": [
+    {
+      "layer": 0,
+      "byte_equal": true
+    },
+    {
+      "layer": 1,
+      "byte_equal": true
+    },
+    {
+      "layer": 2,
+      "byte_equal": true
+    },
+    {
+      "layer": 3,
+      "byte_equal": true
+    },
+    {
+      "layer": 4,
+      "byte_equal": true
+    },
+    {
+      "layer": 5,
+      "byte_equal": true
+    },
+    {
+      "layer": 6,
+      "byte_equal": true
+    },
+    {
+      "layer": 7,
+      "byte_equal": true
+    },
+    {
+      "layer": 8,
+      "byte_equal": true
+    },
+    {
+      "layer": 9,
+      "byte_equal": true
+    },
+    {
+      "layer": 10,
+      "byte_equal": true
+    },
+    {
+      "layer": 11,
+      "byte_equal": true
+    },
+    {
+      "layer": 12,
+      "byte_equal": true
+    },
+    {
+      "layer": 13,
+      "byte_equal": true
+    },
+    {
+      "layer": 14,
+      "byte_equal": true
+    },
+    {
+      "layer": 15,
+      "byte_equal": true
+    },
+    {
+      "layer": 16,
+      "byte_equal": true
+    },
+    {
+      "layer": 17,
+      "byte_equal": true
+    },
+    {
+      "layer": 18,
+      "byte_equal": true
+    },
+    {
+      "layer": 19,
+      "byte_equal": true
+    },
+    {
+      "layer": 20,
+      "byte_equal": true
+    },
+    {
+      "layer": 21,
+      "byte_equal": true
+    },
+    {
+      "layer": 22,
+      "byte_equal": true
+    },
+    {
+      "layer": 23,
+      "byte_equal": true
+    },
+    {
+      "layer": 24,
+      "byte_equal": true
+    },
+    {
+      "layer": 25,
+      "byte_equal": true
+    },
+    {
+      "layer": 26,
+      "byte_equal": true
+    },
+    {
+      "layer": 27,
+      "byte_equal": true
+    },
+    {
+      "layer": 28,
+      "byte_equal": true
+    },
+    {
+      "layer": 29,
+      "byte_equal": true
+    },
+    {
+      "layer": 30,
+      "byte_equal": true
+    },
+    {
+      "layer": 31,
+      "byte_equal": true
+    }
+  ],
+  "quality_cases": [
+    {
+      "case": "coco-val-000000001425-p0",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000001425-p1",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    }
+  ]
+}

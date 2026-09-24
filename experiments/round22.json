@@ -1,7 +1,0 @@
-{
-  "r22_fused_attention_control": {"final": true, "compile": true, "public_int8": true, "public_int8_attention": true, "public_int8_fused": true},
-  "skip_mlp_last1": {"final": true, "compile": true, "public_int8": true, "public_int8_attention": true, "public_int8_fused": true, "skip_mlp_layers": [31]},
-  "skip_mlp_last2": {"final": true, "compile": true, "public_int8": true, "public_int8_attention": true, "public_int8_fused": true, "skip_mlp_layers": [30,31]},
-  "skip_mlp_last4": {"final": true, "compile": true, "public_int8": true, "public_int8_attention": true, "public_int8_fused": true, "skip_mlp_layers": [28,29,30,31]},
-  "skip_mlp_first": {"final": true, "compile": true, "public_int8": true, "public_int8_attention": true, "public_int8_fused": true, "skip_mlp_layers": [0]}
-}

@@ -1,0 +1,16 @@
+{
+  "model": "sam3.1",
+  "selected_head": "propagation_convs",
+  "matching_outputs": [
+    "position.0",
+    "position.1",
+    "position.2",
+    "propagation_convs.0",
+    "propagation_convs.1",
+    "propagation_convs.2",
+    "trunk"
+  ],
+  "all_values_exact": true,
+  "outer_bf16_autocast_restored": true,
+  "autocast_restored_after_error": true
+}

@@ -94,11 +94,11 @@ text and 100.80 ms without caching. The preceding FP32 uncached control took
 1.32 to 0.76 GiB; these are not process RSS measurements. Counts stayed 1/4/6/4/0,
 with mean mask IoU 0.997790 and 922 changed pixels versus stock.
 [CPU INT8 results](../experiments/results/accepted_cpu_dynamic_text_uncached.json) /
-[FP32 comparison](../experiments/round48.json).
+[FP32 comparison](https://github.com/nusu-github/sam3-turing/blob/080bec0b3a2f103787b6985c21bc51c9bb99aaa3/experiments/round48.json).
 
 The EPYC tests used four threads and PyTorch's x86 quantization backend. A
 separate untrimmed INT8 comparison took 105.17 ms at four threads and 87.90 ms at
-eight. [Thread comparison](../experiments/round50.json).
+eight. [Thread comparison](https://github.com/nusu-github/sam3-turing/blob/080bec0b3a2f103787b6985c21bc51c9bb99aaa3/experiments/round50.json).
 Trimmed uncached CPU text measured 87.48 ms / 698 changed pixels with FP32 and
 87.64 ms / 904 changed pixels with INT8; counts matched.
 [FP32](../experiments/results/accepted_cpu_trimmed_text_fp32.json) /
@@ -283,7 +283,7 @@ projections. Counts matched; the latter had mean IoU 0.997066. With refinements
 and trimmed uncached CPU text, image INT8 + CPU FP32 measured 90.60 ms,
 0.783 GiB allocated, 2.549 GiB NVML, and IoU 0.998116. CPU text INT8 measured
 90.01 ms, 0.782 GiB, 2.351 GiB, and IoU 0.997886. CPU attention was unchanged.
-[Comparison](../experiments/round58.json).
+[Comparison](https://github.com/nusu-github/sam3-turing/blob/080bec0b3a2f103787b6985c21bc51c9bb99aaa3/experiments/round58.json).
 
 Seven public Triton kernels passed offline SM75 compilation with Triton 3.5.0.
 An experimental custom INT8 GEMM failed lowering and was not adopted; the public
@@ -309,7 +309,7 @@ projections + fused GELU configuration:
 Counts remained 1/4/6/4/0, with allocation from 1.298 to 1.455 GiB. Agreement is
 against stock 1008-resolution BF16 output; small objects can differ more than the
 mean suggests. First inference took about 84–95 s with that cache state.
-[Settings](../experiments/round30.json) /
+[Settings](https://github.com/nusu-github/sam3-turing/blob/080bec0b3a2f103787b6985c21bc51c9bb99aaa3/experiments/round30.json) /
 [672 results](../experiments/results/compact_int8_resolution672.json).
 
 ```python
@@ -448,8 +448,8 @@ allocated about 3.330 GiB. The
 128 converted layers, CPU text MLP INT8, trimming, refinements, packing, state
 reuse, boxes, empty results, and fixed prompts.
 
-Earlier prototypes remain in [Round 38](../experiments/round38.json) and
-[Round 62](../experiments/round62.json). They ran at about 114–118 ms, close to
+Earlier prototypes ([Round 38](https://github.com/nusu-github/sam3-turing/blob/080bec0b3a2f103787b6985c21bc51c9bb99aaa3/experiments/round38.json) and
+[Round 62](https://github.com/nusu-github/sam3-turing/blob/080bec0b3a2f103787b6985c21bc51c9bb99aaa3/experiments/round62.json)) ran at about 114–118 ms, close to
 FP16, with roughly 2,000–3,000 changed pixels and unchanged counts. Round 62's
 Gaussian group 32 measured 116.81 ms / 1.267 GiB / IoU 0.993293 / 1995 pixels;
 asymmetric group 16 measured 116.65 ms / 1.453 GiB / IoU 0.994461 / 1748 pixels.
@@ -510,7 +510,8 @@ PixelDecoder operations, and early query filtering offered little additional
 benefit to the selected base configuration. `early_filter=True` remains optional
 and defaults to off. Head reassociation, fixed attention backends, MLP splitting,
 arena reuse, and eager real-valued RoPE were not selected as defaults based on
-the RTX 3090 comparisons. Candidate code and measurements remain available.
+the RTX 3090 comparisons. Their measurements remain in `experiments/results/`;
+the candidate implementations were removed after the sweep concluded (see below).
 
 ## Reusing the patch and experiments
 
@@ -524,15 +525,20 @@ The original reproduction inputs were the supplied FP16, 20USD, and GPU-validati
 archives. RunPod experiments reused the container's Python/CUDA installation,
 adding missing helper packages. Windows validation instead used a uv environment.
 
-See the [experiment instructions](../experiments/README.md),
-[all-candidate table](../experiments/results/README.md),
+See the [all-candidate table](../experiments/results/README.md),
 [CSV](../experiments/results/summary.csv), and the
-[historical experiment notebook (Japanese)](../experiments/NOTES.md).
+[experiment notes (Japanese)](../experiments/NOTES.md).
 The development sweep concluded on 2026-09-21: 376 candidates, 384 attempts
 including repeats and failures, and 373 valid image measurements. The final
 bias-correction comparison increased changed pixels from 697 to 769 for the
 selected asymmetric INT8 + tuned-weight configuration, so it was not adopted.
 Unexecuted settings are not counted as measured results.
+
+The sweep runner (`experiments/image_sweep.py`), candidate implementations,
+round configurations and the archived reproduction helpers are no longer in this
+branch. They are preserved in commit `080bec0` (`main`); to repeat an RTX 3090
+comparison, use a separate checkout such as `git worktree add ../sam3-sweep 080bec0`.
+The RTX 2060 validation harness, `experiments/local_turing_bench.py`, remains.
 
 ## Additional measurement and API references
 

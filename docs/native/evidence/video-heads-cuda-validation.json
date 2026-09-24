@@ -1,0 +1,1375 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cuda",
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "points_single",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "points_multi",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "empty_points",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "mask_prompt",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "combined_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "non_square_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "direct_mask",
+      "mask_shape": [
+        2,
+        1,
+        328,
+        328
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "direct_mask_image_size",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "no_prompts",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "points_single",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "points_multi",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        false
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "empty_points",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "mask_prompt",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "combined_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "non_square_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "direct_mask",
+      "mask_shape": [
+        2,
+        1,
+        328,
+        328
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "direct_mask_image_size",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "no_prompts",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "points_single",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "points_multi",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "empty_points",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "mask_prompt",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "combined_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "non_square_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "direct_mask",
+      "mask_shape": [
+        2,
+        1,
+        328,
+        328
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "direct_mask_image_size",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "no_prompts",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "points_single",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "points_multi",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "empty_points",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        false
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "mask_prompt",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "combined_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "non_square_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "direct_mask",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "direct_mask_image_size",
+      "mask_shape": [
+        2,
+        1,
+        252,
+        252
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "forced_present",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "forced_absent",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        false
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "points_single",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "points_multi",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "empty_points",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        false
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "mask_prompt",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "combined_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "non_square_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "direct_mask",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "direct_mask_image_size",
+      "mask_shape": [
+        2,
+        1,
+        252,
+        252
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "forced_present",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "forced_absent",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        false
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "points_single",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "points_multi",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "empty_points",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        false
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "mask_prompt",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "combined_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "non_square_prompt",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "direct_mask",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "direct_mask_image_size",
+      "mask_shape": [
+        2,
+        1,
+        252,
+        252
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "forced_present",
+      "mask_shape": [
+        2,
+        3,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        true,
+        true
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "forced_absent",
+      "mask_shape": [
+        2,
+        1,
+        288,
+        288
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0
+      },
+      "object_present": [
+        false,
+        false
+      ]
+    }
+  ],
+  "scope": "Original SAM3 per-object video heads and SAM3.1 interactive video heads. Does not validate temporal memory or multiplex propagation."
+}

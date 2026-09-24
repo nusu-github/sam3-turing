@@ -1,0 +1,755 @@
+{
+  "color_policy": 1,
+  "cases": [
+    {
+      "file": "person.mkv",
+      "frame": 0,
+      "native_dimensions": [
+        720,
+        1280
+      ],
+      "source_dimensions": [
+        720,
+        1280
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "a01234bc8b8cc0fca025ad6bda691a57a32d2c0deda7639f7d02e8d3fcde69be",
+      "reference_sha256": "a01234bc8b8cc0fca025ad6bda691a57a32d2c0deda7639f7d02e8d3fcde69be"
+    },
+    {
+      "file": "person.mkv",
+      "frame": 1,
+      "native_dimensions": [
+        720,
+        1280
+      ],
+      "source_dimensions": [
+        720,
+        1280
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "298c7cf18bb0317af06a50b139557f6e0bfab48d11d944d24b06cd33bfef0cda",
+      "reference_sha256": "298c7cf18bb0317af06a50b139557f6e0bfab48d11d944d24b06cd33bfef0cda"
+    },
+    {
+      "file": "person.mkv",
+      "frame": 2,
+      "native_dimensions": [
+        720,
+        1280
+      ],
+      "source_dimensions": [
+        720,
+        1280
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "0c93cee478f0ef9bcb884ead0b41a8c4d392f8e9460c9a497a2fb036d51f55c3",
+      "reference_sha256": "0c93cee478f0ef9bcb884ead0b41a8c4d392f8e9460c9a497a2fb036d51f55c3"
+    },
+    {
+      "file": "person.mkv",
+      "frame": 3,
+      "native_dimensions": [
+        720,
+        1280
+      ],
+      "source_dimensions": [
+        720,
+        1280
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "e38b1d8f1290874ba98e3de5485e4ba6a3c1a6d39e4c8d3cd8e6fa4ac7cf4001",
+      "reference_sha256": "e38b1d8f1290874ba98e3de5485e4ba6a3c1a6d39e4c8d3cd8e6fa4ac7cf4001"
+    },
+    {
+      "file": "lossless.mkv",
+      "frame": 0,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "5f97b5d78c8d8f56b281863d7382e15a5e2f32e086718ec17e87cc017d8cc3ed",
+      "reference_sha256": "5f97b5d78c8d8f56b281863d7382e15a5e2f32e086718ec17e87cc017d8cc3ed"
+    },
+    {
+      "file": "lossless.mkv",
+      "frame": 1,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "4215430fd53ac8217c3771e0d998568d7b3c066d7aa209b537ca67413b1073f3",
+      "reference_sha256": "4215430fd53ac8217c3771e0d998568d7b3c066d7aa209b537ca67413b1073f3"
+    },
+    {
+      "file": "lossless.mkv",
+      "frame": 2,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "90fc361e4fe78b496bbcbb7496db4b70b5a7f214a91d975a71b7b4d392dee640",
+      "reference_sha256": "90fc361e4fe78b496bbcbb7496db4b70b5a7f214a91d975a71b7b4d392dee640"
+    },
+    {
+      "file": "lossless.mkv",
+      "frame": 3,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "18ba39672dd3c213fb7fc2a3de19bf0629b5de424d08e59cc15ec0605e979531",
+      "reference_sha256": "18ba39672dd3c213fb7fc2a3de19bf0629b5de424d08e59cc15ec0605e979531"
+    },
+    {
+      "file": "lossless.mkv",
+      "frame": 4,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "292f4dd424053a8a4ce71626c1bd1c8d0783084eb1f343f75be038663870ad55",
+      "reference_sha256": "292f4dd424053a8a4ce71626c1bd1c8d0783084eb1f343f75be038663870ad55"
+    },
+    {
+      "file": "lossless.mkv",
+      "frame": 5,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "a80ba2f8bb3b2ee2dbe5681cff00a317201dd9471ffcf5c4f463a8d7557823a8",
+      "reference_sha256": "a80ba2f8bb3b2ee2dbe5681cff00a317201dd9471ffcf5c4f463a8d7557823a8"
+    },
+    {
+      "file": "lossless.mkv",
+      "frame": 6,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "a366aaf14573a703e2c88b35927a191cffcb560b3b9505e90a04f14f8568f161",
+      "reference_sha256": "a366aaf14573a703e2c88b35927a191cffcb560b3b9505e90a04f14f8568f161"
+    },
+    {
+      "file": "lossless.mkv",
+      "frame": 7,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "df8a6b52ff64fb14a5d5b014907c7322b9c556f01d2def2e7a1d193df4272072",
+      "reference_sha256": "df8a6b52ff64fb14a5d5b014907c7322b9c556f01d2def2e7a1d193df4272072"
+    },
+    {
+      "file": "lossless.mkv",
+      "frame": 8,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "a101da8ca96e359a0c84152eb4e3a400b70d75fbca60c24d21629ae45afa9d4d",
+      "reference_sha256": "a101da8ca96e359a0c84152eb4e3a400b70d75fbca60c24d21629ae45afa9d4d"
+    },
+    {
+      "file": "bframes.mp4",
+      "frame": 0,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "a9e096c68cd01020d0402918d2d657623263cefa4224fb8a6ac6d07e09b110f4",
+      "reference_sha256": "a9e096c68cd01020d0402918d2d657623263cefa4224fb8a6ac6d07e09b110f4"
+    },
+    {
+      "file": "bframes.mp4",
+      "frame": 1,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "3401ea0a12710dc2586b61626580a635381239b85e32c191af1534b4e04f9652",
+      "reference_sha256": "3401ea0a12710dc2586b61626580a635381239b85e32c191af1534b4e04f9652"
+    },
+    {
+      "file": "bframes.mp4",
+      "frame": 2,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "50cc08e4cc682726a7825a61f34a7079bac77b465d35d0784f80018f9809c3a8",
+      "reference_sha256": "50cc08e4cc682726a7825a61f34a7079bac77b465d35d0784f80018f9809c3a8"
+    },
+    {
+      "file": "bframes.mp4",
+      "frame": 3,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "f0957ae279cc7e3b7d21b56dcd21287430927b2494fac5a011842ef3ef64dff3",
+      "reference_sha256": "f0957ae279cc7e3b7d21b56dcd21287430927b2494fac5a011842ef3ef64dff3"
+    },
+    {
+      "file": "bframes.mp4",
+      "frame": 4,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "ff0c2e810da85b9f80bff2c60330b4311711d287308683b192b82ce07d573197",
+      "reference_sha256": "ff0c2e810da85b9f80bff2c60330b4311711d287308683b192b82ce07d573197"
+    },
+    {
+      "file": "bframes.mp4",
+      "frame": 5,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "971110964e018ee4703ba2efc6831eee0212d81d645b44345ba53ce143e0d190",
+      "reference_sha256": "971110964e018ee4703ba2efc6831eee0212d81d645b44345ba53ce143e0d190"
+    },
+    {
+      "file": "bframes.mp4",
+      "frame": 6,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "b8da2e532bef5c42a826f1078fc5b16b7903d6ce6dd8aa4538b2baeadcb527fb",
+      "reference_sha256": "b8da2e532bef5c42a826f1078fc5b16b7903d6ce6dd8aa4538b2baeadcb527fb"
+    },
+    {
+      "file": "bframes.mp4",
+      "frame": 7,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "222c8a6081bdc48b90946e73a1a6eebc71c7c1705f3db3dad428fde5395ee2c8",
+      "reference_sha256": "222c8a6081bdc48b90946e73a1a6eebc71c7c1705f3db3dad428fde5395ee2c8"
+    },
+    {
+      "file": "bframes.mp4",
+      "frame": 8,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "ec36792ad77714385e9eb59c7a689f662c8c93ba0866b8cd1d6daf2099aa6311",
+      "reference_sha256": "ec36792ad77714385e9eb59c7a689f662c8c93ba0866b8cd1d6daf2099aa6311"
+    },
+    {
+      "file": "bt709.mp4",
+      "frame": 0,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "7a671f5cb8ebf90e64810f8a5709816b8e6917c3bea34c2b1f91674b241b85c5",
+      "reference_sha256": "7a671f5cb8ebf90e64810f8a5709816b8e6917c3bea34c2b1f91674b241b85c5"
+    },
+    {
+      "file": "bt709.mp4",
+      "frame": 1,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "b96f723b7ba16699432dd084f90964a901db0da57b773391543452a487b86bb1",
+      "reference_sha256": "b96f723b7ba16699432dd084f90964a901db0da57b773391543452a487b86bb1"
+    },
+    {
+      "file": "bt709.mp4",
+      "frame": 2,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "c4b2ea33e44555fd9a6a0f2ff93dc418c2e979e58a3353d2e0bddbf40d557c6f",
+      "reference_sha256": "c4b2ea33e44555fd9a6a0f2ff93dc418c2e979e58a3353d2e0bddbf40d557c6f"
+    },
+    {
+      "file": "bt709.mp4",
+      "frame": 3,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "6d05527012d15c4cf4706b723227b445cacd2ca6786f8e69f9b05e65935044fa",
+      "reference_sha256": "6d05527012d15c4cf4706b723227b445cacd2ca6786f8e69f9b05e65935044fa"
+    },
+    {
+      "file": "bt709.mp4",
+      "frame": 4,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "506ba3b93494c15f02fec5e479ce769935c4b77aed1c0d84d4ff08fd21c235e0",
+      "reference_sha256": "506ba3b93494c15f02fec5e479ce769935c4b77aed1c0d84d4ff08fd21c235e0"
+    },
+    {
+      "file": "bt709.mp4",
+      "frame": 5,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "87b3fe1945aa03b24c58c8dce9bbd1f2f51724380f9610d814bcfd25e9336468",
+      "reference_sha256": "87b3fe1945aa03b24c58c8dce9bbd1f2f51724380f9610d814bcfd25e9336468"
+    },
+    {
+      "file": "bt709.mp4",
+      "frame": 6,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "3e67dfb6c0acb88c6a6dbaf015743647c9e0b29606b04fa2cbc523b9f5070ccd",
+      "reference_sha256": "3e67dfb6c0acb88c6a6dbaf015743647c9e0b29606b04fa2cbc523b9f5070ccd"
+    },
+    {
+      "file": "bt709.mp4",
+      "frame": 7,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "b13387e2fa155485bcc0deb8253b6ef41772845e29a68d303fcbbbd3aac524c8",
+      "reference_sha256": "b13387e2fa155485bcc0deb8253b6ef41772845e29a68d303fcbbbd3aac524c8"
+    },
+    {
+      "file": "bt709.mp4",
+      "frame": 8,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "c6c400bdee3d33ad64f73d6dff9d5bbca85fb56ba687dc867045d77a0aeb7a3e",
+      "reference_sha256": "c6c400bdee3d33ad64f73d6dff9d5bbca85fb56ba687dc867045d77a0aeb7a3e"
+    },
+    {
+      "file": "rotated.mp4",
+      "frame": 0,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "a9e096c68cd01020d0402918d2d657623263cefa4224fb8a6ac6d07e09b110f4",
+      "reference_sha256": "a9e096c68cd01020d0402918d2d657623263cefa4224fb8a6ac6d07e09b110f4"
+    },
+    {
+      "file": "rotated.mp4",
+      "frame": 1,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "3401ea0a12710dc2586b61626580a635381239b85e32c191af1534b4e04f9652",
+      "reference_sha256": "3401ea0a12710dc2586b61626580a635381239b85e32c191af1534b4e04f9652"
+    },
+    {
+      "file": "rotated.mp4",
+      "frame": 2,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "50cc08e4cc682726a7825a61f34a7079bac77b465d35d0784f80018f9809c3a8",
+      "reference_sha256": "50cc08e4cc682726a7825a61f34a7079bac77b465d35d0784f80018f9809c3a8"
+    },
+    {
+      "file": "rotated.mp4",
+      "frame": 3,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "f0957ae279cc7e3b7d21b56dcd21287430927b2494fac5a011842ef3ef64dff3",
+      "reference_sha256": "f0957ae279cc7e3b7d21b56dcd21287430927b2494fac5a011842ef3ef64dff3"
+    },
+    {
+      "file": "rotated.mp4",
+      "frame": 4,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "ff0c2e810da85b9f80bff2c60330b4311711d287308683b192b82ce07d573197",
+      "reference_sha256": "ff0c2e810da85b9f80bff2c60330b4311711d287308683b192b82ce07d573197"
+    },
+    {
+      "file": "rotated.mp4",
+      "frame": 5,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "971110964e018ee4703ba2efc6831eee0212d81d645b44345ba53ce143e0d190",
+      "reference_sha256": "971110964e018ee4703ba2efc6831eee0212d81d645b44345ba53ce143e0d190"
+    },
+    {
+      "file": "rotated.mp4",
+      "frame": 6,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "b8da2e532bef5c42a826f1078fc5b16b7903d6ce6dd8aa4538b2baeadcb527fb",
+      "reference_sha256": "b8da2e532bef5c42a826f1078fc5b16b7903d6ce6dd8aa4538b2baeadcb527fb"
+    },
+    {
+      "file": "rotated.mp4",
+      "frame": 7,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "222c8a6081bdc48b90946e73a1a6eebc71c7c1705f3db3dad428fde5395ee2c8",
+      "reference_sha256": "222c8a6081bdc48b90946e73a1a6eebc71c7c1705f3db3dad428fde5395ee2c8"
+    },
+    {
+      "file": "rotated.mp4",
+      "frame": 8,
+      "native_dimensions": [
+        48,
+        64
+      ],
+      "source_dimensions": [
+        48,
+        64
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "ec36792ad77714385e9eb59c7a689f662c8c93ba0866b8cd1d6daf2099aa6311",
+      "reference_sha256": "ec36792ad77714385e9eb59c7a689f662c8c93ba0866b8cd1d6daf2099aa6311"
+    },
+    {
+      "file": "person-bt709.mp4",
+      "frame": 0,
+      "native_dimensions": [
+        720,
+        1280
+      ],
+      "source_dimensions": [
+        720,
+        1280
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "15101e609411fbdca40c01460339b04333e8199573cf44ca08592fec41d0872f",
+      "reference_sha256": "15101e609411fbdca40c01460339b04333e8199573cf44ca08592fec41d0872f"
+    },
+    {
+      "file": "person-bt709.mp4",
+      "frame": 1,
+      "native_dimensions": [
+        720,
+        1280
+      ],
+      "source_dimensions": [
+        720,
+        1280
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "2078fb4257f16bffd1eabc016b218ceb79a686ce2bad3ad0105aa75f407cb3d0",
+      "reference_sha256": "2078fb4257f16bffd1eabc016b218ceb79a686ce2bad3ad0105aa75f407cb3d0"
+    },
+    {
+      "file": "person-bt709.mp4",
+      "frame": 2,
+      "native_dimensions": [
+        720,
+        1280
+      ],
+      "source_dimensions": [
+        720,
+        1280
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "c42bfb89eac5ec0b06a4cdbfda7109a17e8e6c7be5fb3fb0d6652785b150a55c",
+      "reference_sha256": "c42bfb89eac5ec0b06a4cdbfda7109a17e8e6c7be5fb3fb0d6652785b150a55c"
+    },
+    {
+      "file": "person-bt709.mp4",
+      "frame": 3,
+      "native_dimensions": [
+        720,
+        1280
+      ],
+      "source_dimensions": [
+        720,
+        1280
+      ],
+      "exact": true,
+      "different": 0,
+      "max_abs": 0.0,
+      "native_sha256": "016c58b4a580eff51f6c77fff9d3fb716b51f3782e6652430d5c0d98ad69bfdc",
+      "reference_sha256": "016c58b4a580eff51f6c77fff9d3fb716b51f3782e6652430d5c0d98ad69bfdc"
+    }
+  ],
+  "all_exact": true,
+  "scope": "Actual complete file preprocessing versus unmodified upstream OpenCV loader; specific codecs only. No model or all-codec claim."
+}

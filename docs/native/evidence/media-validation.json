@@ -1,0 +1,151 @@
+{
+  "status": "incremental native media support; complete project goal remains active",
+  "codec_parity": {
+    "cases": 23,
+    "all_exact": true,
+    "report": "media-parity.json"
+  },
+  "neural_composition": {
+    "models": [
+      "sam3",
+      "sam3.1"
+    ],
+    "modes": [
+      "image",
+      "video"
+    ],
+    "exact_result_comparisons": 20,
+    "report": "media-neural.json",
+    "scope": "File-owned predictor versus identical decoded RGB callback predictor; not original OpenCV video-loader preprocessing parity."
+  },
+  "ctest": {
+    "cpu_passed": 17,
+    "cuda_passed": 29,
+    "failed": 0,
+    "affected_media_tests_after_orientation_fix": "passed on CPU and CUDA",
+    "media_disabled_stub_test": "passed; restored media build then passed again"
+  },
+  "installed_consumers": {
+    "C_only_metadata": true,
+    "cpu_VFR_reverse_reads": true,
+    "cuda_SAM31_real_image_comparisons": 3,
+    "PATH": "/nonexistent",
+    "loader_audit": [
+      {
+        "kind": "cpu",
+        "loaded_libraries": [
+          "/workspace/sdk-media-relocated-cpu/lib/libavcodec.so.60.31.102",
+          "/workspace/sdk-media-relocated-cpu/lib/libavformat.so.60.16.100",
+          "/workspace/sdk-media-relocated-cpu/lib/libavutil.so.58.29.100",
+          "/workspace/sdk-media-relocated-cpu/lib/libc10.so",
+          "/workspace/sdk-media-relocated-cpu/lib/libicudata.so.74.2",
+          "/workspace/sdk-media-relocated-cpu/lib/libicui18n.so.74.2",
+          "/workspace/sdk-media-relocated-cpu/lib/libicuuc.so.74.2",
+          "/workspace/sdk-media-relocated-cpu/lib/libjpeg.so.8.2.2",
+          "/workspace/sdk-media-relocated-cpu/lib/libsam3_native.so",
+          "/workspace/sdk-media-relocated-cpu/lib/libswresample.so.4.12.100",
+          "/workspace/sdk-media-relocated-cpu/lib/libswscale.so.7.5.100",
+          "/workspace/sdk-media-relocated-cpu/lib/libtorch.so",
+          "/workspace/sdk-media-relocated-cpu/lib/libtorch_cpu.so"
+        ],
+        "all_from_relocated_sdk": true
+      },
+      {
+        "kind": "cuda",
+        "loaded_libraries": [
+          "/workspace/sdk-media-relocated-cuda/lib/libavcodec.so.60.31.102",
+          "/workspace/sdk-media-relocated-cuda/lib/libavformat.so.60.16.100",
+          "/workspace/sdk-media-relocated-cuda/lib/libavutil.so.58.29.100",
+          "/workspace/sdk-media-relocated-cuda/lib/libc10.so",
+          "/workspace/sdk-media-relocated-cuda/lib/libc10_cuda.so",
+          "/workspace/sdk-media-relocated-cuda/lib/libcublas-e70f38ef.so.13",
+          "/workspace/sdk-media-relocated-cuda/lib/libcublasLt-656298c8.so.13",
+          "/workspace/sdk-media-relocated-cuda/lib/libcudart-96c42e41.so.13",
+          "/workspace/sdk-media-relocated-cuda/lib/libcudart.so.13.0.96",
+          "/workspace/sdk-media-relocated-cuda/lib/libcudnn.so.9",
+          "/workspace/sdk-media-relocated-cuda/lib/libcudnn_engines_precompiled.so.9",
+          "/workspace/sdk-media-relocated-cuda/lib/libcudnn_engines_runtime_compiled.so.9",
+          "/workspace/sdk-media-relocated-cuda/lib/libcudnn_graph.so.9",
+          "/workspace/sdk-media-relocated-cuda/lib/libcudnn_heuristic.so.9",
+          "/workspace/sdk-media-relocated-cuda/lib/libcufft.so.12.0.0.61",
+          "/workspace/sdk-media-relocated-cuda/lib/libcupti-e2f9ed86.so.13",
+          "/workspace/sdk-media-relocated-cuda/lib/libcurand.so.10.4.0.35",
+          "/workspace/sdk-media-relocated-cuda/lib/libcusparse.so.12.6.3.3",
+          "/workspace/sdk-media-relocated-cuda/lib/libicudata.so.74.2",
+          "/workspace/sdk-media-relocated-cuda/lib/libicui18n.so.74.2",
+          "/workspace/sdk-media-relocated-cuda/lib/libicuuc.so.74.2",
+          "/workspace/sdk-media-relocated-cuda/lib/libjpeg.so.8.2.2",
+          "/workspace/sdk-media-relocated-cuda/lib/libnvJitLink.so.13.0.88",
+          "/workspace/sdk-media-relocated-cuda/lib/libsam3_native.so",
+          "/workspace/sdk-media-relocated-cuda/lib/libswresample.so.4.12.100",
+          "/workspace/sdk-media-relocated-cuda/lib/libswscale.so.7.5.100",
+          "/workspace/sdk-media-relocated-cuda/lib/libtorch.so",
+          "/workspace/sdk-media-relocated-cuda/lib/libtorch_cpu.so",
+          "/workspace/sdk-media-relocated-cuda/lib/libtorch_cuda.so"
+        ],
+        "all_from_relocated_sdk": true
+      }
+    ]
+  },
+  "overlay_archives": [
+    {
+      "file": "media-overlay-linux-common.tar.gz",
+      "bytes": 8442895,
+      "sha256": "6a4b85cccfb4cfcfd22d2bfc8963c469ba0ddf48db7c1d8bcc0c6eba5f4900a6",
+      "entries": 29
+    },
+    {
+      "file": "media-overlay-linux-cpu.tar.gz",
+      "bytes": 1496178,
+      "sha256": "04f0a0f16ea48cb135ea7807a0ed85182f57c43d08526b964500dae9b3edc6f0",
+      "entries": 5
+    },
+    {
+      "file": "media-overlay-linux-cuda.tar.gz",
+      "bytes": 1772957,
+      "sha256": "f3bfe80b23c57c50aee4fd8d78b596551bdf6247fc7db8017f24916894faefc9",
+      "entries": 6
+    }
+  ],
+  "overlay_recovery": [
+    {
+      "kind": "cpu",
+      "complete_sdk_entries": 111,
+      "complete_sdk_hashes_and_symlinks_exact": true,
+      "recovered_client_passed": true
+    },
+    {
+      "kind": "cuda",
+      "complete_sdk_entries": 144,
+      "complete_sdk_hashes_and_symlinks_exact": true,
+      "recovered_client_passed": true
+    }
+  ],
+  "required_linux_symbol_versions": {
+    "cpu": {
+      "GLIBC": "2.38",
+      "GLIBCXX": "3.4.32",
+      "CXXABI": "1.3.11"
+    },
+    "cuda": {
+      "GLIBC": "2.38",
+      "GLIBCXX": "3.4.32",
+      "CXXABI": "1.3.11"
+    }
+  },
+  "windows_runtime_validated": false,
+  "turing_runtime_validated": false,
+  "github_actions_used": false,
+  "shared_modular_weights_unchanged": true,
+  "remaining": [
+    "source OpenCV/TorchCodec preprocessing policy audit",
+    "efficient indexed seeking / reverse traversal",
+    "variable dimensions and exceptional numeric folder stems",
+    "arbitrary-angle display transforms and wider HDR/ICC/16-bit decoding",
+    "video encoding",
+    "multi-GPU transport",
+    "CPU long-run stability",
+    "broader quality/performance",
+    "Windows/Turing user physical validation"
+  ]
+}

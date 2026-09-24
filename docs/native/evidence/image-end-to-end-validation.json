@@ -1,0 +1,330 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "image": "assets/images/truck.jpg",
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "text",
+      "joint_scores": false,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "geometry",
+      "joint_scores": false,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "text",
+      "joint_scores": false,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "geometry",
+      "joint_scores": false,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "mixed_visual_previous",
+      "joint_scores": false,
+      "mask_shape": [
+        3,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "text",
+      "joint_scores": false,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "geometry",
+      "joint_scores": false,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "text",
+      "joint_scores": true,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "geometry",
+      "joint_scores": true,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "text",
+      "joint_scores": true,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "geometry",
+      "joint_scores": true,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "mixed_visual_previous",
+      "joint_scores": true,
+      "mask_shape": [
+        3,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "text",
+      "joint_scores": true,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "geometry",
+      "joint_scores": true,
+      "mask_shape": [
+        1,
+        200,
+        288,
+        288
+      ],
+      "max_errors": {
+        "pred_logits": 0.0,
+        "pred_boxes": 0.0,
+        "pred_boxes_xyxy": 0.0,
+        "pred_masks": 0.0,
+        "semantic_seg": 0.0,
+        "queries": 0.0,
+        "presence_logit_dec": 0.0,
+        "presence_feats": 0.0,
+        "encoder_hidden_states": 0.0
+      }
+    }
+  ],
+  "scope": "Real-image native tensor pipeline. Test tokenizer is Python; native string tokenization and interactive/video sessions remain outstanding."
+}

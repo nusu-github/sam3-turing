@@ -1,0 +1,70 @@
+{
+  "signature": {
+    "args": {
+      "kind": "quality",
+      "role": "development",
+      "mode": "calibrated",
+      "name": "r4-mlp-exclude-6-9590",
+      "scope": "mask:0xffffffbf",
+      "calibration": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+      "limit_images": null,
+      "primary_only": false,
+      "image_id": 9590,
+      "attention": "exact",
+      "projection": "exact",
+      "mean_bias": true
+    },
+    "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+    "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "runtime_sha256": "feb8266eb738a0c133b5f62ef23b7c778e7592425e33bca3d4f140485c7284bd",
+    "environment": {
+      "TORCH_BLAS_PREFER_CUBLASLT": "0",
+      "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+      "SAM3_EXPERIMENT_ATTENTION": "exact",
+      "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+      "SAM3_EXPERIMENT_MLP": "int8_boundary",
+      "SAM3_EXPERIMENT_PROJECTION": "exact",
+      "SAM3_EXPERIMENT_QKV_ROPE": "exact",
+      "SAM3_EXPERIMENT_FC2_NORM": "fused",
+      "SAM3_EXPERIMENT_MLP_SCOPE": "mask:0xffffffbf",
+      "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+      "SAM3_EXPERIMENT_FC2_MEAN_BIAS": "enabled"
+    },
+    "calibration_sha256": "07de8545359fc39cd350d3086501f0a5544d20f6c574e3ba02ee3bfd2981292e",
+    "mean_sha256": "67d2fc4002b37dc614219a18bcff803e5bd0f958cb68b7f47d9e1d1a3481f0aa"
+  },
+  "results": [
+    {
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "mode": "calibrated",
+      "count": 6,
+      "comparison": {
+        "reference_count": 5,
+        "candidate_count": 6,
+        "min_mask_iou": 0.9465658636596617,
+        "max_score_error": 0.02685546875,
+        "max_box_error_px": 0.3584480285644531,
+        "finite": true,
+        "gate_pass": false,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "mode": "calibrated",
+      "count": 1,
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9856115107913669,
+        "max_score_error": 0.0185546875,
+        "max_box_error_px": 0.039642333984375,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "model": "sam3.1",
+  "mode": "bf16_reference",
+  "reference_mode": "bf16_reference",
+  "source_grounding_batch": 1,
+  "source_complex_rope": true,
+  "cases": [
+    {
+      "frame": 0,
+      "ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mask_mismatches": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mask_iou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "max_tracker_error": 0.0,
+      "native_scores": [
+        0.96875,
+        0.964912295,
+        0.972602725,
+        0.94520551
+      ],
+      "source_scores": [
+        0.96875,
+        0.9649122953414917,
+        0.9726027250289917,
+        0.9452055096626282
+      ]
+    },
+    {
+      "frame": 1,
+      "ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mask_mismatches": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mask_iou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "max_tracker_error": 0.0,
+      "native_scores": [
+        0.96875,
+        0.964912295,
+        0.972602725,
+        0.94520551
+      ],
+      "source_scores": [
+        0.96875,
+        0.9649122953414917,
+        0.9726027250289917,
+        0.9452055096626282
+      ]
+    },
+    {
+      "frame": 2,
+      "ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mask_mismatches": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mask_iou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "max_tracker_error": 0.0,
+      "native_scores": [
+        0.96875,
+        0.964912295,
+        0.972602725,
+        0.94520551
+      ],
+      "source_scores": [
+        0.96875,
+        0.9649122953414917,
+        0.9726027250289917,
+        0.9452055096626282
+      ]
+    }
+  ],
+  "exact": true,
+  "scope": "Original raw frame engine with actual neural detection, propagation and updates versus standalone C++ probe. Original feature casts retained; batching and RoPE comparison configuration recorded explicitly. Predictor temporal/output filtering and interactive actions are outside this comparison. FP16/FP32 source MLP uses requested precision adaptation; BF16 source neural execution is unchanged. TF32 disabled, one CPU initialization thread. JSON scores tolerate 1e-8 serialization rounding. Cached references, when used, contain the original neural outputs."
+}

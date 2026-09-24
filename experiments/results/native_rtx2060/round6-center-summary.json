@@ -1,0 +1,46 @@
+{
+  "binaries": {
+    "sam3_native.dll": "2e1555b4da4284aab84f0e978e3efe3c0ef9fb5beb878a73dc4381d338fde0ad",
+    "sam3_kitchen_bench.exe": "5a5b6f542b0f75028e39dbb5f1fd495ea1a22f6657cbbe623967573851b5fe62",
+    "sam3_image_latency.exe": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f"
+  },
+  "results": [
+    {
+      "mode": "anchor",
+      "total": 40,
+      "passed": 40,
+      "max_abs": 0.0239258,
+      "max_rmse": 0.00276202,
+      "changed_repeats": 0,
+      "max_repeat_diff": 0
+    },
+    {
+      "mode": "mean",
+      "total": 40,
+      "passed": 40,
+      "max_abs": 0.0262451,
+      "max_rmse": 0.00249424,
+      "changed_repeats": 19,
+      "max_repeat_diff": 0.000259399
+    },
+    {
+      "mode": "mean_half",
+      "total": 40,
+      "passed": 40,
+      "max_abs": 0.0262451,
+      "max_rmse": 0.00249635,
+      "changed_repeats": 0,
+      "max_repeat_diff": 0
+    },
+    {
+      "mode": "none",
+      "total": 40,
+      "passed": 32,
+      "max_abs": 3.11328,
+      "max_rmse": 0.448709,
+      "changed_repeats": 0,
+      "max_repeat_diff": 0
+    }
+  ],
+  "scope": "40 synthetic conditions per mode; 5 repeated outputs per condition; no end-to-end or ground-truth accuracy claim"
+}

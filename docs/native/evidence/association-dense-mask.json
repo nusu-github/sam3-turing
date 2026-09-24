@@ -1,0 +1,136 @@
+[
+  {
+    "device": "cpu",
+    "mode": "fp32",
+    "iom": false,
+    "new_detections": [],
+    "matches": [
+      [
+        true
+      ]
+    ]
+  },
+  {
+    "device": "cpu",
+    "mode": "fp32",
+    "iom": true,
+    "new_detections": [],
+    "matches": [
+      [
+        true
+      ]
+    ]
+  },
+  {
+    "device": "cpu",
+    "mode": "fp16",
+    "iom": false,
+    "new_detections": [],
+    "matches": [
+      [
+        true
+      ]
+    ]
+  },
+  {
+    "device": "cpu",
+    "mode": "fp16",
+    "iom": true,
+    "new_detections": [
+      0
+    ],
+    "matches": [
+      [
+        false
+      ]
+    ]
+  },
+  {
+    "device": "cpu",
+    "mode": "bf16_reference",
+    "iom": false,
+    "new_detections": [],
+    "matches": [
+      [
+        true
+      ]
+    ]
+  },
+  {
+    "device": "cpu",
+    "mode": "bf16_reference",
+    "iom": true,
+    "new_detections": [],
+    "matches": [
+      [
+        true
+      ]
+    ]
+  },
+  {
+    "device": "cuda",
+    "mode": "fp32",
+    "iom": false,
+    "new_detections": [],
+    "matches": [
+      [
+        true
+      ]
+    ]
+  },
+  {
+    "device": "cuda",
+    "mode": "fp32",
+    "iom": true,
+    "new_detections": [],
+    "matches": [
+      [
+        true
+      ]
+    ]
+  },
+  {
+    "device": "cuda",
+    "mode": "fp16",
+    "iom": false,
+    "new_detections": [],
+    "matches": [
+      [
+        true
+      ]
+    ]
+  },
+  {
+    "device": "cuda",
+    "mode": "fp16",
+    "iom": true,
+    "new_detections": [],
+    "matches": [
+      [
+        true
+      ]
+    ]
+  },
+  {
+    "device": "cuda",
+    "mode": "bf16_reference",
+    "iom": false,
+    "new_detections": [],
+    "matches": [
+      [
+        true
+      ]
+    ]
+  },
+  {
+    "device": "cuda",
+    "mode": "bf16_reference",
+    "iom": true,
+    "new_detections": [],
+    "matches": [
+      [
+        true
+      ]
+    ]
+  }
+]

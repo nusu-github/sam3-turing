@@ -1,70 +1,43 @@
-# Image patch experiments
+# Experiments
 
-For the local Windows / RTX 2060 6 GB validation, use
-[`local_turing_bench.py`](local_turing_bench.py) and the
-[uv setup and results](results/local_rtx2060/README.md). It runs each configuration
-in a fresh process and records OOMs, timings, memory, and output comparisons.
+Measurement and research tooling for this fork. Raw results are under
+[`results/`](results/).
 
-The historical RTX 3090 container sweeps below use a different runner and
-environment; do not mix their numbers with the local RTX 2060 measurements.
+## Python image patch (concluded)
 
-Use the container's existing Python/PyTorch installation. The sweep does not
-create an environment, replace PyTorch, provision machines, or control RunPod.
+`local_turing_bench.py` reproduces the RTX 2060 table in the root README. Every
+configuration runs in a fresh process and records OOMs, timings, memory and
+output comparisons. Setup, method and results:
+[results/local_rtx2060](results/local_rtx2060/README.md).
 
-```bash
-python experiments/image_sweep.py --sweep experiments/round1.json
-python experiments/image_sweep.py --sweep experiments/round2.json
-python experiments/image_sweep.py --sweep experiments/round3.json --cases 5 --reps 7
-python experiments/image_sweep.py --sweep experiments/round4.json --cases 5 --reps 9
-python experiments/image_sweep.py --sweep experiments/round5.json --cases 5 --reps 9
-python experiments/image_sweep.py --sweep experiments/round10.json --cases 5 --reps 9
-python experiments/image_sweep.py --sweep experiments/round11.json --cases 5 --reps 9 --timeout 240
-python experiments/image_sweep.py --sweep experiments/round12.json --cases 5 --reps 9 --timeout 240
-python experiments/packed_masks.py
-python experiments/fused_masks_bench.py
-python experiments/summarize.py
-```
+The RTX 3090 development sweep (rounds 1–68, 376 candidates) concluded on
+2026-09-21. Its measurements remain in [results/README.md](results/README.md) and
+[results/summary.csv](results/summary.csv); the decisions are summarized in
+[NOTES.md](NOTES.md) and the public [image patch guide](../docs/TURING_IMAGE_PATCH.md).
+Do not mix those RTX 3090 container numbers with the RTX 2060 measurements.
 
-`--checkpoint /path/to/sam3.pt` uses a local checkpoint; otherwise the script
-fetches the revision used by the supplied experiments from Hugging Face.
-`--output` selects a result directory. Each candidate runs in its own process.
-The default 180-second candidate timeout includes model construction/compilation.
+The sweep runner, candidate implementations, round configurations, video
+experiments and archived reproduction helpers were removed after the sweep. They
+are preserved in commit `080bec0` (`main`). To repeat an old comparison, use a
+separate checkout, for example `git worktree add ../sam3-sweep 080bec0`.
 
-The round files preserve the candidates, including losers. JSON results
-contain whole-image latency, allocated/reserved VRAM, sampled whole-device NVML
-usage, detection counts, box-matched mask IoU, pixel differences, score error and
-box error. These are practical A/B checks against the stock BF16 and FP16 paths,
-not a ground-truth accuracy benchmark. Text caching timings include a cache hit;
-`combined_uncached` measures encoding the prompt on every image.
+## Native runtime (Windows / RTX 2060)
 
-The first pass had 55 image attempts over 50 named candidates (including repeats and
-three initial failures later corrected). Continued hypotheses and decisions are
-in [NOTES.md](NOTES.md). Rounds 6–9 compare candidates on the first public patch;
-round 10 checks the first combined public modules, rounds 11–13 compare further
-candidates on those modules, and round 14 uses the accepted compact grounding.
-Check out the corresponding
-implementation when repeating an older comparison, since `final` uses the public
-patch from the current checkout. The three initial 4K output configurations
-are recorded separately in `results/packed_masks.json`.
+| Script | Purpose |
+|---|---|
+| `monitor_native_bench.py` | Run one native process (usually `sam3_image_latency`) with a Windows-only `PATH`, sampling whole-device NVML memory, clocks and power |
+| `native_quality.py` | FP16-agreement gates (`compare`) and the 17 fixed regression cases |
+| `profile_native_hotspots.py`, `analyze_native_hotspots.py` | Nsight Systems capture and NVTX-correlated GPU kernel attribution |
 
-`archive_reference/` contains the seven Python helpers used from the supplied
-`SAM3_FP16_reproduction.zip`. That archive also bundled helpers from the earlier
-GPU/20USD experiments. We kept only inference/measurement helpers; the RunPod
-controllers, setup scripts and credentials are not part of this checkout.
-`NOTES.md` is the original development notebook in Japanese; public usage and
-benchmark guides are in English.
-The runtime patch in `sam3/turing.py` is self-contained and does not import these
-experiment helpers.
+The experiment index and decisions are in
+[results/native_rtx2060/README.md](results/native_rtx2060/README.md). Drivers of
+concluded experiments (`run_*_native.py`, `summarize_*_native.py` and similar)
+were removed; they remain in commit `7d7fddb` together with the runtime they
+measured.
 
-The first round had two CPU initialization crashes in the container's NVIDIA
-PyTorch build (before any candidate patch was applied). Later rounds initialize
-with one CPU thread, then restore four threads for inference. The initial
-in-place output prototype had a Python decorator namespace error; the third
-round fixes it. Earlier successful baseline measurements are preserved with
-the `_before_round3` suffix.
-
-`prompt_batch_bench.py --checkpoint /path/to/sam3.pt` compares four prompts on one
-image using stock inference, patched serial calls and batches of 2 or 4. This
-probe retains the allocator cache from construction, so its NVML peaks include
-unused build reserves and differ in scope from `image_sweep.py`. The measured
-serial path was faster and used less allocated memory than prompt batching.
+The ongoing INT8/INT4 calibration research is driven by `run_quant_research.py`
+and the related `prepare_quant_research_data.py`, `make_*`, `run_quant_*`,
+`run_kitchen_center_bench.py`, `check_quant_observer_outputs.py` and
+`summarize_quant_*` scripts. Its goal, fixed data splits, quality gates and
+round-by-round results are in
+[docs/native/QUANT_RESEARCH_LOG.md](../docs/native/QUANT_RESEARCH_LOG.md).

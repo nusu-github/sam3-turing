@@ -1,0 +1,379 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cuda",
+  "math_only": true,
+  "reference_backend_override": "Prevent original Attention.forward from re-enabling Flash/memory-efficient SDPA",
+  "cases": [
+    {
+      "keys": [
+        "masks",
+        "iou_pred",
+        "sam_tokens_out",
+        "object_score_logits"
+      ],
+      "mode": "fp16",
+      "case": "decoder",
+      "batch": 1,
+      "grid": [
+        8,
+        8
+      ],
+      "shared_high": true,
+      "extra": "none",
+      "channels_last": false,
+      "max_errors": {
+        "masks": 0.0,
+        "iou_pred": 0.0,
+        "sam_tokens_out": 0.0,
+        "object_score_logits": 0.0
+      },
+      "exact": true
+    },
+    {
+      "keys": [
+        "masks",
+        "iou_pred",
+        "sam_tokens_out",
+        "object_score_logits"
+      ],
+      "mode": "fp16",
+      "case": "decoder",
+      "batch": 2,
+      "grid": [
+        8,
+        12
+      ],
+      "shared_high": true,
+      "extra": "per_bucket",
+      "channels_last": true,
+      "max_errors": {
+        "masks": 0.0,
+        "iou_pred": 0.0,
+        "sam_tokens_out": 0.0,
+        "object_score_logits": 0.0
+      },
+      "exact": true
+    },
+    {
+      "keys": [
+        "masks",
+        "iou_pred",
+        "sam_tokens_out",
+        "object_score_logits"
+      ],
+      "mode": "fp16",
+      "case": "decoder",
+      "batch": 2,
+      "grid": [
+        12,
+        8
+      ],
+      "shared_high": false,
+      "extra": "shared",
+      "channels_last": false,
+      "max_errors": {
+        "masks": 0.0,
+        "iou_pred": 0.0,
+        "sam_tokens_out": 0.0,
+        "object_score_logits": 0.0
+      },
+      "exact": true
+    },
+    {
+      "keys": [
+        "masks",
+        "iou_pred",
+        "sam_tokens_out",
+        "object_score_logits"
+      ],
+      "mode": "fp16",
+      "case": "decoder",
+      "batch": 1,
+      "grid": [
+        72,
+        72
+      ],
+      "shared_high": true,
+      "extra": "per_bucket",
+      "channels_last": true,
+      "max_errors": {
+        "masks": 0.0,
+        "iou_pred": 0.0,
+        "sam_tokens_out": 0.0,
+        "object_score_logits": 0.0
+      },
+      "exact": true
+    },
+    {
+      "keys": [
+        "masks",
+        "iou_pred",
+        "sam_tokens_out",
+        "object_score_logits"
+      ],
+      "mode": "fp16",
+      "case": "decoder",
+      "batch": 2,
+      "grid": [
+        72,
+        72
+      ],
+      "shared_high": false,
+      "extra": "none",
+      "channels_last": true,
+      "max_errors": {
+        "masks": 0.0,
+        "iou_pred": 0.0,
+        "sam_tokens_out": 0.0,
+        "object_score_logits": 0.0
+      },
+      "exact": true
+    },
+    {
+      "keys": [
+        "low_res_multimasks",
+        "high_res_multimasks",
+        "ious",
+        "low_res_masks",
+        "high_res_masks",
+        "obj_ptr",
+        "object_score_logits",
+        "position",
+        "high0",
+        "high1"
+      ],
+      "mode": "fp16",
+      "case": "one_object",
+      "objects": 1,
+      "buckets": 1,
+      "present": [
+        true
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "position": 0.0,
+        "high0": 0.0,
+        "high1": 0.0
+      },
+      "exact": true
+    },
+    {
+      "keys": [
+        "low_res_multimasks",
+        "high_res_multimasks",
+        "ious",
+        "low_res_masks",
+        "high_res_masks",
+        "obj_ptr",
+        "object_score_logits",
+        "position",
+        "high0",
+        "high1"
+      ],
+      "mode": "fp16",
+      "case": "cross_bucket",
+      "objects": 17,
+      "buckets": 2,
+      "present": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "position": 0.0,
+        "high0": 0.0,
+        "high1": 0.0
+      },
+      "exact": true
+    },
+    {
+      "keys": [
+        "low_res_multimasks",
+        "high_res_multimasks",
+        "ious",
+        "low_res_masks",
+        "high_res_masks",
+        "obj_ptr",
+        "object_score_logits",
+        "position",
+        "high0",
+        "high1"
+      ],
+      "mode": "fp16",
+      "case": "removed_and_added",
+      "objects": 20,
+      "buckets": 3,
+      "present": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "position": 0.0,
+        "high0": 0.0,
+        "high1": 0.0
+      },
+      "exact": true
+    },
+    {
+      "keys": [
+        "low_res_multimasks",
+        "high_res_multimasks",
+        "ious",
+        "low_res_masks",
+        "high_res_masks",
+        "obj_ptr",
+        "object_score_logits",
+        "position",
+        "high0",
+        "high1"
+      ],
+      "mode": "fp16",
+      "case": "forced_present_projected_high",
+      "objects": 3,
+      "buckets": 1,
+      "present": [
+        true,
+        true,
+        true
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "position": 0.0,
+        "high0": 0.0,
+        "high1": 0.0
+      },
+      "exact": true
+    },
+    {
+      "keys": [
+        "low_res_multimasks",
+        "high_res_multimasks",
+        "ious",
+        "low_res_masks",
+        "high_res_masks",
+        "obj_ptr",
+        "object_score_logits",
+        "position",
+        "high0",
+        "high1"
+      ],
+      "mode": "fp16",
+      "case": "forced_absent",
+      "objects": 3,
+      "buckets": 1,
+      "present": [
+        false,
+        false,
+        false
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "position": 0.0,
+        "high0": 0.0,
+        "high1": 0.0
+      },
+      "exact": true
+    },
+    {
+      "keys": [
+        "low_res_multimasks",
+        "high_res_multimasks",
+        "ious",
+        "low_res_masks",
+        "high_res_masks",
+        "obj_ptr",
+        "object_score_logits",
+        "position",
+        "high0",
+        "high1"
+      ],
+      "mode": "fp16",
+      "case": "stability_selection",
+      "objects": 3,
+      "buckets": 1,
+      "present": [
+        true,
+        true,
+        true
+      ],
+      "max_errors": {
+        "low_res_multimasks": 0.0,
+        "high_res_multimasks": 0.0,
+        "ious": 0.0,
+        "low_res_masks": 0.0,
+        "high_res_masks": 0.0,
+        "obj_ptr": 0.0,
+        "object_score_logits": 0.0,
+        "position": 0.0,
+        "high0": 0.0,
+        "high1": 0.0
+      },
+      "exact": true
+    }
+  ],
+  "scope": "Original shipped SAM3.1 propagation decoder plus suppression, demux, presence gating, candidate selection and pointers. Synthetic feature inputs; no temporal scheduling or real-video accuracy claim."
+}

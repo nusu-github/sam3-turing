@@ -1,0 +1,241 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cpu",
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "one_memory",
+      "grid": 8,
+      "batch": 2,
+      "memory_frames": 1,
+      "pointer_tokens": 0,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "two_memories_pointers",
+      "grid": 8,
+      "batch": 2,
+      "memory_frames": 2,
+      "pointer_tokens": 5,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "only_pointers",
+      "grid": 8,
+      "batch": 2,
+      "memory_frames": 0,
+      "pointer_tokens": 3,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "full_grid",
+      "grid": 72,
+      "batch": 1,
+      "memory_frames": 2,
+      "pointer_tokens": 4,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "shared_positions",
+      "grid": 8,
+      "batch": 2,
+      "memory_frames": 1,
+      "pointer_tokens": 3,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "one_memory",
+      "grid": 8,
+      "batch": 2,
+      "memory_frames": 1,
+      "pointer_tokens": 0,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "two_memories_pointers",
+      "grid": 8,
+      "batch": 2,
+      "memory_frames": 2,
+      "pointer_tokens": 5,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "only_pointers",
+      "grid": 8,
+      "batch": 2,
+      "memory_frames": 0,
+      "pointer_tokens": 3,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "full_grid",
+      "grid": 72,
+      "batch": 1,
+      "memory_frames": 2,
+      "pointer_tokens": 4,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "shared_positions",
+      "grid": 8,
+      "batch": 2,
+      "memory_frames": 1,
+      "pointer_tokens": 3,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "batched_image_stream",
+      "grid": 8,
+      "batch": 2,
+      "memory_frames": 1,
+      "pointer_tokens": 0,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "pre_padded_image_pointers",
+      "grid": 8,
+      "batch": 2,
+      "memory_frames": 1,
+      "pointer_tokens": 3,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "batched_image_shared_positions",
+      "grid": 8,
+      "batch": 2,
+      "memory_frames": 1,
+      "pointer_tokens": 3,
+      "source_flash_only_context_removed": false,
+      "math_only_verified": false,
+      "max_errors": {
+        "layer_0": 0.0,
+        "layer_1": 0.0,
+        "layer_2": 0.0,
+        "layer_3": 0.0,
+        "output": 0.0
+      }
+    }
+  ],
+  "scope": "Four original temporal attention layers and final norm. SAM3.1 CUDA FP32/explicit math reference removes only its Flash-only context; equations and weights unchanged. CPU caches computed on CPU as on a CPU-only host. No frame selection/scheduler tested."
+}

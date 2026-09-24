@@ -1,0 +1,31 @@
+{
+  "device": "cpu",
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "cases": [
+    {
+      "mode": "fp32",
+      "case": "grow",
+      "objects": 18,
+      "buckets": 2,
+      "outputs": 2,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "extract",
+      "objects": 1,
+      "buckets": 1,
+      "outputs": 2,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "reassign",
+      "objects": 3,
+      "buckets": 1,
+      "outputs": 2,
+      "exact": true
+    }
+  ],
+  "scope": "CPU-stored shared image sequence and full-resolution masks rebuilt through original SAM3.1 memory host, synthetic features."
+}

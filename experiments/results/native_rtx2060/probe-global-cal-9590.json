@@ -1,0 +1,67 @@
+{
+  "signature": {
+    "args": {
+      "kind": "quality",
+      "role": "development",
+      "mode": "calibrated",
+      "name": "probe-global-cal-9590",
+      "scope": "all",
+      "calibration": ".cache\\quant-research-20260924\\calibrations\\a050-none",
+      "limit_images": null,
+      "primary_only": false,
+      "image_id": 9590,
+      "attention": "kitchen",
+      "projection": "exact"
+    },
+    "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+    "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "runtime_sha256": "b3150e8ecb621cb612ee4cb6b2d9b06ffd53c2fb957307c3f58e9b2dadb85ef9",
+    "environment": {
+      "TORCH_BLAS_PREFER_CUBLASLT": "0",
+      "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+      "SAM3_EXPERIMENT_ATTENTION": "kitchen",
+      "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+      "SAM3_EXPERIMENT_MLP": "int8_boundary",
+      "SAM3_EXPERIMENT_PROJECTION": "exact",
+      "SAM3_EXPERIMENT_QKV_ROPE": "exact",
+      "SAM3_EXPERIMENT_FC2_NORM": "fused",
+      "SAM3_EXPERIMENT_MLP_SCOPE": "all",
+      "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\a050-none"
+    },
+    "calibration_sha256": "07de8545359fc39cd350d3086501f0a5544d20f6c574e3ba02ee3bfd2981292e"
+  },
+  "results": [
+    {
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "mode": "calibrated",
+      "count": 6,
+      "comparison": {
+        "reference_count": 5,
+        "candidate_count": 6,
+        "min_mask_iou": 0.9401788635620024,
+        "max_score_error": 0.04833984375,
+        "max_box_error_px": 0.20998001098632812,
+        "finite": true,
+        "gate_pass": false,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "mode": "calibrated",
+      "count": 1,
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9787234042553191,
+        "max_score_error": 0.0205078125,
+        "max_box_error_px": 0.1182861328125,
+        "finite": true,
+        "gate_pass": false,
+        "byte_equal": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "batch": 1,
+      "original_sizes": [
+        [
+          1200,
+          1800
+        ]
+      ],
+      "max_abs_error": 0.0,
+      "differing_mask_pixels": 0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "batch": 2,
+      "original_sizes": [
+        [
+          1200,
+          1800
+        ],
+        [
+          401,
+          777
+        ]
+      ],
+      "max_abs_error": 0.0,
+      "differing_mask_pixels": 0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "batch": 1,
+      "original_sizes": [
+        [
+          1200,
+          1800
+        ]
+      ],
+      "max_abs_error": 0.0,
+      "differing_mask_pixels": 0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "batch": 2,
+      "original_sizes": [
+        [
+          1200,
+          1800
+        ],
+        [
+          401,
+          777
+        ]
+      ],
+      "max_abs_error": 0.0,
+      "differing_mask_pixels": 0
+    }
+  ]
+}

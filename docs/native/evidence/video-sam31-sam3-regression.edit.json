@@ -1,0 +1,110 @@
+{
+  "model": "sam3",
+  "mode": "bf16_reference",
+  "reference_mode": "bf16_reference",
+  "scope": "Compare latest standalone outputs with retained neural/predictor reference tensors. No reference tensors regenerated in this cached check. Any corrected-source extraction adapter is recorded separately.",
+  "reference_metadata": {},
+  "cases": [
+    {
+      "tag": "18.edit_point",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "20.edit_mask_new",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "21.edit_mask_existing",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "18.edit_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "19.edit_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "20.edit_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "21.edit_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "22.edit_track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "20.edit_remove",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "22.edit_stateless",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    }
+  ],
+  "exact": true
+}

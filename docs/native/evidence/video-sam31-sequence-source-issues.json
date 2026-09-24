@@ -1,0 +1,24 @@
+{
+  "default_repeated_edit": {
+    "observed_runtime_failure": "AssertionError at assert self.iter_use_prev_mask_pred",
+    "trigger": "Second point edit on tracked frame19 after first refinement, clear_old_points=False",
+    "source": "sam3/model/video_tracking_multiplex.py",
+    "source_sha256": "5a6309684a9a3615819f65cad1d2fbd8139a6ceeaa14b2583057d695fc781f1c"
+  },
+  "stateless_remove": {
+    "evidence": "Static source signature/call audit: required frame_idx is omitted by internal stateless refinement call; test adapter supplies None. This item is not a separate unadapted neural runtime test.",
+    "calls": [
+      {
+        "line": 2785,
+        "positional_arguments": 2,
+        "keywords": [
+          "is_user_action"
+        ],
+        "missing_frame_argument": true
+      }
+    ],
+    "source": "sam3/model/sam3_multiplex_tracking.py",
+    "source_sha256": "65e1cea27ee243dad228fb05967a8be92c90ef304665ada76930b899aa034d24"
+  },
+  "scope": "Compatibility issues in original Python reference; C++ repeated edits and stateless edits have no Python dependency."
+}

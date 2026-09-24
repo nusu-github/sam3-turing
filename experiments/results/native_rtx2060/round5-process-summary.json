@@ -1,0 +1,880 @@
+{
+  "quality_processes": 108,
+  "timing_processes": 0,
+  "images": 16,
+  "runs": 40,
+  "wall_seconds": 702.6352245807648,
+  "peak_allocated": 2695089664,
+  "sampled_peak_whole_gpu": 3761156096,
+  "dll_case_counts": {
+    "21e590684d2d4ea126565a4a5291fb4b8e8cdc352895136a360db8b7ed135b46": 103,
+    "feb8266eb738a0c133b5f62ef23b7c778e7592425e33bca3d4f140485c7284bd": 5
+  },
+  "holdout_used": false,
+  "records": [
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000001353-p0",
+      "image_id": 1353,
+      "wall_seconds": 6.432574987411499,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000001353-p1",
+      "image_id": 1353,
+      "wall_seconds": 6.435352325439453,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000001353-p2",
+      "image_id": 1353,
+      "wall_seconds": 6.527022838592529,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "wall_seconds": 6.472932815551758,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000001425-p1",
+      "image_id": 1425,
+      "wall_seconds": 6.442056179046631,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "wall_seconds": 6.437777280807495,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "wall_seconds": 6.449847936630249,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000001761-p0",
+      "image_id": 1761,
+      "wall_seconds": 6.395428657531738,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000001761-p1",
+      "image_id": 1761,
+      "wall_seconds": 6.518017292022705,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000002261-p0",
+      "image_id": 2261,
+      "wall_seconds": 6.416966915130615,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000002261-p1",
+      "image_id": 2261,
+      "wall_seconds": 6.366398334503174,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000003553-p0",
+      "image_id": 3553,
+      "wall_seconds": 6.450497388839722,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000003553-p1",
+      "image_id": 3553,
+      "wall_seconds": 6.545570611953735,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000004795-p0",
+      "image_id": 4795,
+      "wall_seconds": 6.426018714904785,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000004795-p1",
+      "image_id": 4795,
+      "wall_seconds": 6.40647029876709,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000005060-p0",
+      "image_id": 5060,
+      "wall_seconds": 6.597818851470947,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000005060-p1",
+      "image_id": 5060,
+      "wall_seconds": 6.437242031097412,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000005060-p2",
+      "image_id": 5060,
+      "wall_seconds": 6.371444463729858,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000005503-p0",
+      "image_id": 5503,
+      "wall_seconds": 6.448222398757935,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000005992-p0",
+      "image_id": 5992,
+      "wall_seconds": 6.509225130081177,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000006213-p0",
+      "image_id": 6213,
+      "wall_seconds": 6.416839838027954,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000006460-p0",
+      "image_id": 6460,
+      "wall_seconds": 6.457777738571167,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000006460-p1",
+      "image_id": 6460,
+      "wall_seconds": 6.71611475944519,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000006460-p2",
+      "image_id": 6460,
+      "wall_seconds": 6.39483642578125,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000007574-p0",
+      "image_id": 7574,
+      "wall_seconds": 6.347883224487305,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000007574-p1",
+      "image_id": 7574,
+      "wall_seconds": 6.6345133781433105,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000007574-p2",
+      "image_id": 7574,
+      "wall_seconds": 6.452015399932861,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000007977-p0",
+      "image_id": 7977,
+      "wall_seconds": 6.463830471038818,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000007977-p1",
+      "image_id": 7977,
+      "wall_seconds": 6.468295335769653,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000008762-p0",
+      "image_id": 8762,
+      "wall_seconds": 6.440124750137329,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000008762-p1",
+      "image_id": 8762,
+      "wall_seconds": 6.534046411514282,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.461713790893555,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-a0-development",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.422824382781982,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-bowls-mffffffbf-1425",
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "wall_seconds": 6.6051084995269775,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-bowls-mffffffbf-1425",
+      "case": "coco-val-000000001425-p1",
+      "image_id": 1425,
+      "wall_seconds": 6.405699729919434,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-bowls-mffffffbf-7574",
+      "case": "coco-val-000000007574-p0",
+      "image_id": 7574,
+      "wall_seconds": 6.45638108253479,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-bowls-mffffffbf-7574",
+      "case": "coco-val-000000007574-p1",
+      "image_id": 7574,
+      "wall_seconds": 6.711349248886108,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-bowls-mffffffbf-7574",
+      "case": "coco-val-000000007574-p2",
+      "image_id": 7574,
+      "wall_seconds": 6.361308813095093,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mffffff7f-1584",
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "wall_seconds": 6.540165424346924,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mffffff7f-1584",
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "wall_seconds": 6.460003137588501,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mffffff7f-9590",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.666274309158325,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mffffff7f-9590",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.403103351593018,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mffffffbf-1584",
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "wall_seconds": 6.53865385055542,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mffffffbf-1584",
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "wall_seconds": 6.450141191482544,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mffffffbf-9590",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.748106241226196,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mffffffbf-9590",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.554103136062622,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mffffffdf-1584",
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "wall_seconds": 6.488305330276489,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mffffffdf-1584",
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "wall_seconds": 6.592254400253296,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mffffffdf-9590",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.535946607589722,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mffffffdf-9590",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.482952356338501,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mffffffef-1584",
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "wall_seconds": 6.654129981994629,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mffffffef-1584",
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "wall_seconds": 6.4389967918396,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mffffffef-9590",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.554532527923584,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mffffffef-9590",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.390517473220825,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mfffffff7-1584",
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "wall_seconds": 6.578137159347534,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mfffffff7-1584",
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "wall_seconds": 6.55881142616272,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mfffffff7-9590",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.5345494747161865,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mfffffff7-9590",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.4597015380859375,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffb-1584",
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "wall_seconds": 6.522395610809326,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffb-1584",
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "wall_seconds": 6.45973014831543,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffb-9590",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.548546314239502,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffb-9590",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.529903173446655,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffd-1584",
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "wall_seconds": 6.539885759353638,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffd-1584",
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "wall_seconds": 6.487036943435669,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffd-9590",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.768192529678345,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffd-9590",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.602912902832031,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffe-1584",
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "wall_seconds": 6.479124307632446,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffe-1584",
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "wall_seconds": 6.459075689315796,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffe-9590",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.529465198516846,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-exclude-mfffffffe-9590",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.579697132110596,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mffffffbf-2261",
+      "case": "coco-val-000000002261-p0",
+      "image_id": 2261,
+      "wall_seconds": 6.601510047912598,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mffffffbf-2261",
+      "case": "coco-val-000000002261-p1",
+      "image_id": 2261,
+      "wall_seconds": 6.431737899780273,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mffffffbf-4795",
+      "case": "coco-val-000000004795-p0",
+      "image_id": 4795,
+      "wall_seconds": 6.548866271972656,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mffffffbf-4795",
+      "case": "coco-val-000000004795-p1",
+      "image_id": 4795,
+      "wall_seconds": 6.619397878646851,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mffffffbf-5992",
+      "case": "coco-val-000000005992-p0",
+      "image_id": 5992,
+      "wall_seconds": 6.595842361450195,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mffffffef-2261",
+      "case": "coco-val-000000002261-p0",
+      "image_id": 2261,
+      "wall_seconds": 6.579056978225708,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mffffffef-2261",
+      "case": "coco-val-000000002261-p1",
+      "image_id": 2261,
+      "wall_seconds": 6.460740327835083,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mffffffef-4795",
+      "case": "coco-val-000000004795-p0",
+      "image_id": 4795,
+      "wall_seconds": 6.505314826965332,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mffffffef-4795",
+      "case": "coco-val-000000004795-p1",
+      "image_id": 4795,
+      "wall_seconds": 6.590219020843506,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mffffffef-5992",
+      "case": "coco-val-000000005992-p0",
+      "image_id": 5992,
+      "wall_seconds": 6.60039496421814,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mfffffffe-2261",
+      "case": "coco-val-000000002261-p0",
+      "image_id": 2261,
+      "wall_seconds": 6.505940198898315,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mfffffffe-2261",
+      "case": "coco-val-000000002261-p1",
+      "image_id": 2261,
+      "wall_seconds": 6.538022041320801,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mfffffffe-4795",
+      "case": "coco-val-000000004795-p0",
+      "image_id": 4795,
+      "wall_seconds": 6.437381744384766,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mfffffffe-4795",
+      "case": "coco-val-000000004795-p1",
+      "image_id": 4795,
+      "wall_seconds": 6.545330047607422,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-attn-hard-mfffffffe-5992",
+      "case": "coco-val-000000005992-p0",
+      "image_id": 5992,
+      "wall_seconds": 6.617785215377808,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-control-all",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.480545282363892,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-control-all",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.4325807094573975,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-control-global",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.715018033981323,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-control-global",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.42129921913147,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-control-m0",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.535592794418335,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-control-m0",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.557328939437866,
+      "peak_allocated": 2691931648,
+      "peak_whole_gpu": 3744378880
+    },
+    {
+      "run": "r5-qall-1584",
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "wall_seconds": 6.394117593765259,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-1584",
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "wall_seconds": 6.514849424362183,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-2261",
+      "case": "coco-val-000000002261-p0",
+      "image_id": 2261,
+      "wall_seconds": 6.440795421600342,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-2261",
+      "case": "coco-val-000000002261-p1",
+      "image_id": 2261,
+      "wall_seconds": 6.44160532951355,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-5992",
+      "case": "coco-val-000000005992-p0",
+      "image_id": 5992,
+      "wall_seconds": 6.533967971801758,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mffffffbf-1425",
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "wall_seconds": 6.557729005813599,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mffffffbf-1425",
+      "case": "coco-val-000000001425-p1",
+      "image_id": 1425,
+      "wall_seconds": 6.412827253341675,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mffffffbf-4795",
+      "case": "coco-val-000000004795-p0",
+      "image_id": 4795,
+      "wall_seconds": 6.6174585819244385,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mffffffbf-4795",
+      "case": "coco-val-000000004795-p1",
+      "image_id": 4795,
+      "wall_seconds": 6.450693845748901,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mffffffbf-9590",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.55403470993042,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mffffffbf-9590",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.426232576370239,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mfffffffe-1425",
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "wall_seconds": 6.512535572052002,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mfffffffe-1425",
+      "case": "coco-val-000000001425-p1",
+      "image_id": 1425,
+      "wall_seconds": 6.503109693527222,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mfffffffe-4795",
+      "case": "coco-val-000000004795-p0",
+      "image_id": 4795,
+      "wall_seconds": 6.552306890487671,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mfffffffe-4795",
+      "case": "coco-val-000000004795-p1",
+      "image_id": 4795,
+      "wall_seconds": 6.408254861831665,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mfffffffe-9590",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "wall_seconds": 6.614967107772827,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    },
+    {
+      "run": "r5-qall-attn-mfffffffe-9590",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "wall_seconds": 6.406933784484863,
+      "peak_allocated": 2695089664,
+      "peak_whole_gpu": 3761156096
+    }
+  ]
+}

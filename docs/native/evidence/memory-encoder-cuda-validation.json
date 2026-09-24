@@ -1,0 +1,742 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cuda",
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "resize_logits",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "full_probabilities",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "shared_image",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "cpu_staged_image",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "predictions",
+      "shape": [
+        3,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "from_points",
+      "shape": [
+        3,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "overlap",
+      "shape": [
+        3,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "resize_logits",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "full_probabilities",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "shared_image",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "cpu_staged_image",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "predictions",
+      "shape": [
+        3,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "from_points",
+      "shape": [
+        3,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "overlap",
+      "shape": [
+        3,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "resize_logits",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "full_probabilities",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "shared_image",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "cpu_staged_image",
+      "shape": [
+        2,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "predictions",
+      "shape": [
+        3,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "from_points",
+      "shape": [
+        3,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "overlap",
+      "shape": [
+        3,
+        64,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "resize_logits",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "full_probabilities",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "shared_image",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "cpu_staged_image",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "predictions",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "from_points",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "overlap",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "scores_short",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "scores_long",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "resize_logits",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "full_probabilities",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "shared_image",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "cpu_staged_image",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "predictions",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "from_points",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "overlap",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "scores_short",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "scores_long",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "37_objects_3_buckets",
+      "shape": [
+        3,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "resize_logits",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "full_probabilities",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "shared_image",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "cpu_staged_image",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "predictions",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "from_points",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "overlap",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "scores_short",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "scores_long",
+      "shape": [
+        2,
+        256,
+        72,
+        72
+      ],
+      "max_errors": {
+        "features": 0.0,
+        "position": 0.0
+      }
+    }
+  ],
+  "scope": "Original memory encoder and frame-memory host behavior for shipped SAM3/SAM3.1 configurations. CPU reference computes positions on CPU; CUDA reference retains builder positional cache. Temporal attention/scheduling not tested."
+}

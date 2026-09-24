@@ -2,22 +2,26 @@
 
 Run with .venv/Scripts/python.exe experiments/local_turing_bench.py.
 The FP16 reference replaces the upstream BF16-only fused MLP with linear+GELU,
-exactly as the existing reproduction harness does. Stock is left unmodified.
+exactly as the original reproduction harness did. Stock is left unmodified.
 """
 
 import argparse
+import contextlib
 import gc
 import json
+import os
 import platform
+import statistics
 import subprocess
 import sys
+import threading
 import time
 import traceback
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "experiments/archive_reference/sam3_fp16_lab"))
 
 CONFIGS = {
     "stock": {},
@@ -29,10 +33,189 @@ CONFIGS = {
 }
 
 
-def worker(args):
+def environment():
     import torch
-    from gpu_common import environment, measure
-    from image_sweep import compare
+
+    p = torch.cuda.get_device_properties(0)
+    return dict(
+        python=platform.python_version(),
+        torch=torch.__version__,
+        cuda=torch.version.cuda,
+        cudnn=torch.backends.cudnn.version(),
+        gpu=p.name,
+        capability=list(torch.cuda.get_device_capability()),
+        physical_vram_bytes=p.total_memory,
+        tf32_matmul=torch.backends.cuda.matmul.allow_tf32,
+        tf32_cudnn=torch.backends.cudnn.allow_tf32,
+        cudnn_benchmark=torch.backends.cudnn.benchmark,
+        cudnn_deterministic=torch.backends.cudnn.deterministic,
+        cublas_workspace_config=os.environ.get("CUBLAS_WORKSPACE_CONFIG"),
+    )
+
+
+class DeviceMemorySampler:
+    """Sample total device memory through NVML; a sampled lower bound on peak."""
+
+    def __init__(self):
+        import pynvml
+
+        self.nv = pynvml
+        self.nv.nvmlInit()
+        self.handle = self.nv.nvmlDeviceGetHandleByIndex(0)
+        self.stop_event = threading.Event()
+        self.samples = []
+        self.thread = threading.Thread(target=self.loop, daemon=True)
+
+    def loop(self):
+        while not self.stop_event.is_set():
+            self.samples.append(self.nv.nvmlDeviceGetMemoryInfo(self.handle).used)
+            self.stop_event.wait(0.005)
+
+    def __enter__(self):
+        self.thread.start()
+        return self
+
+    def __exit__(self, *args):
+        self.stop_event.set()
+        self.thread.join(timeout=2)
+
+    def result(self):
+        return dict(
+            sampled_device_used_peak_bytes=max(self.samples, default=0),
+            sampled_device_used_min_bytes=min(self.samples, default=0),
+            samples=len(self.samples),
+            requested_interval_ms=5,
+            scope="Whole GPU NVML sampled usage, not an exact instantaneous peak",
+        )
+
+
+def measure(invoke, warmups=5, repetitions=20):
+    import torch
+
+    torch.cuda.synchronize()
+    torch.cuda.reset_peak_memory_stats()
+    allocated_before = torch.cuda.memory_allocated()
+    reserved_before = torch.cuda.memory_reserved()
+    with DeviceMemorySampler() as sampler:
+        begin = time.perf_counter()
+        output = invoke()
+        torch.cuda.synchronize()
+        cold = time.perf_counter() - begin
+        del output
+        for _ in range(warmups):
+            output = invoke()
+            del output
+        torch.cuda.synchronize()
+        times, gpu_times = [], []
+        for index in range(repetitions):
+            first = torch.cuda.Event(enable_timing=True)
+            last = torch.cuda.Event(enable_timing=True)
+            torch.cuda.synchronize()
+            start = time.perf_counter()
+            first.record()
+            output = invoke()
+            last.record()
+            torch.cuda.synchronize()
+            times.append(time.perf_counter() - start)
+            gpu_times.append(first.elapsed_time(last) / 1000)
+            if index < repetitions - 1:
+                del output
+        allocated = torch.cuda.max_memory_allocated()
+        reserved = torch.cuda.max_memory_reserved()
+        free, total = torch.cuda.mem_get_info()
+    result = dict(
+        cold_seconds=cold,
+        warmups=warmups,
+        repetitions=repetitions,
+        wall_seconds=times,
+        gpu_seconds=gpu_times,
+        median_wall_seconds=statistics.median(times),
+        median_gpu_seconds=statistics.median(gpu_times),
+        peak_allocated_bytes=allocated,
+        peak_reserved_bytes=reserved,
+        allocated_before_bytes=allocated_before,
+        reserved_before_bytes=reserved_before,
+        end_device_used_bytes=total - free,
+        physical_vram_bytes=total,
+        nvml=sampler.result(),
+    )
+    return output, result
+
+
+@contextlib.contextmanager
+def fp16_reference_execution():
+    """FP16 autocast with the BF16-only ViT MLP epilogue replaced by linear+GELU."""
+    import sam3.model.vitdet as vitdet
+    import torch
+    import torch.nn.functional as F
+
+    def activation(act, linear, x):
+        y = F.linear(x, linear.weight, linear.bias)
+        if act in (F.gelu, torch.nn.GELU):
+            return F.gelu(y)
+        if act in (F.relu, torch.nn.ReLU):
+            return F.relu(y)
+        raise ValueError("Unexpected activation")
+
+    with patch.object(vitdet, "addmm_act", activation), torch.autocast(
+        "cuda", dtype=torch.float16, cache_enabled=True
+    ):
+        yield
+
+
+def compare(reference, actual):
+    """Match detections by box IoU and summarize mask/score/box differences."""
+    from scipy.optimize import linear_sum_assignment
+    from torchvision.ops import box_iou
+
+    nr, na = len(reference["scores"]), len(actual["scores"])
+    result = {"reference_count": nr, "count": na}
+    if not nr or not na:
+        result["matched"] = 0
+        return result
+    rows, cols = linear_sum_assignment(
+        -box_iou(reference["boxes"].float(), actual["boxes"].float()).numpy()
+    )
+    ious, changed, pixels, prob_abs = [], 0, 0, 0.0
+    for r, a in zip(rows, cols):
+        rm, am = reference["masks"][r], actual["masks"][a]
+        union = (rm | am).sum().item()
+        ious.append((rm & am).sum().item() / union if union else 1.0)
+        changed += (rm != am).sum().item()
+        pixels += rm.numel()
+        prob_abs += (
+            (reference["masks_logits"][r].float() - actual["masks_logits"][a].float())
+            .abs()
+            .sum()
+            .item()
+        )
+    result.update(
+        matched=len(rows),
+        mean_mask_iou=statistics.mean(ious),
+        min_mask_iou=min(ious),
+        changed_pixels=changed,
+        compared_pixels=pixels,
+        probability_mae=prob_abs / pixels,
+        score_max_abs=(
+            reference["scores"][rows].float() - actual["scores"][cols].float()
+        )
+        .abs()
+        .max()
+        .item(),
+        box_max_abs_px=(
+            reference["boxes"][rows].float() - actual["boxes"][cols].float()
+        )
+        .abs()
+        .max()
+        .item(),
+    )
+    return result
+
+
+def worker(args):
+    # Deterministic cuBLAS workspace, set before CUDA initialization.
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+    import torch
     from PIL import Image
     from sam3.model.sam3_image_processor import Sam3Processor
     from sam3.model_builder import build_sam3_image_model
@@ -102,10 +285,8 @@ def worker(args):
         ]
 
         def infer(im, prompt):
-            from precision import execution
-
             ctx = (
-                execution("fp16", "auto", True)
+                fp16_reference_execution()
                 if cfg.get("fp16_adapter")
                 else torch.autocast(
                     "cuda", dtype=torch.float16, cache_enabled=not cfg.get("patch")

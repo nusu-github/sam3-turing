@@ -1,0 +1,9 @@
+{
+  "license": "LGPL version 2.1 or later",
+  "configuration": "--prefix=/workspace/deps/ffmpeg-lgpl --enable-shared --disable-static --disable-gpl --disable-nonfree --disable-autodetect --disable-programs --disable-doc --disable-avdevice --disable-avfilter --disable-postproc --enable-zlib --enable-bzlib --enable-lzma --enable-iconv",
+  "version": "6.1.1",
+  "url": "https://ffmpeg.org/releases/ffmpeg-6.1.1.tar.xz",
+  "source_sha256": "8684f4b00f94b85461884c3719382f1261f0d9eb3d59640a1f4ac0873616f968",
+  "source_bytes": 10458600,
+  "windows_runtime_tested": false
+}

@@ -1,0 +1,23 @@
+[17676] sam3_image_latency.exe@127.0.0.1
+  turing_fp16_s1688gemm_fp16_128x128_ldg8_relu_f2f_tn (24, 41, 1)x(128, 1, 1), Context 1, Stream 7, Device 0, CC 7.5
+    Warning: Data collection happened without fixed GPU frequencies. Profiling results may be inconsistent.
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- ------------
+    Metric Name             Metric Unit Metric Value
+    ----------------------- ----------- ------------
+    DRAM Frequency                  Ghz         2.50
+    SM Frequency                    Mhz       811.59
+    Elapsed Cycles                cycle    2,498,440
+    Memory Throughput                 %        37.88
+    DRAM Throughput                   %        37.88
+    Duration                         ms         3.08
+    L1/TEX Cache Throughput           %        54.13
+    L2 Cache Throughput               %        29.65
+    SM Active Cycles              cycle 2,247,081.63
+    Compute (SM) Throughput           %        47.49
+    ----------------------- ----------- ------------
+
+    OPT   This workload exhibits low compute throughput and memory bandwidth utilization relative to the peak
+          performance of this device. Achieved compute throughput and/or memory bandwidth below 60.0% of peak
+          typically indicate latency issues. Look at Scheduler Statistics and Warp State Statistics for potential
+          reasons.

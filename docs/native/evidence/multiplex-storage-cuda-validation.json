@@ -1,0 +1,65 @@
+{
+  "cases": [
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "score_selection": false,
+      "operations": 16,
+      "exact_tensor_comparisons": 463,
+      "resident_history_peak_logical_bytes": 155336752,
+      "paged_history_peak_disk_bytes": 155336752,
+      "paged_resident_history_tensor_bytes": 0
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "score_selection": true,
+      "operations": 16,
+      "exact_tensor_comparisons": 463,
+      "resident_history_peak_logical_bytes": 155336800,
+      "paged_history_peak_disk_bytes": 155336800,
+      "paged_resident_history_tensor_bytes": 0
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "score_selection": false,
+      "operations": 16,
+      "exact_tensor_comparisons": 463,
+      "resident_history_peak_logical_bytes": 155336752,
+      "paged_history_peak_disk_bytes": 155336752,
+      "paged_resident_history_tensor_bytes": 0
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "score_selection": true,
+      "operations": 16,
+      "exact_tensor_comparisons": 463,
+      "resident_history_peak_logical_bytes": 155336800,
+      "paged_history_peak_disk_bytes": 155336800,
+      "paged_resident_history_tensor_bytes": 0
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "score_selection": false,
+      "operations": 16,
+      "exact_tensor_comparisons": 463,
+      "resident_history_peak_logical_bytes": 176635968,
+      "paged_history_peak_disk_bytes": 176635968,
+      "paged_resident_history_tensor_bytes": 0
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "score_selection": true,
+      "operations": 16,
+      "exact_tensor_comparisons": 463,
+      "resident_history_peak_logical_bytes": 176636032,
+      "paged_history_peak_disk_bytes": 176636032,
+      "paged_resident_history_tensor_bytes": 0
+    }
+  ],
+  "scope": "Paged vs resident native sessions with synthetic full-grid features. Bytes cover archived frame payloads, not model, selected-frame working sets, feature cache, input prompts, metadata or test snapshots. Archives preserve values, dtypes and strides; no upstream-policy or ground-truth quality claim."
+}

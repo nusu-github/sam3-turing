@@ -1,0 +1,214 @@
+{
+  "scope": "FP16 agreement, not ground-truth correctness. Original-resolution binary mask Hungarian matches.",
+  "case": "coco-val-000000001584-p1",
+  "results": [
+    {
+      "run": "r7-qkv-shift-development",
+      "matches": [
+        {
+          "reference_query": 146,
+          "candidate_query": 146,
+          "reference_area_px": 493,
+          "candidate_area_px": 480,
+          "disagreeing_pixels": 15,
+          "union_px": 494,
+          "iou": 0.9696356275303644,
+          "score_error": 0.01318359375,
+          "box_error_px": 0.355682373046875
+        },
+        {
+          "reference_query": 44,
+          "candidate_query": 44,
+          "reference_area_px": 1396,
+          "candidate_area_px": 1381,
+          "disagreeing_pixels": 19,
+          "union_px": 1398,
+          "iou": 0.9864091559370529,
+          "score_error": 0.0029296875,
+          "box_error_px": 0.332977294921875
+        },
+        {
+          "reference_query": 73,
+          "candidate_query": 73,
+          "reference_area_px": 435,
+          "candidate_area_px": 434,
+          "disagreeing_pixels": 5,
+          "union_px": 437,
+          "iou": 0.988558352402746,
+          "score_error": 0.0,
+          "box_error_px": 0.0556640625
+        },
+        {
+          "reference_query": 128,
+          "candidate_query": 128,
+          "reference_area_px": 474,
+          "candidate_area_px": 469,
+          "disagreeing_pixels": 5,
+          "union_px": 474,
+          "iou": 0.989451476793249,
+          "score_error": 0.00146484375,
+          "box_error_px": 0.196136474609375
+        },
+        {
+          "reference_query": 181,
+          "candidate_query": 181,
+          "reference_area_px": 300,
+          "candidate_area_px": 301,
+          "disagreeing_pixels": 3,
+          "union_px": 302,
+          "iou": 0.9900662251655629,
+          "score_error": 0.00439453125,
+          "box_error_px": 0.02313232421875
+        },
+        {
+          "reference_query": 87,
+          "candidate_query": 87,
+          "reference_area_px": 654,
+          "candidate_area_px": 651,
+          "disagreeing_pixels": 3,
+          "union_px": 654,
+          "iou": 0.9954128440366973,
+          "score_error": 0.00048828125,
+          "box_error_px": 0.0437164306640625
+        },
+        {
+          "reference_query": 175,
+          "candidate_query": 175,
+          "reference_area_px": 349,
+          "candidate_area_px": 350,
+          "disagreeing_pixels": 1,
+          "union_px": 350,
+          "iou": 0.9971428571428571,
+          "score_error": 0.00146484375,
+          "box_error_px": 0.0436553955078125
+        },
+        {
+          "reference_query": 157,
+          "candidate_query": 157,
+          "reference_area_px": 680,
+          "candidate_area_px": 681,
+          "disagreeing_pixels": 1,
+          "union_px": 681,
+          "iou": 0.9985315712187959,
+          "score_error": 0.0009765625,
+          "box_error_px": 0.106170654296875
+        },
+        {
+          "reference_query": 56,
+          "candidate_query": 56,
+          "reference_area_px": 269,
+          "candidate_area_px": 269,
+          "disagreeing_pixels": 0,
+          "union_px": 269,
+          "iou": 1.0,
+          "score_error": 0.0048828125,
+          "box_error_px": 0.0549774169921875
+        }
+      ]
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "matches": [
+        {
+          "reference_query": 128,
+          "candidate_query": 128,
+          "reference_area_px": 474,
+          "candidate_area_px": 465,
+          "disagreeing_pixels": 9,
+          "union_px": 474,
+          "iou": 0.9810126582278481,
+          "score_error": 0.0078125,
+          "box_error_px": 0.2842559814453125
+        },
+        {
+          "reference_query": 181,
+          "candidate_query": 42,
+          "reference_area_px": 300,
+          "candidate_area_px": 302,
+          "disagreeing_pixels": 4,
+          "union_px": 303,
+          "iou": 0.9867986798679867,
+          "score_error": 0.01220703125,
+          "box_error_px": 0.146026611328125
+        },
+        {
+          "reference_query": 175,
+          "candidate_query": 175,
+          "reference_area_px": 349,
+          "candidate_area_px": 349,
+          "disagreeing_pixels": 4,
+          "union_px": 351,
+          "iou": 0.9886039886039886,
+          "score_error": 0.005859375,
+          "box_error_px": 0.069610595703125
+        },
+        {
+          "reference_query": 44,
+          "candidate_query": 44,
+          "reference_area_px": 1396,
+          "candidate_area_px": 1400,
+          "disagreeing_pixels": 14,
+          "union_px": 1405,
+          "iou": 0.9900355871886121,
+          "score_error": 0.00537109375,
+          "box_error_px": 0.174957275390625
+        },
+        {
+          "reference_query": 146,
+          "candidate_query": 146,
+          "reference_area_px": 493,
+          "candidate_area_px": 497,
+          "disagreeing_pixels": 4,
+          "union_px": 497,
+          "iou": 0.9919517102615694,
+          "score_error": 0.0009765625,
+          "box_error_px": 0.0610809326171875
+        },
+        {
+          "reference_query": 157,
+          "candidate_query": 157,
+          "reference_area_px": 680,
+          "candidate_area_px": 684,
+          "disagreeing_pixels": 4,
+          "union_px": 684,
+          "iou": 0.9941520467836257,
+          "score_error": 0.00390625,
+          "box_error_px": 0.195587158203125
+        },
+        {
+          "reference_query": 73,
+          "candidate_query": 73,
+          "reference_area_px": 435,
+          "candidate_area_px": 437,
+          "disagreeing_pixels": 2,
+          "union_px": 437,
+          "iou": 0.9954233409610984,
+          "score_error": 0.0029296875,
+          "box_error_px": 0.108795166015625
+        },
+        {
+          "reference_query": 87,
+          "candidate_query": 87,
+          "reference_area_px": 654,
+          "candidate_area_px": 652,
+          "disagreeing_pixels": 2,
+          "union_px": 654,
+          "iou": 0.9969418960244648,
+          "score_error": 0.0029296875,
+          "box_error_px": 0.0584869384765625
+        },
+        {
+          "reference_query": 56,
+          "candidate_query": 56,
+          "reference_area_px": 269,
+          "candidate_area_px": 269,
+          "disagreeing_pixels": 0,
+          "union_px": 269,
+          "iou": 1.0,
+          "score_error": 0.0107421875,
+          "box_error_px": 0.0558319091796875
+        }
+      ]
+    }
+  ]
+}

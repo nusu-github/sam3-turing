@@ -1,13 +1,23 @@
 # SAM3-Turing
 
-Runtime patches for SAM 3 image inference on GPUs with limited VRAM, validated
-on an **RTX 2060 Max-Q with 6 GB VRAM** and an RTX 3090. Apply selective FP16
-conversion, memory optimizations, text caching, and optional compilation without
-modifying the checkpoint or editing upstream model files.
+A community fork of SAM 3 / SAM 3.1 for GPUs with little VRAM, in particular
+Turing laptops such as the **RTX 2060 Max-Q with 6 GB**. The original SAM 3
+project and credits follow the fork's sections.
 
-Optional extensions provide selective INT8 matrix multiplication, compact 4-bit
-weight storage, CPU text encoding, and fused resizing and bit-packing of masks.
-This is a community fork; the original SAM 3 project and credits are below.
+| Part | Status | Start here |
+|---|---|---|
+| Python runtime patch for image inference (`sam3/turing*.py`) | Complete; validated on RTX 2060 Max-Q and RTX 3090 | [Results](#results-on-a-6-gb-rtx-2060-max-q) and [quick start](#quick-start) below |
+| Python-free C/C++ runtime for images and video (`native/`) | Development release (Linux SDK; Windows builds from source) | [QUICKSTART_JA.md](docs/native/QUICKSTART_JA.md) (Japanese), [docs/native](docs/native/README.md) |
+| Windows/RTX 2060 optimization and INT8/INT4 research on the native runtime | Ongoing; opt-in switches only | [Experiments](experiments/results/native_rtx2060/README.md), [research log](docs/native/QUANT_RESEARCH_LOG.md) |
+
+Documentation map: [docs/README.md](docs/README.md). Development history:
+[docs/HISTORY.md](docs/HISTORY.md).
+
+The Python patch applies selective FP16 conversion, memory optimizations, text
+caching and optional compilation without modifying the checkpoint or editing
+upstream model files. Optional extensions provide selective INT8 matrix
+multiplication, compact 4-bit weight storage, CPU text encoding, and fused
+resizing and bit-packing of masks.
 
 ## Results on a 6 GB RTX 2060 Max-Q
 
@@ -68,8 +78,8 @@ Start with `compile=False` for a short startup. Compilation and quantization are
 optional tradeoffs; benchmark them on your own GPU and prompts. The image patch
 supports single-image inference, text and box prompts, and standard dense masks.
 Training, SAM 1-style interactive prediction, and video are outside its scope.
-Video experiments use a separate experimental patch and have not been validated
-on the 6 GB Turing device.
+The earlier video monkeypatch experiments were measured only on an RTX 3090 and
+their implementation is archived in commit `080bec0`.
 
 - [Image patch guide, optional features, and RTX 3090 results](docs/TURING_IMAGE_PATCH.md)
 - [RTX 2060 validation and uv setup](experiments/results/local_rtx2060/README.md)

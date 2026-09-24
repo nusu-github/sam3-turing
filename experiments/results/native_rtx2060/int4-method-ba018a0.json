@@ -1,0 +1,970 @@
+{
+  "quality_gates": {
+    "same_count": true,
+    "min_mask_iou": 0.98,
+    "max_score_error": 0.02,
+    "max_box_error_px": 1.0
+  },
+  "quality": {
+    "truck/exact/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/exact/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995615992357056,
+      "max_score_error": 0.009765625,
+      "max_box_error_px": 0.13665771484375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/exact/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "bag/exact/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9984314545644672,
+      "max_score_error": 0.0029296875,
+      "max_box_error_px": 0.128173828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/exact/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "child/exact/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9954766875434934,
+      "max_score_error": 0.0068359375,
+      "max_box_error_px": 0.27117919921875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/exact/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "wheel/exact/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.990914990266061,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.35894775390625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/exact/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/exact/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/w4/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9983709389329886,
+      "max_score_error": 0.037109375,
+      "max_box_error_px": 1.73260498046875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "truck/w4/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9983724919724266,
+      "max_score_error": 0.02734375,
+      "max_box_error_px": 1.7165603637695312,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/w4/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9938062405048498,
+      "max_score_error": 0.017578125,
+      "max_box_error_px": 0.445709228515625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/w4/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9936901145127366,
+      "max_score_error": 0.015625,
+      "max_box_error_px": 0.36407470703125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/w4/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9860446341041462,
+      "max_score_error": 0.02294921875,
+      "max_box_error_px": 0.68084716796875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/w4/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9880094540842796,
+      "max_score_error": 0.02783203125,
+      "max_box_error_px": 0.462158203125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/w4/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9647058823529412,
+      "max_score_error": 0.0380859375,
+      "max_box_error_px": 1.01123046875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/w4/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9573480342376324,
+      "max_score_error": 0.03759765625,
+      "max_box_error_px": 1.37017822265625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/w4/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/w4/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/a4/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9789213591866996,
+      "max_score_error": 0.2958984375,
+      "max_box_error_px": 34.848602294921875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "truck/a4/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9789195897017012,
+      "max_score_error": 0.2861328125,
+      "max_box_error_px": 34.832557678222656,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/a4/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9729419139155872,
+      "max_score_error": 0.1728515625,
+      "max_box_error_px": 2.4837493896484375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/a4/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.972027972027972,
+      "max_score_error": 0.1708984375,
+      "max_box_error_px": 2.3776092529296875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/a4/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9186503719447396,
+      "max_score_error": 0.05517578125,
+      "max_box_error_px": 4.186279296875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/a4/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9172153780798641,
+      "max_score_error": 0.06005859375,
+      "max_box_error_px": 4.393798828125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/a4/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.42278203723986857,
+      "max_score_error": 0.3408203125,
+      "max_box_error_px": 34.619720458984375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/a4/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.4194429273620972,
+      "max_score_error": 0.34033203125,
+      "max_box_error_px": 34.78338623046875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/a4/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/a4/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/affine/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9953658410189811,
+      "max_score_error": 0.09423828125,
+      "max_box_error_px": 2.2355728149414062,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "truck/affine/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9953046924809126,
+      "max_score_error": 0.08447265625,
+      "max_box_error_px": 2.2195281982421875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/affine/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9905429071803853,
+      "max_score_error": 0.025390625,
+      "max_box_error_px": 0.9879302978515625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/affine/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9897304236200257,
+      "max_score_error": 0.0234375,
+      "max_box_error_px": 1.0940704345703125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/affine/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9762759821525737,
+      "max_score_error": 0.0126953125,
+      "max_box_error_px": 1.23516845703125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/affine/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9757358141559219,
+      "max_score_error": 0.01611328125,
+      "max_box_error_px": 1.25433349609375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/affine/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9114268440145102,
+      "max_score_error": 0.07177734375,
+      "max_box_error_px": 1.874755859375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/affine/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9160860345349894,
+      "max_score_error": 0.0712890625,
+      "max_box_error_px": 1.5545654296875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/affine/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/affine/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/a4_affine/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9963482277286636,
+      "max_score_error": 0.0400390625,
+      "max_box_error_px": 1.5560073852539062,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "truck/a4_affine/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9962337966124578,
+      "max_score_error": 0.0302734375,
+      "max_box_error_px": 1.5399627685546875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/a4_affine/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.991250583294447,
+      "max_score_error": 0.0185546875,
+      "max_box_error_px": 0.521514892578125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/a4_affine/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.99067055393586,
+      "max_score_error": 0.02099609375,
+      "max_box_error_px": 0.6031494140625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/a4_affine/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9732565092134587,
+      "max_score_error": 0.01123046875,
+      "max_box_error_px": 1.89752197265625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/a4_affine/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9731463361600348,
+      "max_score_error": 0.0048828125,
+      "max_box_error_px": 1.8687744140625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/a4_affine/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9278414369773924,
+      "max_score_error": 0.0234375,
+      "max_box_error_px": 2.2000732421875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/a4_affine/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9326505276225947,
+      "max_score_error": 0.02294921875,
+      "max_box_error_px": 1.84112548828125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/a4_affine/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/a4_affine/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/mse/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9961275261411623,
+      "max_score_error": 0.0771484375,
+      "max_box_error_px": 1.99273681640625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "truck/mse/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.996088288429817,
+      "max_score_error": 0.0673828125,
+      "max_box_error_px": 2.12939453125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/mse/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9907710280373832,
+      "max_score_error": 0.01416015625,
+      "max_box_error_px": 0.787811279296875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/mse/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9897256275539988,
+      "max_score_error": 0.01708984375,
+      "max_box_error_px": 0.915985107421875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/mse/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9769352118805418,
+      "max_score_error": 0.0126953125,
+      "max_box_error_px": 0.922271728515625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/mse/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9754281054634412,
+      "max_score_error": 0.009765625,
+      "max_box_error_px": 1.193450927734375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/mse/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.8926886792452831,
+      "max_score_error": 0.10986328125,
+      "max_box_error_px": 3.61273193359375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/mse/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.8899352560329605,
+      "max_score_error": 0.109375,
+      "max_box_error_px": 3.73382568359375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/mse/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/mse/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/a4_mse/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.997093402337533,
+      "max_score_error": 0.0703125,
+      "max_box_error_px": 0.67083740234375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "truck/a4_mse/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9970823906485671,
+      "max_score_error": 0.060546875,
+      "max_box_error_px": 0.8074951171875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/a4_mse/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9942535475548259,
+      "max_score_error": 0.015625,
+      "max_box_error_px": 0.68475341796875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/a4_mse/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9933159268929503,
+      "max_score_error": 0.01806640625,
+      "max_box_error_px": 0.80670166015625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/a4_mse/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9777608612908488,
+      "max_score_error": 0.0126953125,
+      "max_box_error_px": 0.89556884765625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/a4_mse/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9762538716513612,
+      "max_score_error": 0.009765625,
+      "max_box_error_px": 1.166748046875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/a4_mse/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9306286776091669,
+      "max_score_error": 0.09033203125,
+      "max_box_error_px": 1.96240234375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/a4_mse/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9282622139764997,
+      "max_score_error": 0.08984375,
+      "max_box_error_px": 2.08349609375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/a4_mse/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/a4_mse/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/w4_mse/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9986222433083756,
+      "max_score_error": 0.03076171875,
+      "max_box_error_px": 0.6136474609375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "truck/w4_mse/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9986112398454768,
+      "max_score_error": 0.02099609375,
+      "max_box_error_px": 0.75030517578125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/w4_mse/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9957830619655617,
+      "max_score_error": 0.009765625,
+      "max_box_error_px": 0.33831787109375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/w4_mse/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9951990632318501,
+      "max_score_error": 0.0078125,
+      "max_box_error_px": 0.419952392578125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/w4_mse/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.98331039229181,
+      "max_score_error": 0.009765625,
+      "max_box_error_px": 1.0174560546875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/w4_mse/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9854931192660551,
+      "max_score_error": 0.0166015625,
+      "max_box_error_px": 1.04620361328125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/w4_mse/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9540193931811073,
+      "max_score_error": 0.00439453125,
+      "max_box_error_px": 1.693359375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/w4_mse/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.950374531835206,
+      "max_score_error": 0.00390625,
+      "max_box_error_px": 1.814453125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/w4_mse/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/w4_mse/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/rht16/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9977675695886735,
+      "max_score_error": 0.0078125,
+      "max_box_error_px": 0.7672119140625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "truck/rht16/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9978005024280883,
+      "max_score_error": 0.017578125,
+      "max_box_error_px": 0.70703125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/rht16/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9934168419127731,
+      "max_score_error": 0.0078125,
+      "max_box_error_px": 0.56048583984375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/rht16/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9924180140677811,
+      "max_score_error": 0.01025390625,
+      "max_box_error_px": 0.642120361328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/rht16/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9847715736040609,
+      "max_score_error": 0.02197265625,
+      "max_box_error_px": 1.018890380859375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/rht16/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9854780153287616,
+      "max_score_error": 0.01513671875,
+      "max_box_error_px": 1.290069580078125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/rht16/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9691615804690009,
+      "max_score_error": 0.0185546875,
+      "max_box_error_px": 1.481201171875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/rht16/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9698040475425634,
+      "max_score_error": 0.01806640625,
+      "max_box_error_px": 1.53564453125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/rht16/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/rht16/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/rht64/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9980764942891508,
+      "max_score_error": 0.00634765625,
+      "max_box_error_px": 1.30731201171875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "truck/rht64/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.998049806864931,
+      "max_score_error": 0.00341796875,
+      "max_box_error_px": 1.170654296875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/rht64/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9954337899543378,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.31939697265625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/rht64/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9946162971074003,
+      "max_score_error": 0.00341796875,
+      "max_box_error_px": 0.33447265625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/rht64/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.977667898282982,
+      "max_score_error": 0.00390625,
+      "max_box_error_px": 0.93585205078125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/rht64/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9770208604954368,
+      "max_score_error": 0.00927734375,
+      "max_box_error_px": 0.779296875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/rht64/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9553178099433606,
+      "max_score_error": 0.01220703125,
+      "max_box_error_px": 1.4451904296875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/rht64/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9528746465598492,
+      "max_score_error": 0.01171875,
+      "max_box_error_px": 1.08624267578125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/rht64/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/rht64/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    }
+  },
+  "timing": {},
+  "gate_failures": [
+    "truck/w4/int8",
+    "truck/w4/fp16",
+    "child/w4/int8",
+    "child/w4/fp16",
+    "wheel/w4/int8",
+    "wheel/w4/fp16",
+    "truck/a4/int8",
+    "truck/a4/fp16",
+    "bag/a4/int8",
+    "bag/a4/fp16",
+    "child/a4/int8",
+    "child/a4/fp16",
+    "wheel/a4/int8",
+    "wheel/a4/fp16",
+    "truck/affine/int8",
+    "truck/affine/fp16",
+    "bag/affine/int8",
+    "bag/affine/fp16",
+    "child/affine/int8",
+    "child/affine/fp16",
+    "wheel/affine/int8",
+    "wheel/affine/fp16",
+    "truck/a4_affine/int8",
+    "truck/a4_affine/fp16",
+    "bag/a4_affine/fp16",
+    "child/a4_affine/int8",
+    "child/a4_affine/fp16",
+    "wheel/a4_affine/int8",
+    "wheel/a4_affine/fp16",
+    "truck/mse/int8",
+    "truck/mse/fp16",
+    "child/mse/int8",
+    "child/mse/fp16",
+    "wheel/mse/int8",
+    "wheel/mse/fp16",
+    "truck/a4_mse/int8",
+    "truck/a4_mse/fp16",
+    "child/a4_mse/int8",
+    "child/a4_mse/fp16",
+    "wheel/a4_mse/int8",
+    "wheel/a4_mse/fp16",
+    "truck/w4_mse/int8",
+    "truck/w4_mse/fp16",
+    "child/w4_mse/int8",
+    "child/w4_mse/fp16",
+    "wheel/w4_mse/int8",
+    "wheel/w4_mse/fp16",
+    "child/rht16/int8",
+    "child/rht16/fp16",
+    "wheel/rht16/int8",
+    "wheel/rht16/fp16",
+    "truck/rht64/int8",
+    "truck/rht64/fp16",
+    "child/rht64/int8",
+    "child/rht64/fp16",
+    "wheel/rht64/int8",
+    "wheel/rht64/fp16"
+  ]
+}

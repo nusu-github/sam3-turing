@@ -1,0 +1,23 @@
+[
+  {
+    "run": "r8-qkv-output-development",
+    "kind": "quality",
+    "mode": "calibrated",
+    "completed": 33,
+    "process_wall_seconds": 317.91985750198364,
+    "max_peak_allocated_bytes": 2694219264,
+    "max_sampled_whole_gpu_bytes": 4436537344,
+    "compared": 33,
+    "passed": 31,
+    "nonempty": 25,
+    "nonempty_passed": 23,
+    "count_changes": 1,
+    "failed_cases": [
+      "coco-val-000000004795-p0",
+      "coco-val-000000009590-p0"
+    ],
+    "min_mask_iou": 0.9810126582278481,
+    "max_score_error": 0.02392578125,
+    "max_box_error_px": 0.764251708984375
+  }
+]

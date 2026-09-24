@@ -1,0 +1,349 @@
+{
+  "model": "sam3",
+  "mode": "bf16_reference",
+  "reference_mode": "bf16_reference",
+  "scope": "Compare latest standalone outputs with retained actual original neural/predictor reference tensors. No reference tensors regenerated in this cached check.",
+  "cases": [
+    {
+      "tag": "0.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "1.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "2.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "3.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "4.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "5.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "6.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "7.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "8.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "9.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "10.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "11.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "12.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "13.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "14.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "15.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "16.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "17.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "18.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "19.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "20.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "21.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "22.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "23.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "24.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "25.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "26.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "27.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "28.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "29.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "30.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "31.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "32.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    },
+    {
+      "tag": "33.final",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      }
+    }
+  ],
+  "exact": true
+}

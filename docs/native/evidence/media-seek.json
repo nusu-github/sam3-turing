@@ -1,0 +1,309 @@
+{
+  "cases": [
+    {
+      "case": "mpeg2.ts",
+      "order": "reverse",
+      "reads": 360,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 1.0357145853340626,
+      "stats": {
+        "cache_bytes": 589824,
+        "cache_hits": 337,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": false,
+        "read_decoded_frames": 4409,
+        "seek_attempts": 1,
+        "seek_fallbacks": 1
+      },
+      "old_replay_decoded_frames": 64980
+    },
+    {
+      "case": "closed.mp4",
+      "order": "reverse",
+      "reads": 360,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 1.6110858041793108,
+      "stats": {
+        "cache_bytes": 589824,
+        "cache_hits": 337,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 544,
+        "seek_attempts": 23,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": 64980
+    },
+    {
+      "case": "closed.mp4",
+      "order": "random",
+      "reads": 80,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 1.792435908690095,
+      "stats": {
+        "cache_bytes": 73728,
+        "cache_hits": 2,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 1252,
+        "seek_attempts": 75,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": null
+    },
+    {
+      "case": "closed.mp4",
+      "order": "forward",
+      "reads": 360,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 1.6661672908812761,
+      "stats": {
+        "cache_bytes": 294912,
+        "cache_hits": 0,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 360,
+        "seek_attempts": 0,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": null
+    },
+    {
+      "case": "closed.mp4",
+      "order": "zero_cache",
+      "reads": 6,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 0.5035596769303083,
+      "stats": {
+        "cache_bytes": 0,
+        "cache_hits": 1,
+        "cache_limit_bytes": 0,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 43,
+        "seek_attempts": 5,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": null
+    },
+    {
+      "case": "closed.mp4",
+      "order": "tiny_cache",
+      "reads": 5,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 0.524566438049078,
+      "stats": {
+        "cache_bytes": 0,
+        "cache_hits": 0,
+        "cache_limit_bytes": 1,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 43,
+        "seek_attempts": 5,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": null
+    },
+    {
+      "case": "closed.mp4",
+      "order": "threaded",
+      "reads": 5,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 0.4698732439428568,
+      "stats": {
+        "cache_bytes": 368640,
+        "cache_hits": 0,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 67,
+        "seek_attempts": 5,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": null
+    },
+    {
+      "case": "open.mp4",
+      "order": "reverse",
+      "reads": 360,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 1.904509561136365,
+      "stats": {
+        "cache_bytes": 589824,
+        "cache_hits": 337,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 544,
+        "seek_attempts": 23,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": 64980
+    },
+    {
+      "case": "open.mp4",
+      "order": "random",
+      "reads": 80,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 1.980987947434187,
+      "stats": {
+        "cache_bytes": 73728,
+        "cache_hits": 2,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 1252,
+        "seek_attempts": 75,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": null
+    },
+    {
+      "case": "open.mp4",
+      "order": "forward",
+      "reads": 360,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 1.59462720900774,
+      "stats": {
+        "cache_bytes": 294912,
+        "cache_hits": 0,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 360,
+        "seek_attempts": 0,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": null
+    },
+    {
+      "case": "vfr.mkv",
+      "order": "reverse",
+      "reads": 360,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 2.6871127150952816,
+      "stats": {
+        "cache_bytes": 589824,
+        "cache_hits": 337,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 448,
+        "seek_attempts": 23,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": 64980
+    },
+    {
+      "case": "vfr.mkv",
+      "order": "random",
+      "reads": 80,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 3.376385945826769,
+      "stats": {
+        "cache_bytes": 73728,
+        "cache_hits": 2,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 964,
+        "seek_attempts": 75,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": null
+    },
+    {
+      "case": "vfr.mkv",
+      "order": "forward",
+      "reads": 360,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 2.383138343691826,
+      "stats": {
+        "cache_bytes": 294912,
+        "cache_hits": 0,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 360,
+        "seek_attempts": 0,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": null
+    },
+    {
+      "case": "duplicate.mkv",
+      "order": "reverse",
+      "reads": 360,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 4.308524787425995,
+      "stats": {
+        "cache_bytes": 589824,
+        "cache_hits": 337,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": false,
+        "read_decoded_frames": 4408,
+        "seek_attempts": 0,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": 64980
+    },
+    {
+      "case": "missing.h264",
+      "order": "reverse",
+      "reads": 360,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 1.9692352134734392,
+      "stats": {
+        "cache_bytes": 589824,
+        "cache_hits": 337,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": false,
+        "read_decoded_frames": 4408,
+        "seek_attempts": 0,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": 64980
+    },
+    {
+      "case": "bad-index.mp4",
+      "order": "reverse",
+      "reads": 360,
+      "all_pixels_exact": true,
+      "all_timestamps_match": true,
+      "elapsed_seconds": 1.6426424607634544,
+      "stats": {
+        "cache_bytes": 589824,
+        "cache_hits": 337,
+        "cache_limit_bytes": 589824,
+        "index_decoded_frames": 360,
+        "indexed_seek_enabled": true,
+        "read_decoded_frames": 568,
+        "seek_attempts": 23,
+        "seek_fallbacks": 0
+      },
+      "old_replay_decoded_frames": 64980
+    }
+  ],
+  "scope": "Every requested frame, not only the last read of each index. Elapsed includes initial scan, output files and process startup; not model inference."
+}

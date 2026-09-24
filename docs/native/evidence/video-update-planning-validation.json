@@ -1,0 +1,873 @@
+{
+  "cases": [
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 666
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 312
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 608
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": false,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 452
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": false,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 0,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 1,
+      "frames": 8,
+      "exact_comparisons": 456
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 2,
+      "frames": 8,
+      "exact_comparisons": 424
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "multiplex": true,
+      "reverse": true,
+      "variant": 3,
+      "frames": 8,
+      "exact_comparisons": 365
+    }
+  ],
+  "source_sha256": {
+    "sam3/model/sam3_video_base.py": "7ffae0a8c15f17814ce438078b6a00cc052be21ad16c8a59205df859c3df52c4",
+    "sam3/model/sam3_multiplex_base.py": "fad8ba0829e1223af919736d5c90b68a784c4941f936f088bccbdc4fb75d2bf8"
+  },
+  "scope": "Integrated original planning and raw output assembly over multi-frame sequences. Neural correction/memory calls are recording/no-op fixtures; actual-weight execution requires separate tests. Uncapped source configuration via image-only planner flag with unchanged thresholds. Tensor-vs-Python-scalar score representation compared numerically with exact values. Native previous metadata is immutable; original multiplex shallow-copy behavior is not required. Original CPU connected-components empty-batch stack failure is adapted only by returning empty label/count tensors."
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "2404.01892",
+    "url": "https://huggingface.co/api/papers/2404.01892",
+    "metadata": {
+      "title": "Minimize Quantization Output Error with Bias Compensation",
+      "publishedAt": "2024-04-02T00:00:00.000Z",
+      "githubRepo": null,
+      "projectPage": null,
+      "upvotes": 0
+    }
+  },
+  {
+    "id": "2608.17657",
+    "url": "https://huggingface.co/api/papers/2608.17657",
+    "http_status": 404
+  }
+]

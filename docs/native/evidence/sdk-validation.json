@@ -1,0 +1,782 @@
+{
+  "status": "development SDK; overall goal remains active",
+  "libtorch_version": "2.10.0",
+  "cpu_ctest": {
+    "passed": 16,
+    "failed": 0
+  },
+  "cuda_ctest": {
+    "passed": 28,
+    "failed": 0
+  },
+  "official_predictor_parity": {
+    "image": {
+      "kind": "image",
+      "cases": [
+        {
+          "tag": "semantic",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true
+          }
+        },
+        {
+          "tag": "empty_stateless",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true
+          }
+        },
+        {
+          "tag": "point",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true
+          }
+        },
+        {
+          "tag": "cleared",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true
+          }
+        },
+        {
+          "tag": "cleared_twice",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true
+          }
+        },
+        {
+          "tag": "mask_new",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true
+          }
+        },
+        {
+          "tag": "mask_point",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true
+          }
+        },
+        {
+          "tag": "mask_cleared",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true
+          }
+        },
+        {
+          "tag": "mask_replaced",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true
+          }
+        },
+        {
+          "tag": "reset",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true
+          }
+        }
+      ],
+      "retained_after_owner_destruction_exact": true,
+      "all_exact": true,
+      "scope": "Pure C11 client versus retained C++ owner results. Both use full neural execution and the same shared modular store. C++ original-reference provenance is separate. Native client also asserts callback failures/reentry/cancel, shared-owner state isolation, source errors, and context lifetime.",
+      "retained_original_mask_exact": true
+    },
+    "sam3_video": {
+      "kind": "video",
+      "cases": [
+        {
+          "tag": "0.person",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "0.person_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "1.person_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "2.person_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "3.person_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "1.box",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "1.box_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "2.box_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "2.text_box",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "2.fetch",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "0.reset_person",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "0.point_only",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "0.mask_only",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        }
+      ],
+      "retained_after_owner_destruction_exact": true,
+      "all_exact": true,
+      "scope": "Pure C11 client versus retained C++ owner results. Both use full neural execution and the same shared modular store. C++ original-reference provenance is separate. Native client also asserts callback failures/reentry/cancel, shared-owner state isolation, source errors, and context lifetime."
+    },
+    "sam31_video": {
+      "kind": "video",
+      "cases": [
+        {
+          "tag": "0.person",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "0.person_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "1.person_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "2.person_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "3.person_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "1.box",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "1.box_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "2.box_track",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "2.text_box",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "2.fetch",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "0.reset_person",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "0.point_only",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        },
+        {
+          "tag": "0.mask_only",
+          "exact": {
+            "ids": true,
+            "probabilities": true,
+            "boxes_xywh": true,
+            "masks": true,
+            "centers_shape": true,
+            "emission": true
+          }
+        }
+      ],
+      "retained_after_owner_destruction_exact": true,
+      "all_exact": true,
+      "scope": "Pure C11 client versus retained C++ owner results. Both use full neural execution and the same shared modular store. C++ original-reference provenance is separate. Native client also asserts callback failures/reentry/cancel, shared-owner state isolation, source errors, and context lifetime."
+    }
+  },
+  "bundled_cuda_image": {
+    "kind": "image",
+    "cases": [
+      {
+        "tag": "semantic",
+        "exact": {
+          "ids": true,
+          "probabilities": true,
+          "boxes_xywh": true,
+          "masks": true,
+          "centers_shape": true
+        }
+      },
+      {
+        "tag": "empty_stateless",
+        "exact": {
+          "ids": true,
+          "probabilities": true,
+          "boxes_xywh": true,
+          "masks": true,
+          "centers_shape": true
+        }
+      },
+      {
+        "tag": "point",
+        "exact": {
+          "ids": true,
+          "probabilities": true,
+          "boxes_xywh": true,
+          "masks": true,
+          "centers_shape": true
+        }
+      },
+      {
+        "tag": "cleared",
+        "exact": {
+          "ids": true,
+          "probabilities": true,
+          "boxes_xywh": true,
+          "masks": true,
+          "centers_shape": true
+        }
+      },
+      {
+        "tag": "cleared_twice",
+        "exact": {
+          "ids": true,
+          "probabilities": true,
+          "boxes_xywh": true,
+          "masks": true,
+          "centers_shape": true
+        }
+      },
+      {
+        "tag": "mask_new",
+        "exact": {
+          "ids": true,
+          "probabilities": true,
+          "boxes_xywh": true,
+          "masks": true,
+          "centers_shape": true
+        }
+      },
+      {
+        "tag": "mask_point",
+        "exact": {
+          "ids": true,
+          "probabilities": true,
+          "boxes_xywh": true,
+          "masks": true,
+          "centers_shape": true
+        }
+      },
+      {
+        "tag": "mask_cleared",
+        "exact": {
+          "ids": true,
+          "probabilities": true,
+          "boxes_xywh": true,
+          "masks": true,
+          "centers_shape": true
+        }
+      },
+      {
+        "tag": "mask_replaced",
+        "exact": {
+          "ids": true,
+          "probabilities": true,
+          "boxes_xywh": true,
+          "masks": true,
+          "centers_shape": true
+        }
+      },
+      {
+        "tag": "reset",
+        "exact": {
+          "ids": true,
+          "probabilities": true,
+          "boxes_xywh": true,
+          "masks": true,
+          "centers_shape": true
+        }
+      }
+    ],
+    "retained_after_owner_destruction_exact": true,
+    "all_exact": true,
+    "scope": "Pure C11 client versus retained C++ owner results. Both use full neural execution and the same shared modular store. C++ original-reference provenance is separate. Native client also asserts callback failures/reentry/cancel, shared-owner state isolation, source errors, and context lifetime.",
+    "retained_original_mask_exact": true
+  },
+  "bundled_cuda_loader_audit": {
+    "method": "ELF loader LD_DEBUG=libs initialization trace during full SAM3.1 image lifecycle",
+    "all_core_runtime_from_sdk": true,
+    "core_runtime_paths": [
+      "/workspace/sdk-relocated-cuda/lib/libc10.so",
+      "/workspace/sdk-relocated-cuda/lib/libc10_cuda.so",
+      "/workspace/sdk-relocated-cuda/lib/libcublas-e70f38ef.so.13",
+      "/workspace/sdk-relocated-cuda/lib/libcublasLt-656298c8.so.13",
+      "/workspace/sdk-relocated-cuda/lib/libcudart-96c42e41.so.13",
+      "/workspace/sdk-relocated-cuda/lib/libcudart.so.13",
+      "/workspace/sdk-relocated-cuda/lib/libcudnn.so.9",
+      "/workspace/sdk-relocated-cuda/lib/libcudnn_engines_precompiled.so.9",
+      "/workspace/sdk-relocated-cuda/lib/libcudnn_engines_runtime_compiled.so.9",
+      "/workspace/sdk-relocated-cuda/lib/libcudnn_graph.so.9",
+      "/workspace/sdk-relocated-cuda/lib/libcudnn_heuristic.so.9",
+      "/workspace/sdk-relocated-cuda/lib/libcufft.so.12",
+      "/workspace/sdk-relocated-cuda/lib/libcupti-e2f9ed86.so.13",
+      "/workspace/sdk-relocated-cuda/lib/libcurand.so.10",
+      "/workspace/sdk-relocated-cuda/lib/libcusparse.so.12",
+      "/workspace/sdk-relocated-cuda/lib/libicudata.so.74",
+      "/workspace/sdk-relocated-cuda/lib/libicui18n.so.74",
+      "/workspace/sdk-relocated-cuda/lib/libicuuc.so.74",
+      "/workspace/sdk-relocated-cuda/lib/libnvJitLink.so.13",
+      "/workspace/sdk-relocated-cuda/lib/libsam3_native.so",
+      "/workspace/sdk-relocated-cuda/lib/libtorch.so",
+      "/workspace/sdk-relocated-cuda/lib/libtorch_cpu.so",
+      "/workspace/sdk-relocated-cuda/lib/libtorch_cuda.so"
+    ]
+  },
+  "consumers": {
+    "C11_configures_without_CXX_or_Torch_discovery": true,
+    "CPP_ATen_mask_operation_passed": true,
+    "cpu_text_encoder_after_relocation": true,
+    "cpu_text_encoder_PATH_without_Python": true,
+    "cpu_text_encoder_chroot_no_Python_files": true,
+    "chroot_limitations": "No /proc/cpuinfo; functional isolation only, not representative performance."
+  },
+  "build_development_tools_off_target_graph_has_probes": false,
+  "artifact_audit": {
+    "cpu": {
+      "regular_files": 78,
+      "regular_file_bytes": 505360686,
+      "symlinks": 4,
+      "required_symbol_versions_max": {
+        "GLIBC": "2.38",
+        "GLIBCXX": "3.4.32",
+        "CXXABI": "1.3.11"
+      },
+      "elf_requirements": {
+        "lib/libc10.so": {
+          "GLIBC": "2.29",
+          "GLIBCXX": "3.4.26",
+          "CXXABI": "1.3.9"
+        },
+        "lib/libgomp-98b21ff3.so.1": {
+          "GLIBC": "2.17"
+        },
+        "lib/libicudata.so.74.2": {},
+        "lib/libicui18n.so.74.2": {
+          "GLIBC": "2.38",
+          "GLIBCXX": "3.4",
+          "CXXABI": "1.3.8"
+        },
+        "lib/libicuuc.so.74.2": {
+          "GLIBC": "2.38",
+          "GLIBCXX": "3.4.30",
+          "CXXABI": "1.3.8"
+        },
+        "lib/libtorch.so": {},
+        "lib/libtorch_cpu.so": {
+          "GLIBC": "2.29",
+          "GLIBCXX": "3.4.26",
+          "CXXABI": "1.3.11"
+        },
+        "lib/libz.so.1.3": {
+          "GLIBC": "2.14"
+        },
+        "lib/libsam3_native.so": {
+          "GLIBC": "2.32",
+          "GLIBCXX": "3.4.32",
+          "CXXABI": "1.3.9"
+        },
+        "bin/sam3_c_client": {
+          "GLIBC": "2.34"
+        }
+      }
+    },
+    "cu130": {
+      "regular_files": 102,
+      "regular_file_bytes": 3974563903,
+      "symlinks": 12,
+      "required_symbol_versions_max": {
+        "GLIBC": "2.38",
+        "GLIBCXX": "3.4.32",
+        "CXXABI": "1.3.11"
+      },
+      "elf_requirements": {
+        "lib/libsam3_native.so": {
+          "GLIBC": "2.32",
+          "GLIBCXX": "3.4.32",
+          "CXXABI": "1.3.9"
+        },
+        "lib/libc10.so": {
+          "GLIBC": "2.29",
+          "GLIBCXX": "3.4.26",
+          "CXXABI": "1.3.9"
+        },
+        "lib/libc10_cuda.so": {
+          "GLIBC": "2.14",
+          "GLIBCXX": "3.4.26",
+          "CXXABI": "1.3.11"
+        },
+        "lib/libcublas-e70f38ef.so.13": {
+          "GLIBC": "2.17"
+        },
+        "lib/libcublas.so.13.1.0.3": {
+          "GLIBC": "2.17"
+        },
+        "lib/libcublasLt-656298c8.so.13": {
+          "GLIBC": "2.27"
+        },
+        "lib/libcublasLt.so.13.1.0.3": {
+          "GLIBC": "2.27"
+        },
+        "lib/libcudart-96c42e41.so.13": {
+          "GLIBC": "2.17"
+        },
+        "lib/libcudart.so.13.0.96": {
+          "GLIBC": "2.17"
+        },
+        "lib/libcudnn.so.9": {
+          "GLIBC": "2.2.5",
+          "GLIBCXX": "3.4.11",
+          "CXXABI": "1.3"
+        },
+        "lib/libcudnn_graph.so.9": {
+          "GLIBC": "2.17",
+          "GLIBCXX": "3.4.21",
+          "CXXABI": "1.3.9"
+        },
+        "lib/libcudnn_ops.so.9": {
+          "GLIBC": "2.17",
+          "GLIBCXX": "3.4.11",
+          "CXXABI": "1.3.9"
+        },
+        "lib/libcufft.so.12.0.0.61": {
+          "GLIBC": "2.17"
+        },
+        "lib/libcupti-e2f9ed86.so.13": {
+          "GLIBC": "2.25"
+        },
+        "lib/libcurand.so.10.4.0.35": {
+          "GLIBC": "2.27"
+        },
+        "lib/libcusolver.so.12.0.4.66": {
+          "GLIBC": "2.27"
+        },
+        "lib/libcusparse.so.12.6.3.3": {
+          "GLIBC": "2.17"
+        },
+        "lib/libgomp-98b21ff3.so.1": {
+          "GLIBC": "2.17"
+        },
+        "lib/libicudata.so.74.2": {},
+        "lib/libicui18n.so.74.2": {
+          "GLIBC": "2.38",
+          "GLIBCXX": "3.4",
+          "CXXABI": "1.3.8"
+        },
+        "lib/libicuuc.so.74.2": {
+          "GLIBC": "2.38",
+          "GLIBCXX": "3.4.30",
+          "CXXABI": "1.3.8"
+        },
+        "lib/libnvJitLink.so.13.0.88": {
+          "GLIBC": "2.7"
+        },
+        "lib/libtorch.so": {},
+        "lib/libtorch_cpu.so": {
+          "GLIBC": "2.29",
+          "GLIBCXX": "3.4.26",
+          "CXXABI": "1.3.11"
+        },
+        "lib/libtorch_cuda.so": {
+          "GLIBC": "2.29",
+          "GLIBCXX": "3.4.26",
+          "CXXABI": "1.3.11"
+        },
+        "lib/libz.so.1.3": {
+          "GLIBC": "2.14"
+        },
+        "lib/libcudnn_adv.so.9": {
+          "GLIBC": "2.17",
+          "GLIBCXX": "3.4.18",
+          "CXXABI": "1.3.9"
+        },
+        "lib/libcudnn_cnn.so.9": {
+          "GLIBC": "2.27",
+          "GLIBCXX": "3.4.14",
+          "CXXABI": "1.3.9"
+        },
+        "lib/libcudnn_engines_precompiled.so.9": {
+          "GLIBC": "2.27",
+          "GLIBCXX": "3.4.21",
+          "CXXABI": "1.3.9"
+        },
+        "lib/libcudnn_engines_runtime_compiled.so.9": {
+          "GLIBC": "2.27",
+          "GLIBCXX": "3.4.21",
+          "CXXABI": "1.3.9"
+        },
+        "lib/libcudnn_heuristic.so.9": {
+          "GLIBC": "2.27",
+          "GLIBCXX": "3.4.18",
+          "CXXABI": "1.3.9"
+        },
+        "lib/libnvrtc-a49e67e8.so.13": {
+          "GLIBC": "2.7"
+        },
+        "lib/libnvrtc-builtins.so": {
+          "GLIBC": "2.2.5"
+        },
+        "lib/libtorch_cuda_linalg.so": {
+          "GLIBC": "2.14",
+          "GLIBCXX": "3.4.26",
+          "CXXABI": "1.3.9"
+        }
+      }
+    },
+    "native_sm75_cubin_count": 4,
+    "libtorch_cuda_sm75_cubin_count": 468
+  },
+  "physical_validation": {
+    "Linux_Blackwell": true,
+    "Windows": false,
+    "Turing": false
+  },
+  "github_actions_used": false,
+  "precision_and_reference_scope": "Same full neural execution, modular weights and retained C++ references as predictor-c-validation.json; previous source adapters and unresolved reverse-edit discrepancy still apply. No broader upstream equivalence claim.",
+  "remaining": [
+    "integrated media codecs",
+    "multi-GPU transport",
+    "older-Linux portable binary baseline",
+    "Windows and Turing user validation",
+    "long-run CPU stability",
+    "broader quality/performance",
+    "prior 120-pixel reverse-edit discrepancy"
+  ]
+}

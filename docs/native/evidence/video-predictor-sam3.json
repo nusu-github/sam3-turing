@@ -1,0 +1,252 @@
+{
+  "model": "sam3",
+  "mode": "bf16_reference",
+  "source_grounding_batch": 1,
+  "source_complex_rope": true,
+  "cases": [
+    {
+      "tag": "0.person",
+      "native_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "0.person_track",
+      "native_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "1.person_track",
+      "native_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "2.person_track",
+      "native_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "3.person_track",
+      "native_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "1.box",
+      "native_ids": [
+        0,
+        1,
+        2
+      ],
+      "source_ids": [
+        0,
+        1,
+        2
+      ],
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "1.box_track",
+      "native_ids": [
+        0,
+        1,
+        2
+      ],
+      "source_ids": [
+        0,
+        1,
+        2
+      ],
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "2.box_track",
+      "native_ids": [
+        0,
+        1,
+        2
+      ],
+      "source_ids": [
+        0,
+        1,
+        2
+      ],
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true,
+        "emission": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "2.text_box",
+      "native_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "2.fetch",
+      "native_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    },
+    {
+      "tag": "0.reset_person",
+      "native_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source_ids": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0
+    }
+  ],
+  "exact": true,
+  "scope": "Original high-level semantic add_prompt, full propagation with output scheduling, text/box-only/combined replacement, fetch and reset versus owning C++ API. No neural phases mocked or original state behavior patched. Fixed sequence is a fixture, not API input limits. Native additionally checks invalid-input state preservation, point-only cache initialization and callback cancellation; those extra native invariants are not compared here."
+}

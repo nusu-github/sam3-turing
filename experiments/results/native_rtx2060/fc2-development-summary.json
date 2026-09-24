@@ -1,0 +1,46 @@
+[
+  {
+    "run": "development-selective",
+    "kind": "quality",
+    "mode": "selective",
+    "completed": 33,
+    "process_wall_seconds": 213.32279515266418,
+    "max_peak_allocated_bytes": 2432068608,
+    "max_sampled_whole_gpu_bytes": 3478040576,
+    "compared": 33,
+    "passed": 31,
+    "nonempty": 25,
+    "nonempty_passed": 23,
+    "count_changes": 0,
+    "failed_cases": [
+      "coco-val-000000004795-p0",
+      "coco-val-000000005992-p0"
+    ],
+    "min_mask_iou": 0.9840319361277445,
+    "max_score_error": 0.0302734375,
+    "max_box_error_px": 1.126434326171875
+  },
+  {
+    "run": "development-cal-mlp-only",
+    "kind": "quality",
+    "mode": "calibrated",
+    "completed": 33,
+    "process_wall_seconds": 214.1412672996521,
+    "max_peak_allocated_bytes": 2602091520,
+    "max_sampled_whole_gpu_bytes": 3599675392,
+    "compared": 33,
+    "passed": 29,
+    "nonempty": 25,
+    "nonempty_passed": 22,
+    "count_changes": 2,
+    "failed_cases": [
+      "coco-val-000000002261-p1",
+      "coco-val-000000005992-p0",
+      "coco-val-000000009590-p0",
+      "coco-val-000000009590-p1"
+    ],
+    "min_mask_iou": 0.9446565931556157,
+    "max_score_error": 0.037109375,
+    "max_box_error_px": 1.3531494140625
+  }
+]

@@ -1,0 +1,1708 @@
+{
+  "scope": "Actual full-video repeated-edit traces. Pointer provenance is from original neural outputs; the opt-in reference repair consumes no native tensors.",
+  "before": [
+    {
+      "key": "cond0.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond0.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond0.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond0.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond0.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond18.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond18.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond18.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond18.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond18.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond19.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond19.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond19.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": false,
+      "max_abs": 0.53515625,
+      "different_elements": 256
+    },
+    {
+      "key": "cond19.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond19.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked20.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked20.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked20.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked20.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked20.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked21.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked21.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked21.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked21.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked21.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked22.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked22.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked22.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked22.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked22.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked23.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked23.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked23.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked23.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked23.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked24.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked25.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked26.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked27.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked28.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked29.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked30.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked31.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked32.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "source",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "source_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "conditioned",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": false,
+      "max_abs": 0.5115350484848022,
+      "different_elements": 1327102
+    },
+    {
+      "key": "assembled_memory",
+      "native_shape": [
+        36544,
+        1,
+        256
+      ],
+      "source_shape": [
+        36544,
+        1,
+        256
+      ],
+      "exact": false,
+      "max_abs": 0.53515625,
+      "different_elements": 256
+    },
+    {
+      "key": "assembled_position",
+      "native_shape": [
+        36544,
+        1,
+        256
+      ],
+      "source_shape": [
+        36544,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "assembled_image",
+      "native_shape": [
+        36288,
+        1,
+        256
+      ],
+      "source_shape": [
+        36288,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "assembled_image_position",
+      "native_shape": [
+        36288,
+        1,
+        256
+      ],
+      "source_shape": [
+        36288,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    }
+  ],
+  "after": [
+    {
+      "key": "cond0.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond0.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond0.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond0.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond0.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond18.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond18.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond18.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond18.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond18.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond19.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond19.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond19.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond19.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "cond19.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked20.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked20.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked20.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked20.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked20.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked21.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked21.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked21.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked21.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked21.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked22.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked22.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked22.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked22.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked22.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked23.memory",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked23.position",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked23.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked23.image",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked23.image_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked24.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked25.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked26.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked27.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked28.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked29.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked30.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked31.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "tracked32.pointer",
+      "native_shape": [
+        1,
+        16,
+        256
+      ],
+      "source_shape": [
+        1,
+        16,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "source",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "source_position",
+      "native_shape": [
+        5184,
+        1,
+        256
+      ],
+      "source_shape": [
+        5184,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "conditioned",
+      "native_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "source_shape": [
+        1,
+        256,
+        72,
+        72
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "assembled_memory",
+      "native_shape": [
+        36544,
+        1,
+        256
+      ],
+      "source_shape": [
+        36544,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "assembled_position",
+      "native_shape": [
+        36544,
+        1,
+        256
+      ],
+      "source_shape": [
+        36544,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "assembled_image",
+      "native_shape": [
+        36288,
+        1,
+        256
+      ],
+      "source_shape": [
+        36288,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    },
+    {
+      "key": "assembled_image_position",
+      "native_shape": [
+        36288,
+        1,
+        256
+      ],
+      "source_shape": [
+        36288,
+        1,
+        256
+      ],
+      "exact": true,
+      "max_abs": 0.0,
+      "different_elements": 0
+    }
+  ],
+  "pointer_provenance": {
+    "first_point_count": 2,
+    "latest_point_count": 3,
+    "old_reference_uses_first_click": true,
+    "native_uses_latest_original_click": true,
+    "repaired_reference_uses_latest_original_click": true,
+    "first_and_latest_differ": true
+  },
+  "all_repaired_inputs_and_conditioned_features_exact": true
+}

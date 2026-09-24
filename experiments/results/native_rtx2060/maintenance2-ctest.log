@@ -1,0 +1,113 @@
+Test project D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+      Start  1: vision_experiments_cpu
+ 1/54 Test  #1: vision_experiments_cpu .................   Passed    0.58 sec
+      Start  2: vision_experiments_invalid_scope_cpu
+ 2/54 Test  #2: vision_experiments_invalid_scope_cpu ...   Passed    0.56 sec
+      Start  3: vision_experiments_invalid_int4_cpu
+ 3/54 Test  #3: vision_experiments_invalid_int4_cpu ....   Passed    0.54 sec
+      Start  4: vision_position
+ 4/54 Test  #4: vision_position ........................   Passed    4.09 sec
+      Start  5: media
+ 5/54 Test  #5: media ..................................   Passed    0.55 sec
+      Start  6: rotary_pair
+ 6/54 Test  #6: rotary_pair ............................   Passed   11.59 sec
+      Start  7: vision_fusion
+ 7/54 Test  #7: vision_fusion ..........................   Passed   34.12 sec
+      Start  8: rotary_cpu
+ 8/54 Test  #8: rotary_cpu .............................   Passed    4.79 sec
+      Start  9: weights_crc_large_cpu
+ 9/54 Test  #9: weights_crc_large_cpu ..................   Passed    3.78 sec
+      Start 10: inference_settings_cpu
+10/54 Test #10: inference_settings_cpu .................   Passed    0.55 sec
+      Start 11: video_mask_cache_cpu
+11/54 Test #11: video_mask_cache_cpu ...................   Passed    0.65 sec
+      Start 12: image_results_cpu
+12/54 Test #12: image_results_cpu ......................   Passed    1.89 sec
+      Start 13: video_interaction_cpu
+13/54 Test #13: video_interaction_cpu ..................   Passed    0.56 sec
+      Start 14: video_output_cpu
+14/54 Test #14: video_output_cpu .......................   Passed    0.53 sec
+      Start 15: rank_executor_cpu
+15/54 Test #15: rank_executor_cpu ......................   Passed    0.55 sec
+      Start 16: video_collective_cpu
+16/54 Test #16: video_collective_cpu ...................   Passed    0.55 sec
+      Start 17: video_update_cpu
+17/54 Test #17: video_update_cpu .......................   Passed    0.54 sec
+      Start 18: video_objects_cpu
+18/54 Test #18: video_objects_cpu ......................   Passed    0.55 sec
+      Start 19: video_memory_cpu
+19/54 Test #19: video_memory_cpu .......................   Passed    0.71 sec
+      Start 20: occlusion_cpu
+20/54 Test #20: occlusion_cpu ..........................   Passed    0.55 sec
+      Start 21: hotstart_cpu
+21/54 Test #21: hotstart_cpu ...........................   Passed    0.53 sec
+      Start 22: association_cpu
+22/54 Test #22: association_cpu ........................   Passed    0.54 sec
+      Start 23: c_api
+23/54 Test #23: c_api ..................................   Passed    0.57 sec
+      Start 24: c_api_threads
+24/54 Test #24: c_api_threads ..........................   Passed    0.53 sec
+      Start 25: archive_cpu
+25/54 Test #25: archive_cpu ............................   Passed    0.65 sec
+      Start 26: native_cpu
+26/54 Test #26: native_cpu .............................   Passed    0.53 sec
+      Start 27: ops_cpu
+27/54 Test #27: ops_cpu ................................   Passed    0.53 sec
+      Start 28: weights_cpu
+28/54 Test #28: weights_cpu ............................   Passed    0.54 sec
+      Start 29: multiplex_cpu
+29/54 Test #29: multiplex_cpu ..........................   Passed    0.56 sec
+      Start 30: tokenizer_cpu
+30/54 Test #30: tokenizer_cpu ..........................   Passed    0.65 sec
+      Start 31: image_results_cuda
+31/54 Test #31: image_results_cuda .....................   Passed    8.00 sec
+      Start 32: video_output_cuda
+32/54 Test #32: video_output_cuda ......................   Passed    0.93 sec
+      Start 33: rank_executor_cuda
+33/54 Test #33: rank_executor_cuda .....................   Passed    0.72 sec
+      Start 34: video_collective_cuda
+34/54 Test #34: video_collective_cuda ..................   Passed    0.83 sec
+      Start 35: video_update_cuda
+35/54 Test #35: video_update_cuda ......................   Passed    0.97 sec
+      Start 36: video_objects_cuda
+36/54 Test #36: video_objects_cuda .....................   Passed    0.70 sec
+      Start 37: video_memory_cuda
+37/54 Test #37: video_memory_cuda ......................   Passed    0.88 sec
+      Start 38: occlusion_cuda
+38/54 Test #38: occlusion_cuda .........................   Passed    1.00 sec
+      Start 39: hotstart_cuda
+39/54 Test #39: hotstart_cuda ..........................   Passed    0.89 sec
+      Start 40: association_cuda
+40/54 Test #40: association_cuda .......................   Passed    0.95 sec
+      Start 41: archive_cuda
+41/54 Test #41: archive_cuda ...........................   Passed    0.83 sec
+      Start 42: native_cuda
+42/54 Test #42: native_cuda ............................   Passed    0.69 sec
+      Start 43: ops_cuda
+43/54 Test #43: ops_cuda ...............................   Passed    0.89 sec
+      Start 44: vision_position_cuda
+44/54 Test #44: vision_position_cuda ...................   Passed    1.27 sec
+      Start 45: vision_position_stream_cuda
+45/54 Test #45: vision_position_stream_cuda ............   Passed    1.27 sec
+      Start 46: rotary_pair_cuda
+46/54 Test #46: rotary_pair_cuda .......................   Passed    1.09 sec
+      Start 47: rotary_pair_stream_cuda
+47/54 Test #47: rotary_pair_stream_cuda ................   Passed    1.11 sec
+      Start 48: vision_fusion_stream_cuda
+48/54 Test #48: vision_fusion_stream_cuda ..............   Passed   19.93 sec
+      Start 49: vision_fusion_cuda
+49/54 Test #49: vision_fusion_cuda .....................   Passed   20.18 sec
+      Start 50: rotary_cuda
+50/54 Test #50: rotary_cuda ............................   Passed    0.81 sec
+      Start 51: video_mask_cache_cuda
+51/54 Test #51: video_mask_cache_cuda ..................   Passed    1.14 sec
+      Start 52: rotary_stream_cuda
+52/54 Test #52: rotary_stream_cuda .....................   Passed    0.88 sec
+      Start 53: weights_cuda
+53/54 Test #53: weights_cuda ...........................   Passed    0.71 sec
+      Start 54: multiplex_cuda
+54/54 Test #54: multiplex_cuda .........................   Passed    0.88 sec
+
+100% tests passed out of 54
+
+Total Test time (real) = 141.47 sec

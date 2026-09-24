@@ -1,0 +1,814 @@
+{
+  "groups": {
+    "observe": {
+      "processes": 33,
+      "runs": 2,
+      "images": 32,
+      "wall_seconds": 294.14366912841797,
+      "setup_seconds_range": [
+        5.480717,
+        6.0576966
+      ],
+      "max_cold_peak_allocated_bytes": 2339337728,
+      "max_whole_gpu_sampled_bytes": 3944693760
+    },
+    "quality": {
+      "processes": 45,
+      "runs": 7,
+      "images": 16,
+      "wall_seconds": 417.0565617084503,
+      "setup_seconds_range": [
+        5.5419036,
+        9.3388741
+      ],
+      "max_cold_peak_allocated_bytes": 2694219264,
+      "max_whole_gpu_sampled_bytes": 4436537344
+    }
+  },
+  "dll_case_counts": {
+    "fbe9c54661b539933858f97fdd300c4ceccfdbea4fede90ae995f602ddef306b": 78
+  },
+  "records": [
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000009-p0",
+      "image_id": 9,
+      "kind": "observe",
+      "wall_seconds": 8.961966276168823,
+      "setup_seconds": 5.8370931,
+      "peak_allocated": 2339268608,
+      "peak_whole_gpu": 3852550144
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000034-p0",
+      "image_id": 34,
+      "kind": "observe",
+      "wall_seconds": 8.437699317932129,
+      "setup_seconds": 5.4938667,
+      "peak_allocated": 2339163136,
+      "peak_whole_gpu": 3876470784
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000042-p0",
+      "image_id": 42,
+      "kind": "observe",
+      "wall_seconds": 9.03146505355835,
+      "setup_seconds": 5.8746061,
+      "peak_allocated": 2339265024,
+      "peak_whole_gpu": 3886891008
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000049-p0",
+      "image_id": 49,
+      "kind": "observe",
+      "wall_seconds": 8.916592836380005,
+      "setup_seconds": 5.8675717,
+      "peak_allocated": 2338918912,
+      "peak_whole_gpu": 3863035904
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000064-p0",
+      "image_id": 64,
+      "kind": "observe",
+      "wall_seconds": 8.976251363754272,
+      "setup_seconds": 5.8558287,
+      "peak_allocated": 2339268608,
+      "peak_whole_gpu": 3869982720
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000074-p0",
+      "image_id": 74,
+      "kind": "observe",
+      "wall_seconds": 8.899267673492432,
+      "setup_seconds": 5.7762718,
+      "peak_allocated": 2339165184,
+      "peak_whole_gpu": 3872014336
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000077-p0",
+      "image_id": 77,
+      "kind": "observe",
+      "wall_seconds": 9.014965057373047,
+      "setup_seconds": 5.7943774,
+      "peak_allocated": 2338909696,
+      "peak_whole_gpu": 3878764544
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000086-p0",
+      "image_id": 86,
+      "kind": "observe",
+      "wall_seconds": 8.916340827941895,
+      "setup_seconds": 5.7818802,
+      "peak_allocated": 2339330048,
+      "peak_whole_gpu": 3881910272
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000094-p0",
+      "image_id": 94,
+      "kind": "observe",
+      "wall_seconds": 9.151097536087036,
+      "setup_seconds": 6.0576966,
+      "peak_allocated": 2339167232,
+      "peak_whole_gpu": 3864936448
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000109-p0",
+      "image_id": 109,
+      "kind": "observe",
+      "wall_seconds": 8.852314710617065,
+      "setup_seconds": 5.7330789,
+      "peak_allocated": 2339145728,
+      "peak_whole_gpu": 3886432256
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000110-p0",
+      "image_id": 110,
+      "kind": "observe",
+      "wall_seconds": 8.871259450912476,
+      "setup_seconds": 5.7575729,
+      "peak_allocated": 2339268608,
+      "peak_whole_gpu": 3886759936
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000113-p0",
+      "image_id": 113,
+      "kind": "observe",
+      "wall_seconds": 8.83587908744812,
+      "setup_seconds": 5.7395198,
+      "peak_allocated": 2339145728,
+      "peak_whole_gpu": 3887284224
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000127-p0",
+      "image_id": 127,
+      "kind": "observe",
+      "wall_seconds": 9.005120277404785,
+      "setup_seconds": 5.9400972,
+      "peak_allocated": 2339270656,
+      "peak_whole_gpu": 3863232512
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000133-p0",
+      "image_id": 133,
+      "kind": "observe",
+      "wall_seconds": 8.800625562667847,
+      "setup_seconds": 5.710475,
+      "peak_allocated": 2339268608,
+      "peak_whole_gpu": 3881582592
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000149-p0",
+      "image_id": 149,
+      "kind": "observe",
+      "wall_seconds": 8.906900405883789,
+      "setup_seconds": 5.790468,
+      "peak_allocated": 2339168768,
+      "peak_whole_gpu": 3895803904
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000196-p0",
+      "image_id": 196,
+      "kind": "observe",
+      "wall_seconds": 9.096219539642334,
+      "setup_seconds": 5.9186541,
+      "peak_allocated": 2339268608,
+      "peak_whole_gpu": 3886956544
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000208-p0",
+      "image_id": 208,
+      "kind": "observe",
+      "wall_seconds": 8.552386045455933,
+      "setup_seconds": 5.5697746,
+      "peak_allocated": 2339268608,
+      "peak_whole_gpu": 3876470784
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000241-p0",
+      "image_id": 241,
+      "kind": "observe",
+      "wall_seconds": 8.87399411201477,
+      "setup_seconds": 5.8104037,
+      "peak_allocated": 2339268608,
+      "peak_whole_gpu": 3863232512
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000260-p0",
+      "image_id": 260,
+      "kind": "observe",
+      "wall_seconds": 8.874896049499512,
+      "setup_seconds": 5.7718309,
+      "peak_allocated": 2338846720,
+      "peak_whole_gpu": 3864936448
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000308-p0",
+      "image_id": 308,
+      "kind": "observe",
+      "wall_seconds": 9.147023439407349,
+      "setup_seconds": 5.8575056,
+      "peak_allocated": 2339165184,
+      "peak_whole_gpu": 3869130752
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000312-p0",
+      "image_id": 312,
+      "kind": "observe",
+      "wall_seconds": 8.851521492004395,
+      "setup_seconds": 5.7362018,
+      "peak_allocated": 2339167232,
+      "peak_whole_gpu": 3876470784
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000315-p0",
+      "image_id": 315,
+      "kind": "observe",
+      "wall_seconds": 9.013886451721191,
+      "setup_seconds": 5.8852931,
+      "peak_allocated": 2339167232,
+      "peak_whole_gpu": 3944693760
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000322-p0",
+      "image_id": 322,
+      "kind": "observe",
+      "wall_seconds": 8.87296724319458,
+      "setup_seconds": 5.7215656,
+      "peak_allocated": 2339270656,
+      "peak_whole_gpu": 3902947328
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000368-p0",
+      "image_id": 368,
+      "kind": "observe",
+      "wall_seconds": 8.890043497085571,
+      "setup_seconds": 5.8105514,
+      "peak_allocated": 2339268608,
+      "peak_whole_gpu": 3871948800
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000384-p0",
+      "image_id": 384,
+      "kind": "observe",
+      "wall_seconds": 9.044129848480225,
+      "setup_seconds": 5.940145,
+      "peak_allocated": 2339203584,
+      "peak_whole_gpu": 3863232512
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000397-p0",
+      "image_id": 397,
+      "kind": "observe",
+      "wall_seconds": 8.83841609954834,
+      "setup_seconds": 5.7639616,
+      "peak_allocated": 2339268608,
+      "peak_whole_gpu": 3852550144
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000428-p0",
+      "image_id": 428,
+      "kind": "observe",
+      "wall_seconds": 8.416004657745361,
+      "setup_seconds": 5.480717,
+      "peak_allocated": 2339038208,
+      "peak_whole_gpu": 3876470784
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000431-p0",
+      "image_id": 431,
+      "kind": "observe",
+      "wall_seconds": 8.986843824386597,
+      "setup_seconds": 5.9184305,
+      "peak_allocated": 2339094016,
+      "peak_whole_gpu": 3852550144
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000459-p0",
+      "image_id": 459,
+      "kind": "observe",
+      "wall_seconds": 9.095537424087524,
+      "setup_seconds": 5.8704527,
+      "peak_allocated": 2339337728,
+      "peak_whole_gpu": 3863363584
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000488-p0",
+      "image_id": 488,
+      "kind": "observe",
+      "wall_seconds": 9.10799765586853,
+      "setup_seconds": 5.9246194,
+      "peak_allocated": 2339126784,
+      "peak_whole_gpu": 3879944192
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000514-p0",
+      "image_id": 514,
+      "kind": "observe",
+      "wall_seconds": 9.018405199050903,
+      "setup_seconds": 5.9415086,
+      "peak_allocated": 2339038208,
+      "peak_whole_gpu": 3869130752
+    },
+    {
+      "run": "r8-qkv-error-observe",
+      "case": "coco-train-000000000540-p0",
+      "image_id": 540,
+      "kind": "observe",
+      "wall_seconds": 9.000527620315552,
+      "setup_seconds": 5.7349721,
+      "peak_allocated": 2339163136,
+      "peak_whole_gpu": 3893641216
+    },
+    {
+      "run": "r8-qkv-error-smoke",
+      "case": "coco-train-000000000241-p0",
+      "image_id": 241,
+      "kind": "observe",
+      "wall_seconds": 8.885123491287231,
+      "setup_seconds": 5.7648768,
+      "peak_allocated": 2339268608,
+      "peak_whole_gpu": 3867492352
+    },
+    {
+      "run": "r8-qkv-output-controls-base",
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 8.257831573486328,
+      "setup_seconds": 5.771497,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4143849472
+    },
+    {
+      "run": "r8-qkv-output-controls-base",
+      "case": "coco-val-000000001425-p1",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 8.211061000823975,
+      "setup_seconds": 5.7961766,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4128886784
+    },
+    {
+      "run": "r8-qkv-output-controls-excluded-base",
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 8.059813976287842,
+      "setup_seconds": 5.6367068,
+      "peak_allocated": 2592493056,
+      "peak_whole_gpu": 3980914688
+    },
+    {
+      "run": "r8-qkv-output-controls-excluded-base",
+      "case": "coco-val-000000001425-p1",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 7.976489782333374,
+      "setup_seconds": 5.5448774,
+      "peak_allocated": 2592493056,
+      "peak_whole_gpu": 3980914688
+    },
+    {
+      "run": "r8-qkv-output-controls-excluded-output",
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 8.064759492874146,
+      "setup_seconds": 5.6338081,
+      "peak_allocated": 2592493056,
+      "peak_whole_gpu": 3980914688
+    },
+    {
+      "run": "r8-qkv-output-controls-excluded-output",
+      "case": "coco-val-000000001425-p1",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 7.938384056091309,
+      "setup_seconds": 5.5419036,
+      "peak_allocated": 2592493056,
+      "peak_whole_gpu": 3980914688
+    },
+    {
+      "run": "r8-qkv-output-controls-identity",
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 8.138026714324951,
+      "setup_seconds": 5.7408433,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4108709888
+    },
+    {
+      "run": "r8-qkv-output-controls-identity",
+      "case": "coco-val-000000001425-p1",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 7.993402719497681,
+      "setup_seconds": 5.6269413,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4108840960
+    },
+    {
+      "run": "r8-qkv-output-controls-output-fused",
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 8.592426538467407,
+      "setup_seconds": 5.9386048,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4121554944
+    },
+    {
+      "run": "r8-qkv-output-controls-output-fused",
+      "case": "coco-val-000000001425-p1",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 8.485666275024414,
+      "setup_seconds": 6.1087525,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4117950464
+    },
+    {
+      "run": "r8-qkv-output-controls-output-unfused",
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 8.697474241256714,
+      "setup_seconds": 5.9622223,
+      "peak_allocated": 2693170688,
+      "peak_whole_gpu": 4103958528
+    },
+    {
+      "run": "r8-qkv-output-controls-output-unfused",
+      "case": "coco-val-000000001425-p1",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 8.721367835998535,
+      "setup_seconds": 6.1967892,
+      "peak_allocated": 2693170688,
+      "peak_whole_gpu": 4122972160
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000001353-p0",
+      "image_id": 1353,
+      "kind": "quality",
+      "wall_seconds": 9.2053062915802,
+      "setup_seconds": 6.4418732,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4266754048
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000001353-p1",
+      "image_id": 1353,
+      "kind": "quality",
+      "wall_seconds": 9.511062860488892,
+      "setup_seconds": 6.572291,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4342448128
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000001353-p2",
+      "image_id": 1353,
+      "kind": "quality",
+      "wall_seconds": 8.991034030914307,
+      "setup_seconds": 6.1643743,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4401692672
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000001425-p0",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 8.924605369567871,
+      "setup_seconds": 6.3144556,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4417695744
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000001425-p1",
+      "image_id": 1425,
+      "kind": "quality",
+      "wall_seconds": 8.878174781799316,
+      "setup_seconds": 6.3431302,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4436537344
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "kind": "quality",
+      "wall_seconds": 9.07992696762085,
+      "setup_seconds": 6.291633,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4417884160
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "kind": "quality",
+      "wall_seconds": 9.428455352783203,
+      "setup_seconds": 6.6198143,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4086325248
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000001761-p0",
+      "image_id": 1761,
+      "kind": "quality",
+      "wall_seconds": 8.806493520736694,
+      "setup_seconds": 6.139474,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 3881148416
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000001761-p1",
+      "image_id": 1761,
+      "kind": "quality",
+      "wall_seconds": 9.780914068222046,
+      "setup_seconds": 6.9121517,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 3859746816
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000002261-p0",
+      "image_id": 2261,
+      "kind": "quality",
+      "wall_seconds": 9.46064281463623,
+      "setup_seconds": 6.6400947,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4285939712
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000002261-p1",
+      "image_id": 2261,
+      "kind": "quality",
+      "wall_seconds": 9.388073205947876,
+      "setup_seconds": 6.4626243,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4271472640
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000003553-p0",
+      "image_id": 3553,
+      "kind": "quality",
+      "wall_seconds": 9.34873104095459,
+      "setup_seconds": 6.538199,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4349763584
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000003553-p1",
+      "image_id": 3553,
+      "kind": "quality",
+      "wall_seconds": 9.149573802947998,
+      "setup_seconds": 6.4104864,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4379082752
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000004795-p0",
+      "image_id": 4795,
+      "kind": "quality",
+      "wall_seconds": 9.132148265838623,
+      "setup_seconds": 6.3661293,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4118044672
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000004795-p1",
+      "image_id": 4795,
+      "kind": "quality",
+      "wall_seconds": 9.889902353286743,
+      "setup_seconds": 6.744433,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 3902513152
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000005060-p0",
+      "image_id": 5060,
+      "kind": "quality",
+      "wall_seconds": 13.116068840026855,
+      "setup_seconds": 9.3388741,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4061933568
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000005060-p1",
+      "image_id": 5060,
+      "kind": "quality",
+      "wall_seconds": 12.860885620117188,
+      "setup_seconds": 9.246283,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4103290880
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000005060-p2",
+      "image_id": 5060,
+      "kind": "quality",
+      "wall_seconds": 11.7737877368927,
+      "setup_seconds": 8.1654329,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4245520384
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000005503-p0",
+      "image_id": 5503,
+      "kind": "quality",
+      "wall_seconds": 9.897557020187378,
+      "setup_seconds": 6.5783564,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 3898212352
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000005992-p0",
+      "image_id": 5992,
+      "kind": "quality",
+      "wall_seconds": 9.181537866592407,
+      "setup_seconds": 6.4386986,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4323835904
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000006213-p0",
+      "image_id": 6213,
+      "kind": "quality",
+      "wall_seconds": 9.08167576789856,
+      "setup_seconds": 6.4976135,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 3879182336
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000006460-p0",
+      "image_id": 6460,
+      "kind": "quality",
+      "wall_seconds": 9.745649099349976,
+      "setup_seconds": 6.760477,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 3915096064
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000006460-p1",
+      "image_id": 6460,
+      "kind": "quality",
+      "wall_seconds": 9.22958254814148,
+      "setup_seconds": 6.5143107,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 3868368896
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000006460-p2",
+      "image_id": 6460,
+      "kind": "quality",
+      "wall_seconds": 9.348961591720581,
+      "setup_seconds": 6.3182937,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 3871907840
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000007574-p0",
+      "image_id": 7574,
+      "kind": "quality",
+      "wall_seconds": 8.278849601745605,
+      "setup_seconds": 5.8309038,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4200026112
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000007574-p1",
+      "image_id": 7574,
+      "kind": "quality",
+      "wall_seconds": 8.366787672042847,
+      "setup_seconds": 5.7538083,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4252684288
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000007574-p2",
+      "image_id": 7574,
+      "kind": "quality",
+      "wall_seconds": 8.395280361175537,
+      "setup_seconds": 5.9636515,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4200714240
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000007977-p0",
+      "image_id": 7977,
+      "kind": "quality",
+      "wall_seconds": 9.22401237487793,
+      "setup_seconds": 6.4638249,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4370366464
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000007977-p1",
+      "image_id": 7977,
+      "kind": "quality",
+      "wall_seconds": 9.331770420074463,
+      "setup_seconds": 6.5186808,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4340252672
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000008762-p0",
+      "image_id": 8762,
+      "kind": "quality",
+      "wall_seconds": 11.407782316207886,
+      "setup_seconds": 7.8082763,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4278435840
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000008762-p1",
+      "image_id": 8762,
+      "kind": "quality",
+      "wall_seconds": 10.956898927688599,
+      "setup_seconds": 7.5177891,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4231774208
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "kind": "quality",
+      "wall_seconds": 9.254860877990723,
+      "setup_seconds": 6.4576588,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4390993920
+    },
+    {
+      "run": "r8-qkv-output-development",
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "kind": "quality",
+      "wall_seconds": 9.49286413192749,
+      "setup_seconds": 6.6614171,
+      "peak_allocated": 2694219264,
+      "peak_whole_gpu": 4436238336
+    }
+  ],
+  "holdout_used": false
+}

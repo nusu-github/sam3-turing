@@ -1,0 +1,21 @@
+{
+  "cases": [
+    {
+      "mode": "fp16",
+      "exact_tensor_comparisons": 450,
+      "operations": 10
+    },
+    {
+      "mode": "fp32",
+      "exact_tensor_comparisons": 450,
+      "operations": 10
+    },
+    {
+      "mode": "bf16_reference",
+      "exact_tensor_comparisons": 450,
+      "operations": 10
+    }
+  ],
+  "device": "cuda",
+  "scope": "Native global memory write -> object insertion/history rebuild -> forward/reverse propagation -> correction/preflight, resident/offloaded/paged equivalence, plus actual source encoder comparison for rebuilt bucket. Predicted low masks/logits unchanged by memory rewrite; obsolete overrides cleared on preflight."
+}

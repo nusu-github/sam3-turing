@@ -1,0 +1,22 @@
+[
+  {
+    "run": "r7-qkv-shift-development",
+    "kind": "quality",
+    "mode": "calibrated",
+    "completed": 33,
+    "process_wall_seconds": 298.4633550643921,
+    "max_peak_allocated_bytes": 2694219264,
+    "max_sampled_whole_gpu_bytes": 4212228096,
+    "compared": 33,
+    "passed": 32,
+    "nonempty": 25,
+    "nonempty_passed": 24,
+    "count_changes": 0,
+    "failed_cases": [
+      "coco-val-000000001584-p1"
+    ],
+    "min_mask_iou": 0.9696356275303644,
+    "max_score_error": 0.01708984375,
+    "max_box_error_px": 0.97412109375
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "device": "cpu",
+  "routing_cases": 998,
+  "rejected_cancel_histories": 2,
+  "merge_exact_checks": 5106,
+  "scope": "Compare action routing, ranges and partial cache merges to actual source methods."
+}

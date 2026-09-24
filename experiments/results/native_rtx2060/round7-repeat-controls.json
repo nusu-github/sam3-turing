@@ -1,0 +1,157 @@
+{
+  "pairs": 15,
+  "byte_equal": 15,
+  "results": [
+    {
+      "case": "coco-val-000000001353-p0",
+      "screen": "r7-qkv-screen-shift_bias-1353",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000001353-p1",
+      "screen": "r7-qkv-screen-shift_bias-1353",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000001353-p2",
+      "screen": "r7-qkv-screen-shift_bias-1353",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000001425-p0",
+      "screen": "r7-qkv-screen-shift_bias-1425",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000001425-p1",
+      "screen": "r7-qkv-screen-shift_bias-1425",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000001584-p0",
+      "screen": "r7-qkv-screen-shift_bias-1584",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000001584-p1",
+      "screen": "r7-qkv-screen-shift_bias-1584",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000004795-p0",
+      "screen": "r7-qkv-screen-shift_bias-4795",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000004795-p1",
+      "screen": "r7-qkv-screen-shift_bias-4795",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000005992-p0",
+      "screen": "r7-qkv-screen-shift_bias-5992",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000007574-p0",
+      "screen": "r7-qkv-screen-shift_bias-7574",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000007574-p1",
+      "screen": "r7-qkv-screen-shift_bias-7574",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000007574-p2",
+      "screen": "r7-qkv-screen-shift_bias-7574",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000009590-p0",
+      "screen": "r7-qkv-screen-shift_bias-9590",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    {
+      "case": "coco-val-000000009590-p1",
+      "screen": "r7-qkv-screen-shift_bias-9590",
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    }
+  ],
+  "scope": "Fresh-process screen versus full-development rerun; same binary and calibration."
+}

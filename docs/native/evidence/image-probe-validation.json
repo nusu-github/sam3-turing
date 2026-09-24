@@ -1,0 +1,36 @@
+{
+  "cases": [
+    {
+      "case": "text-0-grounding",
+      "text": "truck",
+      "detections": 1,
+      "max_box_error": 0,
+      "max_score_error": 0,
+      "differing_mask_pixels": 0,
+      "elapsed_seconds": 11.021883819252253,
+      "child_path": "/nonexistent"
+    },
+    {
+      "case": "text-1-grounding",
+      "text": "wheel",
+      "detections": 4,
+      "max_box_error": 0,
+      "max_score_error": 0,
+      "differing_mask_pixels": 0,
+      "elapsed_seconds": 10.980430023744702,
+      "child_path": "/nonexistent"
+    },
+    {
+      "case": "text-2-grounding",
+      "text": "a yellow butterfly",
+      "detections": 0,
+      "max_box_error": 0,
+      "max_score_error": 0,
+      "differing_mask_pixels": 0,
+      "elapsed_seconds": 11.06131287291646,
+      "child_path": "/nonexistent"
+    }
+  ],
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "scope": "Python prepares/checks fixtures only. Native child uses arbitrary token IDs; Unicode/BPE and standalone LibTorch packaging remain pending."
+}

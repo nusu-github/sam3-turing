@@ -1,0 +1,1140 @@
+{
+  "quality_gates": {
+    "same_count": true,
+    "min_mask_iou": 0.98,
+    "max_score_error": 0.02,
+    "max_box_error_px": 1.0
+  },
+  "quality": {
+    "truck/exact/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/exact/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995615992357056,
+      "max_score_error": 0.009765625,
+      "max_box_error_px": 0.13665771484375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/exact/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "bag/exact/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9984314545644672,
+      "max_score_error": 0.0029296875,
+      "max_box_error_px": 0.128173828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/exact/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "child/exact/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9954766875434934,
+      "max_score_error": 0.0068359375,
+      "max_box_error_px": 0.27117919921875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/exact/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "wheel/exact/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.990914990266061,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.35894775390625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/exact/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/exact/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/kitchen/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9997957086239248,
+      "max_score_error": 0.0029296875,
+      "max_box_error_px": 0.1221923828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "truck/kitchen/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995930258137913,
+      "max_score_error": 0.0126953125,
+      "max_box_error_px": 0.1199493408203125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/kitchen/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9994128009395185,
+      "max_score_error": 0.00048828125,
+      "max_box_error_px": 0.084625244140625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/kitchen/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9982225010455876,
+      "max_score_error": 0.00244140625,
+      "max_box_error_px": 0.1497802734375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/kitchen/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9975027585806376,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.1331787109375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/kitchen/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.996927001797414,
+      "max_score_error": 0.00537109375,
+      "max_box_error_px": 0.23138427734375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/kitchen/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9951187764399609,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.273193359375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/kitchen/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9907325684024714,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.3587646484375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/kitchen/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/kitchen/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/kitchen_rot/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.99980198611074,
+      "max_score_error": 0.00634765625,
+      "max_box_error_px": 0.08721923828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "truck/kitchen_rot/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9996212895013907,
+      "max_score_error": 0.00341796875,
+      "max_box_error_px": 0.06018829345703125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/kitchen_rot/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9989536465418019,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.0940399169921875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/kitchen_rot/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9984316185696361,
+      "max_score_error": 0.00341796875,
+      "max_box_error_px": 0.088134765625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/kitchen_rot/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9972713381357782,
+      "max_score_error": 0.00341796875,
+      "max_box_error_px": 0.31182861328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/kitchen_rot/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9951856148491879,
+      "max_score_error": 0.005859375,
+      "max_box_error_px": 0.340576171875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/kitchen_rot/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9960924780201889,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.09747314453125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/kitchen_rot/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9916139473297043,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.3583984375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/kitchen_rot/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/kitchen_rot/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/kitchen_all/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995647617266861,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.09714508056640625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "truck/kitchen_all/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995883215303126,
+      "max_score_error": 0.00830078125,
+      "max_box_error_px": 0.113189697265625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/kitchen_all/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9987442444537463,
+      "max_score_error": 0.00341796875,
+      "max_box_error_px": 0.0532989501953125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/kitchen_all/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9982223151730628,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.141143798828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/kitchen_all/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9949597358206361,
+      "max_score_error": 0.00634765625,
+      "max_box_error_px": 0.27935791015625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/kitchen_all/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9966992877410389,
+      "max_score_error": 0.0107421875,
+      "max_box_error_px": 0.401885986328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/kitchen_all/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9925445705024312,
+      "max_score_error": 0.00048828125,
+      "max_box_error_px": 0.13897705078125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/kitchen_all/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9920494699646644,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.3370361328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/kitchen_all/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/kitchen_all/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/kitchen_rot_all/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9996825780944314,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.06982421875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "truck/kitchen_rot_all/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995521768916991,
+      "max_score_error": 0.01171875,
+      "max_box_error_px": 0.119873046875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/kitchen_rot_all/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9985913839652542,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.0940093994140625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/kitchen_rot_all/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9982396432343622,
+      "max_score_error": 0.00390625,
+      "max_box_error_px": 0.073333740234375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/kitchen_rot_all/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9944415494180997,
+      "max_score_error": 0.00341796875,
+      "max_box_error_px": 0.26055908203125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/kitchen_rot_all/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9959099089273055,
+      "max_score_error": 0.00390625,
+      "max_box_error_px": 0.178009033203125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/kitchen_rot_all/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9922204213938411,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.170166015625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/kitchen_rot_all/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.990149955895325,
+      "max_score_error": 0.00048828125,
+      "max_box_error_px": 0.35504150390625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/kitchen_rot_all/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/kitchen_rot_all/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/attention_only/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995553167150633,
+      "max_score_error": 0.01025390625,
+      "max_box_error_px": 0.12371826171875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "truck/attention_only/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9998711301726698,
+      "max_score_error": 0.00048828125,
+      "max_box_error_px": 0.0428466796875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/attention_only/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9982225010455876,
+      "max_score_error": 0.00390625,
+      "max_box_error_px": 0.153533935546875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/attention_only/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9996838777660696,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.031280517578125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/attention_only/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.99478532939336,
+      "max_score_error": 0.00927734375,
+      "max_box_error_px": 0.315765380859375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/attention_only/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9984927536231885,
+      "max_score_error": 0.00244140625,
+      "max_box_error_px": 0.2000732421875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/attention_only/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9909179370742783,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.338623046875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/attention_only/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9973975276512687,
+      "max_score_error": 0.00048828125,
+      "max_box_error_px": 0.1021728515625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/attention_only/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/attention_only/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/global_mlp/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.999525493714363,
+      "max_score_error": 0.01025390625,
+      "max_box_error_px": 0.20587158203125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "truck/global_mlp/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9998224247662449,
+      "max_score_error": 0.00048828125,
+      "max_box_error_px": 0.0763397216796875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/global_mlp/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9981181390486148,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.123260498046875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/global_mlp/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9991781143595163,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.0379180908203125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/global_mlp/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9957644328401508,
+      "max_score_error": 0.00537109375,
+      "max_box_error_px": 0.84759521484375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/global_mlp/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9976220856049183,
+      "max_score_error": 0.0078125,
+      "max_box_error_px": 0.8763427734375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/global_mlp/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9893169310456459,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.36370849609375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/global_mlp/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9957792207792208,
+      "max_score_error": 0.00048828125,
+      "max_box_error_px": 0.177978515625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/global_mlp/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/global_mlp/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    }
+  },
+  "timing": {
+    "exact": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-exact-truck-1",
+          "median_ms": 418.1774,
+          "wall_ms": [
+            399.4685,
+            413.4565,
+            400.1445,
+            420.8965,
+            436.5174,
+            418.8718,
+            427.8141,
+            431.54330000000004,
+            418.1774,
+            441.99719999999996,
+            418.7785,
+            410.8739,
+            413.1153,
+            400.5891,
+            410.4059
+          ],
+          "stage_mean_ms": [
+            1.2342442591986669,
+            1.8513343969986664,
+            287.8386942546,
+            124.99595896406669,
+            1.536486403147333
+          ],
+          "peak_allocated_bytes": 2789232640
+        },
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-exact-truck-2",
+          "median_ms": 415.4832,
+          "wall_ms": [
+            417.3097,
+            414.0476,
+            418.5492,
+            412.7371,
+            414.7518,
+            424.39529999999996,
+            412.78900000000004,
+            419.21380000000005,
+            424.41839999999996,
+            425.0574,
+            414.4325,
+            414.5521,
+            412.5036,
+            415.4832,
+            416.0265
+          ],
+          "stage_mean_ms": [
+            1.2314303874973334,
+            1.8648597399399998,
+            296.6005757649333,
+            115.94912668873334,
+            1.3944490750626668
+          ],
+          "peak_allocated_bytes": 2789232640
+        }
+      ],
+      "median_ms": 415.75485000000003,
+      "p95_ms": 434.279055,
+      "stage_mean_ms": [
+        1.2328373233480001,
+        1.8580970684693332,
+        292.21963500976665,
+        120.47254282640002,
+        1.465467739105
+      ]
+    },
+    "kitchen": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-kitchen-truck-1",
+          "median_ms": 383.6731,
+          "wall_ms": [
+            383.6731,
+            382.1236,
+            378.6485,
+            381.9456,
+            383.73620000000005,
+            385.0243,
+            391.6739,
+            400.4213,
+            380.89050000000003,
+            383.1515,
+            386.4191,
+            391.2937,
+            391.12669999999997,
+            381.8816,
+            382.229
+          ],
+          "stage_mean_ms": [
+            1.201896540322667,
+            1.850984533628666,
+            266.0443237304,
+            114.9602605184,
+            1.5089791933686667
+          ],
+          "peak_allocated_bytes": 2788249600
+        },
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-kitchen-truck-2",
+          "median_ms": 392.228,
+          "wall_ms": [
+            385.0245,
+            408.38059999999996,
+            385.7994,
+            387.9596,
+            401.5737,
+            387.66089999999997,
+            407.4513,
+            392.228,
+            392.4585,
+            396.5538,
+            388.6882,
+            387.0112,
+            399.3334,
+            387.0709,
+            422.2554
+          ],
+          "stage_mean_ms": [
+            1.208646400770667,
+            1.857668264707333,
+            271.8841430664,
+            118.93455708819997,
+            1.3645375887553335
+          ],
+          "peak_allocated_bytes": 2788249600
+        }
+      ],
+      "median_ms": 387.3659,
+      "p95_ms": 407.96241499999996,
+      "stage_mean_ms": [
+        1.205271470546667,
+        1.8543263991679995,
+        268.9642333984,
+        116.9474088033,
+        1.436758391062
+      ]
+    },
+    "kitchen_rot": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-kitchen_rot-truck-1",
+          "median_ms": 391.0235,
+          "wall_ms": [
+            415.3346,
+            404.3603,
+            392.595,
+            417.1353,
+            391.0235,
+            389.00649999999996,
+            390.38469999999995,
+            388.5676,
+            384.4644,
+            398.1186,
+            392.9845,
+            389.4379,
+            388.3105,
+            392.3925,
+            384.9791
+          ],
+          "stage_mean_ms": [
+            1.190250666936,
+            1.8422954638793336,
+            268.19536132819997,
+            121.89985198973332,
+            1.4343679904946665
+          ],
+          "peak_allocated_bytes": 2788249600
+        },
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-kitchen_rot-truck-2",
+          "median_ms": 392.9026,
+          "wall_ms": [
+            394.9069,
+            384.54179999999997,
+            388.5679,
+            385.247,
+            388.63930000000005,
+            395.8021,
+            387.19759999999997,
+            416.8879,
+            399.5002,
+            401.51120000000003,
+            392.9026,
+            405.42040000000003,
+            389.6693,
+            400.28770000000003,
+            390.1168
+          ],
+          "stage_mean_ms": [
+            1.1915711959200002,
+            1.8562666654593332,
+            272.53425089526667,
+            117.82724405933335,
+            1.2913877328233334
+          ],
+          "peak_allocated_bytes": 2788249600
+        }
+      ],
+      "median_ms": 391.70799999999997,
+      "p95_ms": 416.188915,
+      "stage_mean_ms": [
+        1.1909109314280002,
+        1.8492810646693334,
+        270.3648061117333,
+        119.86354802453334,
+        1.3628778616589998
+      ]
+    },
+    "kitchen_all": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-kitchen_all-truck-1",
+          "median_ms": 384.8173,
+          "wall_ms": [
+            379.5346,
+            373.1804,
+            392.6511,
+            384.8173,
+            381.5735,
+            399.1014,
+            378.8251,
+            393.2776,
+            376.4094,
+            392.9456,
+            381.9146,
+            400.31280000000004,
+            384.9778,
+            389.4997,
+            380.8664
+          ],
+          "stage_mean_ms": [
+            1.2057237227753332,
+            1.8535829464579998,
+            261.95611673986673,
+            119.47471364326664,
+            1.4530645132073332
+          ],
+          "peak_allocated_bytes": 2788970496
+        },
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-kitchen_all-truck-2",
+          "median_ms": 383.70500000000004,
+          "wall_ms": [
+            378.3689,
+            383.70500000000004,
+            377.6959,
+            389.2867,
+            381.2058,
+            380.54490000000004,
+            387.0605,
+            384.7595,
+            388.5383,
+            379.1835,
+            391.8356,
+            380.3026,
+            388.75169999999997,
+            377.9157,
+            389.9013
+          ],
+          "stage_mean_ms": [
+            1.2393024047206669,
+            1.858760547639333,
+            264.44598185213334,
+            114.92937571206667,
+            1.4197674830753333
+          ],
+          "peak_allocated_bytes": 2788970496
+        }
+      ],
+      "median_ms": 384.23225,
+      "p95_ms": 396.48069,
+      "stage_mean_ms": [
+        1.222513063748,
+        1.8561717470486663,
+        263.20104929600006,
+        117.20204467766666,
+        1.4364159981413334
+      ]
+    },
+    "kitchen_rot_all": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-kitchen_rot_all-truck-1",
+          "median_ms": 389.6558,
+          "wall_ms": [
+            395.0531,
+            396.1933,
+            390.0965,
+            391.6671,
+            386.0132,
+            382.8623,
+            384.9232,
+            403.93149999999997,
+            382.7011,
+            382.6229,
+            387.96930000000003,
+            371.7744,
+            393.4373,
+            397.8769,
+            389.6558
+          ],
+          "stage_mean_ms": [
+            1.2183914661406665,
+            1.861632013320667,
+            267.064819336,
+            117.41050821940001,
+            1.5151125272113333
+          ],
+          "peak_allocated_bytes": 2788970496
+        },
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-kitchen_rot_all-truck-2",
+          "median_ms": 394.94780000000003,
+          "wall_ms": [
+            394.94780000000003,
+            403.9245,
+            390.1044,
+            400.45,
+            394.41290000000004,
+            396.938,
+            391.1812,
+            403.80539999999996,
+            396.201,
+            390.7381,
+            401.8381,
+            395.3254,
+            385.0069,
+            389.6293,
+            387.0729
+          ],
+          "stage_mean_ms": [
+            1.2255167722706666,
+            1.8536341349293335,
+            269.29723714193335,
+            120.98580780026667,
+            1.3657941182453333
+          ],
+          "peak_allocated_bytes": 2788970496
+        }
+      ],
+      "median_ms": 391.42415,
+      "p95_ms": 403.870905,
+      "stage_mean_ms": [
+        1.2219541192056664,
+        1.8576330741250002,
+        268.1810282389667,
+        119.19815800983335,
+        1.4404533227283332
+      ]
+    },
+    "attention_only": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-attention_only-truck-1",
+          "median_ms": 481.0853,
+          "wall_ms": [
+            502.38300000000004,
+            467.9158,
+            472.3587,
+            476.7075,
+            483.3975,
+            489.75809999999996,
+            477.77340000000004,
+            482.81370000000004,
+            481.0853,
+            468.6183,
+            491.81570000000005,
+            470.7732,
+            484.8633,
+            477.3,
+            484.4715
+          ],
+          "stage_mean_ms": [
+            1.2130261262266666,
+            1.8563733259846669,
+            356.96904703773333,
+            119.34326883946666,
+            1.3745386679946665
+          ],
+          "peak_allocated_bytes": 2375946240
+        },
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-attention_only-truck-2",
+          "median_ms": 476.62690000000003,
+          "wall_ms": [
+            492.5576,
+            476.62690000000003,
+            476.5836,
+            470.8465,
+            471.0652,
+            471.4253,
+            474.3377,
+            481.5199,
+            494.2092,
+            482.664,
+            499.5584,
+            466.9812,
+            474.22569999999996,
+            485.24739999999997,
+            479.4908
+          ],
+          "stage_mean_ms": [
+            1.2061461289713333,
+            1.855455994606,
+            358.5596822102667,
+            116.75459493,
+            1.3987968206400003
+          ],
+          "peak_allocated_bytes": 2375946240
+        }
+      ],
+      "median_ms": 478.63210000000004,
+      "p95_ms": 497.15126,
+      "stage_mean_ms": [
+        1.209586127599,
+        1.8559146602953334,
+        357.764364624,
+        118.04893188473332,
+        1.3866677443173334
+      ]
+    },
+    "global_mlp": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-global_mlp-truck-1",
+          "median_ms": 450.22839999999997,
+          "wall_ms": [
+            443.4806,
+            441.13079999999997,
+            441.4129,
+            450.32329999999996,
+            446.0176,
+            448.6051,
+            469.33459999999997,
+            456.83079999999995,
+            475.4725,
+            475.9463,
+            453.05440000000004,
+            450.22839999999997,
+            446.36949999999996,
+            458.5536,
+            448.5459
+          ],
+          "stage_mean_ms": [
+            1.2360960165666668,
+            1.8492565313973333,
+            323.21156412759996,
+            125.85185394286667,
+            1.4885845343266666
+          ],
+          "peak_allocated_bytes": 2516613120
+        },
+        {
+          "path": ".cache\\native-perf\\kitchen-ba018a0\\timing-global_mlp-truck-2",
+          "median_ms": 455.1875,
+          "wall_ms": [
+            458.68170000000003,
+            446.91880000000003,
+            453.5654,
+            456.5161,
+            450.9627,
+            504.81469999999996,
+            463.1457,
+            448.8133,
+            456.4069,
+            455.1875,
+            463.7411,
+            457.1346,
+            451.7097,
+            454.9851,
+            447.8883
+          ],
+          "stage_mean_ms": [
+            1.1893034696586666,
+            1.843364254633333,
+            333.44572550460003,
+            120.1910924275333,
+            1.3194346586866665
+          ],
+          "peak_allocated_bytes": 2516613120
+        }
+      ],
+      "median_ms": 453.3099,
+      "p95_ms": 475.73309,
+      "stage_mean_ms": [
+        1.2126997431126667,
+        1.846310393015333,
+        328.3286448161,
+        123.0214731852,
+        1.4040095965066666
+      ]
+    }
+  },
+  "gate_failures": []
+}

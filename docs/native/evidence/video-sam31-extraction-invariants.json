@@ -1,0 +1,22 @@
+{
+  "device": "cuda",
+  "mode": "bf16_reference",
+  "cases": [
+    {
+      "storage": "resident",
+      "exact_tensor_comparisons": 9,
+      "retained_spatial_frames": 3
+    },
+    {
+      "storage": "offloaded",
+      "exact_tensor_comparisons": 48,
+      "retained_spatial_frames": 3
+    },
+    {
+      "storage": "paged",
+      "exact_tensor_comparisons": 48,
+      "retained_spatial_frames": 3
+    }
+  ],
+  "scope": "Full-grid synthetic features, actual memory encoder and frame core; extraction from second slot into fresh singleton. Tests preserved object masks/pointers, retained dense memory, unchanged source bucket, annotation discard, restart flags and exact resident/offloaded/paged results. Not upstream accuracy."
+}

@@ -1,0 +1,150 @@
+{
+  "reference": "bf16_reference-masks",
+  "cases": [
+    {
+      "mode": "fp16-masks",
+      "output": "0-0",
+      "frame": 0,
+      "ids": [
+        11,
+        22
+      ],
+      "mask_iou": [
+        1.0,
+        1.0
+      ],
+      "different_mask_pixels": [
+        0,
+        0
+      ],
+      "max_logit_error": 0.0
+    },
+    {
+      "mode": "fp32-masks",
+      "output": "0-0",
+      "frame": 0,
+      "ids": [
+        11,
+        22
+      ],
+      "mask_iou": [
+        1.0,
+        1.0
+      ],
+      "different_mask_pixels": [
+        0,
+        0
+      ],
+      "max_logit_error": 0.0
+    },
+    {
+      "mode": "fp16-masks",
+      "output": "2-0",
+      "frame": 0,
+      "ids": [
+        11,
+        22
+      ],
+      "mask_iou": [
+        1.0,
+        1.0
+      ],
+      "different_mask_pixels": [
+        0,
+        0
+      ],
+      "max_logit_error": 0.0
+    },
+    {
+      "mode": "fp32-masks",
+      "output": "2-0",
+      "frame": 0,
+      "ids": [
+        11,
+        22
+      ],
+      "mask_iou": [
+        1.0,
+        1.0
+      ],
+      "different_mask_pixels": [
+        0,
+        0
+      ],
+      "max_logit_error": 0.0
+    },
+    {
+      "mode": "fp16-masks",
+      "output": "2-1",
+      "frame": 1,
+      "ids": [
+        11,
+        22
+      ],
+      "mask_iou": [
+        0.9979386443555233,
+        0.9977188628012624
+      ],
+      "different_mask_pixels": [
+        221,
+        352
+      ],
+      "max_logit_error": 9.343057632446289
+    },
+    {
+      "mode": "fp32-masks",
+      "output": "2-1",
+      "frame": 1,
+      "ids": [
+        11,
+        22
+      ],
+      "mask_iou": [
+        0.9981990724756689,
+        0.9976211619359983
+      ],
+      "different_mask_pixels": [
+        193,
+        367
+      ],
+      "max_logit_error": 9.330973625183105
+    },
+    {
+      "mode": "fp16-masks",
+      "output": "2-2",
+      "frame": 2,
+      "ids": [
+        11,
+        22
+      ],
+      "mask_iou": [
+        0.9985729874926551,
+        0.9926112671633198
+      ],
+      "different_mask_pixels": [
+        136,
+        847
+      ],
+      "max_logit_error": 8.32966136932373
+    },
+    {
+      "mode": "fp32-masks",
+      "output": "2-2",
+      "frame": 2,
+      "ids": [
+        11,
+        22
+      ],
+      "mask_iou": [
+        0.9979641736538886,
+        0.9925850322333011
+      ],
+      "different_mask_pixels": [
+        194,
+        850
+      ],
+      "max_logit_error": 8.32966136932373
+    }
+  ],
+  "scope": "Precision-mode agreement on this frame/prompt fixture; not ground-truth segmentation accuracy or a dataset benchmark."
+}

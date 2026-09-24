@@ -1,0 +1,474 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "device": "cuda",
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "empty",
+      "shape": [
+        1,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "points",
+      "shape": [
+        5,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "boxes",
+      "shape": [
+        6,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "mixed_padding",
+      "shape": [
+        10,
+        3,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "many_prompts",
+      "shape": [
+        67,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "all_padded",
+      "shape": [
+        6,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "case": "actual_vision",
+      "shape": [
+        6,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "empty",
+      "shape": [
+        1,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "points",
+      "shape": [
+        5,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "boxes",
+      "shape": [
+        6,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "mixed_padding",
+      "shape": [
+        10,
+        3,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "many_prompts",
+      "shape": [
+        67,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "all_padded",
+      "shape": [
+        6,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "case": "actual_vision",
+      "shape": [
+        6,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "empty",
+      "shape": [
+        1,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "points",
+      "shape": [
+        5,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "boxes",
+      "shape": [
+        6,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "mixed_padding",
+      "shape": [
+        10,
+        3,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "many_prompts",
+      "shape": [
+        67,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "all_padded",
+      "shape": [
+        6,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "case": "actual_vision",
+      "shape": [
+        6,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "empty",
+      "shape": [
+        1,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "points",
+      "shape": [
+        5,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "boxes",
+      "shape": [
+        6,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "mixed_padding",
+      "shape": [
+        10,
+        3,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "many_prompts",
+      "shape": [
+        67,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "case": "all_padded",
+      "shape": [
+        6,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "empty",
+      "shape": [
+        1,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "points",
+      "shape": [
+        5,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "boxes",
+      "shape": [
+        6,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "mixed_padding",
+      "shape": [
+        10,
+        3,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "many_prompts",
+      "shape": [
+        67,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "case": "all_padded",
+      "shape": [
+        6,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "empty",
+      "shape": [
+        1,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "points",
+      "shape": [
+        5,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "boxes",
+      "shape": [
+        6,
+        1,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "mixed_padding",
+      "shape": [
+        10,
+        3,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "many_prompts",
+      "shape": [
+        67,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "case": "all_padded",
+      "shape": [
+        6,
+        2,
+        256
+      ],
+      "dtype": "torch.float32",
+      "max_abs_error": 0.0
+    }
+  ]
+}

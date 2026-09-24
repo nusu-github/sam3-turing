@@ -1,0 +1,46 @@
+{
+  "version": "4.10.0",
+  "modules": [
+    "core",
+    "imgproc"
+  ],
+  "ipp": "2021.11.0",
+  "files": [
+    {
+      "file": "opencv-4.10.0.tar.gz",
+      "bytes": 94993429,
+      "sha256": "b2171af5be6b26f7a06b1229948bbb2bdaa74fcf5cd097e0af6378fce50a6eb9",
+      "url": "https://github.com/opencv/opencv/archive/refs/tags/4.10.0.tar.gz"
+    },
+    {
+      "file": "0f2745ff705ecae31176dad437608f6f-ippicv_2021.11.0_lnx_intel64_20240201_general.tgz",
+      "bytes": 32853743,
+      "sha256": "86c53ddd40c2889f6bc1040bcbd95db9b49b7ecf5321c08907ef8465f3053a7a",
+      "url": "https://raw.githubusercontent.com/opencv/opencv_3rdparty/fd27188235d85e552de31425e7ea0f53ba73ba53/ippicv/ippicv_2021.11.0_lnx_intel64_20240201_general.tgz"
+    }
+  ],
+  "configure_flags": [
+    "-DBUILD_LIST=core,imgproc",
+    "-DBUILD_SHARED_LIBS=ON",
+    "-DBUILD_TESTS=OFF",
+    "-DBUILD_PERF_TESTS=OFF",
+    "-DBUILD_EXAMPLES=OFF",
+    "-DBUILD_opencv_apps=OFF",
+    "-DBUILD_JAVA=OFF",
+    "-DBUILD_opencv_python2=OFF",
+    "-DBUILD_opencv_python3=OFF",
+    "-DWITH_OPENCL=OFF",
+    "-DWITH_CUDA=OFF",
+    "-DWITH_OPENEXR=OFF",
+    "-DWITH_FFMPEG=OFF",
+    "-DWITH_GSTREAMER=OFF",
+    "-DWITH_V4L=OFF",
+    "-DWITH_GTK=OFF",
+    "-DWITH_QT=OFF",
+    "-DWITH_ITT=OFF",
+    "-DWITH_LAPACK=OFF",
+    "-DWITH_PROTOBUF=OFF",
+    "-DWITH_IPP=ON"
+  ],
+  "scope": "Pinned Linux reference build. Portable CMake/OpenCV core+imgproc APIs; Windows builds are user-owned. Source archive and IPP notices retained privately. Not OpenCV videoio: decoding remains native FFmpeg."
+}

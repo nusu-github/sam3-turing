@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "model": 3,
+      "mode": "image",
+      "exit_code": 0,
+      "log": "model=3 image=1 exact_result_sets=3 source_and_context_lifetime=passed\n"
+    },
+    {
+      "model": 3,
+      "mode": "video",
+      "exit_code": 0,
+      "log": "model=3 image=0 exact_result_sets=7 source_and_context_lifetime=passed\n"
+    },
+    {
+      "model": 31,
+      "mode": "image",
+      "exit_code": 0,
+      "log": "model=31 image=1 exact_result_sets=3 source_and_context_lifetime=passed\n"
+    },
+    {
+      "model": 31,
+      "mode": "video",
+      "exit_code": 0,
+      "log": "model=31 image=0 exact_result_sets=7 source_and_context_lifetime=passed\n"
+    }
+  ],
+  "scope": "File-owned C predictors versus existing RGB callback C predictors on identical decoded full-resolution pixels. Shared weights, all200 queries, explicit image/video policies, reset, returned-result ownership and source/context lifetime. Not comparison with upstream OpenCV video preprocessing."
+}

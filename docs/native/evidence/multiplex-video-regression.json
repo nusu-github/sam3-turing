@@ -1,0 +1,24 @@
+{
+  "sam3_regression_files_exact": 36,
+  "cpu_fp32_real_frame_outputs": [
+    {
+      "output": "0-0",
+      "frame": 0,
+      "ids": [
+        11
+      ],
+      "positive_pixels": 93973,
+      "finite": true
+    },
+    {
+      "output": "2-0",
+      "frame": 0,
+      "ids": [
+        11
+      ],
+      "positive_pixels": 93650,
+      "finite": true
+    }
+  ],
+  "scope": "Existing SAM3 FP16 standalone files exactly unchanged. SAM3.1 full visual CPU FP32 single-frame smoke, finite nonempty masks; not CPU-vs-reference numerical parity."
+}

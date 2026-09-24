@@ -1,0 +1,73 @@
+{
+  "model": "sam3.1",
+  "mode": "bf16_reference",
+  "corrected_dense_extraction": true,
+  "scope": "Original high-level first point refinement of a grouped object, singleton extraction, and three-frame partial propagation after full neural forward. Optional adapter explicitly re-encodes historical dense memories upstream loses; no neural computation mocked. This is not a quality benchmark.",
+  "cases": [
+    {
+      "tag": "18.point",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0,
+      "mask_iou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "tag": "18.track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0,
+      "mask_iou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "tag": "19.track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0,
+      "mask_iou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "tag": "20.track",
+      "exact": {
+        "out_obj_ids": true,
+        "out_probs": true,
+        "out_boxes_xywh": true,
+        "out_binary_masks": true
+      },
+      "mask_mismatches": 0,
+      "mask_iou": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "exact": true
+}

@@ -1,0 +1,253 @@
+{
+  "base": "ba018a0",
+  "mlp": "int8_boundary",
+  "projection": "qkv",
+  "attention": "exact",
+  "qkv_rope": "fused",
+  "gate": "bit-identical masks/scores/boxes/queries",
+  "timing": {
+    "exact": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\mlp-sweep-ba018a0\\timing-exact-truck-1",
+          "median_ms": 404.6083,
+          "wall_ms": [
+            400.60839999999996,
+            407.65610000000004,
+            399.1597,
+            417.1259,
+            415.6451,
+            402.9067,
+            404.6083,
+            412.3733,
+            412.51349999999996,
+            414.519,
+            428.38349999999997,
+            396.71479999999997,
+            404.1698,
+            397.4302,
+            398.7024
+          ],
+          "stage_mean_ms": [
+            1.261297082902,
+            1.8486122687666664,
+            284.2117513021333,
+            118.62063446046668,
+            1.5076650619506669
+          ],
+          "peak_allocated_bytes": 2788839424,
+          "sm_mhz_tail_median": 1245.0,
+          "temperature_max": 64
+        },
+        {
+          "path": ".cache\\native-perf\\mlp-sweep-ba018a0\\timing-exact-truck-2",
+          "median_ms": 405.5241,
+          "wall_ms": [
+            403.2399,
+            404.55609999999996,
+            403.7426,
+            404.5289,
+            406.5931,
+            406.96090000000004,
+            420.7735,
+            404.29330000000004,
+            405.5241,
+            404.6968,
+            403.403,
+            418.9291,
+            447.4355,
+            430.5136,
+            407.3156
+          ],
+          "stage_mean_ms": [
+            1.228264546394,
+            1.8307669321679998,
+            290.5601826985333,
+            116.4374104818,
+            1.3929642518379999
+          ],
+          "peak_allocated_bytes": 2788839424,
+          "sm_mhz_tail_median": 1230.0,
+          "temperature_max": 70
+        }
+      ],
+      "pooled_median_ms": 405.11045,
+      "p95_ms": 429.555055,
+      "stage_mean_ms": [
+        1.2447808146480002,
+        1.839689600467333,
+        287.38596700033327,
+        117.52902247113335,
+        1.4503146568943333
+      ]
+    },
+    "fc2": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\mlp-sweep-ba018a0\\timing-fc2-truck-1",
+          "median_ms": 400.9675,
+          "wall_ms": [
+            397.01379999999995,
+            398.9818,
+            406.8646,
+            400.9675,
+            400.0362,
+            400.5798,
+            405.7151,
+            398.33639999999997,
+            418.8168,
+            416.5915,
+            402.89009999999996,
+            396.236,
+            405.64840000000004,
+            400.4898,
+            404.12219999999996
+          ],
+          "stage_mean_ms": [
+            1.1981205383940001,
+            1.8225322643906667,
+            282.29455769853337,
+            116.82953643793333,
+            1.3642325242359996
+          ],
+          "peak_allocated_bytes": 2789232640,
+          "sm_mhz_tail_median": 1230.0,
+          "temperature_max": 67
+        },
+        {
+          "path": ".cache\\native-perf\\mlp-sweep-ba018a0\\timing-fc2-truck-2",
+          "median_ms": 404.5706,
+          "wall_ms": [
+            406.49629999999996,
+            395.0286,
+            400.7446,
+            395.67600000000004,
+            404.92089999999996,
+            404.5706,
+            400.1814,
+            407.1982,
+            398.7489,
+            415.5617,
+            420.5557,
+            398.60519999999997,
+            414.3738,
+            405.3556,
+            403.0954
+          ],
+          "stage_mean_ms": [
+            1.2350890795400002,
+            1.8308629353826669,
+            283.06773478186665,
+            117.23427632646664,
+            1.3243690649666668
+          ],
+          "peak_allocated_bytes": 2789232640,
+          "sm_mhz_tail_median": 1237.5,
+          "temperature_max": 68
+        }
+      ],
+      "pooled_median_ms": 402.99275,
+      "p95_ms": 417.815415,
+      "stage_mean_ms": [
+        1.2166048089670003,
+        1.8266975998866668,
+        282.6811462402,
+        117.03190638219999,
+        1.3443007946013332
+      ]
+    }
+  },
+  "quality": {
+    "truck/exact": {
+      "count": 1,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "truck/fc2": {
+      "count": 1,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "bag/exact": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "bag/fc2": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "child/exact": {
+      "count": 6,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "child/fc2": {
+      "count": 6,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "wheel/exact": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "wheel/fc2": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "empty/exact": {
+      "count": 0,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "empty/fc2": {
+      "count": 0,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    }
+  },
+  "gate_failures": []
+}

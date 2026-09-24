@@ -1,8 +1,0 @@
-{
-  "r11_fp16_control": {"final": true, "compile": true},
-  "adaptive_mlp75": {"final": true, "compile": true, "adaptive_mlp": 0.75},
-  "adaptive_mlp50": {"final": true, "compile": true, "adaptive_mlp": 0.5},
-  "adaptive_mlp75_late16": {"final": true, "compile": true, "adaptive_mlp": 0.75, "adaptive_mlp_layers": [16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]},
-  "r11_int8_control": {"final": true, "compile": true, "public_int8": true},
-  "adaptive_int8_75": {"final": true, "compile": true, "public_int8": true, "adaptive_mlp": 0.75}
-}

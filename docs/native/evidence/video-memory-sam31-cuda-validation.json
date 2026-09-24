@@ -1,0 +1,75 @@
+{
+  "device": "cuda",
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "cases": [
+    {
+      "mode": "fp32",
+      "case": "recondition_repeat",
+      "operations": 8,
+      "outputs": 90,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "memory",
+      "operations": 6,
+      "outputs": 83,
+      "exact": true
+    },
+    {
+      "mode": "fp32",
+      "case": "memory_reapply",
+      "operations": 6,
+      "outputs": 83,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "recondition_repeat",
+      "operations": 8,
+      "outputs": 90,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "memory",
+      "operations": 6,
+      "outputs": 83,
+      "exact": true
+    },
+    {
+      "mode": "fp16",
+      "case": "memory_reapply",
+      "operations": 6,
+      "outputs": 83,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "recondition_repeat",
+      "operations": 8,
+      "outputs": 90,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "memory",
+      "operations": 6,
+      "outputs": 83,
+      "exact": true
+    },
+    {
+      "mode": "bf16_reference",
+      "case": "memory_reapply",
+      "operations": 6,
+      "outputs": 83,
+      "exact": true
+    }
+  ],
+  "source_sha256": {
+    "sam3/model/video_tracking_multiplex.py": "5a6309684a9a3615819f65cad1d2fbd8139a6ceeaa14b2583057d695fc781f1c",
+    "sam3/model/video_tracking_multiplex_demo.py": "d57ac540b400d5cb37377fc84810f75c2721f1b6e6ee9c8f119b5d6af7a6a80c"
+  },
+  "scope": "Adapted original demo neural outputs and, for reconditioning cases, stored masks/memory/pointers/scores/conditions after each operation. Includes three-object reordered/repeated correction, preflight, forward/reverse propagation and native executor. Reconditioning source comparisons keep state on the compute device: the original offloaded scatter fails with CPU/CUDA mismatch. Native resident/offloaded/paged equivalence is checked separately. Dynamic insertion/removal layout policy is tested separately.",
+  "adaptations": "Synthetic projected features; source CPU CUDA transfers and every nested session constructor redirected to CPU, CUDA FP32 Flash-only context removed, FP32 compressed memory restored before projection, D2H synchronized. Source mux/demux explicitly stage offloaded tensors to the matrix device and restore F32 when outside AMP; unadapted CUDA refinement failed on CPU-vs-CUDA matmul. Source consolidated annotation indices are restored from the merged inputs/history after singleton refinement; without this, next preflight fails its equality assertion. These adaptations preserve neural equations."
+}

@@ -1,0 +1,125 @@
+{
+  "scope": "Model integration controls for QKV identity, excluded layers and both restore paths.",
+  "results": [
+    {
+      "reference": "r5-a0-development",
+      "candidate": "r7-qkv-controls-base",
+      "case": "coco-val-000000001425-p0",
+      "comparison": {
+        "reference_count": 2,
+        "candidate_count": 2,
+        "min_mask_iou": 1.0,
+        "max_score_error": 0.0,
+        "max_box_error_px": 0.0,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": true
+      }
+    },
+    {
+      "reference": "r5-a0-development",
+      "candidate": "r7-qkv-controls-base",
+      "case": "coco-val-000000001425-p1",
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 1.0,
+        "max_score_error": 0.0,
+        "max_box_error_px": 0.0,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": true
+      }
+    },
+    {
+      "reference": "r7-qkv-controls-base",
+      "candidate": "r7-qkv-controls-identity",
+      "case": "coco-val-000000001425-p0",
+      "comparison": {
+        "reference_count": 2,
+        "candidate_count": 2,
+        "min_mask_iou": 1.0,
+        "max_score_error": 0.0,
+        "max_box_error_px": 0.0,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": true
+      }
+    },
+    {
+      "reference": "r7-qkv-controls-base",
+      "candidate": "r7-qkv-controls-identity",
+      "case": "coco-val-000000001425-p1",
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 1.0,
+        "max_score_error": 0.0,
+        "max_box_error_px": 0.0,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": true
+      }
+    },
+    {
+      "reference": "r7-qkv-controls-excluded-base",
+      "candidate": "r7-qkv-controls-excluded-shift",
+      "case": "coco-val-000000001425-p0",
+      "comparison": {
+        "reference_count": 2,
+        "candidate_count": 2,
+        "min_mask_iou": 1.0,
+        "max_score_error": 0.0,
+        "max_box_error_px": 0.0,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": true
+      }
+    },
+    {
+      "reference": "r7-qkv-controls-excluded-base",
+      "candidate": "r7-qkv-controls-excluded-shift",
+      "case": "coco-val-000000001425-p1",
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 1.0,
+        "max_score_error": 0.0,
+        "max_box_error_px": 0.0,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": true
+      }
+    },
+    {
+      "reference": "r7-qkv-controls-shift-fused",
+      "candidate": "r7-qkv-controls-shift-unfused",
+      "case": "coco-val-000000001425-p0",
+      "comparison": {
+        "reference_count": 2,
+        "candidate_count": 2,
+        "min_mask_iou": 1.0,
+        "max_score_error": 0.0,
+        "max_box_error_px": 0.0,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": true
+      }
+    },
+    {
+      "reference": "r7-qkv-controls-shift-fused",
+      "candidate": "r7-qkv-controls-shift-unfused",
+      "case": "coco-val-000000001425-p1",
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 1.0,
+        "max_score_error": 0.0,
+        "max_box_error_px": 0.0,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "signature": {
+    "args": {
+      "kind": "quality",
+      "role": "development",
+      "mode": "calibrated",
+      "name": "r3-fc2-identity-4795",
+      "scope": "all",
+      "calibration": ".cache\\quant-research-20260924\\calibrations\\identity",
+      "limit_images": null,
+      "primary_only": false,
+      "image_id": 4795,
+      "attention": "exact",
+      "projection": "exact",
+      "mlp_part": "fc2"
+    },
+    "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+    "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "runtime_sha256": "fe975185e87cba5b925ea49d020916d3fa9a573942d896a01f0b477dc6503ed2",
+    "environment": {
+      "TORCH_BLAS_PREFER_CUBLASLT": "0",
+      "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+      "SAM3_EXPERIMENT_ATTENTION": "exact",
+      "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+      "SAM3_EXPERIMENT_MLP": "int8_boundary",
+      "SAM3_EXPERIMENT_PROJECTION": "exact",
+      "SAM3_EXPERIMENT_QKV_ROPE": "exact",
+      "SAM3_EXPERIMENT_FC2_NORM": "fused",
+      "SAM3_EXPERIMENT_MLP_SCOPE": "all",
+      "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\identity",
+      "SAM3_EXPERIMENT_MLP_PART": "fc2"
+    },
+    "calibration_sha256": "8dcecb5eccfc96b8e4bbd7216efa243836fca858f6b7a64d7251c5fae19d448a"
+  },
+  "results": [
+    {
+      "case": "coco-val-000000004795-p0",
+      "image_id": 4795,
+      "mode": "calibrated",
+      "count": 1,
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.999440350035614,
+        "max_score_error": 0.00244140625,
+        "max_box_error_px": 0.192718505859375,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000004795-p1",
+      "image_id": 4795,
+      "mode": "calibrated",
+      "count": 1,
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9992473788020346,
+        "max_score_error": 0.001953125,
+        "max_box_error_px": 0.087982177734375,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    }
+  ]
+}

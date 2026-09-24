@@ -1,0 +1,35 @@
+{
+  "cases": [
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "comparisons": 87
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "comparisons": 87
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "comparisons": 87
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "comparisons": 87
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "comparisons": 87
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "comparisons": 87
+    }
+  ],
+  "scope": "Actual source SAM3 stable GPU greedy / unique-score CPU fallback, SAM3.1 single perflib and batched policies including ties, suppression chains and IoM row-area behavior. Explicit same-mode arithmetic including overflowing FP16 full-grid counts; production defaults FP32 policy math. Video penalty/filter/boundary/query ordering mirrors source host operations. No query cap (257-slot fixtures). Original perflib empty NMS cannot reshape N=0; native returns empty keep flags."
+}

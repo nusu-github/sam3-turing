@@ -1,0 +1,121 @@
+{
+  "real_neural_mask_fixtures": true,
+  "fixture_names": [
+    "random-0-0-3-5-7-9",
+    "random-5-0-3-5-7-9",
+    "random-0-4-3-5-7-9",
+    "random-1-1-3-5-3-5",
+    "random-5-7-7-9-3-5",
+    "random-5-7-3-5-7-9",
+    "random-5-7-3-10-5-6",
+    "random-17-33-11-13-11-13",
+    "random-257-513-3-7-3-7",
+    "full-288-mask",
+    "no-tracks-keep-false",
+    "ambiguous-boundaries",
+    "strides-and-nonfinite",
+    "real-neural-masks"
+  ],
+  "cases": [
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "model": "sam3",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 698
+    },
+    {
+      "device": "cpu",
+      "mode": "fp32",
+      "model": "sam3.1",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 858
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "model": "sam3",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 698
+    },
+    {
+      "device": "cpu",
+      "mode": "fp16",
+      "model": "sam3.1",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 858
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "model": "sam3",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 698
+    },
+    {
+      "device": "cpu",
+      "mode": "bf16_reference",
+      "model": "sam3.1",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 858
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "model": "sam3",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 698
+    },
+    {
+      "device": "cuda",
+      "mode": "fp32",
+      "model": "sam3.1",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 858
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "model": "sam3",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 698
+    },
+    {
+      "device": "cuda",
+      "mode": "fp16",
+      "model": "sam3.1",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 858
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "model": "sam3",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 698
+    },
+    {
+      "device": "cuda",
+      "mode": "bf16_reference",
+      "model": "sam3.1",
+      "workflows": 66,
+      "exact_tensor_and_metadata_comparisons": 858
+    }
+  ],
+  "placement_comparisons": 72,
+  "boundary_comparisons": 32,
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "scope": "Actual repository association wrappers/compilable function and metadata realization, source-specific empty branches and optional zero padding, no detection/track cap. Includes 257 detections/513 tracks and optional stored real neural masks. Placement is a plan comparison, not multi-GPU execution. No Hungarian path: upstream explicitly asserts it disabled.",
+  "total_workflows": 792,
+  "total_exact_tensor_and_metadata_comparisons": 9336,
+  "github_actions_used": false,
+  "windows_runtime_validated": false,
+  "turing_runtime_validated": false,
+  "standalone_path": "/nonexistent",
+  "ctest": {
+    "cuda_enabled": 15,
+    "custom_cuda_disabled": 9
+  },
+  "precision_note": "Default FP32 count arithmetic remains independent of neural autocast. FP16 source-parity mode reproduces dense-mask intersection overflow and device-dependent IoM conversion; same-mode parity is not tracking-quality proof. See association-dense-mask.json."
+}

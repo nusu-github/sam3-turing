@@ -1,0 +1,647 @@
+{
+  "layers": [
+    {
+      "layer": 0,
+      "applied": true,
+      "changed_channels": 871,
+      "q_changed": 167,
+      "k_changed": 109,
+      "v_changed": 595,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 11.2421875,
+      "mse": {
+        "layer": 0,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 0.00010687604966529152,
+        "mse_before": 4.4918135093253986e-05,
+        "mse_estimate_after": 4.491728285482281e-05,
+        "leave_one_calibration_image_out_mse_estimate": 4.503652776185159e-05,
+        "max_abs_mean_error_before": 0.003350104823766742,
+        "max_abs_mean_error_estimate_after": 0.003350104823766742
+      }
+    },
+    {
+      "layer": 1,
+      "applied": true,
+      "changed_channels": 478,
+      "q_changed": 92,
+      "k_changed": 81,
+      "v_changed": 305,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 4.83984375,
+      "mse": {
+        "layer": 1,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 3.9617471425981874e-05,
+        "mse_before": 2.6600237234243134e-05,
+        "mse_estimate_after": 2.660013641580741e-05,
+        "leave_one_calibration_image_out_mse_estimate": 2.6652660544445698e-05,
+        "max_abs_mean_error_before": 0.0019411393295740709,
+        "max_abs_mean_error_estimate_after": 0.0019411393295740709
+      }
+    },
+    {
+      "layer": 2,
+      "applied": true,
+      "changed_channels": 549,
+      "q_changed": 72,
+      "k_changed": 112,
+      "v_changed": 365,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 8.0703125,
+      "mse": {
+        "layer": 2,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 6.389251117872584e-05,
+        "mse_before": 3.428812086968732e-05,
+        "mse_estimate_after": 3.428795107780158e-05,
+        "leave_one_calibration_image_out_mse_estimate": 3.43338740706569e-05,
+        "max_abs_mean_error_before": 0.0019404781551202177,
+        "max_abs_mean_error_estimate_after": 0.0019404781551202177
+      }
+    },
+    {
+      "layer": 3,
+      "applied": true,
+      "changed_channels": 551,
+      "q_changed": 86,
+      "k_changed": 132,
+      "v_changed": 333,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 9.4140625,
+      "mse": {
+        "layer": 3,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 4.70773309254419e-05,
+        "mse_before": 3.165912257020268e-05,
+        "mse_estimate_after": 3.165899734135777e-05,
+        "leave_one_calibration_image_out_mse_estimate": 3.169870967491581e-05,
+        "max_abs_mean_error_before": 0.0019004374616997666,
+        "max_abs_mean_error_estimate_after": 0.0019004374616997666
+      }
+    },
+    {
+      "layer": 4,
+      "applied": true,
+      "changed_channels": 539,
+      "q_changed": 98,
+      "k_changed": 94,
+      "v_changed": 347,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 10.203125,
+      "mse": {
+        "layer": 4,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 6.069686764415466e-05,
+        "mse_before": 4.1419845242668396e-05,
+        "mse_estimate_after": 4.14196639941915e-05,
+        "leave_one_calibration_image_out_mse_estimate": 4.147196885238163e-05,
+        "max_abs_mean_error_before": 0.0036626274340960663,
+        "max_abs_mean_error_estimate_after": 0.0036626274340960663
+      }
+    },
+    {
+      "layer": 5,
+      "applied": true,
+      "changed_channels": 519,
+      "q_changed": 97,
+      "k_changed": 103,
+      "v_changed": 319,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 7.88671875,
+      "mse": {
+        "layer": 5,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 5.1208631828114617e-05,
+        "mse_before": 4.615998938915326e-05,
+        "mse_estimate_after": 4.615979242082699e-05,
+        "leave_one_calibration_image_out_mse_estimate": 4.620912385376222e-05,
+        "max_abs_mean_error_before": 0.0018216828037509458,
+        "max_abs_mean_error_estimate_after": 0.0018216828037509458
+      }
+    },
+    {
+      "layer": 6,
+      "applied": false,
+      "changed_channels": 557,
+      "q_changed": 121,
+      "k_changed": 110,
+      "v_changed": 326,
+      "max_abs_delta": 0.00048828125,
+      "baseline_bias_max_abs": 15.640625,
+      "mse": {
+        "layer": 6,
+        "max_abs_correction": 0.00048828125,
+        "rms_correction": 4.424701395715967e-05,
+        "mse_before": 4.293056693040661e-05,
+        "mse_estimate_after": 4.293040391523302e-05,
+        "leave_one_calibration_image_out_mse_estimate": 4.297832486155e-05,
+        "max_abs_mean_error_before": 0.0037695331848226488,
+        "max_abs_mean_error_estimate_after": 0.0037695331848226488
+      }
+    },
+    {
+      "layer": 7,
+      "applied": true,
+      "changed_channels": 645,
+      "q_changed": 143,
+      "k_changed": 158,
+      "v_changed": 344,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 8.84375,
+      "mse": {
+        "layer": 7,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 5.486438948065006e-05,
+        "mse_before": 9.762055248196029e-05,
+        "mse_estimate_after": 9.762019509075515e-05,
+        "leave_one_calibration_image_out_mse_estimate": 9.772356250321852e-05,
+        "max_abs_mean_error_before": 0.002413690828689141,
+        "max_abs_mean_error_estimate_after": 0.002413690828689141
+      }
+    },
+    {
+      "layer": 8,
+      "applied": true,
+      "changed_channels": 665,
+      "q_changed": 160,
+      "k_changed": 134,
+      "v_changed": 371,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 16.421875,
+      "mse": {
+        "layer": 8,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 7.158379773534181e-05,
+        "mse_before": 8.233359213958662e-05,
+        "mse_estimate_after": 8.233316669588255e-05,
+        "leave_one_calibration_image_out_mse_estimate": 8.243104993075504e-05,
+        "max_abs_mean_error_before": 0.006374029533617431,
+        "max_abs_mean_error_estimate_after": 0.006374029533617431
+      }
+    },
+    {
+      "layer": 9,
+      "applied": true,
+      "changed_channels": 675,
+      "q_changed": 189,
+      "k_changed": 145,
+      "v_changed": 341,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 7.60546875,
+      "mse": {
+        "layer": 9,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 6.068717567716445e-05,
+        "mse_before": 9.817698007251001e-05,
+        "mse_estimate_after": 9.817657628379002e-05,
+        "leave_one_calibration_image_out_mse_estimate": 9.828068258293642e-05,
+        "max_abs_mean_error_before": 0.0019484155236568768,
+        "max_abs_mean_error_estimate_after": 0.0019484155236568768
+      }
+    },
+    {
+      "layer": 10,
+      "applied": true,
+      "changed_channels": 802,
+      "q_changed": 186,
+      "k_changed": 193,
+      "v_changed": 423,
+      "max_abs_delta": 0.00048828125,
+      "baseline_bias_max_abs": 6.03125,
+      "mse": {
+        "layer": 10,
+        "max_abs_correction": 0.00048828125,
+        "rms_correction": 4.826114546168664e-05,
+        "mse_before": 0.0001070238961045078,
+        "mse_estimate_after": 0.00010702342836061691,
+        "leave_one_calibration_image_out_mse_estimate": 0.00010712973738492383,
+        "max_abs_mean_error_before": 0.00165772144237053,
+        "max_abs_mean_error_estimate_after": 0.00165772144237053
+      }
+    },
+    {
+      "layer": 11,
+      "applied": true,
+      "changed_channels": 700,
+      "q_changed": 172,
+      "k_changed": 166,
+      "v_changed": 362,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 5.61328125,
+      "mse": {
+        "layer": 11,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 5.537923606334656e-05,
+        "mse_before": 9.278935563681683e-05,
+        "mse_estimate_after": 9.27889621919714e-05,
+        "leave_one_calibration_image_out_mse_estimate": 9.287785175161157e-05,
+        "max_abs_mean_error_before": 0.0019049938846364967,
+        "max_abs_mean_error_estimate_after": 0.0019049938846364967
+      }
+    },
+    {
+      "layer": 12,
+      "applied": true,
+      "changed_channels": 748,
+      "q_changed": 179,
+      "k_changed": 177,
+      "v_changed": 392,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 10.1796875,
+      "mse": {
+        "layer": 12,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 6.574829250417978e-05,
+        "mse_before": 8.574674174493165e-05,
+        "mse_estimate_after": 8.57463678376311e-05,
+        "leave_one_calibration_image_out_mse_estimate": 8.582209769391503e-05,
+        "max_abs_mean_error_before": 0.0026679098009481095,
+        "max_abs_mean_error_estimate_after": 0.0026679098009481095
+      }
+    },
+    {
+      "layer": 13,
+      "applied": true,
+      "changed_channels": 706,
+      "q_changed": 195,
+      "k_changed": 157,
+      "v_changed": 354,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 5.1015625,
+      "mse": {
+        "layer": 13,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 6.503907495784727e-05,
+        "mse_before": 8.96417946285033e-05,
+        "mse_estimate_after": 8.964142281556264e-05,
+        "leave_one_calibration_image_out_mse_estimate": 8.972448161697786e-05,
+        "max_abs_mean_error_before": 0.0017977349561988376,
+        "max_abs_mean_error_estimate_after": 0.0017977349561988376
+      }
+    },
+    {
+      "layer": 14,
+      "applied": true,
+      "changed_channels": 637,
+      "q_changed": 166,
+      "k_changed": 151,
+      "v_changed": 320,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 5.45703125,
+      "mse": {
+        "layer": 14,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 6.387169479307229e-05,
+        "mse_before": 9.652860127136916e-05,
+        "mse_estimate_after": 9.652819515275379e-05,
+        "leave_one_calibration_image_out_mse_estimate": 9.661845092659563e-05,
+        "max_abs_mean_error_before": 0.0015075648418587662,
+        "max_abs_mean_error_estimate_after": 0.0015075648418587662
+      }
+    },
+    {
+      "layer": 15,
+      "applied": true,
+      "changed_channels": 521,
+      "q_changed": 152,
+      "k_changed": 117,
+      "v_changed": 252,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 6.01953125,
+      "mse": {
+        "layer": 15,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 9.006322567805217e-05,
+        "mse_before": 0.00010233693538878412,
+        "mse_estimate_after": 0.00010233653701772939,
+        "leave_one_calibration_image_out_mse_estimate": 0.00010244368475821944,
+        "max_abs_mean_error_before": 0.0019059608039810882,
+        "max_abs_mean_error_estimate_after": 0.0019059608039810882
+      }
+    },
+    {
+      "layer": 16,
+      "applied": true,
+      "changed_channels": 644,
+      "q_changed": 183,
+      "k_changed": 168,
+      "v_changed": 293,
+      "max_abs_delta": 0.00390625,
+      "baseline_bias_max_abs": 6.05078125,
+      "mse": {
+        "layer": 16,
+        "max_abs_correction": 0.00390625,
+        "rms_correction": 8.451096596424135e-05,
+        "mse_before": 8.625229224113833e-05,
+        "mse_estimate_after": 8.625190761619855e-05,
+        "leave_one_calibration_image_out_mse_estimate": 8.635932855174e-05,
+        "max_abs_mean_error_before": 0.0019756139763558167,
+        "max_abs_mean_error_estimate_after": 0.0019306360236441833
+      }
+    },
+    {
+      "layer": 17,
+      "applied": true,
+      "changed_channels": 633,
+      "q_changed": 171,
+      "k_changed": 172,
+      "v_changed": 290,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 6.046875,
+      "mse": {
+        "layer": 17,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 8.533029534594547e-05,
+        "mse_before": 8.532840101325527e-05,
+        "mse_estimate_after": 8.532801535943376e-05,
+        "leave_one_calibration_image_out_mse_estimate": 8.544580684914756e-05,
+        "max_abs_mean_error_before": 0.0019340515118528856,
+        "max_abs_mean_error_estimate_after": 0.0019340515118528856
+      }
+    },
+    {
+      "layer": 18,
+      "applied": true,
+      "changed_channels": 594,
+      "q_changed": 166,
+      "k_changed": 160,
+      "v_changed": 268,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 6.34375,
+      "mse": {
+        "layer": 18,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 5.988775766543011e-05,
+        "mse_before": 8.665632510985548e-05,
+        "mse_estimate_after": 8.665599617347246e-05,
+        "leave_one_calibration_image_out_mse_estimate": 8.676107522098903e-05,
+        "max_abs_mean_error_before": 0.0019426699282121263,
+        "max_abs_mean_error_estimate_after": 0.0019426699282121263
+      }
+    },
+    {
+      "layer": 19,
+      "applied": true,
+      "changed_channels": 600,
+      "q_changed": 169,
+      "k_changed": 144,
+      "v_changed": 287,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 6.75,
+      "mse": {
+        "layer": 19,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 4.8103659145122364e-05,
+        "mse_before": 8.322992664209587e-05,
+        "mse_estimate_after": 8.322961801515294e-05,
+        "leave_one_calibration_image_out_mse_estimate": 8.334003175842338e-05,
+        "max_abs_mean_error_before": 0.0019326151314089657,
+        "max_abs_mean_error_estimate_after": 0.0019326151314089657
+      }
+    },
+    {
+      "layer": 20,
+      "applied": true,
+      "changed_channels": 583,
+      "q_changed": 148,
+      "k_changed": 181,
+      "v_changed": 254,
+      "max_abs_delta": 0.00048828125,
+      "baseline_bias_max_abs": 6.9609375,
+      "mse": {
+        "layer": 20,
+        "max_abs_correction": 0.00048828125,
+        "rms_correction": 4.376756782646596e-05,
+        "mse_before": 8.498222829269227e-05,
+        "mse_estimate_after": 8.498195790724737e-05,
+        "leave_one_calibration_image_out_mse_estimate": 8.508831765077973e-05,
+        "max_abs_mean_error_before": 0.0019268577743787318,
+        "max_abs_mean_error_estimate_after": 0.0019268577743787318
+      }
+    },
+    {
+      "layer": 21,
+      "applied": true,
+      "changed_channels": 564,
+      "q_changed": 162,
+      "k_changed": 149,
+      "v_changed": 253,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 7.5078125,
+      "mse": {
+        "layer": 21,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 5.527711700229492e-05,
+        "mse_before": 7.848112439131268e-05,
+        "mse_estimate_after": 7.848083606394397e-05,
+        "leave_one_calibration_image_out_mse_estimate": 7.857751609388227e-05,
+        "max_abs_mean_error_before": 0.0018522945536005864,
+        "max_abs_mean_error_estimate_after": 0.0018522945536005864
+      }
+    },
+    {
+      "layer": 22,
+      "applied": true,
+      "changed_channels": 524,
+      "q_changed": 146,
+      "k_changed": 140,
+      "v_changed": 238,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 7.11328125,
+      "mse": {
+        "layer": 22,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 5.09069782504305e-05,
+        "mse_before": 7.365810282107994e-05,
+        "mse_estimate_after": 7.365783130143298e-05,
+        "leave_one_calibration_image_out_mse_estimate": 7.37538805963069e-05,
+        "max_abs_mean_error_before": 0.0018352409060753416,
+        "max_abs_mean_error_estimate_after": 0.0018352409060753416
+      }
+    },
+    {
+      "layer": 23,
+      "applied": true,
+      "changed_channels": 539,
+      "q_changed": 157,
+      "k_changed": 157,
+      "v_changed": 225,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 7.01953125,
+      "mse": {
+        "layer": 23,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 5.7321871161799324e-05,
+        "mse_before": 8.82833568016846e-05,
+        "mse_estimate_after": 8.828305949936836e-05,
+        "leave_one_calibration_image_out_mse_estimate": 8.838525363468837e-05,
+        "max_abs_mean_error_before": 0.0018893583380759083,
+        "max_abs_mean_error_estimate_after": 0.0018893583380759083
+      }
+    },
+    {
+      "layer": 24,
+      "applied": true,
+      "changed_channels": 504,
+      "q_changed": 137,
+      "k_changed": 134,
+      "v_changed": 233,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 7.86328125,
+      "mse": {
+        "layer": 24,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 4.91694976297652e-05,
+        "mse_before": 6.522083418771436e-05,
+        "mse_estimate_after": 6.52206197183789e-05,
+        "leave_one_calibration_image_out_mse_estimate": 6.531947720478878e-05,
+        "max_abs_mean_error_before": 0.0019344047304912237,
+        "max_abs_mean_error_estimate_after": 0.0019344047304912237
+      }
+    },
+    {
+      "layer": 25,
+      "applied": true,
+      "changed_channels": 472,
+      "q_changed": 141,
+      "k_changed": 121,
+      "v_changed": 210,
+      "max_abs_delta": 0.00048828125,
+      "baseline_bias_max_abs": 7.453125,
+      "mse": {
+        "layer": 25,
+        "max_abs_correction": 0.00048828125,
+        "rms_correction": 4.18837695599236e-05,
+        "mse_before": 6.0786648538665076e-05,
+        "mse_estimate_after": 6.0786478004687255e-05,
+        "leave_one_calibration_image_out_mse_estimate": 6.0878800270498444e-05,
+        "max_abs_mean_error_before": 0.0018962577627235078,
+        "max_abs_mean_error_estimate_after": 0.0018962577627235078
+      }
+    },
+    {
+      "layer": 26,
+      "applied": true,
+      "changed_channels": 466,
+      "q_changed": 125,
+      "k_changed": 151,
+      "v_changed": 190,
+      "max_abs_delta": 0.00048828125,
+      "baseline_bias_max_abs": 7.33203125,
+      "mse": {
+        "layer": 26,
+        "max_abs_correction": 0.00048828125,
+        "rms_correction": 4.707028113014524e-05,
+        "mse_before": 5.738579879482897e-05,
+        "mse_estimate_after": 5.73855927277405e-05,
+        "leave_one_calibration_image_out_mse_estimate": 5.746178335209207e-05,
+        "max_abs_mean_error_before": 0.0019309255943653625,
+        "max_abs_mean_error_estimate_after": 0.0019309255943653625
+      }
+    },
+    {
+      "layer": 27,
+      "applied": true,
+      "changed_channels": 462,
+      "q_changed": 123,
+      "k_changed": 135,
+      "v_changed": 204,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 7.51171875,
+      "mse": {
+        "layer": 27,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 6.005089356672733e-05,
+        "mse_before": 5.431684135742687e-05,
+        "mse_estimate_after": 5.431663281054297e-05,
+        "leave_one_calibration_image_out_mse_estimate": 5.4382382890473595e-05,
+        "max_abs_mean_error_before": 0.001904169743284001,
+        "max_abs_mean_error_estimate_after": 0.001904169743284001
+      }
+    },
+    {
+      "layer": 28,
+      "applied": true,
+      "changed_channels": 505,
+      "q_changed": 124,
+      "k_changed": 165,
+      "v_changed": 216,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 7.58203125,
+      "mse": {
+        "layer": 28,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 6.0803457060165215e-05,
+        "mse_before": 5.6708668898323524e-05,
+        "mse_estimate_after": 5.670841992252005e-05,
+        "leave_one_calibration_image_out_mse_estimate": 5.6769252312803136e-05,
+        "max_abs_mean_error_before": 0.001939797122759046,
+        "max_abs_mean_error_estimate_after": 0.001939797122759046
+      }
+    },
+    {
+      "layer": 29,
+      "applied": true,
+      "changed_channels": 482,
+      "q_changed": 122,
+      "k_changed": 124,
+      "v_changed": 236,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 7.70703125,
+      "mse": {
+        "layer": 29,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 4.5597977888130284e-05,
+        "mse_before": 5.2960125599151496e-05,
+        "mse_estimate_after": 5.295994861718956e-05,
+        "leave_one_calibration_image_out_mse_estimate": 5.300991011570908e-05,
+        "max_abs_mean_error_before": 0.001906948346459103,
+        "max_abs_mean_error_estimate_after": 0.001906948346459103
+      }
+    },
+    {
+      "layer": 30,
+      "applied": true,
+      "changed_channels": 469,
+      "q_changed": 110,
+      "k_changed": 116,
+      "v_changed": 243,
+      "max_abs_delta": 0.0009765625,
+      "baseline_bias_max_abs": 6.75,
+      "mse": {
+        "layer": 30,
+        "max_abs_correction": 0.0009765625,
+        "rms_correction": 4.78028777405131e-05,
+        "mse_before": 5.184656172198728e-05,
+        "mse_estimate_after": 5.184639241080154e-05,
+        "leave_one_calibration_image_out_mse_estimate": 5.18921698954834e-05,
+        "max_abs_mean_error_before": 0.0018571453299500718,
+        "max_abs_mean_error_estimate_after": 0.0018571453299500718
+      }
+    },
+    {
+      "layer": 31,
+      "applied": true,
+      "changed_channels": 525,
+      "q_changed": 135,
+      "k_changed": 131,
+      "v_changed": 259,
+      "max_abs_delta": 0.001953125,
+      "baseline_bias_max_abs": 5.390625,
+      "mse": {
+        "layer": 31,
+        "max_abs_correction": 0.001953125,
+        "rms_correction": 5.891014960666704e-05,
+        "mse_before": 5.316775310815203e-05,
+        "mse_estimate_after": 5.316753677117106e-05,
+        "leave_one_calibration_image_out_mse_estimate": 5.321332623252445e-05,
+        "max_abs_mean_error_before": 0.0018719331819738727,
+        "max_abs_mean_error_estimate_after": 0.0018719331819738727
+      }
+    }
+  ],
+  "changed_applied": 18172,
+  "total_applied": 95232,
+  "caveat": "Stored bias changes after Half rounding; calibration MSE estimates omit output re-rounding."
+}

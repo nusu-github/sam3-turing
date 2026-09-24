@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.21)
+project(sam3_c_predictor_probe LANGUAGES C)
+find_package(Sam3Native CONFIG REQUIRED COMPONENTS C)
+add_executable(sam3_predictor_c_probe ../../tools/predictor_c_probe.c)
+target_compile_features(sam3_predictor_c_probe PRIVATE c_std_11)
+target_link_libraries(sam3_predictor_c_probe PRIVATE sam3::c)
+sam3_copy_runtime(sam3_predictor_c_probe)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set_target_properties(sam3_predictor_c_probe PROPERTIES
+    INSTALL_RPATH "$ORIGIN/../${Sam3Native_RUNTIME_LIBDIR}")
+endif()
+install(TARGETS sam3_predictor_c_probe RUNTIME DESTINATION bin)

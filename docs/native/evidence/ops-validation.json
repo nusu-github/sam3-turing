@@ -1,0 +1,7 @@
+{
+  "cpu_cases": 67,
+  "cuda_cases": 67,
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "elapsed_seconds": 1.4325944315642118,
+  "torch": "2.10.0a0+b558c986e8.nv25.11"
+}

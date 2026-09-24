@@ -1,0 +1,1606 @@
+{
+  "scope": "Read-only fetch from packed displayed-mask storage without changing outputs, edit routes or ordinary C++ tensor mutability.",
+  "baseline_commit": "fe87ffbc3b27623cc58b7cd1048ead6e4ba0a895",
+  "hardware": "RTX PRO 4500 Blackwell 32GB; Linux; no Windows/Turing physical test",
+  "libtorch": "Official standalone 2.10.0 CPU/cu130",
+  "source_sha256": {
+    "native/CMakeLists.txt": "acbefb0e1c8f382eb0af90f69e53729329ea5b4f8941511ea45cda17d7de08b6",
+    "native/eval/CMakeLists.txt": "ac9ee57f56b991128146f39f646df6855f41df79c6fb3bbdfe13360f69e898fb",
+    "native/src/video_predictor.cpp": "8e02d6041dba4db6cb40952b787e7ea6ccd7a4f0b965a7a3d35351771fdc047b",
+    "native/tools/video_cache_fetch_probe.cpp": "734f0b5a0198e3e0d66a94d92b31571399d0602fd6b7731591b5066e865e9d60"
+  },
+  "libraries": {
+    "cpu": {
+      "baseline": "594586e72889c1149c00b2a67420300627453a4707e29b63cfb576e0c9055f4b",
+      "current": "50ced08fb12550f68a76bd6df71154f673f24036510be86a8cd108c7660b41c7",
+      "build_tree": "8c4a51cedaca5d4c64bf557cac158be87b4260d79f70bc0d2c59b2029eb23ea2"
+    },
+    "cuda": {
+      "baseline": "ddf7236fbe5b4dd624fb4a8a74880053fa82f87a88d47a68aa052b3f9586eaf8",
+      "current": "e0fdd13b14eeeed386812413fca46f797db5ab8ca12941ba4ad3978a32108ce3",
+      "build_tree": "4b96d1065d9804cf11848043733fa5ce5edbc702e53aedd565b9fdc039f19478"
+    }
+  },
+  "ctest": {
+    "cpu": 22,
+    "cuda_build": 40,
+    "all_pass": true
+  },
+  "owner": [
+    {
+      "case": "sam3-fp16-cache0",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-fp16-cache1",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-fp16-cache2",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache0",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache1",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3-bf16_reference-cache2",
+      "files": 65,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache0",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache1",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache2",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache0",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache1",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache2",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "sam3.1-fp16-cache2-parallel",
+      "files": 68,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    }
+  ],
+  "c_api": [
+    {
+      "case": "3-video-cache1",
+      "files": 195,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "3-video-cache2",
+      "files": 195,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-video-cache1",
+      "files": 189,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-video-cache2",
+      "files": 189,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-image-cache1",
+      "files": 153,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-image-cache2",
+      "files": 153,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    }
+  ],
+  "abi_symbols": [
+    {
+      "variant": "cpu",
+      "public_strong_symbols": 462,
+      "all_preserved": true,
+      "new_strong_symbols": 0
+    },
+    {
+      "variant": "cuda",
+      "public_strong_symbols": 469,
+      "all_preserved": true,
+      "new_strong_symbols": 0
+    }
+  ],
+  "fetch_probe": [
+    {
+      "case": "sam3-fp16-cache1-r0",
+      "model": "sam3",
+      "mode": "fp16",
+      "storage": 1,
+      "repeat": 0,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          0.870248,
+          0.864268,
+          0.847018,
+          0.861908,
+          0.848397,
+          0.837737,
+          0.836508,
+          0.839537,
+          0.863668,
+          0.841967,
+          0.857498,
+          0.834107,
+          0.832748,
+          0.840707,
+          0.829417,
+          0.821487
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          0.689713,
+          0.692982,
+          0.688072,
+          0.681813,
+          0.680082,
+          0.676712,
+          0.689002,
+          0.668192,
+          0.668962,
+          0.664671,
+          0.676892,
+          0.675832,
+          0.679562,
+          0.674812,
+          0.670582,
+          0.660401
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 0.841337,
+      "current_median_ms": 0.676802,
+      "median_ms_reduction_percent": 19.55637277333577
+    },
+    {
+      "case": "sam3-fp16-cache1-r1",
+      "model": "sam3",
+      "mode": "fp16",
+      "storage": 1,
+      "repeat": 1,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          0.846567,
+          0.835917,
+          0.838667,
+          0.833856,
+          0.826017,
+          0.831226,
+          0.830117,
+          0.828377,
+          0.845737,
+          0.833058,
+          0.827516,
+          0.830537,
+          0.825277,
+          0.829697,
+          0.834217,
+          0.838067
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          0.702193,
+          0.689173,
+          0.687993,
+          0.716333,
+          0.691083,
+          0.686242,
+          0.698082,
+          0.690832,
+          0.688512,
+          0.681222,
+          0.669371,
+          0.676832,
+          0.697853,
+          0.678772,
+          0.678512,
+          0.674342
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 0.8321419999999999,
+      "current_median_ms": 0.6882524999999999,
+      "median_ms_reduction_percent": 17.29145987103163
+    },
+    {
+      "case": "sam3-fp16-cache1-r2",
+      "model": "sam3",
+      "mode": "fp16",
+      "storage": 1,
+      "repeat": 2,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          0.896919,
+          0.9495,
+          0.92975,
+          0.937001,
+          1.08669,
+          0.90912,
+          0.94001,
+          0.943701,
+          0.939211,
+          0.917609,
+          1.03778,
+          0.945191,
+          0.90478,
+          0.919749,
+          0.913299,
+          0.884589
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          0.697203,
+          0.706593,
+          0.673702,
+          0.670831,
+          0.674491,
+          0.680382,
+          0.682142,
+          0.684432,
+          0.680992,
+          0.681882,
+          0.675632,
+          0.670392,
+          0.666772,
+          0.676792,
+          0.687012,
+          0.694593
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 0.9333754999999999,
+      "current_median_ms": 0.680687,
+      "median_ms_reduction_percent": 27.07254475824573
+    },
+    {
+      "case": "sam3-fp16-cache2-r0",
+      "model": "sam3",
+      "mode": "fp16",
+      "storage": 2,
+      "repeat": 0,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 2,
+        "archive_unchanged": false,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          1.79138,
+          1.78818,
+          1.78673,
+          1.7665,
+          1.77575,
+          1.74812,
+          2.01235,
+          1.77196,
+          1.96749,
+          1.73701,
+          1.73675,
+          1.81924,
+          1.78106,
+          1.79487,
+          1.7948,
+          1.78916
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 2,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          1.12647,
+          1.14049,
+          1.11135,
+          1.11801,
+          1.14344,
+          1.12823,
+          1.1263,
+          1.11137,
+          1.10414,
+          1.12778,
+          1.14836,
+          1.15649,
+          1.10672,
+          1.11918,
+          1.10829,
+          1.10656
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 1.787455,
+      "current_median_ms": 1.12274,
+      "median_ms_reduction_percent": 37.18778934294849
+    },
+    {
+      "case": "sam3-fp16-cache2-r1",
+      "model": "sam3",
+      "mode": "fp16",
+      "storage": 2,
+      "repeat": 1,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 2,
+        "archive_unchanged": false,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          1.79115,
+          1.84894,
+          1.80422,
+          1.92716,
+          1.78198,
+          1.92978,
+          1.87452,
+          1.7464,
+          1.90997,
+          1.75532,
+          1.83447,
+          1.78245,
+          1.78474,
+          1.69973,
+          1.90392,
+          1.7089
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 2,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          1.11236,
+          1.11383,
+          1.1315,
+          1.11951,
+          1.10202,
+          1.12796,
+          1.1236,
+          1.1043,
+          1.10624,
+          1.10034,
+          1.10081,
+          1.10015,
+          1.09705,
+          1.10235,
+          1.09594,
+          1.09742
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 1.797685,
+      "current_median_ms": 1.103325,
+      "median_ms_reduction_percent": 38.62523189546556
+    },
+    {
+      "case": "sam3-fp16-cache2-r2",
+      "model": "sam3",
+      "mode": "fp16",
+      "storage": 2,
+      "repeat": 2,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 2,
+        "archive_unchanged": false,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          1.7414,
+          1.74939,
+          1.7632,
+          1.79398,
+          1.757,
+          1.75054,
+          1.73019,
+          1.75139,
+          1.73584,
+          1.70043,
+          1.6751,
+          1.67136,
+          1.67123,
+          1.68685,
+          1.66659,
+          1.75201
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 2,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          1.05767,
+          1.1498,
+          1.1297,
+          1.08821,
+          1.05487,
+          1.01908,
+          1.02347,
+          1.13467,
+          1.05966,
+          1.0174,
+          1.13395,
+          1.07709,
+          1.06485,
+          1.1201,
+          1.05822,
+          1.11472
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 1.73862,
+      "current_median_ms": 1.07097,
+      "median_ms_reduction_percent": 38.401145736273605
+    },
+    {
+      "case": "sam3-bf16_reference-cache1-r0",
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "storage": 1,
+      "repeat": 0,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          0.854528,
+          0.859188,
+          0.845188,
+          0.849428,
+          0.852978,
+          0.863347,
+          0.849877,
+          0.872558,
+          0.852898,
+          0.854378,
+          0.854708,
+          0.848077,
+          0.845067,
+          0.849538,
+          0.845538,
+          0.882759
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          0.692513,
+          0.705372,
+          0.685682,
+          0.668612,
+          0.671892,
+          0.667192,
+          0.676162,
+          0.676782,
+          0.706823,
+          0.675672,
+          0.676562,
+          0.663682,
+          0.668771,
+          0.667671,
+          0.675102,
+          0.671322
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 0.852938,
+      "current_median_ms": 0.675387,
+      "median_ms_reduction_percent": 20.81640166108205
+    },
+    {
+      "case": "sam3-bf16_reference-cache2-r0",
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "storage": 2,
+      "repeat": 0,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 2,
+        "archive_unchanged": false,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          1.83201,
+          1.85121,
+          1.80821,
+          1.77248,
+          1.80866,
+          1.70209,
+          1.77946,
+          1.74573,
+          1.78691,
+          1.83373,
+          1.77517,
+          1.76865,
+          1.83815,
+          1.69779,
+          1.75895,
+          1.74455
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 2,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 45156352,
+        "samples_ms": [
+          1.11422,
+          1.12257,
+          1.11209,
+          1.10617,
+          1.15827,
+          1.10382,
+          1.09935,
+          1.10131,
+          1.10175,
+          1.09533,
+          1.13196,
+          1.09831,
+          1.10569,
+          1.09166,
+          1.09977,
+          1.09654
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 1.777315,
+      "current_median_ms": 1.102785,
+      "median_ms_reduction_percent": 37.95219192996177
+    },
+    {
+      "case": "sam3.1-fp16-cache1-r0",
+      "model": "sam3.1",
+      "mode": "fp16",
+      "storage": 1,
+      "repeat": 0,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          0.853997,
+          0.862178,
+          0.845747,
+          0.844507,
+          0.839087,
+          0.965952,
+          0.846847,
+          0.949111,
+          0.863228,
+          0.841488,
+          0.835227,
+          0.831017,
+          0.837687,
+          0.850298,
+          0.836478,
+          0.844717
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          0.693923,
+          0.706613,
+          0.685422,
+          0.688123,
+          0.679882,
+          0.666472,
+          0.673542,
+          0.685952,
+          0.692943,
+          0.678292,
+          0.679482,
+          0.674562,
+          0.678832,
+          0.671572,
+          0.672801,
+          0.661392
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 0.845232,
+      "current_median_ms": 0.679157,
+      "median_ms_reduction_percent": 19.648451549397087
+    },
+    {
+      "case": "sam3.1-fp16-cache1-r1",
+      "model": "sam3.1",
+      "mode": "fp16",
+      "storage": 1,
+      "repeat": 1,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          0.860368,
+          0.861237,
+          0.832138,
+          0.828276,
+          0.826127,
+          0.833807,
+          0.837357,
+          0.828637,
+          0.858268,
+          0.847138,
+          0.838888,
+          0.843047,
+          0.837596,
+          0.832727,
+          0.841488,
+          0.834137
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          0.701373,
+          0.693012,
+          0.678053,
+          0.687003,
+          0.688182,
+          0.685852,
+          0.706653,
+          0.679442,
+          0.685392,
+          0.670481,
+          0.669052,
+          0.668082,
+          0.677672,
+          0.684882,
+          0.684823,
+          0.711463
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 0.8374765,
+      "current_median_ms": 0.685137,
+      "median_ms_reduction_percent": 18.19030145920512
+    },
+    {
+      "case": "sam3.1-fp16-cache1-r2",
+      "model": "sam3.1",
+      "mode": "fp16",
+      "storage": 1,
+      "repeat": 2,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          0.89184,
+          0.891678,
+          0.885689,
+          0.879339,
+          0.878868,
+          0.887809,
+          0.878418,
+          0.876088,
+          0.874218,
+          0.875558,
+          0.876328,
+          0.864648,
+          0.91986,
+          0.994232,
+          0.895379,
+          0.875018
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          0.700563,
+          0.685082,
+          0.700043,
+          0.678832,
+          0.63282,
+          0.628851,
+          0.63418,
+          0.654231,
+          0.686642,
+          0.699203,
+          0.679853,
+          0.624331,
+          0.646011,
+          0.670901,
+          0.688592,
+          0.656401
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 0.8791035,
+      "current_median_ms": 0.6748665,
+      "median_ms_reduction_percent": 23.232418025863847
+    },
+    {
+      "case": "sam3.1-fp16-cache2-r0",
+      "model": "sam3.1",
+      "mode": "fp16",
+      "storage": 2,
+      "repeat": 0,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 2,
+        "archive_unchanged": false,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          1.55722,
+          1.72341,
+          1.89614,
+          1.64306,
+          1.56113,
+          1.59921,
+          1.60164,
+          1.76967,
+          1.64694,
+          1.78873,
+          1.67776,
+          1.77083,
+          1.7543,
+          1.66028,
+          1.52947,
+          1.74391
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 2,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          1.12578,
+          1.16487,
+          1.12381,
+          1.12803,
+          1.13639,
+          1.13086,
+          1.11862,
+          1.15184,
+          1.10795,
+          1.11393,
+          1.11224,
+          1.10482,
+          1.10881,
+          1.11298,
+          1.10705,
+          1.09952
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 1.66902,
+      "current_median_ms": 1.116275,
+      "median_ms_reduction_percent": 33.11793747228913
+    },
+    {
+      "case": "sam3.1-fp16-cache2-r1",
+      "model": "sam3.1",
+      "mode": "fp16",
+      "storage": 2,
+      "repeat": 1,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 2,
+        "archive_unchanged": false,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          1.96127,
+          1.9443,
+          1.76904,
+          1.79058,
+          1.81901,
+          2.02142,
+          2.06797,
+          1.79798,
+          1.81901,
+          1.82405,
+          1.75062,
+          1.827,
+          1.76586,
+          1.74458,
+          1.8204,
+          1.76064
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 2,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          1.09599,
+          1.10986,
+          1.10278,
+          1.11575,
+          1.09613,
+          1.09817,
+          1.09386,
+          1.09589,
+          1.09075,
+          1.10661,
+          1.09249,
+          1.12098,
+          1.22025,
+          1.0869,
+          1.09566,
+          1.08348
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 1.81901,
+      "current_median_ms": 1.09606,
+      "median_ms_reduction_percent": 39.74414654125046
+    },
+    {
+      "case": "sam3.1-fp16-cache2-r2",
+      "model": "sam3.1",
+      "mode": "fp16",
+      "storage": 2,
+      "repeat": 2,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 2,
+        "archive_unchanged": false,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          1.76032,
+          1.75561,
+          1.75899,
+          1.74379,
+          1.95337,
+          1.72997,
+          1.73899,
+          1.73505,
+          1.75597,
+          1.74459,
+          1.73614,
+          1.93194,
+          1.762,
+          1.73218,
+          1.75267,
+          1.88164
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 2,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          1.04197,
+          1.05277,
+          1.06925,
+          1.15428,
+          1.03768,
+          1.04375,
+          1.03685,
+          1.04298,
+          1.03456,
+          1.04204,
+          1.03582,
+          1.04364,
+          1.03687,
+          1.31175,
+          1.7673,
+          1.13891
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 1.75414,
+      "current_median_ms": 1.04331,
+      "median_ms_reduction_percent": 40.52299132338354
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache1-r0",
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "storage": 1,
+      "repeat": 0,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 47024128,
+        "samples_ms": [
+          0.832067,
+          0.862848,
+          0.846537,
+          0.837617,
+          0.825447,
+          0.836967,
+          0.860998,
+          0.827786,
+          0.828107,
+          0.833937,
+          0.833387,
+          0.837067,
+          0.838787,
+          0.826617,
+          0.825637,
+          0.828537
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 1,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 47024128,
+        "samples_ms": [
+          0.692222,
+          0.697253,
+          0.697232,
+          0.683592,
+          0.675612,
+          0.670081,
+          0.663771,
+          0.667061,
+          0.673742,
+          0.674782,
+          0.672442,
+          0.714884,
+          0.674012,
+          0.673722,
+          0.666342,
+          0.668851
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": null,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 0.833662,
+      "current_median_ms": 0.673877,
+      "median_ms_reduction_percent": 19.166640676917034
+    },
+    {
+      "case": "sam3.1-bf16_reference-cache2-r0",
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "storage": 2,
+      "repeat": 0,
+      "files": 40,
+      "all_bytes_exact": true,
+      "baseline": {
+        "storage": 2,
+        "archive_unchanged": false,
+        "peak_extra_cuda_bytes": 47024128,
+        "samples_ms": [
+          1.74209,
+          1.70524,
+          1.69718,
+          1.74074,
+          1.83139,
+          1.73817,
+          1.67903,
+          1.69101,
+          1.68855,
+          1.68731,
+          1.68327,
+          1.68508,
+          1.74514,
+          1.73413,
+          1.73443,
+          1.75055
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "current": {
+        "storage": 2,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 47024128,
+        "samples_ms": [
+          1.13959,
+          1.13754,
+          1.11025,
+          1.22191,
+          1.147,
+          1.21311,
+          1.16359,
+          1.13377,
+          1.09732,
+          1.1156,
+          1.10448,
+          1.09797,
+          1.11086,
+          1.1193,
+          1.10731,
+          1.09741
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      },
+      "baseline_median_ms": 1.7196850000000001,
+      "current_median_ms": 1.1174499999999998,
+      "median_ms_reduction_percent": 35.02007635119224
+    }
+  ],
+  "fp16_fetch_measurement": [
+    {
+      "model": "sam3",
+      "storage": 1,
+      "process_pairs": 3,
+      "samples_per_process": 16,
+      "baseline_ms": 0.841337,
+      "current_ms": 0.680687,
+      "reduction_percent": 19.09460774933231,
+      "baseline_peak_extra_bytes": [
+        45156352,
+        45156352,
+        45156352
+      ],
+      "current_peak_extra_bytes": [
+        45156352,
+        45156352,
+        45156352
+      ]
+    },
+    {
+      "model": "sam3",
+      "storage": 2,
+      "process_pairs": 3,
+      "samples_per_process": 16,
+      "baseline_ms": 1.787455,
+      "current_ms": 1.103325,
+      "reduction_percent": 38.27397053352393,
+      "baseline_peak_extra_bytes": [
+        45156352,
+        45156352,
+        45156352
+      ],
+      "current_peak_extra_bytes": [
+        45156352,
+        45156352,
+        45156352
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "storage": 1,
+      "process_pairs": 3,
+      "samples_per_process": 16,
+      "baseline_ms": 0.845232,
+      "current_ms": 0.679157,
+      "reduction_percent": 19.648451549397087,
+      "baseline_peak_extra_bytes": [
+        46680064,
+        46680064,
+        46680064
+      ],
+      "current_peak_extra_bytes": [
+        46680064,
+        46680064,
+        46680064
+      ]
+    },
+    {
+      "model": "sam3.1",
+      "storage": 2,
+      "process_pairs": 3,
+      "samples_per_process": 16,
+      "baseline_ms": 1.75414,
+      "current_ms": 1.09606,
+      "reduction_percent": 37.51581971792445,
+      "baseline_peak_extra_bytes": [
+        46680064,
+        46680064,
+        46680064
+      ],
+      "current_peak_extra_bytes": [
+        46680064,
+        46680064,
+        46680064
+      ]
+    }
+  ],
+  "measurement_scope": "Guarded VideoPredictor::fetch only, after real four-frame/person inference. Three independent alternating baseline/current process pairs per model/storage, 16 synchronized samples and three warmups per process; no competing GPU work. Peak additional allocated CUDA bytes above live model/cache/retained expected outputs. Ordinary C++ calls outside inference mode retain a compatibility clone and are tested for mutability, not separately timed. Filesystem reads use host OS page cache; no cold-storage or whole-model throughput claim.",
+  "sdk": {
+    "overlays": {
+      "prerequisite": "output-cache-sdk-overlay/overlays.json (includes base/media/seek/preprocess recipe)",
+      "prerequisite_sha256": "7df7929e9fc91cf8e4ab82c7521aca1b128d2e25260a688754f165cdce31eff2",
+      "notes": "Apply the matching archive at the preceding complete SDK root. Reuses all dependency and weight layers. Read-only fetch retains packed archives and avoids resident cloning, repacking, device-to-host transfer and disk rewrite. All cached objects and frames remain available. C ABI1 and existing C++ layouts are preserved. No new weights or dependencies.",
+      "overlays": [
+        {
+          "variant": "cpu",
+          "archive": "cpu.tar.gz",
+          "bytes": 1957790,
+          "sha256": "a79ef5c3ab49cca16fdc6ae0726bce0a36a0ca9e9afcf038b91bfd9d92d05d1f",
+          "files": [
+            {
+              "path": "bin/sam3_image_benchmark",
+              "bytes": 124168,
+              "sha256": "9014aa6ed400d20bd88a7d4d4b4ab325b4cd1b4eff46b01c5d33ee9da3f74bc9"
+            },
+            {
+              "path": "bin/sam3_image_results_test",
+              "bytes": 88392,
+              "sha256": "2979402bb05e34a30ece8c5fc8942289c94dd4345193d33b9e56ba4925ea4174"
+            },
+            {
+              "path": "bin/sam3_predictor_c_probe",
+              "bytes": 39584,
+              "sha256": "1aa9e2a094fd6e085da7d03713da8f1ae4176677389fd0909d83d26ffe3e0ded"
+            },
+            {
+              "path": "bin/sam3_rank_executor_test",
+              "bytes": 98504,
+              "sha256": "b3f3e2888c04c01755ef82d8d770bf9436b820b89755c3aaf33b678e4c96efaa"
+            },
+            {
+              "path": "bin/sam3_rotary_test",
+              "bytes": 72248,
+              "sha256": "f306259f5a6e384c50432dfc4d16ff0cd3ba2e15f0cf8de58a20984569f7e1be"
+            },
+            {
+              "path": "bin/sam3_video_cache_fetch_probe",
+              "bytes": 137624,
+              "sha256": "762b37121b5d7bda7ff684fdaabce4041fc041ae62bca94efc48a82e1176394e"
+            },
+            {
+              "path": "bin/sam3_video_collective_probe",
+              "bytes": 191112,
+              "sha256": "eb187b01926ddf4b0e4f363083cfca0ab28e17b22f1d35bc668614851f9209e0"
+            },
+            {
+              "path": "bin/sam3_video_collective_test",
+              "bytes": 82664,
+              "sha256": "eec4381313842d71c610b3442838b715c5444da5d3f176e564ae2b4516f5eb47"
+            },
+            {
+              "path": "bin/sam3_video_mask_cache_benchmark",
+              "bytes": 50264,
+              "sha256": "30ad4455f5f8b4e046c4bd7b5c7efb280b7f729083a1c2056908f0183b243d77"
+            },
+            {
+              "path": "bin/sam3_video_mask_cache_test",
+              "bytes": 64296,
+              "sha256": "2b0d03cd51d3a55bf57bc9e623b79b35c135feb0107c3c9ec678867a0f3a2da2"
+            },
+            {
+              "path": "bin/sam3_video_multidevice_probe",
+              "bytes": 96304,
+              "sha256": "89d3df51927aac04b3a747465fd94805a0854ae15f66d1c4c640386a0c89abe6"
+            },
+            {
+              "path": "bin/sam3_vision_positions_benchmark",
+              "bytes": 83712,
+              "sha256": "ae94bb6feb2dcbc6e570aac8a6b7f2570552804aec2c075bfca0a92e381a4ee5"
+            },
+            {
+              "path": "lib/libsam3_native.so",
+              "bytes": 4546576,
+              "sha256": "50ced08fb12550f68a76bd6df71154f673f24036510be86a8cd108c7660b41c7"
+            }
+          ],
+          "complete_recovery_entries_verified": 158
+        },
+        {
+          "variant": "cuda",
+          "archive": "cuda.tar.gz",
+          "bytes": 2317779,
+          "sha256": "f2d6c294cd2c9352aaa2b074efcc9373d9fcade8e62086cf4e0e5134b0d72547",
+          "files": [
+            {
+              "path": "bin/sam3_image_benchmark",
+              "bytes": 129048,
+              "sha256": "e82bb43dd69720bcfeae3a7c09c1c44d0a9dba4f0fa5d96980bf9e08a91a7b18"
+            },
+            {
+              "path": "bin/sam3_image_results_test",
+              "bytes": 98664,
+              "sha256": "aa91f34c7096a9b48c7f7645a779d20a5527b3308e299402ff11f72efdff2c67"
+            },
+            {
+              "path": "bin/sam3_predictor_c_probe",
+              "bytes": 39584,
+              "sha256": "2d19dcc15f477af5b68b17fe6bd6f6d2e9c3c165746fb0f95856f665a7bbcd2d"
+            },
+            {
+              "path": "bin/sam3_rank_executor_test",
+              "bytes": 98504,
+              "sha256": "1410012446a8a68e0f8af7d0fcc21f9831796b2c383e8b51961172b35361bbed"
+            },
+            {
+              "path": "bin/sam3_rotary_stream_test",
+              "bytes": 117200,
+              "sha256": "98e1f0d9441ce0280f2dc06e05561809bfc1f7e28fa2031d34f7f6b9c1f1dc29"
+            },
+            {
+              "path": "bin/sam3_rotary_test",
+              "bytes": 72248,
+              "sha256": "2d227bd67880c3d2630bdbc2c87182926644c6ef02f750249139dfee6668a424"
+            },
+            {
+              "path": "bin/sam3_video_cache_fetch_probe",
+              "bytes": 138328,
+              "sha256": "d2ec0b0d6aa7da13d795bc443da2f50157a211a9f2bbe93db5c4a85abe31e2fd"
+            },
+            {
+              "path": "bin/sam3_video_collective_probe",
+              "bytes": 191112,
+              "sha256": "a9b81d707dc1d4f460832a6dce0146353b9fcbdf4ea8145085f2e51e9d412245"
+            },
+            {
+              "path": "bin/sam3_video_collective_test",
+              "bytes": 82664,
+              "sha256": "16ccc76dd622556fdd7e69c90ecf49f546c735bcbba6c35a9c14c651dd38d0d7"
+            },
+            {
+              "path": "bin/sam3_video_mask_cache_benchmark",
+              "bytes": 55088,
+              "sha256": "6b36127bc35ee4e2d2acbed0aa495b9272d7d01f5db0698682e83c0fee05499f"
+            },
+            {
+              "path": "bin/sam3_video_mask_cache_test",
+              "bytes": 64296,
+              "sha256": "6dd108fb038707855b2c94aba004bdcc1fef5c33907f2815fabd28b690f40776"
+            },
+            {
+              "path": "bin/sam3_video_multidevice_probe",
+              "bytes": 96304,
+              "sha256": "237d339f86f1afdac5316fcdaa3d8802cc2f648009879098d1ab6c5561514a35"
+            },
+            {
+              "path": "bin/sam3_vision_positions_benchmark",
+              "bytes": 84440,
+              "sha256": "7ceab000c966a07695e85642ff3fe612fcd5e966e9104260d2c9cb41930f9be8"
+            },
+            {
+              "path": "lib/libsam3_native.so",
+              "bytes": 6015392,
+              "sha256": "e0fdd13b14eeeed386812413fca46f797db5ab8ca12941ba4ad3978a32108ce3"
+            }
+          ],
+          "complete_recovery_entries_verified": 192
+        }
+      ]
+    },
+    "runtime": {
+      "recovered_operator_checks": [
+        {
+          "sdk": "cpu",
+          "tool": "sam3_video_mask_cache_test",
+          "device": "cpu",
+          "passed": true
+        },
+        {
+          "sdk": "cuda",
+          "tool": "sam3_video_mask_cache_test",
+          "device": "cuda",
+          "passed": true
+        }
+      ],
+      "c_api_exact_output_files": 153,
+      "c_api_model": "sam3.1",
+      "c_api_precision": "fp16",
+      "c_api_source": "image",
+      "c_api_tracking_ranks": 2,
+      "c_api_parallel": true,
+      "workspace_runtime_libraries": [
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libavcodec.so.60",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libavformat.so.60",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libavutil.so.58",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libbz2.so.1.0",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libc10.so",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libc10_cuda.so",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcublas-e70f38ef.so.13",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcublasLt-656298c8.so.13",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcudart-96c42e41.so.13",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcudart.so.13",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcudnn.so.9",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcudnn_engines_precompiled.so.9",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcudnn_engines_runtime_compiled.so.9",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcudnn_graph.so.9",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcudnn_heuristic.so.9",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcufft.so.12",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcupti-e2f9ed86.so.13",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcurand.so.10",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libcusparse.so.12",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libgomp-98b21ff3.so.1",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libicudata.so.74",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libicui18n.so.74",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libicuuc.so.74",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libjpeg.so.8",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/liblzma.so.5",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libnvJitLink.so.13",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libopencv_core.so.410",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libopencv_imgproc.so.410",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libsam3_native.so",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libswresample.so.4",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libswscale.so.7",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libtorch.so",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libtorch_cpu.so",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libtorch_cuda.so",
+        "/workspace/cache-fetch-recovered-cuda/bin/../lib/libz.so.1"
+      ],
+      "no_python_or_triton": true,
+      "storage": "packed_disk",
+      "temporary_files_cleaned": true,
+      "recovered_fetch_probe_exact_files": 40,
+      "recovered_fetch_probe": {
+        "storage": 2,
+        "archive_unchanged": true,
+        "peak_extra_cuda_bytes": 46680064,
+        "samples_ms": [
+          1.11737,
+          1.13001,
+          1.11174,
+          1.119,
+          1.14716,
+          1.11338,
+          1.10936,
+          1.10818
+        ],
+        "exact": true,
+        "isolated": true,
+        "cached_propagation": true,
+        "corruption_recovery": true,
+        "legacy_pin_reset": true
+      }
+    }
+  },
+  "private_artifacts": {
+    "bucket": "RamRom/sam3-turing-native-20260922",
+    "sdk_prefix": "cache-fetch-sdk-overlay",
+    "evidence_prefix": "native-foundation/cache-fetch-linux"
+  },
+  "limits": [
+    "No GitHub Actions; Windows/Turing validation remains user-owned.",
+    "No weights, dependencies, model variants or inference count limits added.",
+    "Current metadata and suppression still postprocess fetched masks; whole-session recovery remains nontransactional.",
+    "Reads may compact resident leftovers from a previous failed write; ordinary packed reads preserve archive identity.",
+    "Recorded native exactness does not resolve the preceding source-reference FP16 residual."
+  ]
+}

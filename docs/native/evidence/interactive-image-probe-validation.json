@@ -1,0 +1,154 @@
+{
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "image": "assets/images/truck.jpg",
+  "points": [
+    [
+      500.0,
+      600.0
+    ],
+    [
+      100.0,
+      100.0
+    ]
+  ],
+  "labels": [
+    1,
+    0
+  ],
+  "cases": [
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "stage": "initial",
+      "count": 3,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.435303837060928
+    },
+    {
+      "model": "sam3",
+      "mode": "bf16_reference",
+      "stage": "refined",
+      "count": 1,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.435303837060928
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "stage": "initial",
+      "count": 3,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.325758012011647
+    },
+    {
+      "model": "sam3",
+      "mode": "fp16",
+      "stage": "refined",
+      "count": 1,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.325758012011647
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "stage": "initial",
+      "count": 3,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.485244583338499
+    },
+    {
+      "model": "sam3",
+      "mode": "fp32",
+      "stage": "refined",
+      "count": 1,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.485244583338499
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "stage": "initial",
+      "count": 3,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.320282636210322
+    },
+    {
+      "model": "sam3.1",
+      "mode": "bf16_reference",
+      "stage": "refined",
+      "count": 1,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.320282636210322
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "stage": "initial",
+      "count": 3,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.564956199377775
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp16",
+      "stage": "refined",
+      "count": 1,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.564956199377775
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "stage": "initial",
+      "count": 3,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.717594040557742
+    },
+    {
+      "model": "sam3.1",
+      "mode": "fp32",
+      "stage": "refined",
+      "count": 1,
+      "differing_mask_pixels": 0,
+      "max_iou_error": 0,
+      "max_low_res_error": 0,
+      "child_path": "/nonexistent",
+      "process_elapsed_seconds": 6.717594040557742
+    }
+  ],
+  "scope": "Real-image interactive image host, two-step refinement with feature reuse. SAM3.1 uses its interactive neural modules; video object gating/memory/multiplex is separate."
+}

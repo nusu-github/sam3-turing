@@ -1,0 +1,36 @@
+{
+  "cases": [
+    {
+      "case": "text-0-grounding",
+      "text": "truck",
+      "detections": 1,
+      "max_box_error": 0,
+      "max_score_error": 0,
+      "differing_mask_pixels": 0,
+      "elapsed_seconds": 10.726980920881033,
+      "child_path": "/nonexistent"
+    },
+    {
+      "case": "text-1-grounding",
+      "text": "wheel",
+      "detections": 4,
+      "max_box_error": 0,
+      "max_score_error": 0,
+      "differing_mask_pixels": 0,
+      "elapsed_seconds": 10.347659140825272,
+      "child_path": "/nonexistent"
+    },
+    {
+      "case": "text-2-grounding",
+      "text": "a yellow butterfly",
+      "detections": 0,
+      "max_box_error": 0,
+      "max_score_error": 0,
+      "differing_mask_pixels": 0,
+      "elapsed_seconds": 10.67091909237206,
+      "child_path": "/nonexistent"
+    }
+  ],
+  "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+  "scope": "Python prepares/checks fixtures only. Native child normalizes/tokenizes UTF-8 text and runs image grounding; standalone LibTorch packaging and other model functions remain pending."
+}

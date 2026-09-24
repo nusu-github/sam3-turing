@@ -1,0 +1,10 @@
+{
+  "runtime_source_commit": "1ee344087a2d8c05dd18ae9254122d668b2a2a6d",
+  "cpu_ctest_passed": 27,
+  "cuda_ctest_passed": 51,
+  "raw_cuda_core_sha256": "12e381e9781fb6cec21b45ce85ca34bcc521c6e7a4c0bd5afcfb1cc1a42256ce",
+  "uncommitted_runtime_changes": false,
+  "sm75_resources_file": "final-sm75-resources.txt",
+  "sm75_execution_claimed": false,
+  "notes": "Complete suites repeated after the final Float8/other-floating dtype dispatch guard and after restoring the rejected weight-layout candidate. The raw core hash matches the validated position-fusion ON build. Resource counts are compiled Linux sm75 code, not Windows/Turing execution. No tolerance relaxed."
+}

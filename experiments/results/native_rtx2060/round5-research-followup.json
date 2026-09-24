@@ -1,0 +1,26 @@
+{
+  "date": "2026-09-24",
+  "scite": [
+    {
+      "title": "SageBwd: A Trainable Low-bit Attention",
+      "doi": "10.48550/arxiv.2603.02170",
+      "tally": {
+        "total": 2,
+        "supporting": 0,
+        "contrasting": 0,
+        "mentioning": 2,
+        "citingPublications": 2
+      }
+    }
+  ],
+  "github": {
+    "url": "https://github.com/thu-ml/SageAttention/blob/main/README.md",
+    "readme_blob_sha": "88a3fb78f881eb8253d842a31be91912dd5ede9b",
+    "observed_claims": [
+      "README lists optimized Ampere/Ada/Hopper kernels, Blackwell FP4 in a separate directory.",
+      "README recommends SageAttention2 for precision-sensitive applications.",
+      "Attention TOPS excludes quantization and smoothing; this is not end-to-end latency."
+    ]
+  },
+  "decision": "SageBwd's 2026 result concerns trainable attention/pretraining. Abstract/metadata reviewed only; not evidence of a SAM3 PTQ or SM75 inference improvement. Continue native SM75 attention scope measurements; mean-K smoothing is a separate possible hypothesis, not implemented or verified here."
+}

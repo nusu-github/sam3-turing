@@ -1,0 +1,24 @@
+{
+  "device": "cuda",
+  "torch": "2.10.0a0+b558c986e8.nv25.11",
+  "cases": [
+    {
+      "mode": "fp16",
+      "exact_tensor_comparisons": 361,
+      "operations": 8,
+      "scope": "Same neural workflows with resident/offloaded/paged state; old conditioning frame unchanged and temporary archives cleaned after session destruction."
+    },
+    {
+      "mode": "fp32",
+      "exact_tensor_comparisons": 361,
+      "operations": 8,
+      "scope": "Same neural workflows with resident/offloaded/paged state; old conditioning frame unchanged and temporary archives cleaned after session destruction."
+    },
+    {
+      "mode": "bf16_reference",
+      "exact_tensor_comparisons": 361,
+      "operations": 8,
+      "scope": "Same neural workflows with resident/offloaded/paged state; old conditioning frame unchanged and temporary archives cleaned after session destruction."
+    }
+  ]
+}

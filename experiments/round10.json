@@ -1,8 +1,0 @@
-{
-  "stock_continued": {"precision": "bf16", "cache": true},
-  "accepted_eager": {"final": true},
-  "accepted_compiled": {"final": true, "compile": true},
-  "accepted_text_uncached": {"final": true, "compile": true, "public_compile_text": true, "text_cache_size": 0},
-  "accepted_int8": {"final": true, "compile": true, "public_int8": true},
-  "accepted_fixed": {"final": true, "compile": true, "fixed_text": true}
-}

@@ -1,0 +1,124 @@
+{
+  "device": "RTX PRO 4500 Blackwell",
+  "mode": "bf16_reference",
+  "python_free_client": {
+    "language": "C11",
+    "PATH": "/nonexistent",
+    "libpython_linked": false,
+    "libtorch_python_linked": false
+  },
+  "comparisons": {
+    "image": {
+      "checkpoints": 10,
+      "all_exact": true,
+      "retained_after_owner_destruction_exact": true,
+      "tags": [
+        "semantic",
+        "empty_stateless",
+        "point",
+        "cleared",
+        "cleared_twice",
+        "mask_new",
+        "mask_point",
+        "mask_cleared",
+        "mask_replaced",
+        "reset"
+      ]
+    },
+    "sam3": {
+      "checkpoints": 13,
+      "all_exact": true,
+      "retained_after_owner_destruction_exact": true,
+      "tags": [
+        "0.person",
+        "0.person_track",
+        "1.person_track",
+        "2.person_track",
+        "3.person_track",
+        "1.box",
+        "1.box_track",
+        "2.box_track",
+        "2.text_box",
+        "2.fetch",
+        "0.reset_person",
+        "0.point_only",
+        "0.mask_only"
+      ]
+    },
+    "sam31": {
+      "checkpoints": 13,
+      "all_exact": true,
+      "retained_after_owner_destruction_exact": true,
+      "tags": [
+        "0.person",
+        "0.person_track",
+        "1.person_track",
+        "2.person_track",
+        "3.person_track",
+        "1.box",
+        "1.box_track",
+        "2.box_track",
+        "2.text_box",
+        "2.fetch",
+        "0.reset_person",
+        "0.point_only",
+        "0.mask_only"
+      ]
+    }
+  },
+  "sharing": {
+    "3": {
+      "model": 3,
+      "baseline_bytes": 0,
+      "one_owner_bytes": 2045219328,
+      "two_owner_bytes": 2045219328,
+      "second_owner_delta_bytes": 0,
+      "surviving_owner_bytes": 2045219328,
+      "after_release_bytes": 0,
+      "scope": "CUDA allocator active bytes during C API creation/destruction, before frame inference. Shared vision/detector/tracker cores only; per-owner features/history and temporary text loads are excluded."
+    },
+    "31": {
+      "model": 31,
+      "baseline_bytes": 0,
+      "one_owner_bytes": 2096884224,
+      "two_owner_bytes": 2096884224,
+      "second_owner_delta_bytes": 0,
+      "surviving_owner_bytes": 2096884224,
+      "after_release_bytes": 0,
+      "scope": "CUDA allocator active bytes during C API creation/destruction, before frame inference. Shared vision/detector/tracker cores only; per-owner features/history and temporary text loads are excluded."
+    }
+  },
+  "ctest": {
+    "cuda": 28,
+    "custom_cuda_disabled": 16
+  },
+  "callback_checks": [
+    "provider failure and reset recovery",
+    "provider/output callback reentry returns BUSY",
+    "cancel() within buffered output callback emits exactly one result",
+    "callback return1 emits exactly one result",
+    "callback failure returns CALLBACK_ERROR and emits exactly one result",
+    "retained results survive context and both owners destruction",
+    "independent state with shared immutable cores"
+  ],
+  "scope": "Finite C-boundary fixtures on development LibTorch. Existing C++ original-reference settings/adapters remain authoritative. No new unmodified-source reverse parity claim. No Actions, Windows or Turing physical tests; portable SDK/codecs/multiGPU/CPU stability/broader quality remain.",
+  "legacy_lowlevel_regression": {
+    "cases": [
+      {
+        "model": "sam3",
+        "mode": "bf16_reference",
+        "kind": "video",
+        "exact_comparisons": 46,
+        "child_path": "/nonexistent"
+      },
+      {
+        "model": "sam3.1",
+        "mode": "bf16_reference",
+        "kind": "video",
+        "exact_comparisons": 40,
+        "child_path": "/nonexistent"
+      }
+    ],
+    "scope": "Pure C11 client linked to the shared library. Image two-stage outputs and video sessions compare prior original-parity fixture outputs; Batch outputs have a separate component-composition comparison; ABI lifetime/callback checks run inside C. Grounding count/raw shape smoke here; separate report covers detailed geometry/text/grounding parity."
+  }
+}

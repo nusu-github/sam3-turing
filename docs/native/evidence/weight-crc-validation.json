@@ -1,0 +1,644 @@
+{
+  "change": "Complete weight CRC using existing zlib; bounded1GiB chunks; unchanged weight format/ABI/precision",
+  "baseline_commit": "e61e81bf3b518c059b6ae6dc8308b19e03b4abbd",
+  "full_ctest": {
+    "cpu": 23,
+    "cuda": 41
+  },
+  "final_weight_edge_ctest": {
+    "cpu": 2,
+    "cuda": 3
+  },
+  "large_crc": {
+    "bytes": 1073741841,
+    "crc32": "a42dcf87",
+    "checks": [
+      "valid payload",
+      "nonzero tail",
+      "corruption beyond1GiB",
+      "empty valid CRC",
+      "empty invalid CRC"
+    ]
+  },
+  "c_api": [
+    {
+      "case": "3-video-cache1",
+      "files": 195,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "3-video-cache2",
+      "files": 195,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-video-cache1",
+      "files": 189,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-video-cache2",
+      "files": 189,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-image-cache1",
+      "files": 153,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    },
+    {
+      "case": "31-image-cache2",
+      "files": 153,
+      "exact": true,
+      "changed": [],
+      "temporary_files_cleaned": true
+    }
+  ],
+  "symbols": [
+    {
+      "variant": "cpu",
+      "old": 462,
+      "new": 462,
+      "removed": [],
+      "added": []
+    },
+    {
+      "variant": "cuda",
+      "old": 469,
+      "new": 469,
+      "removed": [],
+      "added": []
+    }
+  ],
+  "benchmarks": [
+    {
+      "kind": "cpu",
+      "model": "all",
+      "medians_seconds": {
+        "cache-fetch": 18.7658,
+        "weight-crc": 2.61815
+      },
+      "reduction_percent": 86.04828997431497
+    },
+    {
+      "kind": "cuda",
+      "model": "sam3",
+      "medians_seconds": {
+        "cache-fetch": 9.496996365,
+        "weight-crc": 1.577104785
+      },
+      "reduction_percent": 83.393646534264
+    },
+    {
+      "kind": "cuda",
+      "model": "sam3.1",
+      "medians_seconds": {
+        "cache-fetch": 9.564726652,
+        "weight-crc": 1.59083883
+      },
+      "reduction_percent": 83.36764982544113
+    }
+  ],
+  "benchmark_samples": [
+    {
+      "kind": "cpu",
+      "variant": "cache-fetch",
+      "repeat": -1,
+      "model": "all",
+      "warmup": true,
+      "process_wall_seconds": 18.903697630390525,
+      "tensors": 3088,
+      "logical_bytes": 6951840400,
+      "seconds": 18.6247
+    },
+    {
+      "kind": "cpu",
+      "variant": "weight-crc",
+      "repeat": -1,
+      "model": "all",
+      "warmup": true,
+      "process_wall_seconds": 2.8430989645421505,
+      "tensors": 3088,
+      "logical_bytes": 6951840400,
+      "seconds": 2.56157
+    },
+    {
+      "kind": "cpu",
+      "variant": "cache-fetch",
+      "repeat": 0,
+      "model": "all",
+      "warmup": false,
+      "process_wall_seconds": 17.9889625441283,
+      "tensors": 3088,
+      "logical_bytes": 6951840400,
+      "seconds": 17.7111
+    },
+    {
+      "kind": "cpu",
+      "variant": "weight-crc",
+      "repeat": 0,
+      "model": "all",
+      "warmup": false,
+      "process_wall_seconds": 2.783082488924265,
+      "tensors": 3088,
+      "logical_bytes": 6951840400,
+      "seconds": 2.52325
+    },
+    {
+      "kind": "cpu",
+      "variant": "weight-crc",
+      "repeat": 1,
+      "model": "all",
+      "warmup": false,
+      "process_wall_seconds": 2.883414823561907,
+      "tensors": 3088,
+      "logical_bytes": 6951840400,
+      "seconds": 2.61815
+    },
+    {
+      "kind": "cpu",
+      "variant": "cache-fetch",
+      "repeat": 1,
+      "model": "all",
+      "warmup": false,
+      "process_wall_seconds": 19.03602621331811,
+      "tensors": 3088,
+      "logical_bytes": 6951840400,
+      "seconds": 18.7658
+    },
+    {
+      "kind": "cpu",
+      "variant": "cache-fetch",
+      "repeat": 2,
+      "model": "all",
+      "warmup": false,
+      "process_wall_seconds": 19.1545641887933,
+      "tensors": 3088,
+      "logical_bytes": 6951840400,
+      "seconds": 18.8681
+    },
+    {
+      "kind": "cpu",
+      "variant": "weight-crc",
+      "repeat": 2,
+      "model": "all",
+      "warmup": false,
+      "process_wall_seconds": 3.0128771252930164,
+      "tensors": 3088,
+      "logical_bytes": 6951840400,
+      "seconds": 2.72324
+    },
+    {
+      "kind": "cuda",
+      "variant": "cache-fetch",
+      "repeat": -1,
+      "model": "sam3",
+      "warmup": true,
+      "process_wall_seconds": 10.274625344201922,
+      "module_load_seconds": 9.497704008,
+      "allocated_bytes": 3407298048,
+      "peak_allocated_bytes": 3407298048,
+      "seconds": 9.497704008
+    },
+    {
+      "kind": "cuda",
+      "variant": "weight-crc",
+      "repeat": -1,
+      "model": "sam3",
+      "warmup": true,
+      "process_wall_seconds": 2.281715763732791,
+      "module_load_seconds": 1.569915012,
+      "allocated_bytes": 3407298048,
+      "peak_allocated_bytes": 3407298048,
+      "seconds": 1.569915012
+    },
+    {
+      "kind": "cuda",
+      "variant": "cache-fetch",
+      "repeat": 0,
+      "model": "sam3",
+      "warmup": false,
+      "process_wall_seconds": 10.193962123245,
+      "module_load_seconds": 9.476572292,
+      "allocated_bytes": 3407298048,
+      "peak_allocated_bytes": 3407298048,
+      "seconds": 9.476572292
+    },
+    {
+      "kind": "cuda",
+      "variant": "weight-crc",
+      "repeat": 0,
+      "model": "sam3",
+      "warmup": false,
+      "process_wall_seconds": 2.2973964754492044,
+      "module_load_seconds": 1.575939187,
+      "allocated_bytes": 3407298048,
+      "peak_allocated_bytes": 3407298048,
+      "seconds": 1.575939187
+    },
+    {
+      "kind": "cuda",
+      "variant": "weight-crc",
+      "repeat": 1,
+      "model": "sam3",
+      "warmup": false,
+      "process_wall_seconds": 2.3044041730463505,
+      "module_load_seconds": 1.59234238,
+      "allocated_bytes": 3407298048,
+      "peak_allocated_bytes": 3407298048,
+      "seconds": 1.59234238
+    },
+    {
+      "kind": "cuda",
+      "variant": "cache-fetch",
+      "repeat": 1,
+      "model": "sam3",
+      "warmup": false,
+      "process_wall_seconds": 10.239024501293898,
+      "module_load_seconds": 9.521293124,
+      "allocated_bytes": 3407298048,
+      "peak_allocated_bytes": 3407298048,
+      "seconds": 9.521293124
+    },
+    {
+      "kind": "cuda",
+      "variant": "cache-fetch",
+      "repeat": 2,
+      "model": "sam3",
+      "warmup": false,
+      "process_wall_seconds": 10.217574080452323,
+      "module_load_seconds": 9.496996365,
+      "allocated_bytes": 3407298048,
+      "peak_allocated_bytes": 3407298048,
+      "seconds": 9.496996365
+    },
+    {
+      "kind": "cuda",
+      "variant": "weight-crc",
+      "repeat": 2,
+      "model": "sam3",
+      "warmup": false,
+      "process_wall_seconds": 2.2957692481577396,
+      "module_load_seconds": 1.577104785,
+      "allocated_bytes": 3407298048,
+      "peak_allocated_bytes": 3407298048,
+      "seconds": 1.577104785
+    },
+    {
+      "kind": "cuda",
+      "variant": "cache-fetch",
+      "repeat": -1,
+      "model": "sam3.1",
+      "warmup": true,
+      "process_wall_seconds": 10.25875660032034,
+      "module_load_seconds": 9.543968109,
+      "allocated_bytes": 3428063744,
+      "peak_allocated_bytes": 3428063744,
+      "seconds": 9.543968109
+    },
+    {
+      "kind": "cuda",
+      "variant": "weight-crc",
+      "repeat": -1,
+      "model": "sam3.1",
+      "warmup": true,
+      "process_wall_seconds": 2.3115415014326572,
+      "module_load_seconds": 1.586709906,
+      "allocated_bytes": 3428063744,
+      "peak_allocated_bytes": 3428063744,
+      "seconds": 1.586709906
+    },
+    {
+      "kind": "cuda",
+      "variant": "cache-fetch",
+      "repeat": 0,
+      "model": "sam3.1",
+      "warmup": false,
+      "process_wall_seconds": 10.285297436639667,
+      "module_load_seconds": 9.564726652,
+      "allocated_bytes": 3428063744,
+      "peak_allocated_bytes": 3428063744,
+      "seconds": 9.564726652
+    },
+    {
+      "kind": "cuda",
+      "variant": "weight-crc",
+      "repeat": 0,
+      "model": "sam3.1",
+      "warmup": false,
+      "process_wall_seconds": 2.3240610398352146,
+      "module_load_seconds": 1.599356156,
+      "allocated_bytes": 3428063744,
+      "peak_allocated_bytes": 3428063744,
+      "seconds": 1.599356156
+    },
+    {
+      "kind": "cuda",
+      "variant": "weight-crc",
+      "repeat": 1,
+      "model": "sam3.1",
+      "warmup": false,
+      "process_wall_seconds": 2.3097130730748177,
+      "module_load_seconds": 1.59083883,
+      "allocated_bytes": 3428063744,
+      "peak_allocated_bytes": 3428063744,
+      "seconds": 1.59083883
+    },
+    {
+      "kind": "cuda",
+      "variant": "cache-fetch",
+      "repeat": 1,
+      "model": "sam3.1",
+      "warmup": false,
+      "process_wall_seconds": 10.281574388965964,
+      "module_load_seconds": 9.564226377,
+      "allocated_bytes": 3428063744,
+      "peak_allocated_bytes": 3428063744,
+      "seconds": 9.564226377
+    },
+    {
+      "kind": "cuda",
+      "variant": "cache-fetch",
+      "repeat": 2,
+      "model": "sam3.1",
+      "warmup": false,
+      "process_wall_seconds": 10.629960490390658,
+      "module_load_seconds": 9.908568108,
+      "allocated_bytes": 3428063744,
+      "peak_allocated_bytes": 3428063744,
+      "seconds": 9.908568108
+    },
+    {
+      "kind": "cuda",
+      "variant": "weight-crc",
+      "repeat": 2,
+      "model": "sam3.1",
+      "warmup": false,
+      "process_wall_seconds": 2.3078303020447493,
+      "module_load_seconds": 1.584841916,
+      "allocated_bytes": 3428063744,
+      "peak_allocated_bytes": 3428063744,
+      "seconds": 1.584841916
+    }
+  ],
+  "benchmark_scope": "EPYC7763 and RTX PRO4500 Blackwell; warm OS page cache; three alternating independent process pairs after warmup; no competing build or GPU jobs. Module loading excludes CUDA context initialization, tokenizer, inference and tracking.",
+  "recovered_sdk": {
+    "recovered_operator_checks": [
+      {
+        "sdk": "cpu",
+        "tool": "sam3_weights_large_test",
+        "device": "cpu",
+        "passed": true
+      },
+      {
+        "sdk": "cuda",
+        "tool": "sam3_weights_large_test",
+        "device": "cpu",
+        "passed": true
+      }
+    ],
+    "c_api_exact_output_files": 153,
+    "c_api_model": "sam3.1",
+    "c_api_precision": "fp16",
+    "c_api_source": "image",
+    "c_api_tracking_ranks": 2,
+    "c_api_parallel": true,
+    "workspace_runtime_libraries": [
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libavcodec.so.60",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libavformat.so.60",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libavutil.so.58",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libbz2.so.1.0",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libc10.so",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libc10_cuda.so",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcublas-e70f38ef.so.13",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcublasLt-656298c8.so.13",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcudart-96c42e41.so.13",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcudart.so.13",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcudnn.so.9",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcudnn_engines_precompiled.so.9",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcudnn_engines_runtime_compiled.so.9",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcudnn_graph.so.9",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcudnn_heuristic.so.9",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcufft.so.12",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcupti-e2f9ed86.so.13",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcurand.so.10",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libcusparse.so.12",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libgomp-98b21ff3.so.1",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libicudata.so.74",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libicui18n.so.74",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libicuuc.so.74",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libjpeg.so.8",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/liblzma.so.5",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libnvJitLink.so.13",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libopencv_core.so.410",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libopencv_imgproc.so.410",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libsam3_native.so",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libswresample.so.4",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libswscale.so.7",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libtorch.so",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libtorch_cpu.so",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libtorch_cuda.so",
+      "/workspace/weight-crc-recovered-cuda/bin/../lib/libz.so.1"
+    ],
+    "no_python_or_triton": true,
+    "storage": "packed_disk",
+    "temporary_files_cleaned": true
+  },
+  "sdk_overlay": {
+    "prerequisite": "cache-fetch-sdk-overlay/overlays.json (includes base/media/seek/preprocess recipe)",
+    "prerequisite_sha256": "4666ded2a6062fdf0b4f558e4d07a6262f66538ddea7fd70b608deee1dd0153f",
+    "notes": "Apply the matching archive at the preceding complete SDK root. Reuses all dependency and weight layers. Weight loading uses the existing zlib IEEE CRC32 implementation with bounded chunks. The weight format and integrity checks are unchanged. Includes the installed sam3_weights verifier and >1GiB CRC regression tool. C ABI1 and existing C++ layouts are preserved. No new weights or dependencies.",
+    "overlays": [
+      {
+        "variant": "cpu",
+        "archive": "cpu.tar.gz",
+        "bytes": 1977926,
+        "sha256": "0506cfb84215f41ee196a9d355d12ff3dafcdd8661ccaf31891e48850b1bc121",
+        "files": [
+          {
+            "path": "bin/sam3_image_benchmark",
+            "bytes": 124168,
+            "sha256": "3c7e082ca4be0064210ace8e8a675e17e4efacfa82161482caf1dce2f2ba6ac9"
+          },
+          {
+            "path": "bin/sam3_image_results_test",
+            "bytes": 88392,
+            "sha256": "3f6c0e6b4f03d3113e4dab5f5f1f6f7050912c42739e03d0c3780cb163ba8abd"
+          },
+          {
+            "path": "bin/sam3_predictor_c_probe",
+            "bytes": 39584,
+            "sha256": "ada16316b6a0e2507fa3c1f425fab5d68ccbb5de808481a7eb0fb2c66f89ed98"
+          },
+          {
+            "path": "bin/sam3_rank_executor_test",
+            "bytes": 98504,
+            "sha256": "632fa525d21c5c00f4f4e8cb72bb5b0856edd33ac4c270bc2db7e3d68cecb811"
+          },
+          {
+            "path": "bin/sam3_rotary_test",
+            "bytes": 72248,
+            "sha256": "f64cd54904ab529f445b7fb59ee963147be1290420987c86864d4ffef23c3c97"
+          },
+          {
+            "path": "bin/sam3_video_cache_fetch_probe",
+            "bytes": 137624,
+            "sha256": "c7f03ee8bfc2de2d6987380f7f4f65b77c567d880a770f34f4b1ca0c80d46674"
+          },
+          {
+            "path": "bin/sam3_video_collective_probe",
+            "bytes": 191112,
+            "sha256": "9b7b6cca8a8792c687af500383ce394005f74c87183a8fe587f075ee94cba646"
+          },
+          {
+            "path": "bin/sam3_video_collective_test",
+            "bytes": 82664,
+            "sha256": "b0a83952a75ee4e6af1fb8761df296862ee46c840eed49a482c49c3de8a2b418"
+          },
+          {
+            "path": "bin/sam3_video_mask_cache_benchmark",
+            "bytes": 50264,
+            "sha256": "a9c74ffca2e6f1f7c18709f96d31e662253a39d78eaf5d6269587bba60181ad4"
+          },
+          {
+            "path": "bin/sam3_video_mask_cache_test",
+            "bytes": 64296,
+            "sha256": "fa822a56c43e783ee60a875750352abbc348d017aecbebbfb31ec4e77ce48288"
+          },
+          {
+            "path": "bin/sam3_video_multidevice_probe",
+            "bytes": 96304,
+            "sha256": "ad0eab94046d4d0b0b3fd9b741750bb1ad66db8be51e601b9367a1e6b9c39e0d"
+          },
+          {
+            "path": "bin/sam3_vision_positions_benchmark",
+            "bytes": 83712,
+            "sha256": "7428c457dc9f0bc3fec28812d4a4fe3afa0067ee49407728172b3473e7851ef6"
+          },
+          {
+            "path": "bin/sam3_weights",
+            "bytes": 28392,
+            "sha256": "1a32583e4bc48aa3662f857adbf4431f5c26d6fcede2e40a124a9e518cbeeadd"
+          },
+          {
+            "path": "bin/sam3_weights_large_test",
+            "bytes": 43256,
+            "sha256": "016e6549c2f0ed1c5ee00e9fd30f4bcf7740cb084241029658844bf3e16ef8ae"
+          },
+          {
+            "path": "lib/libsam3_native.so",
+            "bytes": 4542416,
+            "sha256": "436e56086ee5d90fb1f3b016f6767eeb120220397f9330b25c6475e5df65709e"
+          }
+        ],
+        "complete_recovery_entries_verified": 160
+      },
+      {
+        "variant": "cuda",
+        "archive": "cuda.tar.gz",
+        "bytes": 2337550,
+        "sha256": "489c5d981859f130dd84bb2b943e6853d42c2cecef20f2d8f3cc1de953d6d53e",
+        "files": [
+          {
+            "path": "bin/sam3_image_benchmark",
+            "bytes": 129048,
+            "sha256": "f3dab07d5a4696313535574fab1f102765869886a32160e704460167021ee2c8"
+          },
+          {
+            "path": "bin/sam3_image_results_test",
+            "bytes": 98664,
+            "sha256": "8468c895b4bd040d07e4afee6d2787a73f40d39e866440b75c87f71fd8f90bbc"
+          },
+          {
+            "path": "bin/sam3_predictor_c_probe",
+            "bytes": 39584,
+            "sha256": "1f24716070a585b084fc2dc2dfd6f93ddee948c5204f4285e7d171856c7667e2"
+          },
+          {
+            "path": "bin/sam3_rank_executor_test",
+            "bytes": 98504,
+            "sha256": "f4652e03c5b519daee9a17edcc72a9134d91bcba597d25818c42a7a5efcb330f"
+          },
+          {
+            "path": "bin/sam3_rotary_stream_test",
+            "bytes": 117200,
+            "sha256": "b1599329c952557376ac4f6600310387277817da26db12d9590055fc1dc31787"
+          },
+          {
+            "path": "bin/sam3_rotary_test",
+            "bytes": 72248,
+            "sha256": "643491d2b174654a395575122d5cc510071308022b7e36f18e01a2d392569967"
+          },
+          {
+            "path": "bin/sam3_video_cache_fetch_probe",
+            "bytes": 138328,
+            "sha256": "0b66986d15bd79f1b8c418cbac2ea2305defa3cd21d20c1a4bf4da67877407ec"
+          },
+          {
+            "path": "bin/sam3_video_collective_probe",
+            "bytes": 191112,
+            "sha256": "b1d85d5afc0b7145ed5ac7897fb24e09d23993c6aba8d1fc500769ca85654dad"
+          },
+          {
+            "path": "bin/sam3_video_collective_test",
+            "bytes": 82664,
+            "sha256": "44b1c5b664ed240ca3bcc96e723c65d1896ddd089dd9aefe3b3a8b0fe9147e37"
+          },
+          {
+            "path": "bin/sam3_video_mask_cache_benchmark",
+            "bytes": 55088,
+            "sha256": "d0af262f98231fef6434f6e2fa10bc197301283088bdbc651b83a7ff3e5467a7"
+          },
+          {
+            "path": "bin/sam3_video_mask_cache_test",
+            "bytes": 64296,
+            "sha256": "4406f4c9df7fee24517688f127ba4371f16197a528b8adacb5131126a67479e8"
+          },
+          {
+            "path": "bin/sam3_video_multidevice_probe",
+            "bytes": 96304,
+            "sha256": "b2b9fbc3e7eca601cfa132e992ae1aeecbb77e75f2d780e2a1731e5dda290c78"
+          },
+          {
+            "path": "bin/sam3_vision_positions_benchmark",
+            "bytes": 84440,
+            "sha256": "a73f3080d558d69877fdce4f059f45aef7b9025b6b12a7f867710f6013ae5fb2"
+          },
+          {
+            "path": "bin/sam3_weights",
+            "bytes": 28392,
+            "sha256": "0096e06a5882fa8a62bb28a1ff52b4b9e2b4cc32aeb1b2ceaa5fd13468829a24"
+          },
+          {
+            "path": "bin/sam3_weights_large_test",
+            "bytes": 43256,
+            "sha256": "55b5ff83a8187eb24851efc88c1e82e4e406843f670dcaa2ade5951f3dfa0039"
+          },
+          {
+            "path": "lib/libsam3_native.so",
+            "bytes": 6011224,
+            "sha256": "fd2cac6c6ddd50fa055e30305ccfab8e970e860b98a6922a2147e51e5f334a39"
+          }
+        ],
+        "complete_recovery_entries_verified": 194
+      }
+    ]
+  },
+  "private_evidence": "native-foundation/weight-crc-linux",
+  "remaining_limits": [
+    "Windows/Turing physical tests user-owned",
+    "No GitHub Actions",
+    "Existing source-reference FP16 residuals remain",
+    "No full-function completion claim"
+  ]
+}

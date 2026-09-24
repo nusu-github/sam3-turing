@@ -1,0 +1,28 @@
+{
+  "files": 17,
+  "bytes": 6900865193,
+  "tensor_references": 3088,
+  "unique_tensors": 2998,
+  "logical_tensor_bytes": 6951840400,
+  "unique_tensor_bytes": 6898771600,
+  "bytes_saved_by_exact_deduplication": 53068800,
+  "bytes_shared_across_models": 33733632,
+  "module_logical_bytes": {
+    "sam3.1/detector.backbone.language_backbone": 1414898688,
+    "sam3.1/detector.backbone.vision_backbone": 1877783552,
+    "sam3.1/detector.dot_prod_scoring": 4731904,
+    "sam3.1/detector.geometry_encoder": 32863232,
+    "sam3.1/detector.segmentation_head": 9195524,
+    "sam3.1/detector.transformer": 84190420,
+    "sam3.1/tracker": 78517976,
+    "sam3/detector.backbone.language_backbone": 1414898688,
+    "sam3/detector.backbone.vision_backbone": 1856804864,
+    "sam3/detector.dot_prod_scoring": 4731904,
+    "sam3/detector.geometry_encoder": 32863232,
+    "sam3/detector.segmentation_head": 9195524,
+    "sam3/detector.transformer": 84190420,
+    "sam3/tracker": 46974472
+  },
+  "private_bucket_path": "native-weights-v1/",
+  "native_verify": "tensors=3088 logical_bytes=6951840400 seconds=17.5833"
+}

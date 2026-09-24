@@ -1,0 +1,9 @@
+{
+  "branch": "codex/int8-int4-calibration-research",
+  "base_commit": "cfc27c6f971aab8680eba1ac2929b4c904c49259",
+  "weight_manifest_sha256": "e3648c574e4014dfe62c6f9b09c1660ea99dee7b546b2738231d27bed6de06e9",
+  "weight_verification": "Native WeightStore validates component CRCs when reading; full model files remain local.",
+  "hardware": "RTX 2060 Max-Q 6 GB / SM75",
+  "software": "Windows / CUDA 13.0 / LibTorch 2.10.0 cu130 / MSVC 14.44.35207",
+  "kernel_check": "boundary-affine-check.json; scalar reference and identity checks on non-default CUDA stream"
+}

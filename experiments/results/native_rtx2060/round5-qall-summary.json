@@ -1,0 +1,249 @@
+{
+  "runs": [
+    {
+      "run": "r5-qall-1584",
+      "kind": "quality",
+      "mode": "calibrated",
+      "completed": 2,
+      "process_wall_seconds": 12.908967018127441,
+      "max_peak_allocated_bytes": 2695089664,
+      "max_sampled_whole_gpu_bytes": 3761156096,
+      "compared": 2,
+      "passed": 1,
+      "nonempty": 2,
+      "nonempty_passed": 1,
+      "count_changes": 0,
+      "failed_cases": [
+        "coco-val-000000001584-p1"
+      ],
+      "min_mask_iou": 0.9776876267748479,
+      "max_score_error": 0.00927734375,
+      "max_box_error_px": 0.3896636962890625
+    },
+    {
+      "run": "r5-qall-2261",
+      "kind": "quality",
+      "mode": "calibrated",
+      "completed": 2,
+      "process_wall_seconds": 12.882400751113892,
+      "max_peak_allocated_bytes": 2695089664,
+      "max_sampled_whole_gpu_bytes": 3761156096,
+      "compared": 2,
+      "passed": 2,
+      "nonempty": 1,
+      "nonempty_passed": 1,
+      "count_changes": 0,
+      "failed_cases": [],
+      "min_mask_iou": 0.9993341102047612,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.049530029296875
+    },
+    {
+      "run": "r5-qall-5992",
+      "kind": "quality",
+      "mode": "calibrated",
+      "completed": 1,
+      "process_wall_seconds": 6.533967971801758,
+      "max_peak_allocated_bytes": 2695089664,
+      "max_sampled_whole_gpu_bytes": 3761156096,
+      "compared": 1,
+      "passed": 0,
+      "nonempty": 1,
+      "nonempty_passed": 0,
+      "count_changes": 0,
+      "failed_cases": [
+        "coco-val-000000005992-p0"
+      ],
+      "min_mask_iou": 0.992116434202547,
+      "max_score_error": 0.01318359375,
+      "max_box_error_px": 1.022918701171875
+    },
+    {
+      "run": "r4-joint-qall-4795",
+      "kind": "quality",
+      "mode": "calibrated",
+      "completed": 2,
+      "process_wall_seconds": 13.075580835342407,
+      "max_peak_allocated_bytes": 2695089664,
+      "max_sampled_whole_gpu_bytes": 3761156096,
+      "compared": 2,
+      "passed": 1,
+      "nonempty": 2,
+      "nonempty_passed": 1,
+      "count_changes": 0,
+      "failed_cases": [
+        "coco-val-000000004795-p0"
+      ],
+      "min_mask_iou": 0.9987359703606843,
+      "max_score_error": 0.02978515625,
+      "max_box_error_px": 1.1114501953125
+    },
+    {
+      "run": "r4-joint-qall-9590",
+      "kind": "quality",
+      "mode": "calibrated",
+      "completed": 2,
+      "process_wall_seconds": 12.97298288345337,
+      "max_peak_allocated_bytes": 2695089664,
+      "max_sampled_whole_gpu_bytes": 3761156096,
+      "compared": 2,
+      "passed": 2,
+      "nonempty": 2,
+      "nonempty_passed": 2,
+      "count_changes": 0,
+      "failed_cases": [],
+      "min_mask_iou": 0.9923469879518072,
+      "max_score_error": 0.01123046875,
+      "max_box_error_px": 0.32208251953125
+    }
+  ],
+  "results": [
+    {
+      "case": "coco-val-000000001584-p0",
+      "image_id": 1584,
+      "mode": "calibrated",
+      "count": 3,
+      "comparison": {
+        "reference_count": 3,
+        "candidate_count": 3,
+        "min_mask_iou": 0.9989653388515262,
+        "max_score_error": 0.00048828125,
+        "max_box_error_px": 0.050048828125,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000001584-p1",
+      "image_id": 1584,
+      "mode": "calibrated",
+      "count": 9,
+      "comparison": {
+        "reference_count": 9,
+        "candidate_count": 9,
+        "min_mask_iou": 0.9776876267748479,
+        "max_score_error": 0.00927734375,
+        "max_box_error_px": 0.3896636962890625,
+        "finite": true,
+        "gate_pass": false,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000002261-p0",
+      "image_id": 2261,
+      "mode": "calibrated",
+      "count": 1,
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9993341102047612,
+        "max_score_error": 0.001953125,
+        "max_box_error_px": 0.049530029296875,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000002261-p1",
+      "image_id": 2261,
+      "mode": "calibrated",
+      "count": 0,
+      "comparison": {
+        "reference_count": 0,
+        "candidate_count": 0,
+        "min_mask_iou": null,
+        "max_score_error": null,
+        "max_box_error_px": null,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": true
+      }
+    },
+    {
+      "case": "coco-val-000000005992-p0",
+      "image_id": 5992,
+      "mode": "calibrated",
+      "count": 8,
+      "comparison": {
+        "reference_count": 8,
+        "candidate_count": 8,
+        "min_mask_iou": 0.992116434202547,
+        "max_score_error": 0.01318359375,
+        "max_box_error_px": 1.022918701171875,
+        "finite": true,
+        "gate_pass": false,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000004795-p0",
+      "image_id": 4795,
+      "mode": "calibrated",
+      "count": 1,
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9987359703606843,
+        "max_score_error": 0.02978515625,
+        "max_box_error_px": 1.1114501953125,
+        "finite": true,
+        "gate_pass": false,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000004795-p1",
+      "image_id": 4795,
+      "mode": "calibrated",
+      "count": 1,
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9993512559684451,
+        "max_score_error": 0.00341796875,
+        "max_box_error_px": 0.054779052734375,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000009590-p0",
+      "image_id": 9590,
+      "mode": "calibrated",
+      "count": 5,
+      "comparison": {
+        "reference_count": 5,
+        "candidate_count": 5,
+        "min_mask_iou": 0.9923469879518072,
+        "max_score_error": 0.00341796875,
+        "max_box_error_px": 0.32208251953125,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000009590-p1",
+      "image_id": 9590,
+      "mode": "calibrated",
+      "count": 1,
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9928057553956835,
+        "max_score_error": 0.01123046875,
+        "max_box_error_px": 0.157562255859375,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    }
+  ],
+  "passed": 6,
+  "completed": 9,
+  "scope": "Round4 binary; complement of the original 4-prompt QKV-all screen on the same five development images."
+}

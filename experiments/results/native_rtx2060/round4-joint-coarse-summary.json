@@ -1,0 +1,282 @@
+{
+  "qall": {
+    "cases": 4,
+    "passed": 3,
+    "results": [
+      {
+        "case": "coco-val-000000004795-p0",
+        "image_id": 4795,
+        "mode": "calibrated",
+        "count": 1,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 1,
+          "min_mask_iou": 0.9987359703606843,
+          "max_score_error": 0.02978515625,
+          "max_box_error_px": 1.1114501953125,
+          "finite": true,
+          "gate_pass": false,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000004795-p1",
+        "image_id": 4795,
+        "mode": "calibrated",
+        "count": 1,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 1,
+          "min_mask_iou": 0.9993512559684451,
+          "max_score_error": 0.00341796875,
+          "max_box_error_px": 0.054779052734375,
+          "finite": true,
+          "gate_pass": true,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000009590-p0",
+        "image_id": 9590,
+        "mode": "calibrated",
+        "count": 5,
+        "comparison": {
+          "reference_count": 5,
+          "candidate_count": 5,
+          "min_mask_iou": 0.9923469879518072,
+          "max_score_error": 0.00341796875,
+          "max_box_error_px": 0.32208251953125,
+          "finite": true,
+          "gate_pass": true,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000009590-p1",
+        "image_id": 9590,
+        "mode": "calibrated",
+        "count": 1,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 1,
+          "min_mask_iou": 0.9928057553956835,
+          "max_score_error": 0.01123046875,
+          "max_box_error_px": 0.157562255859375,
+          "finite": true,
+          "gate_pass": true,
+          "byte_equal": false
+        }
+      }
+    ]
+  },
+  "qexcept0": {
+    "cases": 4,
+    "passed": 2,
+    "results": [
+      {
+        "case": "coco-val-000000004795-p0",
+        "image_id": 4795,
+        "mode": "calibrated",
+        "count": 1,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 1,
+          "min_mask_iou": 0.9987505720491345,
+          "max_score_error": 0.0185546875,
+          "max_box_error_px": 0.096710205078125,
+          "finite": true,
+          "gate_pass": true,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000004795-p1",
+        "image_id": 4795,
+        "mode": "calibrated",
+        "count": 2,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 2,
+          "min_mask_iou": 0.9995588769526182,
+          "max_score_error": 0.00439453125,
+          "max_box_error_px": 0.03363037109375,
+          "finite": true,
+          "gate_pass": false,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000009590-p0",
+        "image_id": 9590,
+        "mode": "calibrated",
+        "count": 6,
+        "comparison": {
+          "reference_count": 5,
+          "candidate_count": 6,
+          "min_mask_iou": 0.9916359922141494,
+          "max_score_error": 0.0068359375,
+          "max_box_error_px": 0.198760986328125,
+          "finite": true,
+          "gate_pass": false,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000009590-p1",
+        "image_id": 9590,
+        "mode": "calibrated",
+        "count": 1,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 1,
+          "min_mask_iou": 0.9928057553956835,
+          "max_score_error": 0.00146484375,
+          "max_box_error_px": 0.205535888671875,
+          "finite": true,
+          "gate_pass": true,
+          "byte_equal": false
+        }
+      }
+    ]
+  },
+  "qfirst24": {
+    "cases": 4,
+    "passed": 3,
+    "results": [
+      {
+        "case": "coco-val-000000004795-p0",
+        "image_id": 4795,
+        "mode": "calibrated",
+        "count": 1,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 1,
+          "min_mask_iou": 0.9987722930514693,
+          "max_score_error": 0.03076171875,
+          "max_box_error_px": 1.208160400390625,
+          "finite": true,
+          "gate_pass": false,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000004795-p1",
+        "image_id": 4795,
+        "mode": "calibrated",
+        "count": 1,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 1,
+          "min_mask_iou": 0.9993772057297073,
+          "max_score_error": 0.0029296875,
+          "max_box_error_px": 0.041015625,
+          "finite": true,
+          "gate_pass": true,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000009590-p0",
+        "image_id": 9590,
+        "mode": "calibrated",
+        "count": 5,
+        "comparison": {
+          "reference_count": 5,
+          "candidate_count": 5,
+          "min_mask_iou": 0.9928691194326131,
+          "max_score_error": 0.00341796875,
+          "max_box_error_px": 0.3421630859375,
+          "finite": true,
+          "gate_pass": true,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000009590-p1",
+        "image_id": 9590,
+        "mode": "calibrated",
+        "count": 1,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 1,
+          "min_mask_iou": 0.9928057553956835,
+          "max_score_error": 0.013671875,
+          "max_box_error_px": 0.175384521484375,
+          "finite": true,
+          "gate_pass": true,
+          "byte_equal": false
+        }
+      }
+    ]
+  },
+  "qlast24": {
+    "cases": 4,
+    "passed": 1,
+    "results": [
+      {
+        "case": "coco-val-000000004795-p0",
+        "image_id": 4795,
+        "mode": "calibrated",
+        "count": 1,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 1,
+          "min_mask_iou": 0.9988085291874024,
+          "max_score_error": 0.0380859375,
+          "max_box_error_px": 0.149566650390625,
+          "finite": true,
+          "gate_pass": false,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000004795-p1",
+        "image_id": 4795,
+        "mode": "calibrated",
+        "count": 1,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 1,
+          "min_mask_iou": 0.9995329042972805,
+          "max_score_error": 0.00146484375,
+          "max_box_error_px": 0.0704345703125,
+          "finite": true,
+          "gate_pass": true,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000009590-p0",
+        "image_id": 9590,
+        "mode": "calibrated",
+        "count": 6,
+        "comparison": {
+          "reference_count": 5,
+          "candidate_count": 6,
+          "min_mask_iou": 0.9947136903843186,
+          "max_score_error": 0.01220703125,
+          "max_box_error_px": 0.3370361328125,
+          "finite": true,
+          "gate_pass": false,
+          "byte_equal": false
+        }
+      },
+      {
+        "case": "coco-val-000000009590-p1",
+        "image_id": 9590,
+        "mode": "calibrated",
+        "count": 1,
+        "comparison": {
+          "reference_count": 1,
+          "candidate_count": 1,
+          "min_mask_iou": 0.9787234042553191,
+          "max_score_error": 0.01171875,
+          "max_box_error_px": 0.0770263671875,
+          "finite": true,
+          "gate_pass": false,
+          "byte_equal": false
+        }
+      }
+    ]
+  }
+}

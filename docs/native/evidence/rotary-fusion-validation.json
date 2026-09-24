@@ -1,0 +1,742 @@
+{
+  "scope": "Fuse RoPE FP32 casts and complex multiplication in precompiled CUDA for vision and memory attention; preserve full model functionality.",
+  "baseline_commit": "f56703d54bb3ba5a48918be246c8c5fb5b5efd30",
+  "hardware": "RTX PRO 4500 Blackwell 32GB; no Turing/Windows physical tests",
+  "libtorch": "Official standalone 2.10.0 CPU/cu130",
+  "source_sha256": {
+    "native/CMakeLists.txt": "fdabcdbd9ecc9956f003ed2ba27c710f1cc49e35163f129b72a85c52c1b535ca",
+    "native/eval/CMakeLists.txt": "050db59a8120fdd8029f71dc481b813ea58198b47d1a02298a584acde4ebe186",
+    "native/src/memory_attention.cpp": "0699e7e2eebdef1560c8942310d4044ac376d25988ea02288076d89d79399093",
+    "native/src/vision_encoder.cpp": "6c040707aaafc8f91f95bb479e586e0d520ee18f13b17af3707c90b977d2e2b8",
+    "native/include/sam3/rotary.h": "09074e2deb992019400c20e194805a8b808f5534afe46c91bb9c6bda3f6f8c3d",
+    "native/src/rotary.cpp": "bc184f87ea1c22130fc1f72239e753380f10480d6f5ecb2b3e8df8c70985b39d",
+    "native/src/rotary_cuda.cu": "2ba04e6c6f36e937e69587379a006907ffd80c16039466a506f116e5643b49c7",
+    "native/tests/rotary_test.cpp": "c3b4455b7c7cdf93544b93e08b944245998bb5b03d1dba1d9f93ec98a79310e2"
+  },
+  "libraries": {
+    "cpu": {
+      "baseline": "e49b94613f03cebe52e5bd7d4f19cf7d3a299d237766813398d2f816a774a008",
+      "current": "0c30f58737c18f56a422d7adbac49b7ae7614316be8a1088f02121a614b7c008"
+    },
+    "cuda": {
+      "baseline": "88d42b4aac7056c9568f5fd747b443a0ec210d53570a3517817862a508f73b81",
+      "current": "c6630e8834e3f28c9853963798dad71b0e787f16b021b0603a6a11a3fe98d2ea"
+    }
+  },
+  "functional_test_library": "dab1e389381330668d1c49c6f2bcdc1dc45d905289df0d086001a9bc19d9fdd4",
+  "functional_test_library_note": "The eight real-weight feature cases and 19 regressions used this library before adding only value.numel()>0 to dispatch. That guard routes empty inputs to the original expression. It does not change the nonempty neural fixtures. Final CTests, benchmarks, Nsight and recovered SDK tests use the final library.",
+  "ctest": {
+    "cpu": 21,
+    "cuda_build": 38,
+    "all_pass": true,
+    "rotary_cases_per_device_or_stream": 44,
+    "invalid_frequency_cases": 2,
+    "coverage": [
+      "bitwise values and exact strides",
+      "FP32/FP16/BF16",
+      "strided QKV and partial memory with storage offsets",
+      "expanded batches",
+      "conjugate and strided frequency fallback",
+      "NaN/infinity/subnormal/signed zero",
+      "empty tensors",
+      "FP64 fallback",
+      "input immutability",
+      "nondefault CUDA stream"
+    ]
+  },
+  "features": [
+    {
+      "case": "sam3-fp16-b1",
+      "files": 14,
+      "bytes": 190440181,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-bf16_reference-b1",
+      "files": 14,
+      "bytes": 190440229,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp32-b1",
+      "files": 14,
+      "bytes": 359645953,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3-fp16-b2",
+      "files": 14,
+      "bytes": 380879605,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b1",
+      "files": 14,
+      "bytes": 244187953,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-bf16_reference-b1",
+      "files": 14,
+      "bytes": 244188001,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp32-b1",
+      "files": 14,
+      "bytes": 467141437,
+      "all_bytes_exact": true
+    },
+    {
+      "case": "sam3.1-fp16-b2",
+      "files": 14,
+      "bytes": 488375089,
+      "all_bytes_exact": true
+    }
+  ],
+  "regression": [
+    {
+      "case": "owner-sam3-fp16",
+      "files": 65,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "owner-sam3-bf16_reference",
+      "files": 65,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "owner-sam3.1-fp16",
+      "files": 68,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "owner-sam3.1-bf16_reference",
+      "files": 68,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "parallel-sam3.1-fp16",
+      "files": 68,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "c-sam3-fp16-image",
+      "files": 16,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "c-sam3-fp16-ground",
+      "files": 59,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "c-sam3-fp16-video",
+      "files": 62,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "interactive-sam3-fp16",
+      "files": 6,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "c-sam3-bf16_reference-image",
+      "files": 16,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "c-sam3-bf16_reference-ground",
+      "files": 59,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "interactive-sam3-bf16_reference",
+      "files": 6,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "c-sam3.1-fp16-image",
+      "files": 16,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "c-sam3.1-fp16-ground",
+      "files": 59,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "c-sam3.1-fp16-video",
+      "files": 54,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "interactive-sam3.1-fp16",
+      "files": 6,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "c-sam3.1-bf16_reference-image",
+      "files": 16,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "c-sam3.1-bf16_reference-ground",
+      "files": 59,
+      "exact": true,
+      "changed": []
+    },
+    {
+      "case": "interactive-sam3.1-bf16_reference",
+      "files": 6,
+      "exact": true,
+      "changed": []
+    }
+  ],
+  "fp16_encoder_performance": [
+    {
+      "model": "sam3",
+      "role": "video",
+      "runs": [
+        {
+          "baseline": {
+            "median_ms": 61.815039,
+            "peak_extra_bytes": 168370688
+          },
+          "current": {
+            "median_ms": 59.9056375,
+            "peak_extra_bytes": 168370688
+          },
+          "reduction_percent": 3.088894759089289
+        },
+        {
+          "baseline": {
+            "median_ms": 62.101873,
+            "peak_extra_bytes": 168370688
+          },
+          "current": {
+            "median_ms": 60.055607,
+            "peak_extra_bytes": 168370688
+          },
+          "reduction_percent": 3.2950149506762783
+        },
+        {
+          "baseline": {
+            "median_ms": 62.208271999999994,
+            "peak_extra_bytes": 168370688
+          },
+          "current": {
+            "median_ms": 60.15395,
+            "peak_extra_bytes": 168370688
+          },
+          "reduction_percent": 3.3023293108028984
+        }
+      ],
+      "median_reduction_percent": 3.2950149506762783
+    },
+    {
+      "model": "sam3",
+      "role": "grounding",
+      "runs": [
+        {
+          "baseline": {
+            "median_ms": 59.748432,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 57.758367500000006,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.3307392903632937
+        },
+        {
+          "baseline": {
+            "median_ms": 60.055921999999995,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 57.936523,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.529042481439204
+        },
+        {
+          "baseline": {
+            "median_ms": 60.164466000000004,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 58.0878685,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.4515348312075145
+        }
+      ],
+      "median_reduction_percent": 3.4515348312075145
+    },
+    {
+      "model": "sam3",
+      "role": "interactive",
+      "runs": [
+        {
+          "baseline": {
+            "median_ms": 59.747102,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 57.770742999999996,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.307874246352571
+        },
+        {
+          "baseline": {
+            "median_ms": 60.0640875,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 57.9099475,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.5864026070486776
+        },
+        {
+          "baseline": {
+            "median_ms": 60.1742605,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 58.077798,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.4839854824638916
+        }
+      ],
+      "median_reduction_percent": 3.4839854824638916
+    },
+    {
+      "model": "sam3.1",
+      "role": "video",
+      "runs": [
+        {
+          "baseline": {
+            "median_ms": 63.9883345,
+            "peak_extra_bytes": 223445504
+          },
+          "current": {
+            "median_ms": 61.859511,
+            "peak_extra_bytes": 223445504
+          },
+          "reduction_percent": 3.3268931229957333
+        },
+        {
+          "baseline": {
+            "median_ms": 64.1989155,
+            "peak_extra_bytes": 223445504
+          },
+          "current": {
+            "median_ms": 61.946608499999996,
+            "peak_extra_bytes": 223445504
+          },
+          "reduction_percent": 3.5083256196126844
+        },
+        {
+          "baseline": {
+            "median_ms": 64.2499925,
+            "peak_extra_bytes": 223445504
+          },
+          "current": {
+            "median_ms": 62.095903,
+            "peak_extra_bytes": 223445504
+          },
+          "reduction_percent": 3.3526688738524046
+        }
+      ],
+      "median_reduction_percent": 3.3526688738524046
+    },
+    {
+      "model": "sam3.1",
+      "role": "grounding",
+      "runs": [
+        {
+          "baseline": {
+            "median_ms": 59.907587,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 57.796424,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.524032774012409
+        },
+        {
+          "baseline": {
+            "median_ms": 60.158145000000005,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 57.916568,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.7261404918652485
+        },
+        {
+          "baseline": {
+            "median_ms": 60.186991000000006,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 58.043132,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.5619973093521273
+        }
+      ],
+      "median_reduction_percent": 3.5619973093521273
+    },
+    {
+      "model": "sam3.1",
+      "role": "interactive",
+      "runs": [
+        {
+          "baseline": {
+            "median_ms": 59.856356000000005,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 57.774593499999995,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.4779305642996583
+        },
+        {
+          "baseline": {
+            "median_ms": 60.1622905,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 57.904623,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.752628899659327
+        },
+        {
+          "baseline": {
+            "median_ms": 60.1847665,
+            "peak_extra_bytes": 161906688
+          },
+          "current": {
+            "median_ms": 58.009825500000005,
+            "peak_extra_bytes": 161906688
+          },
+          "reduction_percent": 3.613773262707598
+        }
+      ],
+      "median_reduction_percent": 3.613773262707598
+    }
+  ],
+  "performance_scope": "Encoder-only synchronized wall time; three independent baseline/current pairs, ten selected-position samples per role and process. Process order alternates across pairs. No competing GPU jobs during benchmark. Additional allocation is above live model/input; not total VRAM or full predictor throughput.",
+  "profile": {
+    "scope": "Diagnostic capture includes initialization and full four-frame edit lifecycle; counts only, not steady-state timings.",
+    "baseline_kernel_instances": 46424,
+    "fused_kernel_instances": 44872,
+    "rotary_kernel_instances": 800,
+    "exact_output_files": 68,
+    "changes": [
+      {
+        "name": "void at::native::elementwise_kernel<(int)128, (int)2, void at::native::gpu_kernel_impl_nocast<at::native::BinaryFunctor<c10::complex<float>, c10::complex<float>, c10::complex<float>, at::native::binary_internal::MulFunctor<c10::complex<float>>>>(at::TensorIteratorBase &, const T1 &)::[lambda(int) (instance 1)]>(int, T3)",
+        "before": 800,
+        "after": 0
+      },
+      {
+        "name": "void at::native::elementwise_kernel<(int)128, (int)4, void at::native::gpu_kernel_impl<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase &)::[lambda() (instance 3)]::operator ()() const::[lambda() (instance 7)]::operator ()() const::[lambda(float) (instance 1)]>(at::TensorIteratorBase &, const T1 &)::[lambda(int) (instance 1)]>(int, T3)",
+        "before": 718,
+        "after": 14
+      },
+      {
+        "name": "void at::native::unrolled_elementwise_kernel<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase &)::[lambda() (instance 3)]::operator ()() const::[lambda() (instance 7)]::operator ()() const::[lambda(float) (instance 1)], std::array<char *, (unsigned long)2>, (int)4, TrivialOffsetCalculator<(int)1, unsigned int>, TrivialOffsetCalculator<(int)1, unsigned int>, at::native::memory::LoadWithCast<(int)1>, at::native::memory::StoreWithCast<(int)1>>(int, T1, T2, T4, T5, T6, T7)",
+        "before": 805,
+        "after": 733
+      },
+      {
+        "name": "void at::native::vectorized_elementwise_kernel<(int)4, at::native::float16_copy_kernel_cuda(at::TensorIteratorBase &)::[lambda(float) (instance 1)], std::array<char *, (unsigned long)2>>(int, T2, T3)",
+        "before": 15695,
+        "after": 14919
+      },
+      {
+        "name": "void sam3::<unnamed>::rotary_kernel<c10::Half>(const T1 *, const c10::complex<float> *, T1 *, sam3::<unnamed>::Layout, long)",
+        "before": 0,
+        "after": 776
+      },
+      {
+        "name": "void sam3::<unnamed>::rotary_kernel<float>(const T1 *, const c10::complex<float> *, T1 *, sam3::<unnamed>::Layout, long)",
+        "before": 0,
+        "after": 24
+      }
+    ]
+  },
+  "sdk": {
+    "overlays": {
+      "prerequisite": "vision-positions-sdk-overlay/overlays.json (includes base/media/seek/preprocess recipe)",
+      "prerequisite_sha256": "928edeea56f5080b374b93902fb8d9f0df471141adc3da755cd21fb549dc1500",
+      "notes": "Apply the matching archive at the preceding complete SDK root. Reuses all dependency and weight layers. Precompiled RoPE fuses casts and complex multiplication while retaining feature values and layouts; CPU/fallback paths use original ATen operators. No new weights or dependencies.",
+      "overlays": [
+        {
+          "variant": "cpu",
+          "archive": "cpu.tar.gz",
+          "bytes": 1851016,
+          "sha256": "76055acea2f8f9532a27265e03525d01a9962d83d90cbc564fe806d3c11c2a66",
+          "files": [
+            {
+              "path": "bin/sam3_image_benchmark",
+              "bytes": 124168,
+              "sha256": "37a7eaa72509aceee6631d98e327f54290da5502a607f42f09fce89a08f3d490"
+            },
+            {
+              "path": "bin/sam3_image_results_test",
+              "bytes": 88392,
+              "sha256": "15bdab9ca313968f9ac38b9faa6c87811dbaef79660b9a6b4ca354945347cfae"
+            },
+            {
+              "path": "bin/sam3_predictor_c_probe",
+              "bytes": 35376,
+              "sha256": "b21b0d24ba0bff9528f47f137fef4ca3c70e6684f3e581e875ba8e32387b46c9"
+            },
+            {
+              "path": "bin/sam3_rank_executor_test",
+              "bytes": 98504,
+              "sha256": "46dd7623279fca8be68d5c8c8e0b9588d14a594671da4511a6103d00dfbc455a"
+            },
+            {
+              "path": "bin/sam3_rotary_test",
+              "bytes": 72248,
+              "sha256": "adbea069ff9a92a6ec678ef2f7baa0ba3cd88f8e2ec32da0765cd138682669e9"
+            },
+            {
+              "path": "bin/sam3_video_collective_probe",
+              "bytes": 191112,
+              "sha256": "f2ac83db954299c6802678fa82c2434276e4c1a7f922c34057efd604fabba663"
+            },
+            {
+              "path": "bin/sam3_video_collective_test",
+              "bytes": 82664,
+              "sha256": "eee79c9fc0c04ed2c2369ed68e0b2dfe602e79335c169b4627f12fef1965c704"
+            },
+            {
+              "path": "bin/sam3_video_multidevice_probe",
+              "bytes": 96304,
+              "sha256": "996f2fc2927c68f326294a4dce1e85162c0b357cd8f7d388d91e49cf6fbbe27a"
+            },
+            {
+              "path": "bin/sam3_vision_positions_benchmark",
+              "bytes": 83712,
+              "sha256": "541fd0b9a63c75ee8befaf760cc9dd9db314c2591c203c861092498872108880"
+            },
+            {
+              "path": "include/sam3/rotary.h",
+              "bytes": 488,
+              "sha256": "09074e2deb992019400c20e194805a8b808f5534afe46c91bb9c6bda3f6f8c3d"
+            },
+            {
+              "path": "lib/libsam3_native.so",
+              "bytes": 4501032,
+              "sha256": "0c30f58737c18f56a422d7adbac49b7ae7614316be8a1088f02121a614b7c008"
+            }
+          ],
+          "complete_recovery_entries_verified": 154
+        },
+        {
+          "variant": "cuda",
+          "archive": "cuda.tar.gz",
+          "bytes": 2214219,
+          "sha256": "1741e313eb4d99c84c39f0ca4cf78c001414b8b2e2a042d250eff61b918c85e0",
+          "files": [
+            {
+              "path": "bin/sam3_image_benchmark",
+              "bytes": 129048,
+              "sha256": "614ef0136c02273eaa0b63bf2b1ba912ad46e87d4c724d7ea740b29f59af6ba9"
+            },
+            {
+              "path": "bin/sam3_image_results_test",
+              "bytes": 98664,
+              "sha256": "d1e92c508cfba7c0a02aef33dce04624ee92e1b7b1422766ca267fc3ff6b9325"
+            },
+            {
+              "path": "bin/sam3_predictor_c_probe",
+              "bytes": 35376,
+              "sha256": "b35c59bac99ab8f7d94eec59e58fd9c7a5b2691df2a55edc877e8e6ded23e35d"
+            },
+            {
+              "path": "bin/sam3_rank_executor_test",
+              "bytes": 98504,
+              "sha256": "e95cacac65356f4840c240de23d6f4b4bd984c4208b8dd817fff41487eb53920"
+            },
+            {
+              "path": "bin/sam3_rotary_stream_test",
+              "bytes": 117200,
+              "sha256": "68db58f58483157d97270efc27e82fa9705dcbedd8ee77f6e1c3880cc6898f06"
+            },
+            {
+              "path": "bin/sam3_rotary_test",
+              "bytes": 72248,
+              "sha256": "d5e10f94c45f2bdb8fe2dcca283243b2199b561e768a5a984f8ba78e73b79896"
+            },
+            {
+              "path": "bin/sam3_video_collective_probe",
+              "bytes": 191112,
+              "sha256": "9b7ea617071ae04f02ebfa6c2ef0cd708df5224544037304dbd5fe0cc2666ee7"
+            },
+            {
+              "path": "bin/sam3_video_collective_test",
+              "bytes": 82664,
+              "sha256": "96272251fa3ae874402638e2b1213c0ea15d5351e2f6edf33cf75c339f96e266"
+            },
+            {
+              "path": "bin/sam3_video_multidevice_probe",
+              "bytes": 96304,
+              "sha256": "c4dc7d361beea0b1ff66decd15c854319d8c86abfe80b7f3641b226f7acc5866"
+            },
+            {
+              "path": "bin/sam3_vision_positions_benchmark",
+              "bytes": 84440,
+              "sha256": "9876079c7e2acf5cc621d8ccd9c41064918f1e82c9bf913b1543de0b46dc204b"
+            },
+            {
+              "path": "include/sam3/rotary.h",
+              "bytes": 488,
+              "sha256": "09074e2deb992019400c20e194805a8b808f5534afe46c91bb9c6bda3f6f8c3d"
+            },
+            {
+              "path": "lib/libsam3_native.so",
+              "bytes": 5969840,
+              "sha256": "c6630e8834e3f28c9853963798dad71b0e787f16b021b0603a6a11a3fe98d2ea"
+            }
+          ],
+          "complete_recovery_entries_verified": 188
+        }
+      ]
+    },
+    "runtime": {
+      "recovered_operator_checks": [
+        {
+          "sdk": "cpu",
+          "tool": "sam3_rotary_test",
+          "device": "cpu",
+          "passed": true
+        },
+        {
+          "sdk": "cuda",
+          "tool": "sam3_rotary_test",
+          "device": "cuda",
+          "passed": true
+        },
+        {
+          "sdk": "cuda",
+          "tool": "sam3_rotary_stream_test",
+          "device": "cuda",
+          "passed": true
+        }
+      ],
+      "c_api_exact_output_files": 153,
+      "c_api_model": "sam3.1",
+      "c_api_precision": "fp16",
+      "c_api_source": "image",
+      "c_api_tracking_ranks": 2,
+      "c_api_parallel": true,
+      "workspace_runtime_libraries": [
+        "/workspace/rope-recovered-cuda/bin/../lib/libavcodec.so.60",
+        "/workspace/rope-recovered-cuda/bin/../lib/libavformat.so.60",
+        "/workspace/rope-recovered-cuda/bin/../lib/libavutil.so.58",
+        "/workspace/rope-recovered-cuda/bin/../lib/libbz2.so.1.0",
+        "/workspace/rope-recovered-cuda/bin/../lib/libc10.so",
+        "/workspace/rope-recovered-cuda/bin/../lib/libc10_cuda.so",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcublas-e70f38ef.so.13",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcublasLt-656298c8.so.13",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcudart-96c42e41.so.13",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcudart.so.13",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcudnn.so.9",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcudnn_engines_precompiled.so.9",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcudnn_engines_runtime_compiled.so.9",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcudnn_graph.so.9",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcudnn_heuristic.so.9",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcufft.so.12",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcupti-e2f9ed86.so.13",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcurand.so.10",
+        "/workspace/rope-recovered-cuda/bin/../lib/libcusparse.so.12",
+        "/workspace/rope-recovered-cuda/bin/../lib/libgomp-98b21ff3.so.1",
+        "/workspace/rope-recovered-cuda/bin/../lib/libicudata.so.74",
+        "/workspace/rope-recovered-cuda/bin/../lib/libicui18n.so.74",
+        "/workspace/rope-recovered-cuda/bin/../lib/libicuuc.so.74",
+        "/workspace/rope-recovered-cuda/bin/../lib/libjpeg.so.8",
+        "/workspace/rope-recovered-cuda/bin/../lib/liblzma.so.5",
+        "/workspace/rope-recovered-cuda/bin/../lib/libnvJitLink.so.13",
+        "/workspace/rope-recovered-cuda/bin/../lib/libopencv_core.so.410",
+        "/workspace/rope-recovered-cuda/bin/../lib/libopencv_imgproc.so.410",
+        "/workspace/rope-recovered-cuda/bin/../lib/libsam3_native.so",
+        "/workspace/rope-recovered-cuda/bin/../lib/libswresample.so.4",
+        "/workspace/rope-recovered-cuda/bin/../lib/libswscale.so.7",
+        "/workspace/rope-recovered-cuda/bin/../lib/libtorch.so",
+        "/workspace/rope-recovered-cuda/bin/../lib/libtorch_cpu.so",
+        "/workspace/rope-recovered-cuda/bin/../lib/libtorch_cuda.so",
+        "/workspace/rope-recovered-cuda/bin/../lib/libz.so.1"
+      ],
+      "no_python_or_triton": true,
+      "layout_audit": [
+        {
+          "device": "cpu",
+          "cases": 240,
+          "all_bytes_and_strides_exact": true
+        },
+        {
+          "device": "cuda",
+          "cases": 240,
+          "all_bytes_and_strides_exact": true
+        }
+      ]
+    }
+  },
+  "sm75": {
+    "compiled_kernel_variants": [
+      "float",
+      "half",
+      "bfloat16",
+      "double"
+    ],
+    "active_fast_path_dtypes": [
+      "float",
+      "half",
+      "bfloat16"
+    ],
+    "evidence": "rope-sm75-kernels.log",
+    "physical_execution": false
+  },
+  "private_artifacts": {
+    "bucket": "RamRom/sam3-turing-native-20260922",
+    "sdk_prefix": "rotary-sdk-overlay",
+    "evidence_prefix": "native-foundation/rotary-fusion-linux"
+  },
+  "limits": [
+    "No GitHub Actions; Windows/Turing validation remains user-owned.",
+    "No new weights, dependencies, model variants or inference limits.",
+    "Recorded exactness does not prove all-input equality or resolve prior source-reference FP16 residual.",
+    "CPU uses original ATen path; no CPU performance or long-run stability improvement is claimed.",
+    "Initial FMA experiments and layout failures are preserved with evidence."
+  ]
+}
