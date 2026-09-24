@@ -1,0 +1,999 @@
+{
+  "quality_gates": {
+    "same_count": true,
+    "min_mask_iou": 0.98,
+    "max_score_error": 0.02,
+    "max_box_error_px": 1.0
+  },
+  "quality": {
+    "truck/exact/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/exact/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995615992357056,
+      "max_score_error": 0.009765625,
+      "max_box_error_px": 0.13665771484375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/exact/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "bag/exact/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9984314545644672,
+      "max_score_error": 0.0029296875,
+      "max_box_error_px": 0.128173828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/exact/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "child/exact/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9954766875434934,
+      "max_score_error": 0.0068359375,
+      "max_box_error_px": 0.27117919921875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/exact/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "wheel/exact/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.990914990266061,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.35894775390625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/exact/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/exact/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/all/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9734874908089968,
+      "max_score_error": 0.30810546875,
+      "max_box_error_px": 31.987655639648438,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "truck/all/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9735197768961861,
+      "max_score_error": 0.29833984375,
+      "max_box_error_px": 31.97161102294922,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/all/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9545932064900199,
+      "max_score_error": 0.22314453125,
+      "max_box_error_px": 3.3051300048828125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "bag/all/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.954253705216478,
+      "max_score_error": 0.22119140625,
+      "max_box_error_px": 3.2900543212890625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/all/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.8967672989580551,
+      "max_score_error": 0.044921875,
+      "max_box_error_px": 5.33837890625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/all/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.8953382816254606,
+      "max_score_error": 0.0498046875,
+      "max_box_error_px": 5.5458984375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/all/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.47797758665624185,
+      "max_score_error": 0.388671875,
+      "max_box_error_px": 16.7298583984375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/all/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.4750390015600624,
+      "max_score_error": 0.38818359375,
+      "max_box_error_px": 16.71234130859375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/all/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/all/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/last8/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9978146420553362,
+      "max_score_error": 0.0263671875,
+      "max_box_error_px": 0.3131103515625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "truck/last8/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9977753862831198,
+      "max_score_error": 0.0166015625,
+      "max_box_error_px": 0.35223388671875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/last8/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9915631591281932,
+      "max_score_error": 0.01123046875,
+      "max_box_error_px": 0.365264892578125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/last8/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9907472475989693,
+      "max_score_error": 0.00927734375,
+      "max_box_error_px": 0.4468994140625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/last8/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.981664853101197,
+      "max_score_error": 0.0302734375,
+      "max_box_error_px": 1.99578857421875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "child/last8/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9811238644399717,
+      "max_score_error": 0.0234375,
+      "max_box_error_px": 1.967041015625,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/last8/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9729126832377311,
+      "max_score_error": 0.0087890625,
+      "max_box_error_px": 0.8095703125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/last8/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9672808132147395,
+      "max_score_error": 0.00830078125,
+      "max_box_error_px": 0.864013671875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/last8/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/last8/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/last4/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.998275344813233,
+      "max_score_error": 0.01220703125,
+      "max_box_error_px": 0.3284912109375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "truck/last4/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9981733223387128,
+      "max_score_error": 0.00244140625,
+      "max_box_error_px": 0.38623046875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/last4/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9939017239357335,
+      "max_score_error": 0.00634765625,
+      "max_box_error_px": 0.3724365234375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/last4/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.992850445382091,
+      "max_score_error": 0.0087890625,
+      "max_box_error_px": 0.39764404296875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/last4/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9832663261979789,
+      "max_score_error": 0.013671875,
+      "max_box_error_px": 0.9483642578125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/last4/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.982079826228618,
+      "max_score_error": 0.0078125,
+      "max_box_error_px": 1.0755615234375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/last4/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9784911717495988,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.6595458984375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/last4/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9728,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.6956787109375,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/last4/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/last4/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/last2/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9986052407137775,
+      "max_score_error": 0.00244140625,
+      "max_box_error_px": 0.401763916015625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "truck/last2/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9984655422352825,
+      "max_score_error": 0.00732421875,
+      "max_box_error_px": 0.421142578125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/last2/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9944887429643527,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.30682373046875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/last2/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9934372436423298,
+      "max_score_error": 0.00439453125,
+      "max_box_error_px": 0.33203125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/last2/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9863572127405152,
+      "max_score_error": 0.01025390625,
+      "max_box_error_px": 0.8641357421875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/last2/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9852765402586113,
+      "max_score_error": 0.0048828125,
+      "max_box_error_px": 0.7586669921875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/last2/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9787644787644788,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.73760986328125,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "wheel/last2/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9743260590500642,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.73602294921875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/last2/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/last2/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/last/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9989678704512465,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.606689453125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "truck/last/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9987873056665185,
+      "max_score_error": 0.009765625,
+      "max_box_error_px": 0.6668701171875,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/last/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9955440900562852,
+      "max_score_error": 0.00244140625,
+      "max_box_error_px": 0.177490234375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/last/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9944919723426696,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.213958740234375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/last/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9905218433380543,
+      "max_score_error": 0.005859375,
+      "max_box_error_px": 0.56927490234375,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/last/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9891120910229191,
+      "max_score_error": 0.00244140625,
+      "max_box_error_px": 0.55010986328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/last/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9819819819819819,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.47979736328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/last/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9737347853939782,
+      "max_score_error": 0.00244140625,
+      "max_box_error_px": 0.4530029296875,
+      "gate_pass": false,
+      "byte_equal": false
+    },
+    "empty/last/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/last/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    }
+  },
+  "timing": {
+    "exact": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-exact-truck-1",
+          "median_ms": 407.8037,
+          "wall_ms": [
+            406.9563,
+            415.29519999999997,
+            408.1371,
+            406.6651,
+            410.44960000000003,
+            407.8037,
+            396.6287,
+            403.7778,
+            416.1916,
+            399.537,
+            408.0587,
+            399.0684,
+            402.9862,
+            419.2541,
+            414.9672
+          ],
+          "stage_mean_ms": [
+            1.2071210781740003,
+            1.8339562575013333,
+            286.9241617838,
+            116.26149546300003,
+            1.4437440156940002
+          ],
+          "peak_allocated_bytes": 2789232640
+        },
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-exact-truck-2",
+          "median_ms": 415.66979999999995,
+          "wall_ms": [
+            413.65229999999997,
+            418.18919999999997,
+            415.0331,
+            411.41119999999995,
+            422.90709999999996,
+            411.20640000000003,
+            422.0126,
+            413.801,
+            417.43190000000004,
+            414.8725,
+            433.0481,
+            436.3091,
+            415.66979999999995,
+            428.4134,
+            415.4048
+          ],
+          "stage_mean_ms": [
+            1.2294250806166667,
+            1.8602666854853334,
+            296.14369099933333,
+            118.4645858766,
+            1.5421631971993333
+          ],
+          "peak_allocated_bytes": 2789232640
+        }
+      ],
+      "median_ms": 414.33675,
+      "p95_ms": 430.96248499999996,
+      "stage_mean_ms": [
+        1.2182730793953334,
+        1.8471114714933332,
+        291.53392639156664,
+        117.36304066980001,
+        1.4929536064466666
+      ]
+    },
+    "all": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-all-truck-1",
+          "median_ms": 391.0335,
+          "wall_ms": [
+            392.841,
+            388.5334,
+            390.55699999999996,
+            394.07,
+            387.08520000000004,
+            384.36940000000004,
+            376.5563,
+            385.9991,
+            397.9782,
+            392.09680000000003,
+            391.0335,
+            397.9717,
+            384.5439,
+            396.75169999999997,
+            400.5121
+          ],
+          "stage_mean_ms": [
+            1.1966293255486666,
+            1.8307519992193335,
+            271.6787556966,
+            114.70158131913334,
+            1.2757354577386666
+          ],
+          "peak_allocated_bytes": 2703289856
+        },
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-all-truck-2",
+          "median_ms": 400.5302,
+          "wall_ms": [
+            391.6336,
+            421.05019999999996,
+            400.5302,
+            396.9391,
+            399.139,
+            406.6198,
+            401.0508,
+            407.9608,
+            402.9529,
+            398.6984,
+            407.2658,
+            396.3041,
+            395.5731,
+            394.091,
+            415.0111
+          ],
+          "stage_mean_ms": [
+            1.2238399982453332,
+            1.86827732722,
+            279.53217976880006,
+            118.04455566400001,
+            1.5933375755933334
+          ],
+          "peak_allocated_bytes": 2703289856
+        }
+      ],
+      "median_ms": 396.5279,
+      "p95_ms": 411.838465,
+      "stage_mean_ms": [
+        1.210234661897,
+        1.8495146632196668,
+        275.60546773270005,
+        116.37306849156667,
+        1.434536516666
+      ]
+    },
+    "last8": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-last8-truck-1",
+          "median_ms": 406.87800000000004,
+          "wall_ms": [
+            415.0744,
+            404.1691,
+            409.64549999999997,
+            399.3177,
+            402.4059,
+            409.8326,
+            413.8122,
+            413.5526,
+            400.2052,
+            406.2323,
+            405.3339,
+            406.87800000000004,
+            418.7747,
+            414.26829999999995,
+            402.0443
+          ],
+          "stage_mean_ms": [
+            1.26007253329,
+            1.8679807901373338,
+            286.8467163086,
+            116.36408284506666,
+            1.7023253361373338
+          ],
+          "peak_allocated_bytes": 2766950400
+        },
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-last8-truck-2",
+          "median_ms": 417.44239999999996,
+          "wall_ms": [
+            422.7161,
+            404.9317,
+            409.9564,
+            415.4429,
+            409.33799999999997,
+            421.27759999999995,
+            419.44890000000004,
+            408.1464,
+            417.44239999999996,
+            417.5134,
+            414.9742,
+            415.99019999999996,
+            438.4928,
+            431.0278,
+            431.3331
+          ],
+          "stage_mean_ms": [
+            1.2196906566626666,
+            1.8495274543766667,
+            291.87191162106666,
+            122.09447224926664,
+            1.4491306463879998
+          ],
+          "peak_allocated_bytes": 2766950400
+        }
+      ],
+      "median_ms": 413.68240000000003,
+      "p95_ms": 431.195715,
+      "stage_mean_ms": [
+        1.2398815949763333,
+        1.8587541222570003,
+        289.3593139648333,
+        119.22927754716665,
+        1.5757279912626667
+      ]
+    },
+    "last4": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-last4-truck-1",
+          "median_ms": 406.6772,
+          "wall_ms": [
+            401.3859,
+            406.6209,
+            404.0557,
+            401.2325,
+            404.19480000000004,
+            421.7927,
+            410.1213,
+            407.1282,
+            418.3698,
+            431.0463,
+            405.5003,
+            412.8219,
+            406.6772,
+            406.19440000000003,
+            413.4234
+          ],
+          "stage_mean_ms": [
+            1.1864405314133333,
+            1.8488917191826666,
+            290.3085388183333,
+            115.29979705793332,
+            1.3519146521893333
+          ],
+          "peak_allocated_bytes": 2778222592
+        },
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-last4-truck-2",
+          "median_ms": 413.2816,
+          "wall_ms": [
+            413.6585,
+            415.4477,
+            406.5901,
+            408.1035,
+            405.1041,
+            414.90860000000004,
+            408.0455,
+            413.2816,
+            418.63030000000003,
+            411.5936,
+            418.8685,
+            420.5563,
+            409.49580000000003,
+            409.5021,
+            419.63289999999995
+          ],
+          "stage_mean_ms": [
+            1.2309866666793334,
+            1.8558549324673332,
+            293.8669087728667,
+            114.53023935953335,
+            1.361657603582
+          ],
+          "peak_allocated_bytes": 2778222592
+        }
+      ],
+      "median_ms": 409.8117,
+      "p95_ms": 421.23632000000003,
+      "stage_mean_ms": [
+        1.2087135990463334,
+        1.852373325825,
+        292.0877237956,
+        114.91501820873333,
+        1.3567861278856665
+      ]
+    },
+    "last2": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-last2-truck-1",
+          "median_ms": 412.4054,
+          "wall_ms": [
+            412.6974,
+            412.2251,
+            403.0118,
+            412.4054,
+            411.8716,
+            416.461,
+            425.26930000000004,
+            414.92600000000004,
+            418.94930000000005,
+            407.3492,
+            426.9017,
+            409.2828,
+            407.3928,
+            416.6934,
+            408.3381
+          ],
+          "stage_mean_ms": [
+            1.203291718166,
+            1.84429227511,
+            291.4123657226,
+            117.6935175578,
+            1.3852373441073336
+          ],
+          "peak_allocated_bytes": 2783006720
+        },
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-last2-truck-2",
+          "median_ms": 417.2405,
+          "wall_ms": [
+            408.9387,
+            418.263,
+            418.6527,
+            408.5556,
+            423.2899,
+            419.1706,
+            410.3621,
+            406.5831,
+            419.4788,
+            417.94930000000005,
+            421.6266,
+            417.2405,
+            412.5204,
+            416.0893,
+            414.24060000000003
+          ],
+          "stage_mean_ms": [
+            1.197245875995333,
+            1.8545237302786666,
+            294.2834554038,
+            116.79876352946668,
+            1.350630402566
+          ],
+          "peak_allocated_bytes": 2783006720
+        }
+      ],
+      "median_ms": 414.5833,
+      "p95_ms": 424.37857,
+      "stage_mean_ms": [
+        1.2002687970806665,
+        1.8494080026943331,
+        292.8479105632,
+        117.24614054363335,
+        1.3679338733366668
+      ]
+    },
+    "last": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-last-truck-1",
+          "median_ms": 410.6567,
+          "wall_ms": [
+            426.657,
+            417.7972,
+            407.7165,
+            413.6584,
+            410.46110000000004,
+            410.6567,
+            409.784,
+            411.0315,
+            407.37600000000003,
+            410.2928,
+            406.8669,
+            420.0716,
+            408.4579,
+            425.9924,
+            411.6549
+          ],
+          "stage_mean_ms": [
+            1.2195327997213332,
+            1.847688523928667,
+            292.496089681,
+            116.22518259693334,
+            1.3899029334386666
+          ],
+          "peak_allocated_bytes": 2785366016
+        },
+        {
+          "path": ".cache\\native-perf\\int4-fc2-ba018a0\\timing-last-truck-2",
+          "median_ms": 417.2421,
+          "wall_ms": [
+            424.9635,
+            421.8092,
+            409.1186,
+            413.566,
+            417.2421,
+            420.02450000000005,
+            404.7666,
+            429.3395,
+            401.7768,
+            416.5018,
+            423.8756,
+            430.19230000000005,
+            417.0312,
+            426.4545,
+            408.7263
+          ],
+          "stage_mean_ms": [
+            1.2156458616253334,
+            1.8591530640919998,
+            292.80480753573335,
+            120.268784078,
+            1.494536542892667
+          ],
+          "peak_allocated_bytes": 2785366016
+        }
+      ],
+      "median_ms": 413.6122,
+      "p95_ms": 428.13237499999997,
+      "stage_mean_ms": [
+        1.2175893306733334,
+        1.8534207940103333,
+        292.6504486083667,
+        118.24698333746667,
+        1.4422197381656667
+      ]
+    }
+  },
+  "gate_failures": [
+    "truck/all/int8",
+    "truck/all/fp16",
+    "bag/all/int8",
+    "bag/all/fp16",
+    "child/all/int8",
+    "child/all/fp16",
+    "wheel/all/int8",
+    "wheel/all/fp16",
+    "truck/last8/int8",
+    "child/last8/int8",
+    "child/last8/fp16",
+    "wheel/last8/int8",
+    "wheel/last8/fp16",
+    "child/last4/fp16",
+    "wheel/last4/int8",
+    "wheel/last4/fp16",
+    "wheel/last2/int8",
+    "wheel/last2/fp16",
+    "wheel/last/fp16"
+  ]
+}

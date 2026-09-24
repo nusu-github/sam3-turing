@@ -1,0 +1,860 @@
+{
+  "base": "ba018a0",
+  "mlp": "int8_boundary",
+  "timing": {
+    "exact": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\projection-ba018a0\\timing-exact-truck-1",
+          "median_ms": 446.5827,
+          "wall_ms": [
+            454.557,
+            451.6962,
+            457.1252,
+            446.5827,
+            446.13370000000003,
+            444.8236,
+            444.13059999999996,
+            440.4592,
+            450.5974,
+            454.18330000000003,
+            444.2464,
+            444.5997,
+            444.2385,
+            448.9203,
+            448.30789999999996
+          ],
+          "stage_mean_ms": [
+            1.2630613327020004,
+            2.2176789283760003,
+            319.9178934733333,
+            123.12651672366665,
+            1.4678826570513335
+          ],
+          "peak_allocated_bytes": 2688241664,
+          "sm_mhz_tail_median": 1350.0,
+          "temperature_max": 58
+        },
+        {
+          "path": ".cache\\native-perf\\projection-ba018a0\\timing-exact-truck-2",
+          "median_ms": 460.8279,
+          "wall_ms": [
+            475.0558,
+            462.50190000000003,
+            456.4136,
+            457.2452,
+            460.8279,
+            463.29740000000004,
+            455.4686,
+            475.3864,
+            464.3431,
+            451.8775,
+            453.9477,
+            458.4627,
+            462.6708,
+            458.2244,
+            461.1998
+          ],
+          "stage_mean_ms": [
+            1.3760767936706664,
+            1.970542955398,
+            329.70653483073335,
+            126.1684595744,
+            1.8505493243533335
+          ],
+          "peak_allocated_bytes": 2688241664,
+          "sm_mhz_tail_median": 1305.0,
+          "temperature_max": 68
+        }
+      ],
+      "pooled_median_ms": 454.37015,
+      "p95_ms": 470.23508499999997,
+      "stage_mean_ms": [
+        1.3195690631863335,
+        2.094110941887,
+        324.81221415203333,
+        124.64748814903334,
+        1.6592159907023336
+      ]
+    },
+    "qkv": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\projection-ba018a0\\timing-qkv-truck-1",
+          "median_ms": 439.4271,
+          "wall_ms": [
+            445.9615,
+            438.49850000000004,
+            438.289,
+            438.6782,
+            450.34610000000004,
+            446.22319999999996,
+            439.4271,
+            435.3249,
+            434.2726,
+            437.5371,
+            439.2782,
+            446.4055,
+            447.8763,
+            449.146,
+            457.1529
+          ],
+          "stage_mean_ms": [
+            1.3285440127053332,
+            2.229879450797333,
+            312.571114095,
+            125.07899373373334,
+            1.6961322784420003
+          ],
+          "peak_allocated_bytes": 2788970496,
+          "sm_mhz_tail_median": 1350.0,
+          "temperature_max": 61
+        },
+        {
+          "path": ".cache\\native-perf\\projection-ba018a0\\timing-qkv-truck-2",
+          "median_ms": 449.70009999999996,
+          "wall_ms": [
+            469.44239999999996,
+            443.298,
+            449.70009999999996,
+            445.53229999999996,
+            445.63000000000005,
+            455.31280000000004,
+            443.647,
+            455.6949,
+            443.6149,
+            450.1533,
+            452.1164,
+            444.1832,
+            454.44059999999996,
+            450.53,
+            446.2154
+          ],
+          "stage_mean_ms": [
+            1.262600541114,
+            1.9540245453520002,
+            319.1748128254667,
+            125.71528879806667,
+            1.695428260168
+          ],
+          "peak_allocated_bytes": 2788970496,
+          "sm_mhz_tail_median": 1312.5,
+          "temperature_max": 68
+        }
+      ],
+      "pooled_median_ms": 446.08844999999997,
+      "p95_ms": 456.4968,
+      "stage_mean_ms": [
+        1.2955722769096667,
+        2.091951998074667,
+        315.87296346023334,
+        125.3971412659,
+        1.6957802693050001
+      ]
+    },
+    "proj": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\projection-ba018a0\\timing-proj-truck-1",
+          "median_ms": 451.6244,
+          "wall_ms": [
+            448.53589999999997,
+            445.6992,
+            451.6244,
+            452.5923,
+            459.81129999999996,
+            451.71410000000003,
+            449.9748,
+            463.429,
+            453.34000000000003,
+            448.8263,
+            448.55400000000003,
+            451.5471,
+            454.6524,
+            445.0594,
+            458.6216
+          ],
+          "stage_mean_ms": [
+            1.2079317331313333,
+            1.8176597356813333,
+            323.0746765136,
+            124.51623942066668,
+            1.5982357422506666
+          ],
+          "peak_allocated_bytes": 2722648064,
+          "sm_mhz_tail_median": 1335.0,
+          "temperature_max": 63
+        },
+        {
+          "path": ".cache\\native-perf\\projection-ba018a0\\timing-proj-truck-2",
+          "median_ms": 458.6968,
+          "wall_ms": [
+            452.00449999999995,
+            462.73199999999997,
+            462.5672,
+            469.41650000000004,
+            454.9475,
+            456.7288,
+            464.2186,
+            459.7424,
+            458.6968,
+            465.5318,
+            454.4551,
+            450.92339999999996,
+            453.4853,
+            460.4126,
+            456.4422
+          ],
+          "stage_mean_ms": [
+            1.2277546723700001,
+            2.1744853337620005,
+            329.0839579263333,
+            124.78384908046668,
+            1.5014613151553333
+          ],
+          "peak_allocated_bytes": 2722648064,
+          "sm_mhz_tail_median": 1320.0,
+          "temperature_max": 66
+        }
+      ],
+      "pooled_median_ms": 454.55375000000004,
+      "p95_ms": 464.94086,
+      "stage_mean_ms": [
+        1.2178432027506667,
+        1.9960725347216668,
+        326.0793172199667,
+        124.65004425056668,
+        1.549848528703
+      ]
+    },
+    "both": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\projection-ba018a0\\timing-both-truck-1",
+          "median_ms": 452.8907,
+          "wall_ms": [
+            440.75399999999996,
+            449.69,
+            465.0707,
+            452.8907,
+            450.0899,
+            454.6962,
+            466.4533,
+            450.1031,
+            450.33820000000003,
+            445.2752,
+            467.13919999999996,
+            453.2473,
+            450.1458,
+            461.1648,
+            454.824
+          ],
+          "stage_mean_ms": [
+            1.1991637150453334,
+            1.9076757431033333,
+            318.6222757975334,
+            130.80427602120002,
+            1.5419114510213336
+          ],
+          "peak_allocated_bytes": 2822524928,
+          "sm_mhz_tail_median": 1335.0,
+          "temperature_max": 64
+        },
+        {
+          "path": ".cache\\native-perf\\projection-ba018a0\\timing-both-truck-2",
+          "median_ms": 447.1036,
+          "wall_ms": [
+            453.2535,
+            443.882,
+            445.65110000000004,
+            441.795,
+            441.2732,
+            447.1036,
+            447.0642,
+            439.0482,
+            451.4476,
+            447.27660000000003,
+            450.0567,
+            448.9696,
+            447.27729999999997,
+            448.7147,
+            445.7585
+          ],
+          "stage_mean_ms": [
+            1.2542655944820003,
+            1.9301055987686664,
+            316.771681722,
+            124.94084065760003,
+            1.5146368026733334
+          ],
+          "peak_allocated_bytes": 2822524928,
+          "sm_mhz_tail_median": 1320.0,
+          "temperature_max": 66
+        }
+      ],
+      "pooled_median_ms": 449.87334999999996,
+      "p95_ms": 465.83113,
+      "stage_mean_ms": [
+        1.2267146547636667,
+        1.9188906709359999,
+        317.6969787597667,
+        127.87255833940003,
+        1.5282741268473337
+      ]
+    }
+  },
+  "quality": {
+    "truck/exact/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9996700027814052
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.01123046875,
+      "max_box_error_px": 0.0943603515625,
+      "byte_equal": false
+    },
+    "truck/exact/previous": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        1.0
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "byte_equal": true
+    },
+    "truck/qkv/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9995615992357056
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.009765625,
+      "max_box_error_px": 0.13665771484375,
+      "byte_equal": false
+    },
+    "truck/qkv/previous": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9996558659920174
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.107177734375,
+      "byte_equal": false
+    },
+    "truck/proj/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9995930117445182
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.00634765625,
+      "max_box_error_px": 0.1290283203125,
+      "byte_equal": false
+    },
+    "truck/proj/previous": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9996118683432278
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0048828125,
+      "max_box_error_px": 0.187255859375,
+      "byte_equal": false
+    },
+    "truck/both/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9995914339411539
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.00244140625,
+      "max_box_error_px": 0.24434661865234375,
+      "byte_equal": false
+    },
+    "truck/both/previous": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9996825641275464
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0087890625,
+      "max_box_error_px": 0.29831695556640625,
+      "byte_equal": false
+    },
+    "bag/exact/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9988118087926149,
+        0.9996837778012017,
+        0.998122286116653,
+        0.9983272347098797
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.00537109375,
+      "max_box_error_px": 0.118743896484375,
+      "byte_equal": false
+    },
+    "bag/exact/previous": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "byte_equal": true
+    },
+    "bag/qkv/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9988117001828154,
+        0.9994729630020027,
+        0.9987089201877934,
+        0.9984314545644672
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0029296875,
+      "max_box_error_px": 0.128173828125,
+      "byte_equal": false
+    },
+    "bag/qkv/previous": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9994512027805725,
+        0.9997891185153943,
+        0.9989432898908066,
+        0.9990582818876217
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0029296875,
+      "max_box_error_px": 0.121124267578125,
+      "byte_equal": false
+    },
+    "bag/proj/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9984459274156687,
+        0.9993675556024033,
+        0.9983562287190325,
+        0.9984312905249948
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.00439453125,
+      "max_box_error_px": 0.1442413330078125,
+      "byte_equal": false
+    },
+    "bag/proj/previous": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9990852542993048,
+        0.9996836777730915,
+        0.9988253259720428,
+        0.998849011195982
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.1592254638671875,
+      "byte_equal": false
+    },
+    "bag/both/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9986292607146121,
+        0.9995783704016022,
+        0.998708617046255,
+        0.9981181390486148
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0029296875,
+      "max_box_error_px": 0.158447265625,
+      "byte_equal": false
+    },
+    "bag/both/previous": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9992684711046086,
+        0.9996837111228255,
+        0.9982390232448932,
+        0.9989537560159029
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.00341796875,
+      "max_box_error_px": 0.1559906005859375,
+      "byte_equal": false
+    },
+    "child/exact/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9980253878702398,
+        0.9979456477079298,
+        0.9969273581077164,
+        0.9985119680285702,
+        0.9983097533491925,
+        0.9977632296781233
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0029296875,
+      "max_box_error_px": 0.6485595703125,
+      "byte_equal": false
+    },
+    "child/exact/previous": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "byte_equal": true
+    },
+    "child/qkv/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9977427910388804,
+        0.9980043434877033,
+        0.9954766875434934,
+        0.9984270713769502,
+        0.9985605207159844,
+        0.9972720824922254
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0068359375,
+      "max_box_error_px": 0.27117919921875,
+      "byte_equal": false
+    },
+    "child/qkv/previous": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9983625995144261,
+        0.9981805376217866,
+        0.9973870630588781,
+        0.9982145134549165,
+        0.9981224183251971,
+        0.9967831634043945
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.009765625,
+      "max_box_error_px": 0.67730712890625,
+      "byte_equal": false
+    },
+    "child/proj/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9975184704754385,
+        0.9983560356975105,
+        0.9959408524209916,
+        0.9982998979938796,
+        0.9987480438184664,
+        0.9973266408423809
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.00634765625,
+      "max_box_error_px": 0.1636962890625,
+      "byte_equal": false
+    },
+    "child/proj/previous": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9981378026070763,
+        0.9985322609053014,
+        0.9970400464306443,
+        0.9981723126620479,
+        0.9983098591549295,
+        0.9968376860585574
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.00927734375,
+      "max_box_error_px": 0.812255859375,
+      "byte_equal": false
+    },
+    "child/both/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9980818053596615,
+        0.9978874479197231,
+        0.9956491472328577,
+        0.9986819167481611,
+        0.9982478097622027,
+        0.9965105501335805
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.005859375,
+      "max_box_error_px": 0.83111572265625,
+      "byte_equal": false
+    },
+    "child/both/previous": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9979121995260128,
+        0.9978291480873035,
+        0.9966326056665118,
+        0.9987242728355162,
+        0.9980598322693703,
+        0.9963487738419619
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0087890625,
+      "max_box_error_px": 1.47967529296875,
+      "byte_equal": false
+    },
+    "wheel/exact/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9984059126150279,
+        0.9965982140623828,
+        0.9915693904020753,
+        0.9897149573905377
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.37152099609375,
+      "byte_equal": false
+    },
+    "wheel/exact/previous": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "byte_equal": true
+    },
+    "wheel/qkv/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9978032589016295,
+        0.9967965562980203,
+        0.990914990266061,
+        0.9913196998675886
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.35894775390625,
+      "byte_equal": false
+    },
+    "wheel/qkv/previous": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.997947058255241,
+        0.9972451790633609,
+        0.9928594612138916,
+        0.9965991423924294
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.23089599609375,
+      "byte_equal": false
+    },
+    "wheel/proj/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9985749824891916,
+        0.9975470564677613,
+        0.9918883841661259,
+        0.9925033073643981
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.2813720703125,
+      "byte_equal": false
+    },
+    "wheel/proj/previous": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9986226560989755,
+        0.9976960256442363,
+        0.990602721970188,
+        0.9951313071702567
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.32830810546875,
+      "byte_equal": false
+    },
+    "wheel/both/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9982382469350324,
+        0.995844910014768,
+        0.9935064935064936,
+        0.9894242068155111
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.001953125,
+      "max_box_error_px": 0.33331298828125,
+      "byte_equal": false
+    },
+    "wheel/both/previous": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9978998189499094,
+        0.9968931649629185,
+        0.9948051948051948,
+        0.9970440437481525
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.2286376953125,
+      "byte_equal": false
+    },
+    "empty/exact/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "byte_equal": true
+    },
+    "empty/exact/previous": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "byte_equal": true
+    },
+    "empty/qkv/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "byte_equal": true
+    },
+    "empty/qkv/previous": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "byte_equal": true
+    },
+    "empty/proj/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "byte_equal": true
+    },
+    "empty/proj/previous": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "byte_equal": true
+    },
+    "empty/both/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "byte_equal": true
+    },
+    "empty/both/previous": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "byte_equal": true
+    }
+  }
+}

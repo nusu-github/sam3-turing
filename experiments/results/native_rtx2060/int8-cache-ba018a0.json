@@ -1,0 +1,374 @@
+{
+  "base": "ba018a0",
+  "mlp": "int8_boundary",
+  "projection": "qkv",
+  "attention": "exact",
+  "qkv_rope": "fused",
+  "fc2_norm": "fused",
+  "gate": "bit-identical masks/scores/boxes/queries",
+  "timing": {
+    "exact": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\int8-cache-ba018a0\\timing-exact-truck-1",
+          "median_ms": 397.86,
+          "wall_ms": [
+            406.16020000000003,
+            395.5841,
+            401.9203,
+            405.09650000000005,
+            392.25100000000003,
+            394.4442,
+            397.86,
+            397.3625,
+            410.2494,
+            390.3605,
+            398.1423,
+            390.7329,
+            406.5649,
+            409.1408,
+            395.8893
+          ],
+          "stage_mean_ms": [
+            1.25738667647,
+            1.8159061352413335,
+            278.46091105146667,
+            116.4744598388667,
+            1.3939434607826664
+          ],
+          "peak_allocated_bytes": 2789232640,
+          "sm_mhz_tail_median": 1245.0,
+          "temperature_max": 63
+        },
+        {
+          "path": ".cache\\native-perf\\int8-cache-ba018a0\\timing-exact-truck-2",
+          "median_ms": 405.4879,
+          "wall_ms": [
+            399.9511,
+            410.23150000000004,
+            405.4879,
+            400.1372,
+            397.9363,
+            406.78950000000003,
+            410.9111,
+            403.85159999999996,
+            405.5113,
+            411.6891,
+            411.26669999999996,
+            402.5032,
+            403.1349,
+            405.3429,
+            407.6065
+          ],
+          "stage_mean_ms": [
+            1.223618149758,
+            1.8406463940939999,
+            286.4891153971333,
+            114.4544570922,
+            1.431848533949333
+          ],
+          "peak_allocated_bytes": 2789232640,
+          "sm_mhz_tail_median": 1200.0,
+          "temperature_max": 71
+        }
+      ],
+      "pooled_median_ms": 403.49325,
+      "p95_ms": 411.10668,
+      "stage_mean_ms": [
+        1.2405024131140001,
+        1.8282762646676667,
+        282.47501322429997,
+        115.46445846553334,
+        1.4128959973659998
+      ]
+    },
+    "fc2": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\int8-cache-ba018a0\\timing-fc2-truck-1",
+          "median_ms": 400.4589,
+          "wall_ms": [
+            400.4589,
+            401.9407,
+            405.97749999999996,
+            414.7669,
+            392.8525,
+            393.1983,
+            395.9767,
+            405.069,
+            401.5222,
+            398.2604,
+            399.62059999999997,
+            415.40409999999997,
+            396.09119999999996,
+            395.6578,
+            407.55190000000005
+          ],
+          "stage_mean_ms": [
+            1.2017216046653334,
+            1.821766400337333,
+            281.11482950846664,
+            116.09300333653331,
+            1.3434858640026668
+          ],
+          "peak_allocated_bytes": 2789232640,
+          "sm_mhz_tail_median": 1245.0,
+          "temperature_max": 65
+        },
+        {
+          "path": ".cache\\native-perf\\int8-cache-ba018a0\\timing-fc2-truck-2",
+          "median_ms": 404.21020000000004,
+          "wall_ms": [
+            406.1164,
+            400.8771,
+            404.97729999999996,
+            405.4781,
+            402.1005,
+            398.474,
+            406.0526,
+            398.4774,
+            401.7275,
+            412.0014,
+            399.882,
+            397.56649999999996,
+            408.3981,
+            404.21020000000004,
+            408.36539999999997
+          ],
+          "stage_mean_ms": [
+            1.2050794601426669,
+            1.836904533704,
+            286.5532552082667,
+            112.65271453853332,
+            1.352096001306
+          ],
+          "peak_allocated_bytes": 2789232640,
+          "sm_mhz_tail_median": 1230.0,
+          "temperature_max": 70
+        }
+      ],
+      "pooled_median_ms": 401.83410000000003,
+      "p95_ms": 413.522425,
+      "stage_mean_ms": [
+        1.2034005324040002,
+        1.8293354670206665,
+        283.8340423583667,
+        114.37285893753332,
+        1.3477909326543334
+      ]
+    },
+    "all": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\int8-cache-ba018a0\\timing-all-truck-1",
+          "median_ms": 406.20070000000004,
+          "wall_ms": [
+            406.20070000000004,
+            396.6799,
+            399.45599999999996,
+            405.8521,
+            410.42040000000003,
+            394.43149999999997,
+            405.119,
+            405.16200000000003,
+            409.6246,
+            427.7862,
+            423.04609999999997,
+            422.2837,
+            412.4125,
+            398.6771,
+            414.51500000000004
+          ],
+          "stage_mean_ms": [
+            1.255637319882667,
+            1.8420095841086668,
+            283.29755249013334,
+            120.65895741773333,
+            1.6676735877993332
+          ],
+          "peak_allocated_bytes": 2789232640,
+          "sm_mhz_tail_median": 1245.0,
+          "temperature_max": 68
+        },
+        {
+          "path": ".cache\\native-perf\\int8-cache-ba018a0\\timing-all-truck-2",
+          "median_ms": 401.9642,
+          "wall_ms": [
+            404.84999999999997,
+            397.68530000000004,
+            400.7056,
+            396.54650000000004,
+            399.6109,
+            407.442,
+            399.7057,
+            401.8889,
+            404.3702,
+            401.9642,
+            409.18339999999995,
+            401.1368,
+            404.1924,
+            408.6534,
+            404.235
+          ],
+          "stage_mean_ms": [
+            1.22538239956,
+            1.8405333280560001,
+            284.67744140626667,
+            113.41434631333333,
+            1.5976405382166665
+          ],
+          "peak_allocated_bytes": 2789232640,
+          "sm_mhz_tail_median": 1215.0,
+          "temperature_max": 69
+        }
+      ],
+      "pooled_median_ms": 404.6101,
+      "p95_ms": 422.70302,
+      "stage_mean_ms": [
+        1.2405098597213335,
+        1.8412714560823336,
+        283.98749694820003,
+        117.03665186553333,
+        1.6326570630079997
+      ]
+    }
+  },
+  "quality": {
+    "truck/exact": {
+      "count": 1,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "truck/fc2": {
+      "count": 1,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "truck/all": {
+      "count": 1,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "bag/exact": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "bag/fc2": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "bag/all": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "child/exact": {
+      "count": 6,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "child/fc2": {
+      "count": 6,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "child/all": {
+      "count": 6,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "wheel/exact": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "wheel/fc2": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "wheel/all": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "empty/exact": {
+      "count": 0,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "empty/fc2": {
+      "count": 0,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "empty/all": {
+      "count": 0,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    }
+  },
+  "gate_failures": []
+}

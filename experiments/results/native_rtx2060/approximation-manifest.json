@@ -1,0 +1,22 @@
+{
+  "commit": "908e4763d44310d0567ab400e390f667905cf866",
+  "environment_variable": "SAM3_EXPERIMENT_MLP",
+  "files": {
+    "native/tools/approx_bench.cpp": "B94444F6C3A82DAA96648B95F91F8F0C58A916CAF6BDAC1BD33F0C4D480510C6",
+    "native/tools/approx_kernels.cu": "D093B9FE6E65682EB376F798FC860E0622B990443EF7F089CAF2512C5C19DBE8",
+    "build/native-windows-cu130/sam3_native.dll": "10A3A87DF996FE1276D367D1DF16BC355B11A7801AECDE1CDCB6B17F399E8E0E",
+    "build/native-windows-cu130/sam3_image_latency.exe": "C16E0C417BA6BCC572D8BA896C4DB9F038F04B0F98CF6C619CF4ACE791CD3A63",
+    "native/src/vision_encoder.cpp": "EAC93803A66E16893AB63269927B04B73E885C2CD9929FAD896F69C8BCE59FDF",
+    "build/native-windows-cu130/sam3_approx_bench.exe": "D215EDA09DFC1C44A239FFCD5012DCEBA6AAC1805B5DD29663B7396E985074EA"
+  },
+  "variants": [
+    "exact",
+    "tanh",
+    "fused",
+    "int8"
+  ],
+  "post_validation_diagnostic": {
+    "native\\tools\\approx_bench.cpp": "146499deb1ec21adb3c0e0d0502273ce955c7dcb3670e1e6985e307403d97de5",
+    "build\\native-windows-cu130\\sam3_approx_bench.exe": "f520c277378168171de4d9bc7fdba5b3285f61c249c5e4d515b91bfdfdbd6715"
+  }
+}

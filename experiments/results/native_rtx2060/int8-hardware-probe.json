@@ -1,0 +1,49 @@
+{
+  "torch": "2.10.0+cu130",
+  "gpu": "NVIDIA GeForce RTX 2060 with Max-Q Design",
+  "capability": [
+    7,
+    5
+  ],
+  "results": [
+    {
+      "shape": [
+        256,
+        256,
+        256
+      ],
+      "device": "cuda:0",
+      "dtype": "torch.int32",
+      "exact": true,
+      "cuda_events": [
+        "_ZN7cutlass7Kernel2I51cutlass_75_tensorop_i8816gemm_s8_128x128_tn_align16EEvNT_6ParamsE"
+      ]
+    },
+    {
+      "shape": [
+        5184,
+        1024,
+        4736
+      ],
+      "device": "cuda:0",
+      "dtype": "torch.int32",
+      "exact": true,
+      "cuda_events": [
+        "_ZN7cutlass7Kernel2I51cutlass_75_tensorop_i8816gemm_s8_128x128_tn_align16EEvNT_6ParamsE"
+      ]
+    },
+    {
+      "shape": [
+        5184,
+        4736,
+        1024
+      ],
+      "device": "cuda:0",
+      "dtype": "torch.int32",
+      "exact": true,
+      "cuda_events": [
+        "_ZN7cutlass7Kernel2I51cutlass_75_tensorop_i8816gemm_s8_128x128_tn_align16EEvNT_6ParamsE"
+      ]
+    }
+  ]
+}

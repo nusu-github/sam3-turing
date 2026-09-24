@@ -1,0 +1,44 @@
+{
+  "commit": "19f8bf9",
+  "local_changes": "Preserved Windows fixes; latency tool opts into fixed FP16 compute storage",
+  "ctest": {
+    "passed": 41,
+    "total": 41
+  },
+  "metrics": {
+    "model": "sam3",
+    "mode": "fp16",
+    "resolution": 1008,
+    "threshold": 0.5,
+    "scope": "CPU RGB tensor transfer + preprocessing + vision + detector + postprocessing; cached text; no image feature reuse; excludes disk IO and setup",
+    "compute_storage": "fp16",
+    "text_weights_resident": true,
+    "height": 1200,
+    "width": 1800,
+    "count": 1,
+    "finite": true,
+    "warmups": 2,
+    "repeats": 5,
+    "setup_seconds": 4.8918371,
+    "cold_seconds": 1.0380892,
+    "median_wall_seconds": 0.5624052,
+    "allocated_before_bytes": 1938488832,
+    "cold_peak_allocated_bytes": 2377584640,
+    "peak_allocated_bytes": 2376994816,
+    "peak_reserved_bytes": 2610954240,
+    "wall_seconds": [
+      0.5621009,
+      0.5717415,
+      0.5624052,
+      0.5654101,
+      0.5563969
+    ]
+  },
+  "truck_output_byte_equal_to_previous_native": {
+    "masks.u8.bin": true,
+    "scores.f32.bin": true,
+    "boxes.f32.bin": true,
+    "queries.i64.bin": true
+  },
+  "note": "One fresh process, five measured inferences; preliminary smoke measurement, not a full performance rerun"
+}

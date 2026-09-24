@@ -1,0 +1,558 @@
+{
+  "root": ".cache\\native-perf\\approximation-v3",
+  "timing": {
+    "exact": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\approximation-v3\\timing-exact-truck-1",
+          "median_ms": 531.3029,
+          "wall_ms": [
+            541.2946,
+            536.7259,
+            529.9947000000001,
+            536.1673000000001,
+            534.3041,
+            532.6943,
+            531.3029,
+            529.842,
+            530.0852,
+            527.4544,
+            530.4601,
+            529.2302,
+            539.4951,
+            529.8154000000001,
+            537.3333
+          ],
+          "peak_allocated_bytes": 2375946240,
+          "gpu_stage_mean_ms": [
+            1.23308160305,
+            1.906811738015333,
+            404.72223307286663,
+            123.6669840494,
+            1.5097151994706668
+          ],
+          "sm_mhz_tail_median": 1335.0,
+          "temperature_max": 66
+        },
+        {
+          "path": ".cache\\native-perf\\approximation-v3\\timing-exact-truck-2",
+          "median_ms": 547.3965,
+          "wall_ms": [
+            546.3091,
+            559.6081,
+            548.0728,
+            548.4454,
+            555.3884,
+            545.3286,
+            548.8478,
+            550.7362999999999,
+            548.6967000000001,
+            547.3965,
+            521.0160000000001,
+            509.3056,
+            518.3889,
+            515.0929,
+            518.9299000000001
+          ],
+          "peak_allocated_bytes": 2375946240,
+          "gpu_stage_mean_ms": [
+            1.2252799987806668,
+            1.9411157210673333,
+            409.9585083009334,
+            124.18387044273332,
+            1.3902016162859998
+          ],
+          "sm_mhz_tail_median": 1245.0,
+          "temperature_max": 73
+        }
+      ],
+      "pooled_median_ms": 535.2357,
+      "pooled_p95_ms": 553.294955
+    },
+    "tanh": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\approximation-v3\\timing-tanh-truck-1",
+          "median_ms": 537.3895,
+          "wall_ms": [
+            551.2461,
+            543.755,
+            540.5118,
+            533.3774999999999,
+            540.6284999999999,
+            535.7015,
+            537.004,
+            534.6977,
+            542.7966,
+            537.3895,
+            544.8092,
+            534.7412,
+            535.4014999999999,
+            538.2076999999999,
+            536.6549
+          ],
+          "peak_allocated_bytes": 2375946240,
+          "gpu_stage_mean_ms": [
+            1.2368405342106668,
+            1.8237354596446664,
+            408.44962565113326,
+            125.76757863366666,
+            1.794041601818
+          ],
+          "sm_mhz_tail_median": 1335.0,
+          "temperature_max": 68
+        },
+        {
+          "path": ".cache\\native-perf\\approximation-v3\\timing-tanh-truck-2",
+          "median_ms": 550.4765,
+          "wall_ms": [
+            543.0369000000001,
+            543.4638000000001,
+            556.8629000000001,
+            559.2995,
+            539.4666,
+            552.7197,
+            544.2985,
+            548.4200000000001,
+            546.3681,
+            550.4765,
+            550.7155,
+            578.8597,
+            571.2819000000001,
+            548.0493,
+            557.1286
+          ],
+          "peak_allocated_bytes": 2375946240,
+          "gpu_stage_mean_ms": [
+            1.3863573392239998,
+            1.8591765324273333,
+            417.3952718097334,
+            129.5654830934,
+            2.2202816089
+          ],
+          "sm_mhz_tail_median": 1305.0,
+          "temperature_max": 72
+        }
+      ],
+      "pooled_median_ms": 543.6094,
+      "pooled_p95_ms": 565.88982
+    },
+    "fused": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\approximation-v3\\timing-fused-truck-1",
+          "median_ms": 539.6359,
+          "wall_ms": [
+            537.1899,
+            531.5225,
+            539.6359,
+            540.9009,
+            531.3141,
+            534.6264,
+            532.7645,
+            534.5199,
+            549.8197,
+            533.4014000000001,
+            544.2031000000001,
+            540.1510000000001,
+            541.7151,
+            550.3567,
+            544.6174
+          ],
+          "peak_allocated_bytes": 2375946240,
+          "gpu_stage_mean_ms": [
+            1.2701418797166668,
+            2.061501868566,
+            409.8540649413334,
+            124.32203318273335,
+            1.5534975846600003
+          ],
+          "sm_mhz_tail_median": 1320.0,
+          "temperature_max": 69
+        },
+        {
+          "path": ".cache\\native-perf\\approximation-v3\\timing-fused-truck-2",
+          "median_ms": 548.3219,
+          "wall_ms": [
+            546.2135999999999,
+            538.655,
+            555.3751,
+            536.0832,
+            548.3219,
+            541.631,
+            562.3856000000001,
+            551.6429,
+            539.2348000000001,
+            554.0167,
+            540.8575,
+            545.2627,
+            552.664,
+            549.1905,
+            549.9018
+          ],
+          "peak_allocated_bytes": 2375946240,
+          "gpu_stage_mean_ms": [
+            1.255812279384,
+            1.9476117451979997,
+            414.60410563146655,
+            127.67497304293335,
+            1.7987242539713333
+          ],
+          "sm_mhz_tail_median": 1305.0,
+          "temperature_max": 72
+        }
+      ],
+      "pooled_median_ms": 541.67305,
+      "pooled_p95_ms": 554.76382
+    },
+    "int8": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\approximation-v3\\timing-int8-truck-1",
+          "median_ms": 501.47520000000003,
+          "wall_ms": [
+            507.10540000000003,
+            493.92,
+            489.8413,
+            535.6604,
+            501.47520000000003,
+            490.16569999999996,
+            490.3963,
+            505.92179999999996,
+            502.08450000000005,
+            498.12760000000003,
+            509.3318,
+            501.6823,
+            502.2311,
+            487.5999,
+            490.39349999999996
+          ],
+          "peak_allocated_bytes": 2687193088,
+          "gpu_stage_mean_ms": [
+            1.3278528054553331,
+            2.1976447741193335,
+            359.13481852219996,
+            135.8420033772,
+            1.839566938082
+          ],
+          "sm_mhz_tail_median": 1320.0,
+          "temperature_max": 71
+        },
+        {
+          "path": ".cache\\native-perf\\approximation-v3\\timing-int8-truck-2",
+          "median_ms": 491.7099,
+          "wall_ms": [
+            491.7099,
+            489.35659999999996,
+            492.3297,
+            490.9116,
+            491.26930000000004,
+            485.566,
+            488.45640000000003,
+            516.9268000000001,
+            500.081,
+            501.2873,
+            500.4497999999999,
+            493.36400000000003,
+            510.1017,
+            488.0388,
+            485.5638
+          ],
+          "peak_allocated_bytes": 2687193088,
+          "gpu_stage_mean_ms": [
+            1.399718387922667,
+            2.1028608083726668,
+            360.50344645193326,
+            129.4308507283333,
+            1.5414954741786666
+          ],
+          "sm_mhz_tail_median": 1320.0,
+          "temperature_max": 71
+        }
+      ],
+      "pooled_median_ms": 493.64200000000005,
+      "pooled_p95_ms": 513.855505
+    }
+  },
+  "quality": {
+    "truck/tanh": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9999669946767129
+      ],
+      "matched_changed_pixels": [
+        21
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.0,
+      "max_matched_box_error_px": 0.018829345703125
+    },
+    "truck/fused": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9999701381347021
+      ],
+      "matched_changed_pixels": [
+        19
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.0,
+      "max_matched_box_error_px": 0.02108001708984375
+    },
+    "truck/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9996700027814052
+      ],
+      "matched_changed_pixels": [
+        210
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.01123046875,
+      "max_matched_box_error_px": 0.0943603515625
+    },
+    "bag/tanh": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        1.0,
+        1.0,
+        0.9998825601879037,
+        1.0
+      ],
+      "matched_changed_pixels": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.00048828125,
+      "max_matched_box_error_px": 0.016571044921875
+    },
+    "bag/fused": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        1.0,
+        1.0,
+        0.9998825601879037,
+        1.0
+      ],
+      "matched_changed_pixels": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.00048828125,
+      "max_matched_box_error_px": 0.0179443359375
+    },
+    "bag/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9988118087926149,
+        0.9996837778012017,
+        0.998122286116653,
+        0.9983272347098797
+      ],
+      "matched_changed_pixels": [
+        13,
+        3,
+        16,
+        16
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.00537109375,
+      "max_matched_box_error_px": 0.118743896484375
+    },
+    "child/tanh": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9999435411020777,
+        0.9998824704707058,
+        0.9997678198281866,
+        0.9998298306815281,
+        0.9998120771736407,
+        0.9998907223254289
+      ],
+      "matched_changed_pixels": [
+        1,
+        2,
+        4,
+        4,
+        3,
+        2
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.00048828125,
+      "max_matched_box_error_px": 0.03961181640625
+    },
+    "child/fused": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9998870885790098,
+        0.9998824704707058,
+        0.9997097747852334,
+        0.999914915340764,
+        0.9998747181157605,
+        0.9999453611627145
+      ],
+      "matched_changed_pixels": [
+        2,
+        2,
+        5,
+        2,
+        2,
+        1
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.0009765625,
+      "max_matched_box_error_px": 0.0284423828125
+    },
+    "child/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9980253878702398,
+        0.9979456477079298,
+        0.9969273581077164,
+        0.9985119680285702,
+        0.9983097533491925,
+        0.9977632296781233
+      ],
+      "matched_changed_pixels": [
+        35,
+        35,
+        53,
+        35,
+        27,
+        41
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.0029296875,
+      "max_matched_box_error_px": 0.6485595703125
+    },
+    "wheel/tanh": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.999903358299106,
+        0.9998998297105078,
+        1.0,
+        0.9995579784882864
+      ],
+      "matched_changed_pixels": [
+        4,
+        4,
+        0,
+        3
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.00048828125,
+      "max_matched_box_error_px": 0.0411376953125
+    },
+    "wheel/fused": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9999275152218035,
+        0.9998998272019233,
+        1.0,
+        0.9998526594960955
+      ],
+      "matched_changed_pixels": [
+        3,
+        4,
+        0,
+        1
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.00048828125,
+      "max_matched_box_error_px": 0.03472900390625
+    },
+    "wheel/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9984059126150279,
+        0.9965982140623828,
+        0.9915693904020753,
+        0.9897149573905377
+      ],
+      "matched_changed_pixels": [
+        66,
+        136,
+        26,
+        70
+      ],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": false,
+      "max_matched_score_error": 0.0009765625,
+      "max_matched_box_error_px": 0.37152099609375
+    },
+    "empty/tanh": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "matched_changed_pixels": [],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": true,
+      "max_matched_score_error": null,
+      "max_matched_box_error_px": null
+    },
+    "empty/fused": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "matched_changed_pixels": [],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": true,
+      "max_matched_score_error": null,
+      "max_matched_box_error_px": null
+    },
+    "empty/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "matched_changed_pixels": [],
+      "unmatched_reference": 0,
+      "unmatched_candidate": 0,
+      "byte_equal": true,
+      "max_matched_score_error": null,
+      "max_matched_box_error_px": null
+    }
+  }
+}

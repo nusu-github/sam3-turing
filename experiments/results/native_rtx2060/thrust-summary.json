@@ -1,0 +1,68 @@
+[
+  {
+    "op": "pack [1, 1008, 1008] ",
+    "cub_ms": 0.014861200004816055,
+    "thrust_ms": 0.016312799975275995,
+    "change_percent": 9.767717075266603
+  },
+  {
+    "op": "unpack [1, 1008, 1008] ",
+    "cub_ms": 0.032230399549007416,
+    "thrust_ms": 0.02699360027909279,
+    "change_percent": -16.248012259208565
+  },
+  {
+    "op": "components [1, 256, 256] random",
+    "cub_ms": 0.07845039963722228,
+    "thrust_ms": 0.09998840093612671,
+    "change_percent": 27.454291372003816
+  },
+  {
+    "op": "components [1, 256, 256] zero",
+    "cub_ms": 0.024357599765062334,
+    "thrust_ms": 0.02557479962706566,
+    "change_percent": 4.99720774519512
+  },
+  {
+    "op": "components [1, 256, 256] one",
+    "cub_ms": 0.4027892053127289,
+    "thrust_ms": 0.3948839962482452,
+    "change_percent": -1.9626169123241555
+  },
+  {
+    "op": "position 5 72",
+    "cub_ms": 0.042457999999999996,
+    "thrust_ms": 0.043066,
+    "change_percent": 1.432003391587
+  },
+  {
+    "op": "position 5 144",
+    "cub_ms": 0.122766,
+    "thrust_ms": 0.13495400000000002,
+    "change_percent": 9.927830180994746
+  },
+  {
+    "op": "position 5 288",
+    "cub_ms": 0.465426,
+    "thrust_ms": 0.468224,
+    "change_percent": 0.6011696811093481
+  },
+  {
+    "op": "position 6 72",
+    "cub_ms": 0.0666344,
+    "thrust_ms": 0.0658244,
+    "change_percent": -1.2155883447588556
+  },
+  {
+    "op": "position 6 144",
+    "cub_ms": 0.149183,
+    "thrust_ms": 0.1494535,
+    "change_percent": 0.18132092798774924
+  },
+  {
+    "op": "position 6 288",
+    "cub_ms": 0.4872345,
+    "thrust_ms": 0.486342,
+    "change_percent": -0.18317668391708564
+  }
+]

@@ -1,0 +1,356 @@
+{
+  "base": "ba018a0",
+  "mlp": "int8_boundary",
+  "timing": {
+    "base": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\restore-rows-ba018a0\\timing-base-truck-1",
+          "median_ms": 411.8674,
+          "wall_ms": [
+            405.0923,
+            418.7604,
+            403.08880000000005,
+            419.5847,
+            419.4151,
+            408.721,
+            417.27599999999995,
+            411.8674,
+            424.6012,
+            409.4022,
+            419.7946,
+            410.2652,
+            410.4843,
+            413.35139999999996,
+            406.9815
+          ],
+          "stage_mean_ms": [
+            1.1953301350273333,
+            1.8012671867993333,
+            296.1676411946666,
+            112.6332560222,
+            1.4016362587619997
+          ],
+          "peak_allocated_bytes": 2688241664,
+          "sm_mhz_tail_median": 1275.0,
+          "temperature_max": 62,
+          "byte_equal_to_flat_restore": true
+        },
+        {
+          "path": ".cache\\native-perf\\restore-rows-ba018a0\\timing-base-truck-2",
+          "median_ms": 425.0727,
+          "wall_ms": [
+            426.4801,
+            431.5373,
+            419.1178,
+            425.0727,
+            424.1979,
+            428.0632,
+            415.2975,
+            421.879,
+            425.3431,
+            420.21599999999995,
+            437.6241,
+            428.3152,
+            414.2538,
+            435.816,
+            420.0108
+          ],
+          "stage_mean_ms": [
+            1.199165860812,
+            1.824260282516667,
+            304.62978922526673,
+            115.90358530680001,
+            1.282931200663333
+          ],
+          "peak_allocated_bytes": 2688241664,
+          "sm_mhz_tail_median": 1230.0,
+          "temperature_max": 70,
+          "byte_equal_to_flat_restore": true
+        }
+      ],
+      "pooled_median_ms": 419.4999,
+      "p95_ms": 433.890585,
+      "stage_mean_ms": [
+        1.1972479979196666,
+        1.8127637346580001,
+        300.39871520996667,
+        114.26842066450001,
+        1.3422837297126664
+      ]
+    },
+    "rows": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\restore-rows-ba018a0\\timing-rows-truck-1",
+          "median_ms": 416.3058,
+          "wall_ms": [
+            413.1183,
+            416.1786,
+            423.0671,
+            416.3058,
+            418.9747,
+            416.6692,
+            412.7169,
+            408.66049999999996,
+            410.19620000000003,
+            426.7527,
+            407.8057,
+            410.79130000000004,
+            417.94730000000004,
+            423.11539999999997,
+            422.2165
+          ],
+          "stage_mean_ms": [
+            1.2192384004593333,
+            1.8144085327786668,
+            298.2375874836667,
+            113.49037017813333,
+            1.4874880154926666
+          ],
+          "peak_allocated_bytes": 2688241664,
+          "sm_mhz_tail_median": 1260.0,
+          "temperature_max": 65,
+          "byte_equal_to_flat_restore": true
+        },
+        {
+          "path": ".cache\\native-perf\\restore-rows-ba018a0\\timing-rows-truck-2",
+          "median_ms": 428.9909,
+          "wall_ms": [
+            415.2799,
+            420.0329,
+            432.13439999999997,
+            423.0802,
+            435.7708,
+            434.0663,
+            425.438,
+            428.9909,
+            424.0772,
+            428.7348,
+            449.5851,
+            437.3779,
+            437.1079,
+            423.1095,
+            435.0847
+          ],
+          "stage_mean_ms": [
+            1.222239979108,
+            1.827406922976667,
+            304.3354471842666,
+            120.93574523926665,
+            1.6140330632526665
+          ],
+          "peak_allocated_bytes": 2688241664,
+          "sm_mhz_tail_median": 1245.0,
+          "temperature_max": 70,
+          "byte_equal_to_flat_restore": true
+        }
+      ],
+      "pooled_median_ms": 423.07365,
+      "p95_ms": 437.2564,
+      "stage_mean_ms": [
+        1.2207391897836666,
+        1.8209077278776669,
+        301.2865173339667,
+        117.21305770869999,
+        1.5507605393726664
+      ]
+    },
+    "qkv": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\restore-rows-ba018a0\\timing-qkv-truck-1",
+          "median_ms": 411.6507,
+          "wall_ms": [
+            420.9985,
+            403.0063,
+            414.4081,
+            405.57189999999997,
+            416.0367,
+            411.6811,
+            407.1862,
+            411.6507,
+            405.5777,
+            403.47749999999996,
+            403.3979,
+            418.63800000000003,
+            411.80519999999996,
+            408.52090000000004,
+            415.5215
+          ],
+          "stage_mean_ms": [
+            1.1910421291973334,
+            1.8136234760273335,
+            291.37839762373335,
+            114.66206054693332,
+            1.4073493321753334
+          ],
+          "peak_allocated_bytes": 2788970496,
+          "sm_mhz_tail_median": 1245.0,
+          "temperature_max": 66,
+          "byte_equal_to_flat_restore": true
+        },
+        {
+          "path": ".cache\\native-perf\\restore-rows-ba018a0\\timing-qkv-truck-2",
+          "median_ms": 415.1209,
+          "wall_ms": [
+            410.2334,
+            415.1209,
+            417.16229999999996,
+            409.0011,
+            430.1003,
+            419.8254,
+            416.244,
+            415.6344,
+            419.5468,
+            411.1241,
+            406.34,
+            410.8333,
+            423.8018,
+            407.5026,
+            407.4778
+          ],
+          "stage_mean_ms": [
+            1.2809301376346662,
+            1.827940265338,
+            293.8754638672,
+            115.36964111313334,
+            2.259771704675333
+          ],
+          "peak_allocated_bytes": 2788970496,
+          "sm_mhz_tail_median": 1245.0,
+          "temperature_max": 69,
+          "byte_equal_to_flat_restore": true
+        }
+      ],
+      "pooled_median_ms": 411.66589999999997,
+      "p95_ms": 422.54031499999996,
+      "stage_mean_ms": [
+        1.2359861334159998,
+        1.8207818706826666,
+        292.62693074546667,
+        115.01585083003333,
+        1.8335605184253332
+      ]
+    },
+    "qkv_rows": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\restore-rows-ba018a0\\timing-qkv_rows-truck-1",
+          "median_ms": 408.6215,
+          "wall_ms": [
+            418.5263,
+            401.4823,
+            403.279,
+            416.81210000000004,
+            403.90999999999997,
+            412.1393,
+            408.6215,
+            404.66839999999996,
+            415.9062,
+            400.0467,
+            410.3179,
+            412.0228,
+            401.1957,
+            415.2062,
+            408.2278
+          ],
+          "stage_mean_ms": [
+            1.2038933277119999,
+            1.8161152124413331,
+            289.97359822593336,
+            114.44676310226667,
+            1.3379775842026669
+          ],
+          "peak_allocated_bytes": 2788970496,
+          "sm_mhz_tail_median": 1260.0,
+          "temperature_max": 67,
+          "byte_equal_to_flat_restore": true
+        },
+        {
+          "path": ".cache\\native-perf\\restore-rows-ba018a0\\timing-qkv_rows-truck-2",
+          "median_ms": 412.51480000000004,
+          "wall_ms": [
+            411.80850000000004,
+            413.8428,
+            405.82430000000005,
+            413.0514,
+            412.51480000000004,
+            419.4908,
+            423.3357,
+            392.1227,
+            415.87829999999997,
+            412.9833,
+            407.0414,
+            405.5141,
+            425.84159999999997,
+            408.1325,
+            409.74519999999995
+          ],
+          "stage_mean_ms": [
+            1.1815679947533333,
+            1.8191167990360002,
+            290.95738932300003,
+            116.42936401366667,
+            1.375490132968
+          ],
+          "peak_allocated_bytes": 2788970496,
+          "sm_mhz_tail_median": 1245.0,
+          "temperature_max": 69,
+          "byte_equal_to_flat_restore": true
+        }
+      ],
+      "pooled_median_ms": 411.06320000000005,
+      "p95_ms": 421.60549499999996,
+      "stage_mean_ms": [
+        1.1927306612326665,
+        1.8176160057386666,
+        290.4654937744667,
+        115.43806355796667,
+        1.3567338585853335
+      ]
+    }
+  },
+  "quality": {
+    "truck/rows": {
+      "byte_equal_to_flat_restore": true,
+      "count": 1
+    },
+    "truck/qkv_rows": {
+      "byte_equal_to_flat_restore": true,
+      "count": 1
+    },
+    "bag/rows": {
+      "byte_equal_to_flat_restore": true,
+      "count": 4
+    },
+    "bag/qkv_rows": {
+      "byte_equal_to_flat_restore": true,
+      "count": 4
+    },
+    "child/rows": {
+      "byte_equal_to_flat_restore": true,
+      "count": 6
+    },
+    "child/qkv_rows": {
+      "byte_equal_to_flat_restore": true,
+      "count": 6
+    },
+    "wheel/rows": {
+      "byte_equal_to_flat_restore": true,
+      "count": 4
+    },
+    "wheel/qkv_rows": {
+      "byte_equal_to_flat_restore": true,
+      "count": 4
+    },
+    "empty/rows": {
+      "byte_equal_to_flat_restore": true,
+      "count": 0
+    },
+    "empty/qkv_rows": {
+      "byte_equal_to_flat_restore": true,
+      "count": 0
+    }
+  }
+}

@@ -1,0 +1,747 @@
+{
+  "quality_gates": {
+    "same_count": true,
+    "min_mask_iou": 0.98,
+    "max_score_error": 0.02,
+    "max_box_error_px": 1.0
+  },
+  "quality": {
+    "truck/exact/exact": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/exact/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995883215303126,
+      "max_score_error": 0.00830078125,
+      "max_box_error_px": 0.113189697265625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/exact/exact": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "bag/exact/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9982223151730628,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.141143798828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/exact/exact": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "child/exact/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9966992877410389,
+      "max_score_error": 0.0107421875,
+      "max_box_error_px": 0.401885986328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/exact/exact": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "wheel/exact/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9920494699646644,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.3370361328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/exact/exact": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/exact/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/borrow/exact": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/borrow/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995883215303126,
+      "max_score_error": 0.00830078125,
+      "max_box_error_px": 0.113189697265625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/borrow/exact": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "bag/borrow/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9982223151730628,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.141143798828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/borrow/exact": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "child/borrow/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9966992877410389,
+      "max_score_error": 0.0107421875,
+      "max_box_error_px": 0.401885986328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/borrow/exact": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "wheel/borrow/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9920494699646644,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.3370361328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/borrow/exact": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/borrow/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/borrow_relu/exact": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/borrow_relu/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995883215303126,
+      "max_score_error": 0.00830078125,
+      "max_box_error_px": 0.113189697265625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/borrow_relu/exact": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "bag/borrow_relu/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9982223151730628,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.141143798828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/borrow_relu/exact": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "child/borrow_relu/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9966992877410389,
+      "max_score_error": 0.0107421875,
+      "max_box_error_px": 0.401885986328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/borrow_relu/exact": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "wheel/borrow_relu/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9920494699646644,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.3370361328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/borrow_relu/exact": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/borrow_relu/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/nchw/exact": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/nchw/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995883215303126,
+      "max_score_error": 0.00830078125,
+      "max_box_error_px": 0.113189697265625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/nchw/exact": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "bag/nchw/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9982223151730628,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.141143798828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/nchw/exact": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "child/nchw/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9966992877410389,
+      "max_score_error": 0.0107421875,
+      "max_box_error_px": 0.401885986328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/nchw/exact": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "wheel/nchw/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9920494699646644,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.3370361328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/nchw/exact": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/nchw/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/fused_nchw/exact": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/fused_nchw/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995883215303126,
+      "max_score_error": 0.00830078125,
+      "max_box_error_px": 0.113189697265625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/fused_nchw/exact": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "bag/fused_nchw/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9982223151730628,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.141143798828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/fused_nchw/exact": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "child/fused_nchw/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9966992877410389,
+      "max_score_error": 0.0107421875,
+      "max_box_error_px": 0.401885986328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/fused_nchw/exact": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "wheel/fused_nchw/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9920494699646644,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.3370361328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/fused_nchw/exact": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/fused_nchw/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    }
+  },
+  "timing": {
+    "exact": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\pixel-ba018a0\\timing-exact-truck-1",
+          "median_ms": 374.57059999999996,
+          "wall_ms": [
+            377.6975,
+            364.2762,
+            367.7955,
+            373.00680000000006,
+            357.438,
+            368.8519,
+            382.49830000000003,
+            368.24449999999996,
+            377.5792,
+            381.5276,
+            374.57059999999996,
+            392.49899999999997,
+            376.3715,
+            380.3632,
+            368.1786
+          ],
+          "stage_mean_ms": [
+            1.195266127586,
+            1.8386730670926672,
+            251.8922393799334,
+            117.82023315426667,
+            1.2725247939426667
+          ],
+          "peak_allocated_bytes": 2788970496
+        },
+        {
+          "path": ".cache\\native-perf\\pixel-ba018a0\\timing-exact-truck-2",
+          "median_ms": 382.133,
+          "wall_ms": [
+            375.6958,
+            385.5288,
+            375.6164,
+            384.0807,
+            385.8152,
+            389.34970000000004,
+            377.79220000000004,
+            383.7826,
+            378.4735,
+            373.95099999999996,
+            373.08419999999995,
+            395.7102,
+            392.1923,
+            382.133,
+            379.7844
+          ],
+          "stage_mean_ms": [
+            1.225339722632667,
+            1.8552298625306667,
+            260.86078898106666,
+            116.79655863439997,
+            1.4143146594360003
+          ],
+          "peak_allocated_bytes": 2788970496
+        }
+      ],
+      "median_ms": 377.74485000000004,
+      "p95_ms": 392.36098499999997,
+      "stage_mean_ms": [
+        1.2103029251093336,
+        1.846951464811667,
+        256.3765141805,
+        117.30839589433333,
+        1.3434197266893335
+      ]
+    },
+    "borrow_relu": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\pixel-ba018a0\\timing-borrow_relu-truck-1",
+          "median_ms": 373.871,
+          "wall_ms": [
+            378.4658,
+            377.224,
+            369.7466,
+            371.2517,
+            375.287,
+            378.9167,
+            387.6306,
+            368.4235,
+            373.871,
+            379.3639,
+            369.4852,
+            369.1925,
+            371.0848,
+            374.51390000000004,
+            373.8241
+          ],
+          "stage_mean_ms": [
+            1.193994673094,
+            1.8378282785413336,
+            254.19288330086673,
+            115.91663208006668,
+            1.3673451026280001
+          ],
+          "peak_allocated_bytes": 2746503168
+        },
+        {
+          "path": ".cache\\native-perf\\pixel-ba018a0\\timing-borrow_relu-truck-2",
+          "median_ms": 378.8288,
+          "wall_ms": [
+            386.921,
+            376.91560000000004,
+            393.9611,
+            378.001,
+            382.2584,
+            381.03749999999997,
+            378.8288,
+            376.6692,
+            378.3051,
+            378.50329999999997,
+            378.16519999999997,
+            384.0747,
+            402.4399,
+            379.1967,
+            378.2088
+          ],
+          "stage_mean_ms": [
+            1.191808001202,
+            1.8481642723086664,
+            259.97594401046666,
+            117.763857015,
+            1.4081343809766667
+          ],
+          "peak_allocated_bytes": 2746503168
+        }
+      ],
+      "median_ms": 378.187,
+      "p95_ms": 391.112375,
+      "stage_mean_ms": [
+        1.1929013371480002,
+        1.842996275425,
+        257.0844136556667,
+        116.84024454753333,
+        1.3877397418023334
+      ]
+    },
+    "nchw": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\pixel-ba018a0\\timing-nchw-truck-1",
+          "median_ms": 371.7663,
+          "wall_ms": [
+            374.2439,
+            364.7659,
+            371.222,
+            367.5709,
+            375.6435,
+            365.1205,
+            378.59229999999997,
+            374.44939999999997,
+            372.183,
+            373.1427,
+            366.38739999999996,
+            376.16749999999996,
+            368.7496,
+            371.7663,
+            370.361
+          ],
+          "stage_mean_ms": [
+            1.208546129863333,
+            1.8339093367253336,
+            255.87474365226666,
+            110.90298767099999,
+            1.491752537092
+          ],
+          "peak_allocated_bytes": 2704032768
+        },
+        {
+          "path": ".cache\\native-perf\\pixel-ba018a0\\timing-nchw-truck-2",
+          "median_ms": 378.8566,
+          "wall_ms": [
+            383.1508,
+            371.0965,
+            382.7115,
+            390.79970000000003,
+            372.67040000000003,
+            371.1932,
+            378.8566,
+            369.5237,
+            383.9812,
+            369.9627,
+            380.8981,
+            370.9518,
+            372.0617,
+            379.8752,
+            387.0326
+          ],
+          "stage_mean_ms": [
+            1.1979754765819999,
+            1.8577770709986672,
+            259.43846638993335,
+            113.73120168053335,
+            1.3798058668773334
+          ],
+          "peak_allocated_bytes": 2704032768
+        }
+      ],
+      "median_ms": 372.4267,
+      "p95_ms": 385.65947,
+      "stage_mean_ms": [
+        1.2032608032226664,
+        1.8458432038620005,
+        257.6566050211,
+        112.31709467576667,
+        1.4357792019846667
+      ]
+    },
+    "fused_nchw": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\pixel-ba018a0\\timing-fused_nchw-truck-1",
+          "median_ms": 363.7868,
+          "wall_ms": [
+            379.899,
+            359.4887,
+            365.9741,
+            359.5842,
+            361.2819,
+            360.8574,
+            360.5542,
+            363.7868,
+            368.6082,
+            355.8051,
+            367.2629,
+            364.7189,
+            361.9693,
+            388.0764,
+            365.90869999999995
+          ],
+          "stage_mean_ms": [
+            1.2018645366033334,
+            1.8230421304706665,
+            257.0684458414666,
+            103.96039683025998,
+            1.4854570468273331
+          ],
+          "peak_allocated_bytes": 2704032768
+        },
+        {
+          "path": ".cache\\native-perf\\pixel-ba018a0\\timing-fused_nchw-truck-2",
+          "median_ms": 366.43219999999997,
+          "wall_ms": [
+            365.18260000000004,
+            361.0217,
+            372.2806,
+            365.4963,
+            359.9249,
+            363.3461,
+            364.35269999999997,
+            365.5276,
+            390.48119999999994,
+            366.43219999999997,
+            367.84929999999997,
+            390.43260000000004,
+            377.80960000000005,
+            379.0399,
+            378.70369999999997
+          ],
+          "stage_mean_ms": [
+            1.2168512026466667,
+            1.8192512035373334,
+            258.2405517578,
+            108.50164845786666,
+            1.3679125467926667
+          ],
+          "peak_allocated_bytes": 2704032768
+        }
+      ],
+      "median_ms": 365.51195,
+      "p95_ms": 389.37231,
+      "stage_mean_ms": [
+        1.209357869625,
+        1.821146667004,
+        257.6544987996333,
+        106.23102264406333,
+        1.42668479681
+      ]
+    }
+  },
+  "gate_failures": []
+}
