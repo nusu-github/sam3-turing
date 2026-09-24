@@ -1,0 +1,54 @@
+{
+  "date": "2026-09-24",
+  "host": "Linux container without GPU; g++ 13.3.0",
+  "toolchain": {
+    "nvcc": "13.0.88 (pip nvidia-cuda-nvcc 13.0.88, nvidia-nvvm 13.0.88, nvidia-cuda-crt 13.0.88, nvidia-cuda-runtime 13.0.96)",
+    "cccl": "3.0.1 (pip nvidia-cuda-cccl 13.0.85, CCCL_VERSION 3000001)",
+    "libtorch_headers": "torch 2.10.0+cu130 wheel include/",
+    "flags": "-std=c++17 -arch=sm_75 --expt-relaxed-constexpr -DSAM3_WITH_CUDA (+ --extended-lambda for ops_cuda.cu, vision_position_cuda.cu)"
+  },
+  "compile_existing_sm75": {
+    "passed": [
+      "src/ops_cuda.cu", "src/components_cuda.cu", "src/edt_cuda.cu", "src/roi_align_cuda.cu",
+      "src/rotary_cuda.cu", "src/rotary_pair_cuda.cu", "src/vision_position_cuda.cu", "src/vision_fusion_cuda.cu",
+      "tools/approx_kernels.cu", "tools/approx_boundary.cu", "tools/pixel_transform.cu"
+    ],
+    "not_built": ["tools/int4_experiment.cu (external CUTLASS)", "tools/kitchen_attention.cu (external ComfyKitchen)"]
+  },
+  "prototypes_compile_sm75": {
+    "roi_align_cuda.cu": {"api": "cub::DeviceFor::ForEachInExtents", "nonblank_lines": [31, 30]},
+    "components_cuda.cu": {"api": "cub::DeviceFor::Bulk", "nonblank_lines": [90, 81]},
+    "rotary_cuda.cu": {"api": "cub::DeviceFor::ForEachInExtents", "nonblank_lines": [60, 39]}
+  },
+  "rotary_half_ptx_float_ops": {
+    "original": {"fma.rn.f32": 1, "mul.f32": 3, "sub.f32": 1, "cvt.rn.f16.f32": 2},
+    "prototype": {"fma.rn.f32": 1, "mul.f32": 3, "sub.f32": 1, "cvt.rn.f16.f32": 2},
+    "note": "PTX only; ptxas contraction and GPU results not checked"
+  },
+  "cpu_equivalence_ops_prototype": {
+    "libtorch": "2.10.0+cpu",
+    "compared": "prototype ops.cpp (ATen pack/unpack, host NMS) linked together with the original ops.cpp",
+    "cases": 45,
+    "result": "all equal",
+    "coverage": [
+      "pack/unpack N in {0..5}, H*W from 1 to 1008x1008, densities 0/0.3/1, non-multiple-of-8 tails, strided input",
+      "unpack of random bytes including nonzero padding bits",
+      "resize_and_pack_masks FP32 and FP16, 11x37x41 -> 101x67, chunk 4",
+      "generic_nms n in {0,1,2,7,64,200}, thresholds 0/0.5/0.9, tied integer scores"
+    ]
+  },
+  "cccl_3_0_1_facts": {
+    "DeviceFor": "Bulk, ForEachN, ForEachCopyN, ForEachInExtents present; static policy 256 threads x 2 items, no grid-stride",
+    "ForEachInExtents": "row-major iteration, fast_div_mod index decomposition, index types up to 64-bit",
+    "ceil_div": "cuda::ceil_div in <cuda/cmath>",
+    "missing": "cuda/std/algorithm",
+    "warp_reduce_shfl_offsets": "1,2,4,8,16 (PyTorch LayerNorm Welford uses 16..1)"
+  },
+  "pypi_windows_wheel_sizes_mib": {
+    "cutensor-cu13 2.8.1": 178.6,
+    "nvidia-npp 13.2.0.58": 245.1,
+    "nvidia-cusparselt-cu13 0.9.1": 150.6,
+    "nvidia-cudss-cu13 0.8.0.10": 75.5
+  },
+  "not_done": ["GPU execution", "Windows/MSVC build", "timing", "memory measurement"]
+}

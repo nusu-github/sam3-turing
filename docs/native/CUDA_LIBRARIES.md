@@ -108,6 +108,13 @@ Fingerprints of all packed outputs were unchanged. Evidence:
 | cuDNN Frontend, cuTENSOR | No demonstrated benefit over existing ATen/vendor kernels or the small transpose kernel; not benchmarked |
 | libcu++ `span`/`mdspan` | Usable in device code, but not yet applied: only worthwhile where it shortens shape/stride handling (ROIAlign, RoPE) |
 
+A wider 2026-09-24 survey of the PyTorch C++, CUDA 13.0.3, cuBLAS, cuDNN,
+cuTENSOR, cuSPARSE, cuSPARSELt, cuDSS and CCCL documentation is in
+[CUDA_PYTORCH_LIBRARY_REVIEW_20260924_JA.md](CUDA_PYTORCH_LIBRARY_REVIEW_20260924_JA.md)
+(Japanese). It found no library that replaces the large exact kernels, and lists
+four candidates still to validate on the RTX 2060: dropping the position kernel,
+a host NMS pass, one shared RoPE rounding helper and `cub::DeviceFor` launches.
+
 The probes and parity scripts used here (`experiments/cccl_highlevel_probe.cu`,
 `experiments/check_cub_ops.py`, `experiments/probe_npp_edt.py`) were removed
 after the review and remain in commit `7d7fddb`. Raw results are in

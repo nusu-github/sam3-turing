@@ -11,7 +11,7 @@ options, tests, probes and experiment switches are in
 | C and C++ APIs | [C_API.md](C_API.md) (common rules, image, low-level video), [PREDICTOR_C_API.md](PREDICTOR_C_API.md), [VIDEO_PREDICTOR.md](VIDEO_PREDICTOR.md) (owning predictor, image mode) |
 | Predictor features | [VIDEO_EDIT.md](VIDEO_EDIT.md), [VIDEO_MULTIDEVICE.md](VIDEO_MULTIDEVICE.md), [OUTPUT_CACHE.md](OUTPUT_CACHE.md) |
 | Input | [MEDIA_IO.md](MEDIA_IO.md), [VIDEO_PREPROCESS.md](VIDEO_PREPROCESS.md) |
-| Internals | [COMPONENTS.md](COMPONENTS.md), [VIDEO_PIPELINE.md](VIDEO_PIPELINE.md), [CUDA_LIBRARIES.md](CUDA_LIBRARIES.md) |
+| Internals | [COMPONENTS.md](COMPONENTS.md), [VIDEO_PIPELINE.md](VIDEO_PIPELINE.md), [CUDA_LIBRARIES.md](CUDA_LIBRARIES.md), [CUDA_PYTORCH_LIBRARY_REVIEW_20260924_JA.md](CUDA_PYTORCH_LIBRARY_REVIEW_20260924_JA.md) (library survey for fewer hand-written kernels) |
 | Performance | [PERFORMANCE.md](PERFORMANCE.md) |
 | Validation | [VALIDATION.md](VALIDATION.md), [IMAGE_PRECISION_AUDIT.md](IMAGE_PRECISION_AUDIT.md) |
 | Quantization research (ongoing) | [QUANT_RESEARCH_LOG.md](QUANT_RESEARCH_LOG.md), [INT8_INT4_RESEARCH_20260924_JA.md](INT8_INT4_RESEARCH_20260924_JA.md) (literature survey), [Windows/RTX 2060 experiments](../../experiments/results/native_rtx2060/README.md) |
