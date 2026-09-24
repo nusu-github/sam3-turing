@@ -71,8 +71,8 @@ Start with `compile=False` for a short startup. Compilation and quantization are
 optional tradeoffs; benchmark them on your own GPU and prompts. The image patch
 supports single-image inference, text and box prompts, and standard dense masks.
 Training, SAM 1-style interactive prediction, and video are outside its scope.
-Video experiments use a separate experimental patch and have not been validated
-on the 6 GB Turing device.
+The earlier video monkeypatch experiments were measured only on an RTX 3090 and
+their implementation is archived in commit `080bec0`.
 
 - [Image patch guide, optional features, and RTX 3090 results](docs/TURING_IMAGE_PATCH.md)
 - [RTX 2060 validation and uv setup](experiments/results/local_rtx2060/README.md)

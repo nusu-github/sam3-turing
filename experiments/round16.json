@@ -1,6 +1,0 @@
-{
-  "r16_fp16_control": {"final": true, "compile": true},
-  "weight_only_int8_m64n64": {"final": true, "compile": true, "weight_only_int8": true},
-  "weight_only_int8_m128n64": {"final": true, "compile": true, "weight_only_int8": true, "weight_only_tile": [128, 64, 32, 8]},
-  "weight_only_int8_m64n128": {"final": true, "compile": true, "weight_only_int8": true, "weight_only_tile": [64, 128, 32, 4]}
-}

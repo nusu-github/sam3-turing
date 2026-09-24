@@ -2,11 +2,17 @@
 
 ![SAM 3.1 video benchmarks](images/video_benchmarks.png)
 
-These are **experimental video patches measured on an RTX 3090**. They have not
-been validated on the 6 GB Turing device. Use the separate
-[video experiment implementation](../experiments/video_variants.py), not the
-image-only `apply_turing_patch` API. In particular, the image patch's removal of
-unused neck features is not applied to video.
+This is a record of **experimental video monkeypatches measured on an RTX 3090**.
+They were never validated on the 6 GB Turing device and are not part of the
+image-only `apply_turing_patch` API; in particular, the image patch's removal of
+unused neck features is not applied to video. For Python-free video inference,
+see the [native runtime](native/QUICKSTART_JA.md).
+
+The implementation (`experiments/video_variants.py`) and its runners
+(`video_sweep.py`, `video_probe.py`, `video_profile.py`) were removed from this
+branch after the experiments concluded. They are preserved in commit `080bec0`
+(`main`); run the commands below from a separate checkout of that commit, e.g.
+`git worktree add ../sam3-video 080bec0`.
 
 ## Setup and measurement method
 
@@ -103,12 +109,7 @@ alone gave little improvement at 197.79 ms/frame. Combining decoder compilation
 with that change took 164.79 ms/frame and had the same output-comparison metrics
 as decoder compilation alone. The decoder-only cold run took 19.34 s with the
 available cache. Additional saved outputs are cloned outside CUDA Graphs.
-
-```bash
-python experiments/video_sweep.py \
-  --checkpoint checkpoints/sam3.1/sam3.1_multiplex.pt \
-  --variants fp16_int8_cpu_trim_compile_decoder
-```
+Runner variant: `fp16_int8_cpu_trim_compile_decoder`.
 
 ## Round 3b: Expand compilation coverage
 
@@ -132,10 +133,5 @@ with 7346 changed pixels. Cold runs took 38.43 s for the full configuration and
 98.70 s with efficient attention, depending on the available cache.
 
 These variants preserve every FPN used by video; they do not remove neck stages
-as the image patch does. They remain experimental video monkeypatches.
-
-```bash
-python experiments/video_sweep.py \
-  --checkpoint checkpoints/sam3.1/sam3.1_multiplex.pt \
-  --variants fp16_int8_cpu_trim_compile_all fp16_int8_cpu_trim_compile_all_efficient
-```
+as the image patch does. Runner variants: `fp16_int8_cpu_trim_compile_all` and
+`fp16_int8_cpu_trim_compile_all_efficient`.

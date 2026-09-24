@@ -1,5 +1,0 @@
-{
-  "r31_fp16_control": {"final": true, "compile": true},
-  "dequant_weight_mlp": {"final": true, "compile": true, "dequant_weight": true},
-  "dequant_weight_attention": {"final": true, "compile": true, "dequant_weight": true, "dequant_weight_attention": true}
-}
