@@ -5,6 +5,7 @@
 #include <c10/cuda/CUDAStream.h>
 #include <c10/cuda/CUDAException.h>
 #include "sage_attention/qk_int_sv_i8_cuda.cuh"
+#include "../src/vision_experiments.h"
 #include <climits>
 extern "C" void launch_quant_qk_per_thread_int8(const void*,void*,void*,const void*,void*,void*,int,void*,void*,int,int,int,int,int,int,int,int,int,int,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int,int,int,void*,cudaStream_t);
 extern "C" void launch_quant_v_int8_kernel(const void*,void*,void*,int,int,int,int,int,int64_t,int64_t,int64_t,int,cudaStream_t);
@@ -17,12 +18,28 @@ at::Tensor kitchen_attention(const at::Tensor& q,const at::Tensor& k,const at::T
   TORCH_CHECK(int64_t(b)*h*d*padded<INT_MAX,"kitchen padded layout too large");
   auto qi=at::empty(q.sizes(),q.options().dtype(at::kChar)),ki=at::empty_like(qi),vi=at::empty({b,h,d,padded},qi.options());
   auto qs=at::empty({b,h,((n+127)/128)*32},q.options().dtype(at::kFloat)),ks=at::empty({b,h,((n+63)/64)*4},qs.options()),vs=at::empty({b,h,d},qs.options());
-  auto anchor=at::empty({b,h},q.options().dtype(at::kInt));
+  const auto& center=detail::kitchen_center_for_length(n);
+  const bool use_mean=center=="mean",use_anchor=center=="anchor";
+  // Compare the external atomic reduction with ATen's reduction tree. This
+  // variant materializes a centered FP16 K, so its extra rounding and cost are
+  // measured separately; it is not assumed equivalent to fused mean/quant.
+  at::Tensor centered;
+  if(center=="mean_half") {
+    auto values=k.to(at::kFloat);
+    centered=(values-values.mean(2,true)).to(at::kHalf);
+  }
+  const auto& keys=centered.defined()?centered:k;
+  // Mean scratch is FP32 [B,H,D], with one completion counter per head.
+  // The external launcher zeroes both buffers and runs reduction/quantization
+  // on the supplied current stream. A common K shift cancels in row softmax.
+  auto counters=at::empty({b,h},q.options().dtype(at::kInt));
+  at::Tensor means;
+  if(use_mean)means=at::empty({b,h,d},qs.options());
   // Keep the BHND logical interface, but optionally write directly into BNHD
   // storage. The caller's head concatenation then becomes a view, not a copy.
   auto out=sequence_output ? at::empty({b,n,h,d},q.options()).transpose(1,2) : at::empty(q.sizes(),q.options());
   auto stream=c10::cuda::getCurrentCUDAStream();
-  launch_quant_qk_per_thread_int8(q.const_data_ptr(),qi.mutable_data_ptr(),qs.mutable_data_ptr(),k.const_data_ptr(),ki.mutable_data_ptr(),ks.mutable_data_ptr(),0,nullptr,nullptr,b,h,n,h,n,d,128,32,64,64,q.stride(0),q.stride(1),q.stride(2),k.stride(0),k.stride(1),k.stride(2),1,rotation?1:0,1,anchor.mutable_data_ptr(),stream);
+  launch_quant_qk_per_thread_int8(q.const_data_ptr(),qi.mutable_data_ptr(),qs.mutable_data_ptr(),keys.const_data_ptr(),ki.mutable_data_ptr(),ks.mutable_data_ptr(),use_mean?1:0,use_mean?means.mutable_data_ptr():nullptr,use_mean?counters.mutable_data_ptr():nullptr,b,h,n,h,n,d,128,32,64,64,q.stride(0),q.stride(1),q.stride(2),keys.stride(0),keys.stride(1),keys.stride(2),1,rotation?1:0,use_anchor?1:0,use_anchor?counters.mutable_data_ptr():nullptr,stream);
   launch_quant_v_int8_kernel(v.const_data_ptr(),vi.mutable_data_ptr(),vs.mutable_data_ptr(),b,h,n,d,padded,v.stride(0),v.stride(1),v.stride(2),1,stream);
   auto kernel=qk_int_sv_i8_attn_kernel<128,64,32,64,64,DataType::kInt8,QuantGranularity::kPerThread,QuantGranularity::kPerThread,float,false,half,ComputeUnit::kCudaCore,MaskMode::kNone,false,true,false,false,true>;
   C10_CUDA_CHECK(cudaFuncSetAttribute(kernel,cudaFuncAttributeMaxDynamicSharedMemorySize,16384));

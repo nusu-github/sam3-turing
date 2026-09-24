@@ -598,3 +598,141 @@ Python構文検査と `git diff --check` もPass。
 attentionの単層切り分け、108評価、33件での反証結果が増えたprogressとして継続する。
 採用構成は未確定であり、ゴールは未達。準備した既存17例driverのモデル実行、
 候補固定後の独立評価、速度の再測定、SAM3.1への別評価は引き続き必要。
+
+## Round 6 — Kの平均中心化
+
+前roundは層別実装と108評価・反証を追加したprogressとして継続。
+開始commit `3e2b844`、clean tree、GPU使用率0%、56℃、382MiBを確認。
+品質・速度閾値と校正/開発/holdoutの分離は維持する。
+
+現在のComfyKitchen adapterはadaptive anchorによるK中心化を使う。
+同じ固定版の公開launcherに存在するfull-mean K smoothingへ切り替える選択肢を追加した。
+`SAM3_EXPERIMENT_KITCHEN_CENTER=anchor`（従来default）/ `mean` / `none`。
+`mean`はFP32 `[B,H,64]` scratchとINT32 `[B,H]` counterを用い、launcherが初期化、
+Kの平均計算、量子化を同じcurrent streamで実行する。外部kernel本体は変更しない。
+全keyに共通のベクトルを引くとQKの各rowから同じ定数が引かれ、厳密なsoftmaxは不変。
+有限精度の丸め・INT8量子化は別途検証する。
+
+新規operator checkはN=1/65/129/576/5184、B=1/2/9、通常・大きなKオフセット・
+token間で一定のK・全zero、rotation有無を含む40条件。
+N<=129はCPU FP64の明示的なmatmul/softmaxと比較し、中心化前後の数学的同値も確認する。
+productionサイズは既存SDPA、一定Kではmean(V)を参照とする。
+非default CUDA streamで各条件を5回再実行して、byte一致と最大差を記録する。
+誤差閾値は既存operator checkと同じmax abs .05 / RMSE .005。
+中心化なしは大offset時の反証用で、誤差超過を記録する。モデル品質gateとは別である。
+
+初回operator結果: mean 40/40、anchor 40/40、none 32/40。
+最大abs/RMSEはmean .026245/.002494、anchor .023926/.002762、none 3.11328/.448709。
+noneの大きな誤差はオフセットを含む入力の診断であり、通常SAM3入力の精度測定ではない。
+meanのmemcheckは0 errors。
+一方、N=5184のrandom/shifted（rotation有無）の4条件で、5回すべてにbyte差があった。
+最大再実行差 .000259399。公開mean kernelは512rowごとのFP32部分和をatomic加算するため、
+加算順による変動がある。単発の誤差基準Passだけでは再現性を満たしたと扱わない。
+
+比較として `mean_half` を追加する。ATenのFP32 meanで中心を計算し、FP32で引いたKを
+FP16へ丸めた後、中心化なしの既存INT8 quantizerへ渡す。
+これは追加のK実体化・丸めを含む別経路で、fused meanとbyte同値を主張しない。
+40条件の誤差と5回再実行、追加コストを別に評価してからモデルへ進む。
+
+mean_half追加後（scope追加前）のビルドで4モードを再確認すると、mean_halfは40/40、max abs .026245、RMSE .002496。
+40条件×5回の200再実行はすべてbyte一致。anchorも40/40・200回一致。
+fused meanは誤差基準40/40だが19/200再実行が変化し、最大差は引き続き .000259399。
+今回のモデル候補には再実行が安定したmean_halfを使い、fused meanは診断用に残す。
+異なるGPU/LibTorch版や任意入力での決定性を保証したものではない。
+[数値とこの検査に使ったバイナリSHA](../../experiments/results/native_rtx2060/round6-center-summary.json)。
+
+mean_halfのmemcheckも0 errors。
+[検査log](../../experiments/results/native_rtx2060/round6-mean-half-memcheck.log)。
+新バイナリのanchorを前roundのblock0候補と比較し、1425/9590の4promptで4出力がbyte一致。
+[既定値対照](../../experiments/results/native_rtx2060/round6-controls.json)。
+
+同じMLP0/QKV6/attention0 FP16構成でcenterだけmean_halfへ変えると、
+7574 bowlのscore差が .029785→.010742、1425 bowlのbox差が2.317856→.482269pxへ改善し、
+2画像5promptが5/5合格した（非空4/4）。この結果を根拠に開発全33件へ広げる。
+`r6-mean-half-a0-7574/1425` が初期screen、`r6-mean-half-development` が全開発評価。
+独立holdoutはまだ使わない。
+
+全33件では **31/33（非空23/25）**。bowl2件は改善したが、羊box差1.651917pxと
+9590人物5→6検出がFailに入れ替わった。全mask IoUとscore差は基準内。
+[全開発要約](../../experiments/results/native_rtx2060/round6-mean-half-development-summary.json)。
+一律mean_halfは採用しない。
+
+global attention（N=5184）とlocal window attention（N=576）では中心の推定対象が
+異なるため、2群の切り分けを追加する。`SAM3_EXPERIMENT_KITCHEN_CENTER_SCOPE`
+のall/default、local、globalでmeanを使う群を指定し、他方は従来anchorを使う。
+精度bit数やMLP/QKV scopeは変えない。local/global指定はこの2つのSAM3形状に限定し、
+他のtoken長は拒否する。任意の1層mask探索へは広げない。
+
+候補を固定した後に速度を比較できるよう、`run_quant_candidate_timing.py` も追加した。
+保存済みquality runの全precision引数・バイナリ・データ・校正hashを引き継ぎ、
+現行selectiveの事前加熱後、既定4画像×2構成×2 fresh process、各5 warmup＋15測定を
+順序反転して比較する。まだ実行しておらず、今回の速度改善を主張しない。
+
+### 群別の切り分け結果
+
+scope追加後のall設定を1425の2promptで再実行し、scope追加前のmean_halfと
+全4出力ファイルがbyte一致した。
+[対照](../../experiments/results/native_rtx2060/round6-scope-controls.json)。
+7574/1425/5992/9590の8promptではlocalのみmean_halfが **7/8**、globalのみが **5/8**。
+localでは羊box差が .730865pxへ収まり、残りは9590人物の5→6検出。
+globalでは7574 bowl score差 .024902、1425 bowl box差1.280396px、
+9590 spoon IoU .978571 / score差 .024902がFailとなった。
+[8件比較](../../experiments/results/native_rtx2060/round6-center-scopes-summary.json)。
+
+local候補を全開発33件へ広げると **31/33（非空23/25）**。
+9590人物の検出数に加えて、1353人物のmask IoU .971460、box差2.583389pxがFailだった。
+最大score差 .016602は基準内。local限定でも採用基準を満たさない。
+[全開発要約](../../experiments/results/native_rtx2060/round6-mean-local-development-summary.json)。
+一律meanとlocal meanは合格数が同じだが、失敗画像が異なる。この結果も開発データの
+反証として残し、独立holdoutを使った成功率には数えない。
+
+### 平均中心化のコスト
+
+`run_kitchen_center_bench.py` を実行した。anchor→mean_half→mean_half→anchorの
+4 fresh process、各演算100 warmup後20 CUDA event測定、4 pass/process。
+以下は各方式8個のpass中央値の中央値であり、全標本をpoolした中央値やp95ではない。
+native既存benchのhead-major出力を使う。モデルのsequence出力・end-to-end wallとは別。
+
+| 形状（B×N、H=16、D=64） | anchor | mean_half | 増加 |
+|---|---:|---:|---:|
+| local 9×576 | 0.945456 ms | 1.500280 ms | +0.554824 ms（+58.68%） |
+| global 1×5184 | 4.282195 ms | 4.796895 ms | +0.514700 ms（+12.02%） |
+
+rotationなしの量子化・中心化を含むoperator時間。事前に熱平衡まで加熱しておらず、
+whole processの温度は55〜73℃に変化した。診断上はATen meanとK実体化の追加コストが
+見えるが、モデル全体の速度差や採用条件の達成をこの値から主張しない。
+[数値と限界](../../experiments/results/native_rtx2060/round6-center-micro-summary.json)、
+[実行順序・NVML・バイナリhash](../../experiments/results/native_rtx2060/r6-center-micro-protocol.json)。
+
+今回のqualityは **93 process / 15 run / 16画像**、子process時間合計602.95秒。
+最大allocated 2.692GB、whole GPU標本最大3.761GB。scope追加前42件、追加後51件を
+各runのDLL hashで区別した。microbench 4 processはこの93件に含めない。
+校正の再収集とモデル全体のtimingは未実施。
+[process集計](../../experiments/results/native_rtx2060/round6-process-summary.json)。
+
+再現例（nameは新しい名前を指定）:
+
+```powershell
+.venv/Scripts/python.exe experiments/run_quant_research.py quality --mode calibrated --scope mask:0xfffffffe --calibration .cache/quant-research-20260924/calibrations/a050-none-mean-bias --mean-bias --projection-scope mask:0xffffffbf --attention-scope mask:0xfffffffe --kitchen-center mean_half --kitchen-center-scope local --name <unique>
+.venv/Scripts/python.exe experiments/run_kitchen_center_bench.py --name <unique>
+```
+
+### 次の反復
+
+平均中心化だけでは固定gateを満たせず、今回の方式は採用しない。
+次は校正32枚のFP16経路からQKV入力のチャネル統計を取り、入力scale/shiftと
+重みmean bias補正を調べる。norm1のgamma/betaへ等価変換を折り込む案なら実行時の
+追加affine演算を避けられるが、FP16の丸め位置が変わるため数学的同値だけで判断しない。
+identity変換、FP64参照、実装のbias適用箇所、実モデルの品質を別々に検証する。
+このQKV校正はまだ未実装・未測定である。
+
+独立holdout 32枚68promptと既存17例の最終回帰は未使用のまま。
+現在のmean_halfの結果をINT4やSAM3.1へ一般化しない。通常のruntime defaultは変更していない。
+
+最終検証: 全CTest **60/60、144.01秒**、selector 9/9、対照6件byte一致。
+Python構文検査・`git diff --check` はPass。データと重みmanifestのSHAも維持した。
+40条件operator/memcheckはscope追加前のビルド、最終scopeビルドはselector・対照・
+microbenchの数値/layout check・モデル51件・CTestで検証し、hashを混同せず記録した。
+[検証要約](../../experiments/results/native_rtx2060/round6-validation.json)、
+[CTest log](../../experiments/results/native_rtx2060/round6-ctest.log)。
+研究上の反証と再現性検証が増えたprogressとして継続する。採用構成は未確定、ゴールは未達。

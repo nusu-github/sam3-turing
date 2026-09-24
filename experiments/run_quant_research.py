@@ -48,6 +48,8 @@ def main():
     parser.add_argument('--image-id',type=int,help='Inspect one image from the selected split without changing its role')
     parser.add_argument('--attention',choices=['exact','kitchen','kitchen_all','kitchen_rot_all'],help='Explicit attention isolation override')
     parser.add_argument('--attention-scope',help='INT8 attention blocks: all, firstN, lastN, global, local, mask:0xHEX')
+    parser.add_argument('--kitchen-center',choices=['anchor','mean','mean_half','none'],help='K centering before attention quantization')
+    parser.add_argument('--kitchen-center-scope',choices=['all','local','global'],help='Apply mean centering only to selected attention shapes; use anchor elsewhere')
     parser.add_argument('--projection',choices=['exact','qkv'],help='Explicit QKV isolation override')
     parser.add_argument('--projection-scope',help='Quantized projection blocks: all, firstN, lastN, global, local, mask:0xHEX')
     parser.add_argument('--mlp-part',choices=['both','fc1','fc2'],help='Quantize only the selected MLP linear(s)')
@@ -72,6 +74,10 @@ def main():
         parser.error('projection scope requires a QKV INT8 mode')
     if args.attention_scope is not None and (args.mode=='fp16' or args.attention=='exact'):
         parser.error('attention scope requires an INT8 attention mode')
+    if args.kitchen_center is not None and (args.mode=='fp16' or args.attention=='exact'):
+        parser.error('K centering requires an INT8 attention mode')
+    if args.kitchen_center_scope is not None and args.kitchen_center not in ['mean','mean_half']:
+        parser.error('K centering scope requires mean or mean_half')
     data=json.loads(DATA.read_text())
     images=[r for r in data['images'] if r['role']==args.role]
     if args.image_id is not None:
@@ -81,6 +87,8 @@ def main():
     env=environment(args.mode,args.scope,args.calibration)
     if args.attention is not None: env['SAM3_EXPERIMENT_ATTENTION']=args.attention
     if args.attention_scope is not None: env['SAM3_EXPERIMENT_ATTENTION_SCOPE']=args.attention_scope
+    if args.kitchen_center is not None: env['SAM3_EXPERIMENT_KITCHEN_CENTER']=args.kitchen_center
+    if args.kitchen_center_scope is not None: env['SAM3_EXPERIMENT_KITCHEN_CENTER_SCOPE']=args.kitchen_center_scope
     if args.mlp_part is not None: env['SAM3_EXPERIMENT_MLP_PART']=args.mlp_part
     if args.mean_bias: env['SAM3_EXPERIMENT_FC2_MEAN_BIAS']='enabled'
     if args.projection_scope is not None: env['SAM3_EXPERIMENT_PROJECTION_SCOPE']=args.projection_scope
@@ -94,7 +102,7 @@ def main():
                    binary_sha256=hashlib.sha256(EXE.read_bytes()).hexdigest(),
                    runtime_sha256=hashlib.sha256((EXE.parent/'sam3_native.dll').read_bytes()).hexdigest(),
                    environment={k:v for k,v in env.items() if k.startswith(('SAM3_','TORCH_BLAS'))})
-    for optional in ['image_id','attention','projection','mlp_part','projection_scope','attention_scope']:
+    for optional in ['image_id','attention','projection','mlp_part','projection_scope','attention_scope','kitchen_center','kitchen_center_scope']:
         if getattr(args,optional) is None: signature['args'].pop(optional)
     if not args.mean_bias: signature['args'].pop('mean_bias')
     if args.calibration:

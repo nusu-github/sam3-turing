@@ -37,6 +37,23 @@ int main(int argc, char** argv) {
       rejects([] { attention_int8_layer(0); });
       setting("SAM3_EXPERIMENT_ATTENTION_SCOPE", "all");
       rejects([] { attention_int8_layer(0); });
+    } else if (mode == "invalid_kitchen_center") {
+      setting("SAM3_EXPERIMENT_KITCHEN_CENTER", "typo");
+      rejects([] { kitchen_center(); });
+      setting("SAM3_EXPERIMENT_KITCHEN_CENTER", "anchor");
+      rejects([] { kitchen_center(); });
+    } else if (mode == "center_scope") {
+      setting("SAM3_EXPERIMENT_KITCHEN_CENTER", "mean_half");
+      setting("SAM3_EXPERIMENT_KITCHEN_CENTER_SCOPE", "global");
+      TORCH_CHECK(kitchen_center_for_length(5184)=="mean_half" && kitchen_center_for_length(576)=="anchor","centering scope mismatch");
+      rejects([]{kitchen_center_for_length(129);});
+      setting("SAM3_EXPERIMENT_KITCHEN_CENTER_SCOPE", "local");
+      TORCH_CHECK(kitchen_center_for_length(576)=="anchor","centering scope cache changed");
+    } else if (mode == "invalid_center_scope") {
+      setting("SAM3_EXPERIMENT_KITCHEN_CENTER_SCOPE", "typo");
+      rejects([] { kitchen_center_for_length(576); });
+      setting("SAM3_EXPERIMENT_KITCHEN_CENTER_SCOPE", "all");
+      rejects([] { kitchen_center_for_length(576); });
     } else if (mode == "invalid_int4") {
       setting("SAM3_EXPERIMENT_INT4_FC2", "typo");
       rejects([] { int4_fc2_mode(); });
@@ -49,6 +66,10 @@ int main(int argc, char** argv) {
       rejects([] { mlp_int8_part(); });
     } else {
       TORCH_CHECK(mode == "valid", "unknown test mode");
+      setting("SAM3_EXPERIMENT_KITCHEN_CENTER", nullptr);
+      TORCH_CHECK(kitchen_center()=="anchor","default kitchen centering changed");
+      setting("SAM3_EXPERIMENT_KITCHEN_CENTER", "mean");
+      TORCH_CHECK(kitchen_center()=="anchor","kitchen centering cache changed");
       for(int count=1;count<=32;++count) for(int layer=0;layer<32;++layer) {
         TORCH_CHECK(quant_mask_layer(quant_layer_mask("first"+std::to_string(count)),layer)==(layer<count),"first scope mismatch");
         TORCH_CHECK(quant_mask_layer(quant_layer_mask("last"+std::to_string(count)),layer)==(layer>=32-count),"last scope mismatch");

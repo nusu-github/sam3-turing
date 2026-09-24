@@ -1,0 +1,94 @@
+{
+  "scope": "Synthetic attention operator cost, including centering and quantization.\n\nUses the existing benchmark's head-major output, not the model's sequence\nlayout. CUDA-event medians here are not end-to-end wall latency or acceptance.\n",
+  "layout": "head-major",
+  "rotation": false,
+  "samples": "Two fresh processes per mode, four passes per process, 100 warmups and 20 CUDA-event samples per operator/pass. Only pass medians are retained, so this is not a pooled sample median or p95.",
+  "preheated": false,
+  "order": [
+    "anchor",
+    "mean_half",
+    "mean_half",
+    "anchor"
+  ],
+  "binary_sha256": "05568837fb0812434786d03feede1270faa0b212a4d7d2ee2a4e480adbd3fa96",
+  "runtime_sha256": "e9f8c04b337846aedd4387d0702f058865d37d8eef62f260acfd3c140e60a0b5",
+  "results": [
+    {
+      "batch": 9,
+      "length": 576,
+      "modes": {
+        "anchor": {
+          "median_of_eight_pass_medians_ms": 0.945456,
+          "pass_median_range_ms": [
+            0.886576,
+            0.970672
+          ],
+          "process_medians_ms": [
+            0.924488,
+            0.954496
+          ],
+          "temperature_range_c": [
+            55,
+            73
+          ]
+        },
+        "mean_half": {
+          "median_of_eight_pass_medians_ms": 1.50028,
+          "pass_median_range_ms": [
+            1.46008,
+            1.51133
+          ],
+          "process_medians_ms": [
+            1.500655,
+            1.48935
+          ],
+          "temperature_range_c": [
+            63,
+            71
+          ]
+        }
+      },
+      "added_ms": 0.5548240000000001,
+      "operator_latency_increase_percent": 58.683217410434764
+    },
+    {
+      "batch": 1,
+      "length": 5184,
+      "modes": {
+        "anchor": {
+          "median_of_eight_pass_medians_ms": 4.282195,
+          "pass_median_range_ms": [
+            4.20864,
+            4.40826
+          ],
+          "process_medians_ms": [
+            4.21394,
+            4.33505
+          ],
+          "temperature_range_c": [
+            55,
+            73
+          ]
+        },
+        "mean_half": {
+          "median_of_eight_pass_medians_ms": 4.796895,
+          "pass_median_range_ms": [
+            4.78587,
+            4.87322
+          ],
+          "process_medians_ms": [
+            4.79631,
+            4.809065
+          ],
+          "temperature_range_c": [
+            63,
+            71
+          ]
+        }
+      },
+      "added_ms": 0.5147000000000004,
+      "operator_latency_increase_percent": 12.01953670956135
+    }
+  ],
+  "caveats": "Temperatures drift across the short sequence. These are diagnostic operator costs, not model end-to-end latency or a qualified speed comparison."
+}

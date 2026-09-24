@@ -1,0 +1,103 @@
+{
+  "ctest": {
+    "passed": 60,
+    "total": 60,
+    "seconds": 144.01,
+    "log": "round6-ctest.log"
+  },
+  "selector_tests": {
+    "passed": 9,
+    "total": 9,
+    "seconds": 5.03,
+    "log": "round6-final-selectors.log"
+  },
+  "model_controls": {
+    "anchor_vs_round5_cases": 4,
+    "scope_all_vs_pre_scope_mean_half_cases": 2,
+    "all_byte_equal": true
+  },
+  "operator_checks": {
+    "report": "round6-center-summary.json",
+    "cases_per_mode": 40,
+    "repeats_per_case": 5,
+    "checked_before_scope_addition": true,
+    "current_build_microbench": "Four processes passed existing numerical and output-layout checks on six synthetic shapes; detailed shifted/constant/zero 40-case check and memcheck are from earlier builds."
+  },
+  "memcheck": {
+    "mean": {
+      "errors": 0,
+      "build": "initial mean/anchor/none adapter; DLL hash not captured"
+    },
+    "mean_half": {
+      "errors": 0,
+      "runtime_sha256": "2e1555b4da4284aab84f0e978e3efe3c0ef9fb5beb878a73dc4381d338fde0ad"
+    },
+    "racecheck_run": false
+  },
+  "cuda_kernel_body_changed": false,
+  "cuda_adapter_changed": true,
+  "quality_processes": 93,
+  "synthetic_timing_processes": 4,
+  "model_timing_processes": 0,
+  "holdout_used": false,
+  "accepted_candidate": null,
+  "development_candidates": [
+    {
+      "run": "r6-mean-half-development",
+      "kind": "quality",
+      "mode": "calibrated",
+      "completed": 33,
+      "process_wall_seconds": 214.4921600818634,
+      "max_peak_allocated_bytes": 2691931648,
+      "max_sampled_whole_gpu_bytes": 3744378880,
+      "compared": 33,
+      "passed": 31,
+      "nonempty": 25,
+      "nonempty_passed": 23,
+      "count_changes": 1,
+      "failed_cases": [
+        "coco-val-000000005992-p0",
+        "coco-val-000000009590-p0"
+      ],
+      "min_mask_iou": 0.982,
+      "max_score_error": 0.01953125,
+      "max_box_error_px": 1.65191650390625
+    },
+    {
+      "run": "r6-mean-local-development",
+      "kind": "quality",
+      "mode": "calibrated",
+      "completed": 33,
+      "process_wall_seconds": 213.30454850196838,
+      "max_peak_allocated_bytes": 2691931648,
+      "max_sampled_whole_gpu_bytes": 3761156096,
+      "compared": 33,
+      "passed": 31,
+      "nonempty": 25,
+      "nonempty_passed": 23,
+      "count_changes": 1,
+      "failed_cases": [
+        "coco-val-000000001353-p1",
+        "coco-val-000000009590-p0"
+      ],
+      "min_mask_iou": 0.9714599341383096,
+      "max_score_error": 0.0166015625,
+      "max_box_error_px": 2.5833892822265625
+    }
+  ],
+  "weight_manifest_sha256": "e3648c574e4014dfe62c6f9b09c1660ea99dee7b546b2738231d27bed6de06e9",
+  "data_manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+  "binaries": {
+    "sam3_native.dll": "e9f8c04b337846aedd4387d0702f058865d37d8eef62f260acfd3c140e60a0b5",
+    "sam3_image_latency.exe": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "sam3_kitchen_bench.exe": "05568837fb0812434786d03feede1270faa0b212a4d7d2ee2a4e480adbd3fa96",
+    "sam3_vision_experiments_test.exe": "77f7d93c553c8683f2aaeb72d7177cfdcaa7b9cfddf9614e153c6520e0049d1f"
+  },
+  "python_syntax_checks": true,
+  "diff_check": true,
+  "unexecuted_drivers": [
+    "run_quant_candidate_timing.py",
+    "run_quant_legacy_regression.py"
+  ],
+  "default_runtime_options_changed": false
+}

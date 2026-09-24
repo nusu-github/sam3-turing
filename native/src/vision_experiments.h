@@ -95,6 +95,21 @@ inline const std::string& mlp_int8_part() {
   check_experiment(part, {"both", "fc1", "fc2"}, "invalid MLP INT8 part: ");
   return part;
 }
+inline const std::string& kitchen_center() {
+  static const std::string mode=read_experiment("SAM3_EXPERIMENT_KITCHEN_CENTER", "anchor");
+  check_experiment(mode, {"anchor", "mean", "mean_half", "none"}, "invalid kitchen K centering: ");
+  return mode;
+}
+inline const std::string& kitchen_center_for_length(int64_t length) {
+  const auto& mode=kitchen_center();
+  static const std::string scope=read_experiment("SAM3_EXPERIMENT_KITCHEN_CENTER_SCOPE", "all");
+  check_experiment(scope,{"all","global","local"},"invalid kitchen centering scope: ");
+  if(scope=="all")return mode;
+  TORCH_CHECK(mode=="mean" || mode=="mean_half","centering scope requires a mean centering mode");
+  TORCH_CHECK(length==576 || length==5184,"scoped centering requires SAM3 local/global token lengths");
+  static const std::string anchor="anchor";
+  return ((scope=="global" && length==5184) || (scope=="local" && length==576))?mode:anchor;
+}
 inline const std::string& int4_fc2_mode() {
   static const std::string mode=read_experiment("SAM3_EXPERIMENT_INT4_FC2");
   check_experiment(mode, {"exact", "all", "last8", "last4", "last2", "last", "w4", "a4",
