@@ -72,6 +72,24 @@ inline bool projection_int8_layer(int layer) {
   static const uint32_t mask=quant_layer_mask(scope);
   return quant_mask_layer(mask,layer);
 }
+inline bool attention_int8_layer(int layer) {
+  static const std::string scope=read_experiment("SAM3_EXPERIMENT_ATTENTION_SCOPE", "all");
+  static const uint32_t mask=quant_layer_mask(scope);
+  return quant_mask_layer(mask,layer);
+}
+// Attention keeps its existing private ABI; its internal weight prefix carries
+// the block index. Reject malformed prefixes instead of partially parsing them.
+inline int attention_block_index(const std::string& prefix) {
+  constexpr std::string_view start="trunk.blocks.",end=".attn";
+  TORCH_CHECK(prefix.size()>start.size()+end.size() && prefix.compare(0,start.size(),start)==0 &&
+      prefix.compare(prefix.size()-end.size(),end.size(),end)==0,"invalid attention block prefix: ",prefix);
+  const auto digits=prefix.substr(start.size(),prefix.size()-start.size()-end.size());
+  TORCH_CHECK(digits.size()<=2 && std::all_of(digits.begin(),digits.end(),[](char c){return c>='0' && c<='9';}),
+      "invalid attention block index: ",prefix);
+  const int layer=std::stoi(digits);
+  TORCH_CHECK(layer<32,"attention block index outside [0,31]");
+  return layer;
+}
 inline const std::string& mlp_int8_part() {
   static const std::string part=read_experiment("SAM3_EXPERIMENT_MLP_PART", "both");
   check_experiment(part, {"both", "fc1", "fc2"}, "invalid MLP INT8 part: ");

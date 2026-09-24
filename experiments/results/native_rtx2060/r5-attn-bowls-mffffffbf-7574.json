@@ -1,0 +1,88 @@
+{
+  "signature": {
+    "args": {
+      "kind": "quality",
+      "role": "development",
+      "mode": "calibrated",
+      "name": "r5-attn-bowls-mffffffbf-7574",
+      "scope": "mask:0xfffffffe",
+      "calibration": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+      "limit_images": null,
+      "primary_only": false,
+      "image_id": 7574,
+      "attention_scope": "mask:0xffffffbf",
+      "projection_scope": "mask:0xffffffbf",
+      "mean_bias": true
+    },
+    "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+    "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "runtime_sha256": "21e590684d2d4ea126565a4a5291fb4b8e8cdc352895136a360db8b7ed135b46",
+    "environment": {
+      "TORCH_BLAS_PREFER_CUBLASLT": "0",
+      "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+      "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+      "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+      "SAM3_EXPERIMENT_MLP": "int8_boundary",
+      "SAM3_EXPERIMENT_PROJECTION": "qkv",
+      "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+      "SAM3_EXPERIMENT_FC2_NORM": "fused",
+      "SAM3_EXPERIMENT_MLP_SCOPE": "mask:0xfffffffe",
+      "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+      "SAM3_EXPERIMENT_ATTENTION_SCOPE": "mask:0xffffffbf",
+      "SAM3_EXPERIMENT_FC2_MEAN_BIAS": "enabled",
+      "SAM3_EXPERIMENT_PROJECTION_SCOPE": "mask:0xffffffbf"
+    },
+    "calibration_sha256": "07de8545359fc39cd350d3086501f0a5544d20f6c574e3ba02ee3bfd2981292e",
+    "mean_sha256": "67d2fc4002b37dc614219a18bcff803e5bd0f958cb68b7f47d9e1d1a3481f0aa"
+  },
+  "results": [
+    {
+      "case": "coco-val-000000007574-p0",
+      "image_id": 7574,
+      "mode": "calibrated",
+      "count": 1,
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.998766827664166,
+        "max_score_error": 0.00244140625,
+        "max_box_error_px": 0.3267364501953125,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000007574-p1",
+      "image_id": 7574,
+      "mode": "calibrated",
+      "count": 4,
+      "comparison": {
+        "reference_count": 4,
+        "candidate_count": 4,
+        "min_mask_iou": 0.9916317991631799,
+        "max_score_error": 0.0146484375,
+        "max_box_error_px": 0.141632080078125,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "case": "coco-val-000000007574-p2",
+      "image_id": 7574,
+      "mode": "calibrated",
+      "count": 0,
+      "comparison": {
+        "reference_count": 0,
+        "candidate_count": 0,
+        "min_mask_iou": null,
+        "max_score_error": null,
+        "max_box_error_px": null,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": true
+      }
+    }
+  ]
+}

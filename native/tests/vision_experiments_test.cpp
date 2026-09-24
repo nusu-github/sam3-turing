@@ -32,6 +32,11 @@ int main(int argc, char** argv) {
       rejects([] { projection_int8_layer(0); });
       setting("SAM3_EXPERIMENT_PROJECTION_SCOPE", "all");
       rejects([] { projection_int8_layer(0); });
+    } else if (mode == "invalid_attention_scope") {
+      setting("SAM3_EXPERIMENT_ATTENTION_SCOPE", "mask:0xz");
+      rejects([] { attention_int8_layer(0); });
+      setting("SAM3_EXPERIMENT_ATTENTION_SCOPE", "all");
+      rejects([] { attention_int8_layer(0); });
     } else if (mode == "invalid_int4") {
       setting("SAM3_EXPERIMENT_INT4_FC2", "typo");
       rejects([] { int4_fc2_mode(); });
@@ -55,6 +60,15 @@ int main(int argc, char** argv) {
       for(const std::string bad:{"", "first", "first0", "first33", "last-1", "last1x", "mask:0x", "mask:0x100000000", "mask:0x1g"})
         rejects([&]{quant_layer_mask(bad);});
       rejects([]{quant_mask_layer(1,-1);});rejects([]{quant_mask_layer(1,32);});
+      for(int layer=0;layer<32;++layer)
+        TORCH_CHECK(attention_block_index("trunk.blocks."+std::to_string(layer)+".attn")==layer,"attention prefix mismatch");
+      for(const std::string bad:{"", "trunk.blocks..attn", "trunk.blocks.-1.attn", "trunk.blocks.32.attn",
+          "trunk.blocks.123.attn", "trunk.blocks.1x.attn", "trunk.blocks.1.attn.qkv", "blocks.1.attn"})
+        rejects([&]{attention_block_index(bad);});
+      setting("SAM3_EXPERIMENT_ATTENTION_SCOPE", "mask:0xffffffbf");
+      for(int layer=0;layer<32;++layer) TORCH_CHECK(attention_int8_layer(layer)==(layer!=6),"attention scope mismatch");
+      setting("SAM3_EXPERIMENT_ATTENTION_SCOPE", "all");
+      TORCH_CHECK(!attention_int8_layer(6),"attention scope cache changed");
       setting("SAM3_EXPERIMENT_PROJECTION_SCOPE", "first24");
       TORCH_CHECK(projection_int8_layer(23) && !projection_int8_layer(24),"projection scope mismatch");
       setting("SAM3_EXPERIMENT_PROJECTION_SCOPE", "all");

@@ -488,3 +488,113 @@ QKV6をFP16にした際のmask悪化とattention側の誤差を切り分ける�
 その結果に応じてattentionの層指定、または校正32枚からのQKV入力/LayerNorm校正へ進む。
 開発例の偶然の誤差相殺だけを追わず、候補固定後の全33例・既存17例・独立評価と
 再測定が揃うまで、ゴール完了とはしない。
+
+## Round 5 — attentionの層ごとの切り分け
+
+前roundは実装・速度診断・品質反証が増えたprogress。開始commit `a83c317`、
+clean tree、GPU使用率0%、52℃、382MiBを確認した。
+まずMLP block0 FP16 / QKV全層INT8 / attention全層INT8の未測定3画像を補完。
+前roundの4promptと合わせて6/9で、小さい人物IoU .97769、羊box差1.02292px、
+テレビscore/boxがFail。QKV6をFP16へ戻す前にも小さい人物maskの問題が存在する。
+新規runは `r5-qall-1584/2261/5992`、既存は `r4-joint-qall-4795/9590`。
+
+attentionに `SAM3_EXPERIMENT_ATTENTION_SCOPE` を追加する。
+既存の共有mask parserを使い、対象外blockは既存FP16 SDPAへ戻す。
+QKVの量子化とは独立で、デフォルトallは従来動作を維持する。
+まずMLP0 / QKV6 FP16候補に対し、attention block0〜7をそれぞれ1層だけFP16に戻し、
+1584/9590の4promptで切り分ける。閾値・校正データ・最終評価は変更しない。
+
+新しい層選択のCPU testは6/6。all / global / mask0の各2promptを前roundの
+all INT8 / global4のみINT8 / FP16 attentionと比較し、出力4ファイルが6/6 byte一致した。
+[対照](../../experiments/results/native_rtx2060/round5-controls.json)。
+
+追加の文献確認: [SageBwd（2026-03）](https://huggingface.co/papers/2603.02170)を
+SciteとHF公式APIで照合した。今回はabstract/metadataまでの確認。
+主題は訓練時の低bit attentionで、SAM3のPTQやSM75推論速度の実証として採用しない。
+[SageAttention公式README](https://github.com/thu-ml/SageAttention/blob/main/README.md)
+はAmpere/Ada/Hopper最適化、別系統のBlackwell FP4、量子化・smoothingを除いた
+kernel TOPSを区別している。これらの倍率をRTX 2060の全体速度へ転用しない。
+取得README blob SHAは `88a3fb78f881eb8253d842a31be91912dd5ede9b`。
+手元のComfyKitchen adapterはQ/Kに加えてP/V側にもINT8を使い、Kはadaptive anchorで
+中心化する設定。外部kernelにはfull-mean K smoothingも存在するが、現adapterでは未使用。
+層選択で頭打ちになった場合の別仮説として残す。訓練におけるsmoothingの知見だけで
+推論品質の改善を予断しない。
+
+最初の8候補（attentionのblock0〜7を1層ずつFP16）は、4prompt中の合格数が
+順に **4, 2, 2, 2, 4, 1, 4, 3**。
+[全結果](../../experiments/results/native_rtx2060/r5-attn-exclude-summary.json)。
+block0 / 4 / 6の3候補を残して、4795/2261/5992の5promptを補完する。
+block3ではspoon IoU .99281でもscore差 .0200195のためFailのままとした。
+小さな超過を許容するための閾値変更は行わない。
+
+9promptまで広げた結果、attention block0 FP16は **9/9**、block4は **8/9**
+（テレビscore差 .02734）、block6は **9/9**。
+[9件の統合結果](../../experiments/results/native_rtx2060/round5-hard-summary.json)。
+最小mask IoUの余裕がblock0 .98381 / block6 .98101のため、まずblock0候補を
+開発16画像33promptへ広げる。MLPはblock0、QKVはblock6だけFP16、FC2校正は従来と同じ。
+この時点で独立評価には進まない。
+
+block0候補の全開発結果は **31/33**（非空23/25）。検出数とmask IoUは全件基準内だが、
+7574 bowlのscore差 .029785、1425 bowlのbox差2.317856pxがFail。
+[全33件](../../experiments/results/native_rtx2060/r5-a0-development.json)、
+[要約](../../experiments/results/native_rtx2060/round5-a0-development-summary.json)。
+FP16一致への改善は特定の難例に限られ、候補全体の採用基準には届かない。
+次にattention block6 FP16候補を、この2画像5promptで比較する。
+
+既存17例の再評価用に `run_quant_legacy_regression.py` を追加した。
+保存済み候補の環境・バイナリ・校正hashを照合し、同じバイナリのfresh FP16と
+候補を各例で連続実行する。旧5例＋追加12例の画像/prompt存在と構文は確認済み。
+この時点ではまだモデル実行しておらず、17例の合格を主張しない。
+
+attention block6 FP16候補では、7574 bowlのscore差は .014648へ収まるが、
+1425 bowlのbox差1.740356pxが残った（追加5件中4件合格）。
+[追加比較](../../experiments/results/native_rtx2060/r5-attn-bowls-summary.json)。
+次にQKV6を含め全QKVをINT8へ戻し、attention block0 / 6 FP16の2候補を
+1425/4795/9590の6promptで比較したところ **4/6 / 3/6**。
+どちらも1425 bowlのbox差（1.458527 / 2.070831px）と9590人物の5→6検出がFail。
+block6ではテレビscore差 .020508もFail。
+[再組み合わせ](../../experiments/results/native_rtx2060/r5-qall-attn-summary.json)。
+
+### 解釈と次の反復
+
+層ごとの精度変更で小さいmaskの誤差と検出数の不一致を解消できた例はあるが、
+9件の成功は33件への一般化を保証しなかった。31/33の合格数自体は現行selectiveと同じで、
+失敗するpromptが入れ替わっている。今回の候補は採用しない。
+新規の速度測定は行っていないため、Round 4の13.25%を今回の候補の実測値にしない。
+独立holdout 32枚68promptは未使用のまま。
+
+次は同じ失敗画像への層mask探索だけを増やさず、Kのfull-mean smoothingと、
+校正32枚からのQKV入力チャネルscale/mean補正を順に切り分ける。
+前者は現在anchor中心化を使うadapterの代替で、外部kernelのscratch/current stream/
+determinismをoperator検証してからモデルへ適用する。後者は校正画像だけで統計を取得し、
+元のFP16重みとの等価変換と量子化誤差を分離して確かめる。
+いずれも新しい速度・精度の結果はまだなく、INT4やSAM3.1動画への有効性も未証明。
+
+今回のモデル評価はquality 108 process / 40 run、開発16画像、子process時間合計702.64秒。
+最初のQKV全層対照5件だけ前round DLL、それ以降の103件は新DLLを使用し、
+各runのsignatureに区別して保存した。最大allocated 2.695GB、whole GPU標本最大3.761GB。
+校正の再収集やtiming測定は行っていない。
+[process集計](../../experiments/results/native_rtx2060/round5-process-summary.json)。
+
+再現例（nameは新しい名前を指定）:
+
+```powershell
+.venv/Scripts/python.exe experiments/run_quant_attention_screen.py --name <unique> --scopes mask:0xfffffffe mask:0xffffffbf --images 1584 4795 2261 5992 9590
+.venv/Scripts/python.exe experiments/run_quant_research.py quality --mode calibrated --scope mask:0xfffffffe --calibration .cache/quant-research-20260924/calibrations/a050-none-mean-bias --mean-bias --projection-scope mask:0xffffffbf --attention-scope mask:0xfffffffe --name <unique>
+```
+
+第1コマンドは今回9/9だった2候補の難例比較、第2コマンドはblock0候補の全33件。
+通常のruntime defaultは変更していない。
+
+### 検証と到達点
+
+全CTest **57/57、141.36秒**、selector 6/6、従来3構成との6出力対照はbyte一致。
+Python構文検査と `git diff --check` もPass。
+新しいCUDA kernelは追加・変更していないため、新規memcheckの実施は主張しない。
+重みmanifestのSHA256は研究開始時と一致した。
+[検証要約](../../experiments/results/native_rtx2060/round5-validation.json)、
+[CTest](../../experiments/results/native_rtx2060/round5-ctest.log)。
+
+attentionの単層切り分け、108評価、33件での反証結果が増えたprogressとして継続する。
+採用構成は未確定であり、ゴールは未達。準備した既存17例driverのモデル実行、
+候補固定後の独立評価、速度の再測定、SAM3.1への別評価は引き続き必要。

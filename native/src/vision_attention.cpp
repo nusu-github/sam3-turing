@@ -64,7 +64,8 @@ at::Tensor VisionEncoder::attention(const at::Tensor& x, const std::string& pref
     const auto mode = detail::read_experiment("SAM3_EXPERIMENT_ATTENTION");
 #ifdef SAM3_EXPERIMENT_KITCHEN_ATTENTION
     if(mode=="kitchen" || mode=="kitchen_rot" || mode=="kitchen_all" || mode=="kitchen_rot_all") {
-      if(length==5184 || mode=="kitchen_all" || mode=="kitchen_rot_all") {
+      if(detail::attention_int8_layer(detail::attention_block_index(prefix)) &&
+          (length==5184 || mode=="kitchen_all" || mode=="kitchen_rot_all")) {
         const auto layout = detail::checked_experiment("SAM3_EXPERIMENT_KITCHEN_LAYOUT",
             {"head", "sequence"}, "invalid kitchen output layout: ", "head");
         return kitchen_attention(q,k,v,mode=="kitchen_rot" || mode=="kitchen_rot_all",layout=="sequence");
