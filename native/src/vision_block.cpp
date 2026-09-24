@@ -72,12 +72,24 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
         return detail::quantized_linear(value, weight(name + ".int8"),
             weight(name + ".scale"), weight(name + ".bias"), gelu, !gelu, label);
       };
-      if (mode == "int8_boundary") {
+      const auto& mlp_part=detail::mlp_int8_part();
+      if (mode == "int8_boundary" && mlp_part!="fc1") {
         const auto fc1=prefix+".mlp.fc1",fc2=prefix+".mlp.fc2";
         const bool calibrated=weights_.count(fc2+".calib_r")!=0;
         const auto& fc2_bias=weight(fc2+(calibrated?".calib_bias":".bias"));
         at::Tensor qhidden,shidden,int4_offset;
-        {
+        if(mlp_part=="fc2") {
+          // Preserve the exact FP16 FC1 output, then fuse GELU, optional affine,
+          // and FC2 activation quantization. Only FC2 uses integer GEMM here.
+          auto pre=detail::profile_call("vision.mlp.fc1.fp16",[&]{return linear(normalized,fc1);});
+          pre=pre.reshape({-1,4736}).contiguous();
+          qhidden=at::empty(pre.sizes(),pre.options().dtype(at::kChar));
+          shidden=at::empty({pre.size(0)},pre.options().dtype(at::kFloat));
+          detail::profile_call("vision.mlp.gelu_quant",[&]{
+            approx_gelu_quant(pre,calibrated?weight(fc2+".calib_r"):at::Tensor(),
+                calibrated?weight(fc2+".calib_shift"):at::Tensor(),qhidden,shidden);return 0;
+          });
+        } else {
           detail::ProfileRange fc1_range("vision.mlp.fc1");
           const auto flat=normalized.to(at::kHalf).reshape({-1,1024}).contiguous();
           auto [q, scales] = detail::quantize_rows(flat, "vision.mlp.fc1");
@@ -130,7 +142,7 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
         projection=result.view({b,h,w,1024});
       } else {
         hidden = quant_linear(normalized,prefix + ".mlp.fc1",true).view({b,h,w,4736});
-        projection = quant_linear(hidden,prefix + ".mlp.fc2",false).view({b,h,w,1024});
+        if(mlp_part!="fc1")projection = quant_linear(hidden,prefix + ".mlp.fc2",false).view({b,h,w,1024});
       }
 #else
       TORCH_CHECK(false,"experimental int8 requires CUDA");

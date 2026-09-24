@@ -11,21 +11,24 @@
 #include <string>
 #include <climits>
 
-template<int Items,int Threads=256,bool ReadOnly=false,bool Affine=false>
+template<int Items,int Threads=256,bool ReadOnly=false,bool Affine=false,bool HalfInput=false>
 __global__ void restore_quant_rows(const int* accum, const float* xs, const float* ws,
     const half* bias, signed char* q, float* scales, int n,
-    const float* channel_scale=nullptr,const float* channel_shift=nullptr) {
+    const float* channel_scale=nullptr,const float* channel_shift=nullptr,const half* input=nullptr) {
   const int row=blockIdx.x;
   float values[Items], mx=0;
-  const float xscale=xs[row];
+  [[maybe_unused]] const float xscale=HalfInput?1.f:xs[row];
   #pragma unroll
   for(int j=0;j<Items;++j) {
     const int col=threadIdx.x+j*Threads;
     float v=0;
     if(col<n) {
-      const float w=ReadOnly ? __ldg(ws+col) : ws[col];
-      const half b=ReadOnly ? __ldg(bias+col) : bias[col];
-      v=float(accum[row*n+col])*xscale*w+__half2float(b);
+      if constexpr(HalfInput) v=__half2float(input[row*n+col]);
+      else {
+        const float w=ReadOnly ? __ldg(ws+col) : ws[col];
+        const half b=ReadOnly ? __ldg(bias+col) : bias[col];
+        v=float(accum[row*n+col])*xscale*w+__half2float(b);
+      }
       v=.5f*v*(1.f+erff(v*.7071067811865475f));
       // Preserve the existing two-kernel INT8 path's rounding before absmax.
       v=__half2float(__float2half_rn(v));
@@ -48,6 +51,32 @@ __global__ void restore_quant_rows(const int* accum, const float* xs, const floa
     const int col=threadIdx.x+j*Threads;
     if(col<n) q[row*n+col]=(signed char)__float2int_rn(fminf(127.f,fmaxf(-127.f,values[j]/scale)));
   }
+}
+
+void approx_gelu_quant(const at::Tensor& input,const at::Tensor& r,const at::Tensor& shift,
+    at::Tensor& q,at::Tensor& scales) {
+  TORCH_CHECK(input.is_cuda() && input.scalar_type()==at::kHalf && input.dim()==2 &&
+      input.is_contiguous() && input.size(0)>0 && input.numel()<INT_MAX &&
+      input.size(1)>0 && input.size(1)<=8192,"invalid FP16 GELU boundary input");
+  const auto n=input.size(1),m=input.size(0);
+  TORCH_CHECK(q.device()==input.device() && scales.device()==input.device() &&
+      q.is_contiguous() && scales.is_contiguous() && q.scalar_type()==at::kChar &&
+      scales.scalar_type()==at::kFloat && q.sizes()==input.sizes() && scales.numel()==m,
+      "invalid FP16 GELU quantization output");
+  TORCH_CHECK(r.defined()==shift.defined(),"scale and shift must be provided together");
+  if(r.defined()) for(const auto& t:{r,shift})
+    TORCH_CHECK(t.device()==input.device() && t.is_contiguous() && t.scalar_type()==at::kFloat &&
+        t.numel()==n,"invalid FP16 GELU calibration vector");
+  const c10::cuda::CUDAGuard guard(input.device());
+  auto stream=c10::cuda::getCurrentCUDAStream();
+#define GELU_LAUNCH(I,A) restore_quant_rows<I,256,false,A,true><<<m,256,0,stream>>>(nullptr,nullptr,nullptr,nullptr,q.mutable_data_ptr<int8_t>(),scales.mutable_data_ptr<float>(),int(n),r.defined()?r.const_data_ptr<float>():nullptr,shift.defined()?shift.const_data_ptr<float>():nullptr,reinterpret_cast<const half*>(input.const_data_ptr<at::Half>()))
+  if(r.defined()) {
+    if(n==4736) {GELU_LAUNCH(19,true);} else {GELU_LAUNCH(32,true);}
+  } else {
+    if(n==4736) {GELU_LAUNCH(19,false);} else {GELU_LAUNCH(32,false);}
+  }
+#undef GELU_LAUNCH
+  C10_CUDA_KERNEL_LAUNCH_CHECK();
 }
 
 void approx_restore_quant_affine(const at::Tensor& accum,const at::Tensor& xs,

@@ -32,9 +32,16 @@ int main(int argc, char** argv) {
       rejects([] { int4_fc2_mode(); });
       setting("SAM3_EXPERIMENT_INT4_FC2", "exact");
       rejects([] { int4_fc2_mode(); });
+    } else if (mode == "invalid_part") {
+      setting("SAM3_EXPERIMENT_MLP_PART", "typo");
+      rejects([] { mlp_int8_part(); });
+      setting("SAM3_EXPERIMENT_MLP_PART", "both");
+      rejects([] { mlp_int8_part(); });
     } else {
       TORCH_CHECK(mode == "valid", "unknown test mode");
       setting("SAM3_EXPERIMENT_MLP", nullptr);
+      setting("SAM3_EXPERIMENT_MLP_PART", nullptr);
+      TORCH_CHECK(mlp_int8_part()=="both","default MLP part changed");
       TORCH_CHECK(read_experiment("SAM3_EXPERIMENT_MLP") == "exact", "default changed");
       setting("SAM3_EXPERIMENT_MLP", "int8");
       TORCH_CHECK(read_experiment("SAM3_EXPERIMENT_MLP") == "int8", "live setting cached");

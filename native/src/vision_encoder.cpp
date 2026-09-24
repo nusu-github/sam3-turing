@@ -57,8 +57,14 @@ VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
   for (int i = 0; i < 32; ++i) weight("trunk.blocks." + std::to_string(i) + ".attn.qkv.weight");
 #ifdef SAM3_WITH_CUDA
   const auto experiment = detail::read_experiment("SAM3_EXPERIMENT_MLP");
+  const auto& mlp_part = detail::mlp_int8_part();
+  TORCH_CHECK(mlp_part=="both" || (experiment=="int8_boundary" && detail::int4_fc2_mode()=="exact"),
+      "MLP part isolation requires INT8 boundary mode without INT4");
   const bool calibrated = !detail::read_experiment("SAM3_EXPERIMENT_FC2_CALIBRATION", "").empty();
-  TORCH_CHECK(!calibrated || (experiment=="int8_boundary" && detail::int4_fc2_mode()=="exact"),
+  const bool mean_bias = detail::checked_experiment("SAM3_EXPERIMENT_FC2_MEAN_BIAS",
+      {"exact","enabled"},"invalid FC2 mean bias experiment: ")=="enabled";
+  TORCH_CHECK(!mean_bias || calibrated,"FC2 mean bias requires calibration data");
+  TORCH_CHECK(!calibrated || (experiment=="int8_boundary" && mlp_part!="fc1" && detail::int4_fc2_mode()=="exact"),
       "FC2 calibration currently requires INT8 boundary mode without INT4");
   if(detail::int4_fc2_layer(31))TORCH_CHECK(experiment=="int8_boundary","INT4 FC2 requires int8_boundary MLP");
   if (experiment == "int8" || experiment == "int8_boundary") {
@@ -66,6 +72,7 @@ VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
                 "experimental int8 requires CUDA FP16 compute storage");
     for (int layer=0; layer<32; ++layer) for (int fc=1; fc<=2; ++fc) {
       if(!detail::mlp_int8_layer(layer))continue;
+      if((mlp_part=="fc1" && fc==2) || (mlp_part=="fc2" && fc==1))continue;
       const auto name = "trunk.blocks." + std::to_string(layer) + ".mlp.fc" + std::to_string(fc);
       auto w = weight(name + ".weight");
       if(fc==2 && calibrated) {
@@ -90,6 +97,13 @@ VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
       else
 #endif
       approx_quant(w,q,scales);
+      if(fc==2 && mean_bias) {
+        auto corrected_bias=detail::fc2_mean_bias(weight(name+".weight"),weight(name+".bias"),
+            q,scales,detail::read_fc2_mean(layer,device),weight(name+".calib_r"),
+            weight(name+".calib_shift")).to(at::kHalf).contiguous();
+        TORCH_CHECK(at::isfinite(corrected_bias).all().item<bool>(),"FC2 mean bias overflows FP16");
+        weights_.at(name+".calib_bias")=std::move(corrected_bias);
+      }
 #ifdef SAM3_EXPERIMENT_INT8_GEMM
       if(fc==2 && detail::int4_affine_mode()) {
         auto expanded=q.scalar_type()==at::kByte?detail::unpack_int4_diagnostic(q):q;

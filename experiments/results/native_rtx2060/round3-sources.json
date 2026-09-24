@@ -1,0 +1,20 @@
+{
+  "checked": "2026-09-24",
+  "uniq_vit": {
+    "doi": "10.1016/j.neucom.2025.132072",
+    "scite_metadata_found": true,
+    "full_text_read": false,
+    "github_revision": "3d711f88975db8c322ff3b714dc9cd96558ec588",
+    "github_files": [
+      "README.md"
+    ],
+    "readme_bytes": 98,
+    "reproduction_code_present": false
+  },
+  "colinearity_decay": {
+    "url": "https://arxiv.org/html/2605.01330v1",
+    "full_text_read": true,
+    "approach": "training-time matrix-pair regularization; not applied in this experiment",
+    "hf_metadata": "round3-hf-paper-metadata.json"
+  }
+}

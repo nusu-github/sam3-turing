@@ -1,4 +1,5 @@
 #include "../src/approx_kernels.h"
+#include "../src/vision_calibration.h"
 #include <ATen/ATen.h>
 #include <ATen/cuda/CUDAEvent.h>
 #include <c10/core/InferenceMode.h>
@@ -82,6 +83,50 @@ int main(int argc,char** argv) { try {
     approx_restore_quant_affine(acc,xs,ws,bias,r,shift,qf,sf);
     TORCH_CHECK(at::equal(q,qf) && at::equal(s,sf),"affine calibration scalar mismatch n=",n);
     check_quant(scalar,qf,sf);
+    // FP16 FC1 isolation must match ATen GELU + original quantizer, not the
+    // accumulator restore path (which has a different pre-GELU rounding point).
+    auto pre=(at::randn({m,n},opts)*3).to(at::kHalf);
+    for(int kind=0;kind<3;++kind) {
+      if(kind==1)pre.zero_();
+      if(kind==2)pre.fill_(.25);
+      auto activated=at::gelu(pre,"none");
+      approx_quant(activated,q,s);
+      approx_gelu_quant(pre,at::Tensor(),at::Tensor(),qf,sf);
+      TORCH_CHECK(at::equal(q,qf) && at::equal(s,sf),"FP16 GELU boundary mismatch n=",n," case=",kind);
+      auto expected=activated.cpu();
+      auto* a=expected.mutable_data_ptr<at::Half>();
+      for(int64_t i=0;i<expected.numel();++i) {
+        const float scaled=float(a[i])/rc.const_data_ptr<float>()[i%n];
+        a[i]=at::Half(scaled-bc.const_data_ptr<float>()[i%n]);
+      }
+      auto expected_gpu=expected.to(at::kCUDA);
+      approx_quant(expected_gpu,q,s);
+      approx_gelu_quant(pre,r,shift,qf,sf);
+      TORCH_CHECK(at::equal(q,qf) && at::equal(s,sf),"FP16 affine GELU boundary mismatch n=",n," case=",kind);
+      check_quant(expected,qf,sf);
+    }
+    // Independent empirical output-mean oracle in CPU float64. This isolates
+    // weight error; rounding/quantizing activations would introduce another error.
+    auto original=(at::randn({11,n},opts)*.03).to(at::kHalf);
+    auto original_bias=(at::randn({11},opts)*.01).to(at::kHalf);
+    auto inputs=at::randn({37,n},at::TensorOptions().dtype(at::kFloat))+1.25;
+    auto mu=inputs.mean(0).to(at::kCUDA);
+    auto transformed_weight=(original.to(at::kFloat)*r).to(at::kHalf).contiguous();
+    auto qw=at::empty({11,n},opts.dtype(at::kChar)),sw=at::empty({11},opts);
+    approx_quant(transformed_weight,qw,sw);
+    auto corrected=sam3::detail::fc2_mean_bias(original,original_bias,qw,sw,mu,r,shift);
+    auto xd=inputs.to(at::kDouble),rd=r.cpu().to(at::kDouble),bd=shift.cpu().to(at::kDouble);
+    auto wd=qw.cpu().to(at::kDouble)*sw.cpu().to(at::kDouble).unsqueeze(1);
+    auto reference=at::linear(xd,original.cpu().to(at::kDouble),original_bias.cpu().to(at::kDouble));
+    auto candidate=at::linear(xd/rd-bd,wd,corrected.cpu().to(at::kDouble));
+    const double mean_error=(reference-candidate).mean(0).abs().max().item<double>();
+    TORCH_CHECK(mean_error<2e-5,"FC2 compensated empirical mean error: ",mean_error);
+    // The exported FP16 bias has at most its own rounding error remaining here.
+    auto rounded=corrected.to(at::kHalf).to(at::kFloat);
+    auto candidate_half_bias=at::linear(xd/rd-bd,wd,rounded.cpu().to(at::kDouble));
+    const double round_bound=(rounded-corrected).abs().max().item<double>();
+    TORCH_CHECK((reference-candidate_half_bias).mean(0).abs().max().item<double>()<2e-5+round_bound,
+                "FC2 FP16 bias has error beyond bias rounding");
     std::vector<double> a,b;
     if(n==4736 && argc==2) {
       for(int i=0;i<100;++i) {separate();fused();}
@@ -91,7 +136,7 @@ int main(int argc,char** argv) { try {
       }
     }
     if(!first)out<<',';first=false;
-    out<<"{\"m\":"<<m<<",\"n\":"<<n<<",\"bit_equal\":true,\"affine_scalar_equal\":true,\"separate_ms\":[";
+    out<<"{\"m\":"<<m<<",\"n\":"<<n<<",\"bit_equal\":true,\"affine_scalar_equal\":true,\"fp16_gelu_quant_equal\":true,\"fc2_weight_mean_error\":"<<mean_error<<",\"separate_ms\":[";
     for(size_t i=0;i<a.size();++i) {if(i)out<<',';out<<a[i];}
     out<<"],\"fused_ms\":[";
     for(size_t i=0;i<b.size();++i) {if(i)out<<',';out<<b[i];}

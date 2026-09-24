@@ -48,13 +48,21 @@ def main():
     parser.add_argument('--image-id',type=int,help='Inspect one image from the selected split without changing its role')
     parser.add_argument('--attention',choices=['exact','kitchen','kitchen_all','kitchen_rot_all'],help='Explicit attention isolation override')
     parser.add_argument('--projection',choices=['exact','qkv'],help='Explicit QKV isolation override')
+    parser.add_argument('--mlp-part',choices=['both','fc1','fc2'],help='Quantize only the selected MLP linear(s)')
+    parser.add_argument('--mean-bias',action='store_true',help='Compensate FC2 weight quantization mean error using calibration data')
     args = parser.parse_args()
     if args.role=='holdout' and args.kind!='quality':
         parser.error('holdout is only for final quality evaluation')
     if args.kind=='observe' and (args.role!='calibration' or args.mode!='fp16'):
         parser.error('observations require calibration split and fp16')
-    if args.mode=='fp16' and (args.attention is not None or args.projection is not None):
+    if args.mode=='fp16' and (args.attention is not None or args.projection is not None or args.mlp_part is not None):
         parser.error('FP16 reference and observations must not use quantization overrides')
+    if args.mlp_part is not None and args.mode not in ['selective','all','calibrated']:
+        parser.error('MLP part requires an MLP INT8 mode')
+    if args.mlp_part=='fc1' and args.mode=='calibrated':
+        parser.error('FC2 calibration cannot apply when only FC1 is quantized')
+    if args.mean_bias and args.mode!='calibrated':
+        parser.error('FC2 mean bias needs calibrated mode and fc2-mean.f32.bin')
     data=json.loads(DATA.read_text())
     images=[r for r in data['images'] if r['role']==args.role]
     if args.image_id is not None:
@@ -63,6 +71,8 @@ def main():
     if args.limit_images: images=images[:args.limit_images]
     env=environment(args.mode,args.scope,args.calibration)
     if args.attention is not None: env['SAM3_EXPERIMENT_ATTENTION']=args.attention
+    if args.mlp_part is not None: env['SAM3_EXPERIMENT_MLP_PART']=args.mlp_part
+    if args.mean_bias: env['SAM3_EXPERIMENT_FC2_MEAN_BIAS']='enabled'
     if args.projection is not None:
         env['SAM3_EXPERIMENT_PROJECTION']=args.projection
         env['SAM3_EXPERIMENT_QKV_ROPE']='fused' if args.projection=='qkv' else 'exact'
@@ -73,10 +83,13 @@ def main():
                    binary_sha256=hashlib.sha256(EXE.read_bytes()).hexdigest(),
                    runtime_sha256=hashlib.sha256((EXE.parent/'sam3_native.dll').read_bytes()).hexdigest(),
                    environment={k:v for k,v in env.items() if k.startswith(('SAM3_','TORCH_BLAS'))})
-    for optional in ['image_id','attention','projection']:
+    for optional in ['image_id','attention','projection','mlp_part']:
         if getattr(args,optional) is None: signature['args'].pop(optional)
+    if not args.mean_bias: signature['args'].pop('mean_bias')
     if args.calibration:
         signature['calibration_sha256']=hashlib.sha256((args.calibration/'fc2-affine.f32.bin').read_bytes()).hexdigest()
+        if args.mean_bias:
+            signature['mean_sha256']=hashlib.sha256((args.calibration/'fc2-mean.f32.bin').read_bytes()).hexdigest()
     sigpath=root/'run.json'
     if sigpath.exists():
         if json.loads(sigpath.read_text())!=signature: raise RuntimeError('run signature changed; choose a new name')

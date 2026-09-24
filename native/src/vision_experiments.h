@@ -33,6 +33,11 @@ inline bool mlp_int8_layer(int layer) {
       "last24", "global", "local"}, "invalid MLP INT8 scope: ");
   return scope=="all" || (scope=="first8" && layer<8) || (scope=="first16" && layer<16) || (scope=="first24" && layer<24) || (scope=="last8" && layer>=24) || (scope=="last16" && layer>=16) || (scope=="last24" && layer>=8) || (scope=="global" && (layer+1)%8==0) || (scope=="local" && (layer+1)%8!=0);
 }
+inline const std::string& mlp_int8_part() {
+  static const std::string part=read_experiment("SAM3_EXPERIMENT_MLP_PART", "both");
+  check_experiment(part, {"both", "fc1", "fc2"}, "invalid MLP INT8 part: ");
+  return part;
+}
 inline const std::string& int4_fc2_mode() {
   static const std::string mode=read_experiment("SAM3_EXPERIMENT_INT4_FC2");
   check_experiment(mode, {"exact", "all", "last8", "last4", "last2", "last", "w4", "a4",

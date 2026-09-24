@@ -14,6 +14,9 @@ void approx_restore_quant_affine(const at::Tensor& accum, const at::Tensor& inpu
     const at::Tensor& weight_scales, const at::Tensor& bias,
     const at::Tensor& channel_scale, const at::Tensor& channel_shift,
     at::Tensor& quantized, at::Tensor& scales);
+void approx_gelu_quant(const at::Tensor& fp16_input,
+    const at::Tensor& channel_scale, const at::Tensor& channel_shift,
+    at::Tensor& quantized, at::Tensor& scales);
 at::Tensor approx_restore_rope(const at::Tensor& accum, const at::Tensor& input_scales,
     const at::Tensor& weight_scales, const at::Tensor& bias,
     const at::Tensor& frequencies, int64_t batch);

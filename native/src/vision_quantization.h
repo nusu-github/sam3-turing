@@ -34,7 +34,7 @@ inline std::pair<at::Tensor, at::Tensor> quantize_rows(
   return {std::move(quantized), std::move(scales)};
 }
 
-// Shared unfused INT8 projection; keep the FP16 rounding point before GELU.
+// Shared unfused INT8 projection; restore/GELU runs in FP32 before FP16 output.
 inline at::Tensor quantized_linear(const at::Tensor& value, const at::Tensor& weight,
     const at::Tensor& weight_scales, const at::Tensor& bias, bool gelu, bool fc2,
     const std::string& profile_label) {

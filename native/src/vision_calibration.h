@@ -44,4 +44,27 @@ inline std::pair<at::Tensor,at::Tensor> read_fc2_calibration(int layer, at::Devi
   values=values.to(device);
   return {values[0].contiguous(),values[1].contiguous()};
 }
+
+inline at::Tensor read_fc2_mean(int layer, at::Device device) {
+  constexpr int64_t width=4736;
+  const auto root=read_experiment("SAM3_EXPERIMENT_FC2_CALIBRATION", "");
+  const auto path=std::filesystem::u8path(root)/"fc2-mean.f32.bin";
+  TORCH_CHECK(std::filesystem::file_size(path)==32*width*sizeof(float),"invalid FC2 mean size");
+  auto mean=at::empty({width},at::TensorOptions().dtype(at::kFloat).device(at::kCPU));
+  std::ifstream in(path,std::ios::binary);
+  in.seekg(layer*width*sizeof(float));
+  in.read(static_cast<char*>(mean.mutable_data_ptr()),mean.nbytes());
+  TORCH_CHECK(in && at::isfinite(mean).all().item<bool>(),"invalid FC2 mean data");
+  return mean.to(device);
+}
+
+// Correct expected output from weight quantization only. Activation quantization
+// and changed inputs from earlier quantized blocks are deliberately not modeled.
+inline at::Tensor fc2_mean_bias(const at::Tensor& original_weight,const at::Tensor& bias,
+    const at::Tensor& q,const at::Tensor& scales,const at::Tensor& mean,
+    const at::Tensor& r,const at::Tensor& shift) {
+  const auto dequantized=q.to(at::kFloat)*scales.unsqueeze(1);
+  return bias.to(at::kFloat) + at::mv(original_weight.to(at::kFloat),mean) -
+      at::mv(dequantized,mean/r-shift);
+}
 } // namespace sam3::detail

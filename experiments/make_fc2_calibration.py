@@ -14,6 +14,7 @@ def main():
     p.add_argument('--alpha',type=float,default=.5)
     p.add_argument('--shift',choices=['none','mean','midrange'],default='none')
     p.add_argument('--identity',action='store_true')
+    p.add_argument('--mean-bias',action='store_true',help='Save calibration-only input means for weight error compensation')
     args=p.parse_args()
     if not 0<=args.alpha<=1: p.error('alpha must be between zero and one')
     run=json.loads((args.observations/'run.json').read_text())
@@ -21,6 +22,7 @@ def main():
     cases=sorted(d.parent for d in args.observations.glob('*/complete.json'))
     assert cases, 'no complete calibration images'
     transformed=[]
+    means=[]
     summaries=[]
     hashes={}
     for layer in range(32):
@@ -33,6 +35,7 @@ def main():
         lo=stats[:,0].min(0)
         hi=stats[:,1].max(0)
         mean=stats[:,2].mean(0)
+        means.append(mean)
         wmax=stats[0,4]
         assert np.all(stats[:,4]==wmax) and np.isfinite(stats).all()
         center={'none':np.zeros_like(mean),'mean':mean,'midrange':(lo+hi)/2}[args.shift]
@@ -55,6 +58,12 @@ def main():
                 observations_run=run,observation_sha256=hashes,
                 file_sha256=hashlib.sha256(target.read_bytes()).hexdigest(),layers=summaries,
                 rounding='GELU FP16 -> affine FP32 division/subtraction -> FP16 -> symmetric row INT8. Weight transformed in FP32 then stored FP16; bias correction uses transformed FP16 weight.')
+    if args.mean_bias:
+        mean_target=args.output/'fc2-mean.f32.bin'
+        if mean_target.exists(): raise RuntimeError('refusing to overwrite calibration means')
+        np.stack(means).astype('<f4').tofile(mean_target)
+        report['mean_sha256']=hashlib.sha256(mean_target.read_bytes()).hexdigest()
+        report['mean_bias_formula']='bias + W_original @ mean - W_dequantized @ (mean / r - shift); FP32 setup, bias stored FP16. Excludes activation quantization error and upstream propagation.'
     (args.output/'calibration.json').write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps({k:report[k] for k in ['alpha','shift','identity','images','file_sha256']}))
 

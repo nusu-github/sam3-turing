@@ -1,0 +1,48 @@
+{
+  "ctest": {
+    "passed": 55,
+    "total": 55,
+    "seconds": 142.01,
+    "log": "round3-ctest.log"
+  },
+  "memcheck": {
+    "errors": 0,
+    "log": "round3-boundary-memcheck.log"
+  },
+  "operator": {
+    "widths": [
+      1,
+      31,
+      32,
+      257,
+      1024,
+      4736,
+      8192
+    ],
+    "fp16_gelu_quant_bit_equal": true,
+    "affine_scalar_bit_equal": true,
+    "max_corrected_empirical_mean_error": 1.99671e-06,
+    "details": "round3-boundary-memcheck.json"
+  },
+  "final_build_control": {
+    "cases": 3,
+    "all_byte_equal": true,
+    "details": "round3-final-control.json"
+  },
+  "model_evaluations": {
+    "including_controls": 88,
+    "reports": 51,
+    "unique_development_images": 6,
+    "process_wall_seconds_sum": 581.6408512592316,
+    "max_peak_allocated_bytes": 2703868928,
+    "max_sampled_whole_gpu_bytes": 3740184576,
+    "speed_claim": false,
+    "holdout_used": false
+  },
+  "binaries": {
+    "sam3_native.dll": "b3c85e5797dbb66f4a4b0619386a3630cb89bf24cc7b382375b0c8d1002f8e35",
+    "sam3_image_latency.exe": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "sam3_boundary_bench.exe": "debe0442a0d28baae05692a7ce4d811ac5d49e909a07cad79f95ea1976207c16"
+  },
+  "default_runtime_options_changed": false
+}

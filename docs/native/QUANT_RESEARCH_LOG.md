@@ -222,3 +222,134 @@ GBは10^9 bytes。NVMLは20ms間隔の全GPU標本で厳密なprocess peakでは
 その後、校正データのみから平均誤差補正またはFC1のチャネル変換を作る。
 FC2の品質・速度が成立した範囲でINT4へ同じ校正を移す。失敗例を隠したり基準を緩めたりせず、
 screen → 開発33例 → 既存17例 → 候補固定 → 未使用holdout → 制御した速度測定、を続ける。
+
+## Round 3 — FC1 / FC2の分離
+
+前roundは実装・検証・反証データが増えたためprogressと判定して継続。
+開始時は `ea8aeb4`、作業ツリーclean、RTX 2060 Max-QはGPU使用率0%、57℃を確認した。
+新しい `SAM3_EXPERIMENT_MLP_PART=both|fc1|fc2` は、選んだLinearだけを量子化する。
+未選択側のINT8重みは確保しない。既存のblock scopeと組み合わせられる。
+初期実装ではpart分離とINT4の同時使用を拒否し、校正はFC2を量子化する場合だけ許可する。
+
+FC2のみの場合はFP16 FC1出力からGELU → FP16丸め → optional affine → FP16丸め →
+row INT8量子化を融合する。既存の両FC量子化経路はGELU前の復元値がFP32なので、
+FC1をFP16に保つFC2単独との比較には、この丸め位置の差も含まれる。すべてが重み誤差だけの切り分けではない。
+
+新GELU融合は7種類の幅、random/zero/constant入力、本番5184x4736、非default streamで
+ATen GELU + 既存quantizerとbyte一致。affineありはCPUスカラー変換の参照とも一致。
+1画像のFP16/従来両FC INT8は前ビルドと出力全ファイルがbyte一致。
+[operator結果](../../experiments/results/native_rtx2060/round3-boundary-check.json)、
+[既存経路の対照](../../experiments/results/native_rtx2060/round3-default-control.json)。
+
+最初のscreenは画像1584、4795、2261、5992、9590の9prompt。
+前roundの失敗と小さな人物maskを含む開発例であり、独立評価ではない。
+attention/QKVをFP16に固定し、FC1のみINT8、FC2のみINT8、alpha=.5/shiftなし校正FC2の3条件を比較する。
+
+### 分離screenの結果と平均誤差補正
+
+FC1のみ / FC2のみはいずれも8/9合格。両方で9590 `person` の5→6検出が残った。
+追加query 87のscoreはそれぞれ.54590 / .54395で、単に.50000付近の丸めだけとは言えない。
+既存alpha=.5/shiftなしをFC2単独へ移すと5/9へ下がり、1584の人物mask、テレビscore、
+laptop検出数、羊のboxが基準外になった。一方9590の人物数は正しくなるため、
+校正を無条件に良いものとは扱わない。identity校正はテレビ画像の2promptとも
+FC2未校正出力と全ファイルbyte一致した。
+[集計と失敗の詳細](../../experiments/results/native_rtx2060/round3-isolation-summary.json)。
+
+追加候補は校正32枚からFC2入力のchannel mean `mu` を保存し、実際のINT8重みを
+復元した `Wq` に対して `bias_new = bias + W_original @ mu - Wq @ (mu/r-shift)` を
+FP32で計算、FP16 biasとして保持する。起動時だけの処理で推論演算を増やさない。
+既存の等価変換biasをこの値で置き換える。重み量子化と重み変換の丸めに対する平均補正であり、
+活性の丸め・量子化や上流の誤差伝搬は含めない。`SAM3_EXPERIMENT_FC2_MEAN_BIAS=enabled`
+およびrunnerの `--mean-bias` で明示的に有効にする。
+
+元の校正データは変更せず、`make_fc2_calibration.py ... --mean-bias` によって
+`identity-mean-bias` / `a050-none-mean-bias` を新規作成。
+32層×4736のmeanファイルSHA256は
+`67d2fc4002b37dc614219a18bcff803e5bd0f958cb68b7f47d9e1d1a3481f0aa`。
+変換scale/shiftのSHAは以前のidentity / a050-noneと同じ。
+CPU float64で独立に作った出力の標本平均と照合し、7幅で補正後の誤差は最大約2e-6。
+FP16 bias化後の追加誤差もbias丸めの範囲内だった。
+[演算検証](../../experiments/results/native_rtx2060/round3-boundary-mean-check.json)。
+
+screenは同じ5画像9promptで、FC2単独 / 両FC、identity / alpha=.5の4候補。
+パラメータ作成には開発画像を使わず、最終評価32枚も未使用のまま比較する。
+
+### 今回の追加文献確認
+
+Sciteで [UniQ-ViT（Neurocomputing 2026）](https://doi.org/10.1016/j.neucom.2025.132072)
+の書誌を照合。著者所属機関の[公開抄録](https://research.birmingham.ac.uk/en/publications/uniq-vit-optimization-driven-uniform-quantization-for-vision-tran/)
+では、uniform量子化の範囲初期化後、block単位で重みと量子化パラメータを調整し、
+post-LayerNormのchannel差には2段階の再パラメータ化を使う。
+本文取得はできず、抄録からSAM3/SM75の実測効果は判断しない。
+GitHub connectorで[公開リポジトリ](https://github.com/Dexter-Yu/UniQ-ViT/tree/3d711f88975db8c322ff3b714dc9cd96558ec588)
+を確認したところ、このrevisionには98-byte READMEだけがあり、再現実装はなかった。
+「code available」という抄録の記述だけで再現可能とみなさない。
+
+[Colinearity Decay（2026-05-02 v1）](https://arxiv.org/html/2605.01330v1) も本文確認。
+Transformer内の行列の組に正則化を加える学習・fine-tuning手法で、
+推論時のscale/shift校正だけで適用する方法ではない。Swin/ViTでのW4A4評価を報告しているが、
+本プロジェクトのSAM3/SM75にそのまま当てはめる根拠はない。
+HF papers APIの当該IDは404だったため、HF登録を裏付けにせずarXiv一次本文を参照した。
+
+平均補正screenの結果:
+
+| attention/QKV FP16の候補 | 補正前 | 平均補正あり |
+|---|---:|---:|
+| FC2のみ、identity | 8/9 | 7/9 |
+| FC2のみ、alpha=.5 | 5/9 | 5/9 |
+| 両FC、identity | 同条件の9例は未測定 | 8/9 |
+| 両FC、alpha=.5 | 5/9 | 8/9 |
+
+両FC/alpha=.5では、surfboardの0→1検出、羊のbox差、spoonのIoU/scoreが解消した。
+9590人物は依然5→6検出、IoU .95339、score差 .02783でFail。
+FC2単独のidentityでは小さな人物maskも基準外となり、補正がすべての構成で改善するわけではない。
+[各候補の全結果・処理時間・メモリ](../../experiments/results/native_rtx2060/round3-mean-bias-summary.json)。
+これらは品質用のcold+1回測定であり、latencyの比較には使用しない。
+
+次のscreenは両FC/平均補正でidentityとalpha=.5の2条件を固定し、attention全層とQKVをINT8にする。
+品質が成立するなら高速化の測定対象になるが、部分系の8/9から最終構成の品質を推定しない。
+
+### attention/QKVとの組み合わせと今回の判断
+
+全attention・QKVをINT8に戻すと、平均補正付き両FCはidentityが6/9、alpha=.5が5/9だった。
+identityは小さな人物mask、テレビscore、9590人物検出数でFail。
+alpha=.5は同じ3例に加えてspoonのIoU .97857もFail。
+[全結果](../../experiments/results/native_rtx2060/round3-combined-summary.json)。
+この2候補は現時点で不採用。開発33例や独立holdoutへは展開せず、速度改善も主張しない。
+
+今回わかったことは、FC1/FC2を片方だけにしても累積誤差は残ること、
+重みの平均誤差補正は一部の失敗を解消するがattention/QKVとの組み合わせには不十分なこと。
+GELU丸め位置の既存コメントも実コードに合わせて修正した。
+新しいnative演算はopt-inのままで、通常設定は変更しない。
+
+次の反復では、最も良かった両FC/alpha=.5/平均補正を使い、まず既存のfirst24/last24などの
+MLP scopeで誤差が集中する範囲を切り分ける。必要ならQKVにも層scopeを加えて同じ切り分けを行う。
+これはモデル構成の開発選択なので、同じ開発画像での改善は独立した一般化の証拠にしない。
+採用候補が固定されるまでholdout32枚は使わない。
+
+### Round 3の検証・記録
+
+最終ビルドで既存FP16 / 両FC INT8 / 平均補正なし校正の3対照を再確認し、
+7574の主promptに対して保存済み出力と全ファイルbyte一致。
+meanデータが校正フォルダに存在しても、flagなしでは従来出力を維持した。
+CTestは **55/55合格、142.01秒**。新しいFP16 GELU境界、affine、平均補正検証を含む
+operator全7幅のCompute Sanitizer memcheckは **0 errors**。
+Python構文検査と `git diff --check` もPass。
+[検証要約とバイナリSHA](../../experiments/results/native_rtx2060/round3-validation.json)、
+[CTest](../../experiments/results/native_rtx2060/round3-ctest.log)、
+[memcheck](../../experiments/results/native_rtx2060/round3-boundary-memcheck.log)。
+
+モデル評価は対照を含む88回、開発画像6枚（難例5枚＋対照1枚）、51 run。
+native子process時間の合計581.64秒。新しい32枚GPU校正取得は不要だった。
+保存済み統計からmeanを生成するCPU処理の所要時間は今回は単独計測していない。
+最大allocated 2.704GB、20ms sampled whole GPU 3.740GB（GB=10^9bytes）。
+すべてcold+1回の品質評価で、これらから速度差を主張しない。
+
+再現例: `make_fc2_calibration.py <calibration-fp16> <new-output> --alpha 0.5 --shift none --mean-bias`
+でファイルを作り、`run_quant_research.py quality --mode calibrated --calibration <new-output>
+--mlp-part both --mean-bias --attention exact --projection exact --image-id 9590 --name <unique>`。
+FC2単独は `--mlp-part fc2`、全attention/QKV INT8との組み合わせはattention/projectionのoverrideを省く。
+各run reportに環境、データ、モデル実行バイナリ、校正ファイルのhashを保存している。
+
+今回も新しい切り分け・校正実装・検証・反証が増えたためprogressとして継続。
+ゴール達成ではなく、採用候補は未確定。最終評価32枚は未使用。

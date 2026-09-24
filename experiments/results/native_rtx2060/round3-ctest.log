@@ -1,0 +1,882 @@
+Start testing: Sep 24 20:20 東京 (標準時)
+----------------------------------------------------------
+1/55 Testing: vision_experiments_cpu
+1/55 Test: vision_experiments_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_vision_experiments_test.exe" "valid"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"vision_experiments_cpu" start time: Sep 24 20:20 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS experiment setting lifetime: valid
+<end of output>
+Test time =   0.57 sec
+----------------------------------------------------------
+Test Passed.
+"vision_experiments_cpu" end time: Sep 24 20:20 東京 (標準時)
+"vision_experiments_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/55 Testing: vision_experiments_invalid_scope_cpu
+2/55 Test: vision_experiments_invalid_scope_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_vision_experiments_test.exe" "invalid_scope"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"vision_experiments_invalid_scope_cpu" start time: Sep 24 20:20 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS experiment setting lifetime: invalid_scope
+<end of output>
+Test time =   0.57 sec
+----------------------------------------------------------
+Test Passed.
+"vision_experiments_invalid_scope_cpu" end time: Sep 24 20:20 東京 (標準時)
+"vision_experiments_invalid_scope_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/55 Testing: vision_experiments_invalid_int4_cpu
+3/55 Test: vision_experiments_invalid_int4_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_vision_experiments_test.exe" "invalid_int4"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"vision_experiments_invalid_int4_cpu" start time: Sep 24 20:20 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS experiment setting lifetime: invalid_int4
+<end of output>
+Test time =   0.59 sec
+----------------------------------------------------------
+Test Passed.
+"vision_experiments_invalid_int4_cpu" end time: Sep 24 20:20 東京 (標準時)
+"vision_experiments_invalid_int4_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/55 Testing: vision_experiments_invalid_part_cpu
+4/55 Test: vision_experiments_invalid_part_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_vision_experiments_test.exe" "invalid_part"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"vision_experiments_invalid_part_cpu" start time: Sep 24 20:20 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS experiment setting lifetime: invalid_part
+<end of output>
+Test time =   0.58 sec
+----------------------------------------------------------
+Test Passed.
+"vision_experiments_invalid_part_cpu" end time: Sep 24 20:20 東京 (標準時)
+"vision_experiments_invalid_part_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/55 Testing: vision_position
+5/55 Test: vision_position
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_vision_position_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"vision_position" start time: Sep 24 20:20 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS position 54 exact cases, layout, empty/strided inputs, independent outputs and invalid inputs
+<end of output>
+Test time =   4.08 sec
+----------------------------------------------------------
+Test Passed.
+"vision_position" end time: Sep 24 20:20 東京 (標準時)
+"vision_position" time elapsed: 00:00:04
+----------------------------------------------------------
+
+6/55 Testing: media
+6/55 Test: media
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_native_media_test.exe"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"media" start time: Sep 24 20:20 東京 (標準時)
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.59 sec
+----------------------------------------------------------
+Test Passed.
+"media" end time: Sep 24 20:20 東京 (標準時)
+"media" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/55 Testing: rotary_pair
+7/55 Test: rotary_pair
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_rotary_pair_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"rotary_pair" start time: Sep 24 20:20 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS rotary pair 82 exact cases, layout, independence, FMA, nonfinite, empty, fallback and invalid inputs
+<end of output>
+Test time =  11.35 sec
+----------------------------------------------------------
+Test Passed.
+"rotary_pair" end time: Sep 24 20:20 東京 (標準時)
+"rotary_pair" time elapsed: 00:00:11
+----------------------------------------------------------
+
+8/55 Testing: vision_fusion
+8/55 Test: vision_fusion
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_vision_fusion_test.exe"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"vision_fusion" start time: Sep 24 20:20 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS 240 norm and 360 each residual-norm and next-projection layout/distribution/dtype cases on cpu
+<end of output>
+Test time =  33.27 sec
+----------------------------------------------------------
+Test Passed.
+"vision_fusion" end time: Sep 24 20:21 東京 (標準時)
+"vision_fusion" time elapsed: 00:00:33
+----------------------------------------------------------
+
+9/55 Testing: rotary_cpu
+9/55 Test: rotary_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_rotary_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"rotary_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS rotary cpu exact cases=45 invalid=2
+<end of output>
+Test time =   4.75 sec
+----------------------------------------------------------
+Test Passed.
+"rotary_cpu" end time: Sep 24 20:21 東京 (標準時)
+"rotary_cpu" time elapsed: 00:00:04
+----------------------------------------------------------
+
+10/55 Testing: weights_crc_large_cpu
+10/55 Test: weights_crc_large_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_weights_large_test.exe"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"weights_crc_large_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS CRC chunk boundary, tensor tail, empty tensors and corruption rejection
+<end of output>
+Test time =   3.69 sec
+----------------------------------------------------------
+Test Passed.
+"weights_crc_large_cpu" end time: Sep 24 20:21 東京 (標準時)
+"weights_crc_large_cpu" time elapsed: 00:00:03
+----------------------------------------------------------
+
+11/55 Testing: inference_settings_cpu
+11/55 Test: inference_settings_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_inference_settings_test.exe"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"inference_settings_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS 10 inference policy changes and restoration
+<end of output>
+Test time =   0.54 sec
+----------------------------------------------------------
+Test Passed.
+"inference_settings_cpu" end time: Sep 24 20:21 東京 (標準時)
+"inference_settings_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+12/55 Testing: video_mask_cache_cpu
+12/55 Test: video_mask_cache_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_mask_cache_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_mask_cache_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS lossless mask cache cpu policies=2 corruption=2
+<end of output>
+Test time =   0.68 sec
+----------------------------------------------------------
+Test Passed.
+"video_mask_cache_cpu" end time: Sep 24 20:21 東京 (標準時)
+"video_mask_cache_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+13/55 Testing: image_results_cpu
+13/55 Test: image_results_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_image_results_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"image_results_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+{"device":"cpu","cases":2304,"all_outputs_exact":true}
+<end of output>
+Test time =   1.88 sec
+----------------------------------------------------------
+Test Passed.
+"image_results_cpu" end time: Sep 24 20:21 東京 (標準時)
+"image_results_cpu" time elapsed: 00:00:01
+----------------------------------------------------------
+
+14/55 Testing: video_interaction_cpu
+14/55 Test: video_interaction_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_interaction_test.exe"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_interaction_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+interaction routing/cache/reset passed
+<end of output>
+Test time =   0.55 sec
+----------------------------------------------------------
+Test Passed.
+"video_interaction_cpu" end time: Sep 24 20:21 東京 (標準時)
+"video_interaction_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/55 Testing: video_output_cpu
+15/55 Test: video_output_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_output_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_output_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+video output snapshot/cancel/reset/uncapped overlap passed cpu
+<end of output>
+Test time =   0.53 sec
+----------------------------------------------------------
+Test Passed.
+"video_output_cpu" end time: Sep 24 20:21 東京 (標準時)
+"video_output_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+16/55 Testing: rank_executor_cpu
+16/55 Test: rank_executor_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_rank_executor_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"rank_executor_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+parallel overlap, TLS, caller stream, error draining and serial order passed on cpu
+<end of output>
+Test time =   0.65 sec
+----------------------------------------------------------
+Test Passed.
+"rank_executor_cpu" end time: Sep 24 20:21 東京 (標準時)
+"rank_executor_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+17/55 Testing: video_collective_cpu
+17/55 Test: video_collective_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_collective_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_collective_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+collective gather/transport/placement/empty execution passed: 8 dtype/device combinations on cpu
+<end of output>
+Test time =   0.62 sec
+----------------------------------------------------------
+Test Passed.
+"video_collective_cpu" end time: Sep 24 20:21 東京 (標準時)
+"video_collective_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+18/55 Testing: video_update_cpu
+18/55 Test: video_update_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_update_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_update_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+video planning/rank alignment/score ordering passed on cpu
+<end of output>
+Test time =   0.61 sec
+----------------------------------------------------------
+Test Passed.
+"video_update_cpu" end time: Sep 24 20:21 東京 (標準時)
+"video_update_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+19/55 Testing: video_objects_cpu
+19/55 Test: video_objects_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_objects_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_objects_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+video object coordinator passed on cpu
+<end of output>
+Test time =   0.60 sec
+----------------------------------------------------------
+Test Passed.
+"video_objects_cpu" end time: Sep 24 20:21 東京 (標準時)
+"video_objects_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+20/55 Testing: video_memory_cpu
+20/55 Test: video_memory_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_memory_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_memory_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+global memory preparation/ID assignment passed cpu
+<end of output>
+Test time =   0.76 sec
+----------------------------------------------------------
+Test Passed.
+"video_memory_cpu" end time: Sep 24 20:21 東京 (標準時)
+"video_memory_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+21/55 Testing: occlusion_cpu
+21/55 Test: occlusion_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_occlusion_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"occlusion_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+occlusion/reconditioning policy/order/state hook passed cpu
+<end of output>
+Test time =   0.59 sec
+----------------------------------------------------------
+Test Passed.
+"occlusion_cpu" end time: Sep 24 20:21 東京 (標準時)
+"occlusion_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+22/55 Testing: hotstart_cpu
+22/55 Test: hotstart_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_hotstart_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"hotstart_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+native hotstart/compaction/extension/confirmation/precision passed cpu
+<end of output>
+Test time =   0.70 sec
+----------------------------------------------------------
+Test Passed.
+"hotstart_cpu" end time: Sep 24 20:21 東京 (標準時)
+"hotstart_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+23/55 Testing: association_cpu
+23/55 Test: association_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_association_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"association_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+native association/matching/empty-policy/placement passed cpu fp32
+<end of output>
+Test time =   0.56 sec
+----------------------------------------------------------
+Test Passed.
+"association_cpu" end time: Sep 24 20:21 東京 (標準時)
+"association_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+24/55 Testing: c_api
+24/55 Test: c_api
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_c_api_test.exe"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"c_api" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+pure C API: ABI/defaults/NULL/invalid options/exception translation passed
+<end of output>
+Test time =   0.63 sec
+----------------------------------------------------------
+Test Passed.
+"c_api" end time: Sep 24 20:21 東京 (標準時)
+"c_api" time elapsed: 00:00:00
+----------------------------------------------------------
+
+25/55 Testing: c_api_threads
+25/55 Test: c_api_threads
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_c_api_thread_test.exe"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"c_api_threads" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+C ABI thread-local errors remain independent
+<end of output>
+Test time =   0.59 sec
+----------------------------------------------------------
+Test Passed.
+"c_api_threads" end time: Sep 24 20:21 東京 (標準時)
+"c_api_threads" time elapsed: 00:00:00
+----------------------------------------------------------
+
+26/55 Testing: archive_cpu
+26/55 Test: archive_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_tensor_archive_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"archive_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+archive tensors=33 device=cpu exact values/strides/dtypes, CRC/truncation/missing-file failures, shared lifetime; selective spatial/pointer paging across 31 frames
+<end of output>
+Test time =   0.76 sec
+----------------------------------------------------------
+Test Passed.
+"archive_cpu" end time: Sep 24 20:21 東京 (標準時)
+"archive_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+27/55 Testing: native_cpu
+27/55 Test: native_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_native_smoke.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"native_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS: native ATen matmul on cpu
+<end of output>
+Test time =   0.60 sec
+----------------------------------------------------------
+Test Passed.
+"native_cpu" end time: Sep 24 20:21 東京 (標準時)
+"native_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+28/55 Testing: ops_cpu
+28/55 Test: ops_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_native_ops_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"ops_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS: native masks, NMS, regions, EDT and ROIAlign on cpu
+<end of output>
+Test time =   0.62 sec
+----------------------------------------------------------
+Test Passed.
+"ops_cpu" end time: Sep 24 20:21 東京 (標準時)
+"ops_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+29/55 Testing: weights_cpu
+29/55 Test: weights_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_native_weights_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"weights_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS: native weight loading, device placement, checksum and malformed data checks on cpu
+<end of output>
+Test time =   0.61 sec
+----------------------------------------------------------
+Test Passed.
+"weights_cpu" end time: Sep 24 20:21 東京 (標準時)
+"weights_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+30/55 Testing: multiplex_cpu
+30/55 Test: multiplex_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_native_multiplex_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"multiplex_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+{"device":"cpu","mode":"fp32","state_safety":true,"roundtrip":true,"max_objects_tested":257}
+<end of output>
+Test time =   0.58 sec
+----------------------------------------------------------
+Test Passed.
+"multiplex_cpu" end time: Sep 24 20:21 東京 (標準時)
+"multiplex_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+31/55 Testing: tokenizer_cpu
+31/55 Test: tokenizer_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_tokenizer_test.exe" "D:/PycharmProjects/sam3-turing/native/../sam3/assets/bpe_simple_vocab_16e6.txt.gz"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"tokenizer_cpu" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+native tokenizer API checks passed
+<end of output>
+Test time =   0.69 sec
+----------------------------------------------------------
+Test Passed.
+"tokenizer_cpu" end time: Sep 24 20:21 東京 (標準時)
+"tokenizer_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+32/55 Testing: image_results_cuda
+32/55 Test: image_results_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_image_results_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"image_results_cuda" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+{"device":"cuda:0","cases":2304,"all_outputs_exact":true}
+<end of output>
+Test time =   8.45 sec
+----------------------------------------------------------
+Test Passed.
+"image_results_cuda" end time: Sep 24 20:21 東京 (標準時)
+"image_results_cuda" time elapsed: 00:00:08
+----------------------------------------------------------
+
+33/55 Testing: video_output_cuda
+33/55 Test: video_output_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_output_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_output_cuda" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+video output snapshot/cancel/reset/uncapped overlap passed cuda
+<end of output>
+Test time =   0.93 sec
+----------------------------------------------------------
+Test Passed.
+"video_output_cuda" end time: Sep 24 20:21 東京 (標準時)
+"video_output_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+34/55 Testing: rank_executor_cuda
+34/55 Test: rank_executor_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_rank_executor_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"rank_executor_cuda" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+parallel overlap, TLS, caller stream, error draining and serial order passed on cuda:0
+<end of output>
+Test time =   0.72 sec
+----------------------------------------------------------
+Test Passed.
+"rank_executor_cuda" end time: Sep 24 20:21 東京 (標準時)
+"rank_executor_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+35/55 Testing: video_collective_cuda
+35/55 Test: video_collective_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_collective_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_collective_cuda" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+collective gather/transport/placement/empty execution passed: 8 dtype/device combinations on cuda
+<end of output>
+Test time =   0.83 sec
+----------------------------------------------------------
+Test Passed.
+"video_collective_cuda" end time: Sep 24 20:21 東京 (標準時)
+"video_collective_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+36/55 Testing: video_update_cuda
+36/55 Test: video_update_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_update_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_update_cuda" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+video planning/rank alignment/score ordering passed on cuda
+<end of output>
+Test time =   0.96 sec
+----------------------------------------------------------
+Test Passed.
+"video_update_cuda" end time: Sep 24 20:21 東京 (標準時)
+"video_update_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+37/55 Testing: video_objects_cuda
+37/55 Test: video_objects_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_objects_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_objects_cuda" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+video object coordinator passed on cuda
+<end of output>
+Test time =   0.71 sec
+----------------------------------------------------------
+Test Passed.
+"video_objects_cuda" end time: Sep 24 20:21 東京 (標準時)
+"video_objects_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+38/55 Testing: video_memory_cuda
+38/55 Test: video_memory_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_memory_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_memory_cuda" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+global memory preparation/ID assignment passed cuda
+<end of output>
+Test time =   0.80 sec
+----------------------------------------------------------
+Test Passed.
+"video_memory_cuda" end time: Sep 24 20:21 東京 (標準時)
+"video_memory_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+39/55 Testing: occlusion_cuda
+39/55 Test: occlusion_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_occlusion_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"occlusion_cuda" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+occlusion/reconditioning policy/order/state hook passed cuda
+<end of output>
+Test time =   0.98 sec
+----------------------------------------------------------
+Test Passed.
+"occlusion_cuda" end time: Sep 24 20:21 東京 (標準時)
+"occlusion_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+40/55 Testing: hotstart_cuda
+40/55 Test: hotstart_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_hotstart_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"hotstart_cuda" start time: Sep 24 20:21 東京 (標準時)
+Output:
+----------------------------------------------------------
+native hotstart/compaction/extension/confirmation/precision passed cuda
+<end of output>
+Test time =   0.91 sec
+----------------------------------------------------------
+Test Passed.
+"hotstart_cuda" end time: Sep 24 20:22 東京 (標準時)
+"hotstart_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+41/55 Testing: association_cuda
+41/55 Test: association_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_association_test.exe" "cuda" "fp16"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"association_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+native association/matching/empty-policy/placement passed cuda fp16
+<end of output>
+Test time =   0.97 sec
+----------------------------------------------------------
+Test Passed.
+"association_cuda" end time: Sep 24 20:22 東京 (標準時)
+"association_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+42/55 Testing: archive_cuda
+42/55 Test: archive_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_tensor_archive_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"archive_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+archive tensors=33 device=cuda exact values/strides/dtypes, CRC/truncation/missing-file failures, shared lifetime; selective spatial/pointer paging across 31 frames
+<end of output>
+Test time =   0.85 sec
+----------------------------------------------------------
+Test Passed.
+"archive_cuda" end time: Sep 24 20:22 東京 (標準時)
+"archive_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+43/55 Testing: native_cuda
+43/55 Test: native_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_native_smoke.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"native_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS: native ATen matmul on cuda
+<end of output>
+Test time =   0.69 sec
+----------------------------------------------------------
+Test Passed.
+"native_cuda" end time: Sep 24 20:22 東京 (標準時)
+"native_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+44/55 Testing: ops_cuda
+44/55 Test: ops_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_native_ops_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"ops_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS: native masks, NMS, regions, EDT and ROIAlign on cuda
+<end of output>
+Test time =   0.90 sec
+----------------------------------------------------------
+Test Passed.
+"ops_cuda" end time: Sep 24 20:22 東京 (標準時)
+"ops_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+45/55 Testing: vision_position_cuda
+45/55 Test: vision_position_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_vision_position_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"vision_position_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS position 54 exact cases, layout, empty/strided inputs, independent outputs and invalid inputs
+<end of output>
+Test time =   1.28 sec
+----------------------------------------------------------
+Test Passed.
+"vision_position_cuda" end time: Sep 24 20:22 東京 (標準時)
+"vision_position_cuda" time elapsed: 00:00:01
+----------------------------------------------------------
+
+46/55 Testing: vision_position_stream_cuda
+46/55 Test: vision_position_stream_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_vision_position_stream_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"vision_position_stream_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS position 54 exact cases, layout, empty/strided inputs, independent outputs and invalid inputs
+<end of output>
+Test time =   1.27 sec
+----------------------------------------------------------
+Test Passed.
+"vision_position_stream_cuda" end time: Sep 24 20:22 東京 (標準時)
+"vision_position_stream_cuda" time elapsed: 00:00:01
+----------------------------------------------------------
+
+47/55 Testing: rotary_pair_cuda
+47/55 Test: rotary_pair_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_rotary_pair_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"rotary_pair_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS rotary pair 82 exact cases, layout, independence, FMA, nonfinite, empty, fallback and invalid inputs
+<end of output>
+Test time =   1.10 sec
+----------------------------------------------------------
+Test Passed.
+"rotary_pair_cuda" end time: Sep 24 20:22 東京 (標準時)
+"rotary_pair_cuda" time elapsed: 00:00:01
+----------------------------------------------------------
+
+48/55 Testing: rotary_pair_stream_cuda
+48/55 Test: rotary_pair_stream_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_rotary_pair_stream_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"rotary_pair_stream_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS rotary pair 82 exact cases, layout, independence, FMA, nonfinite, empty, fallback and invalid inputs
+<end of output>
+Test time =   1.09 sec
+----------------------------------------------------------
+Test Passed.
+"rotary_pair_stream_cuda" end time: Sep 24 20:22 東京 (標準時)
+"rotary_pair_stream_cuda" time elapsed: 00:00:01
+----------------------------------------------------------
+
+49/55 Testing: vision_fusion_stream_cuda
+49/55 Test: vision_fusion_stream_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_vision_fusion_stream_test.exe"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"vision_fusion_stream_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS 240 norm and 360 each residual-norm and next-projection layout/distribution/dtype cases on cuda:0
+<end of output>
+Test time =  19.64 sec
+----------------------------------------------------------
+Test Passed.
+"vision_fusion_stream_cuda" end time: Sep 24 20:22 東京 (標準時)
+"vision_fusion_stream_cuda" time elapsed: 00:00:19
+----------------------------------------------------------
+
+50/55 Testing: vision_fusion_cuda
+50/55 Test: vision_fusion_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_vision_fusion_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"vision_fusion_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS 240 norm and 360 each residual-norm and next-projection layout/distribution/dtype cases on cuda
+<end of output>
+Test time =  19.95 sec
+----------------------------------------------------------
+Test Passed.
+"vision_fusion_cuda" end time: Sep 24 20:22 東京 (標準時)
+"vision_fusion_cuda" time elapsed: 00:00:19
+----------------------------------------------------------
+
+51/55 Testing: rotary_cuda
+51/55 Test: rotary_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_rotary_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"rotary_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS rotary cuda exact cases=45 invalid=2
+<end of output>
+Test time =   0.82 sec
+----------------------------------------------------------
+Test Passed.
+"rotary_cuda" end time: Sep 24 20:22 東京 (標準時)
+"rotary_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+52/55 Testing: video_mask_cache_cuda
+52/55 Test: video_mask_cache_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_video_mask_cache_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"video_mask_cache_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS lossless mask cache cuda policies=2 corruption=2
+<end of output>
+Test time =   1.10 sec
+----------------------------------------------------------
+Test Passed.
+"video_mask_cache_cuda" end time: Sep 24 20:22 東京 (標準時)
+"video_mask_cache_cuda" time elapsed: 00:00:01
+----------------------------------------------------------
+
+53/55 Testing: rotary_stream_cuda
+53/55 Test: rotary_stream_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_rotary_stream_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"rotary_stream_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS rotary cuda exact cases=45 invalid=2
+<end of output>
+Test time =   0.84 sec
+----------------------------------------------------------
+Test Passed.
+"rotary_stream_cuda" end time: Sep 24 20:22 東京 (標準時)
+"rotary_stream_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+54/55 Testing: weights_cuda
+54/55 Test: weights_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_native_weights_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"weights_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+PASS: native weight loading, device placement, checksum and malformed data checks on cuda
+<end of output>
+Test time =   0.76 sec
+----------------------------------------------------------
+Test Passed.
+"weights_cuda" end time: Sep 24 20:22 東京 (標準時)
+"weights_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+55/55 Testing: multiplex_cuda
+55/55 Test: multiplex_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_native_multiplex_test.exe" "cuda" "fp16"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"multiplex_cuda" start time: Sep 24 20:22 東京 (標準時)
+Output:
+----------------------------------------------------------
+{"device":"cuda","mode":"fp16","state_safety":true,"roundtrip":true,"max_objects_tested":257}
+<end of output>
+Test time =   0.97 sec
+----------------------------------------------------------
+Test Passed.
+"multiplex_cuda" end time: Sep 24 20:22 東京 (標準時)
+"multiplex_cuda" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 24 20:22 東京 (標準時)

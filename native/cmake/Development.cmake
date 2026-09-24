@@ -8,6 +8,7 @@ sam3_add_native_tool(sam3_vision_experiments_test tests/vision_experiments_test.
 add_test(NAME vision_experiments_cpu COMMAND sam3_vision_experiments_test valid)
 add_test(NAME vision_experiments_invalid_scope_cpu COMMAND sam3_vision_experiments_test invalid_scope)
 add_test(NAME vision_experiments_invalid_int4_cpu COMMAND sam3_vision_experiments_test invalid_int4)
+add_test(NAME vision_experiments_invalid_part_cpu COMMAND sam3_vision_experiments_test invalid_part)
 
 sam3_add_native_tool(sam3_vision_position_test tests/vision_position_test.cpp)
 add_test(NAME vision_position COMMAND sam3_vision_position_test cpu)

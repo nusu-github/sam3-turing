@@ -1,0 +1,32 @@
+{
+  "fp16": {
+    "reference_count": 1,
+    "candidate_count": 1,
+    "min_mask_iou": 1.0,
+    "max_score_error": 0.0,
+    "max_box_error_px": 0.0,
+    "finite": true,
+    "gate_pass": true,
+    "byte_equal": true
+  },
+  "all": {
+    "reference_count": 1,
+    "candidate_count": 1,
+    "min_mask_iou": 1.0,
+    "max_score_error": 0.0,
+    "max_box_error_px": 0.0,
+    "finite": true,
+    "gate_pass": true,
+    "byte_equal": true
+  },
+  "calibrated_no_mean": {
+    "reference_count": 1,
+    "candidate_count": 1,
+    "min_mask_iou": 1.0,
+    "max_score_error": 0.0,
+    "max_box_error_px": 0.0,
+    "finite": true,
+    "gate_pass": true,
+    "byte_equal": true
+  }
+}
