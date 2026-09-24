@@ -1,9 +1,9 @@
 # Native image FP16 quality audit
 
-The native image path now has a reproducible annotated-image audit. It retains
-all 200 queries, runs full 1008-pixel encoding and accepts arbitrary UTF-8 prompt
-files. The dataset selection and prompt list are test inputs, not runtime limits.
-No production arithmetic, threshold or model weight was changed for this audit.
+A reproducible annotated-image audit of the native image path, comparing FP16
+with BF16 against ground truth. It keeps all 200 queries, runs full 1008-pixel
+encoding and accepts arbitrary UTF-8 prompt files. The dataset selection and
+prompt list are test inputs, not runtime limits.
 
 ## Selection and metric
 
@@ -29,7 +29,7 @@ truncation, nonfinite/duplicate candidates and a known perfect AP result.
 ## Results
 
 AP below is expressed on a 0–100 scale. The machine-readable report is
-[image-precision-coco-slice.json](image-precision-coco-slice.json).
+[image-precision-coco-slice.json](evidence/image-precision-coco-slice.json).
 
 | Model | Precision | Box AP | Mask AP |
 |---|---|---:|---:|
@@ -86,8 +86,8 @@ cmake --install build/image-audit --config Release --prefix /absolute/path/to/sd
 The matching LibTorch prefix must precede the SDK prefix during C++ compilation.
 CPU builds omit `SAM3_BENCHMARK_CUDA`; CUDA benchmarking requires it for correct
 synchronization and allocator accounting. Use the corresponding Windows LibTorch
-and SDK paths with MSVC; Windows execution remains user-owned. The inference
-command itself needs neither Python nor the evaluation packages:
+and SDK paths with MSVC. The inference command itself needs neither Python nor
+the evaluation packages:
 
 ```bash
 env -u LD_LIBRARY_PATH PATH=/nonexistent /absolute/path/to/sdk/bin/sam3_image_benchmark \
@@ -108,16 +108,9 @@ Each model/precision was additionally executed from the installed CUDA SDK on
 the first selected image/prompt with Python absent from PATH: all 200 candidates
 and masks match the development run exactly. CPU model inference was not rerun.
 
-## Persistence and limits
+## Data and limits
 
-The existing private bucket stores `native-foundation/image-precision-linux/`
-(all outputs, selected data/attribution, reports and logs) and
-`image-audit-sdk-tools/` (small CPU/CUDA tool-only archives). Apply each tool to
-the matching SDK already restored through `video-preprocess-sdk-overlay`.
-No new LibTorch, OpenCV or weight copy is required. Public Git contains code and
-aggregate evidence, not dataset images or weight-bearing outputs.
-
-No GitHub Actions or Windows/Turing physical tests were used. Wider annotated
-coverage, video precision, source parity across library builds and repeated
-performance measurements remain necessary; the overall development goal stays
-active.
+All outputs, the selected images with attribution, reports and logs are kept in
+the private bucket (`native-foundation/image-precision-linux/`); Git contains the
+code and aggregate evidence only. Wider annotated coverage, video precision and
+repeated performance measurements have not been done.

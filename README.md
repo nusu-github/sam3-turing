@@ -1,16 +1,23 @@
 # SAM3-Turing
 
-**Native C/C++ runtime:** [Python 不要の SAM3 / SAM3.1 — 使い方と現状](docs/native/QUICKSTART_JA.md).
-The original Python patch instructions and benchmarks follow below.
+A community fork of SAM 3 / SAM 3.1 for GPUs with little VRAM, in particular
+Turing laptops such as the **RTX 2060 Max-Q with 6 GB**. The original SAM 3
+project and credits follow the fork's sections.
 
-Runtime patches for SAM 3 image inference on GPUs with limited VRAM, validated
-on an **RTX 2060 Max-Q with 6 GB VRAM** and an RTX 3090. Apply selective FP16
-conversion, memory optimizations, text caching, and optional compilation without
-modifying the checkpoint or editing upstream model files.
+| Part | Status | Start here |
+|---|---|---|
+| Python runtime patch for image inference (`sam3/turing*.py`) | Complete; validated on RTX 2060 Max-Q and RTX 3090 | [Results](#results-on-a-6-gb-rtx-2060-max-q) and [quick start](#quick-start) below |
+| Python-free C/C++ runtime for images and video (`native/`) | Development release (Linux SDK; Windows builds from source) | [QUICKSTART_JA.md](docs/native/QUICKSTART_JA.md) (Japanese), [docs/native](docs/native/README.md) |
+| Windows/RTX 2060 optimization and INT8/INT4 research on the native runtime | Ongoing; opt-in switches only | [Experiments](experiments/results/native_rtx2060/README.md), [research log](docs/native/QUANT_RESEARCH_LOG.md) |
 
-Optional extensions provide selective INT8 matrix multiplication, compact 4-bit
-weight storage, CPU text encoding, and fused resizing and bit-packing of masks.
-This is a community fork; the original SAM 3 project and credits are below.
+Documentation map: [docs/README.md](docs/README.md). Development history:
+[docs/HISTORY.md](docs/HISTORY.md).
+
+The Python patch applies selective FP16 conversion, memory optimizations, text
+caching and optional compilation without modifying the checkpoint or editing
+upstream model files. Optional extensions provide selective INT8 matrix
+multiplication, compact 4-bit weight storage, CPU text encoding, and fused
+resizing and bit-packing of masks.
 
 ## Results on a 6 GB RTX 2060 Max-Q
 

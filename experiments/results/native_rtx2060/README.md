@@ -1,104 +1,109 @@
-# Windows RTX 2060 initial native image benchmark
+# Windows / RTX 2060 native experiments
 
-Latest follow-up: [pixel conversion fusion and selective MLP INT8](PIXEL_AND_MLP_SCOPE.md).
+Measurements of the native runtime on the target laptop GPU: RTX 2060 Max-Q 6 GB
+(SM75), Windows 11, driver 610.88, CUDA 13.0, MSVC 14.44, standalone LibTorch
+2.10.0+cu130. Build: [WINDOWS_BUILD.md](../../../docs/native/WINDOWS_BUILD.md).
 
-Earlier: [extended INT8 attention checks and zero-copy output layout](KITCHEN_EXTENDED.md),
-including the quality limits of the combined INT8 path and attention-only results.
+Unless a report says otherwise, the workload is one image (`truck.jpg`, prompt
+`truck`) at 1008 px with all 200 queries, threshold 0.5, cached text and fresh
+image features; disk I/O and setup are excluded. Timings come from
+`sam3_image_latency` run through
+[`experiments/monitor_native_bench.py`](../../monitor_native_bench.py) in fresh,
+alternating processes. GPU clocks were not fixed: compare numbers only within
+one report's series and never add gains from different reports.
 
-See [ConvRot and ComfyKitchen experiments](CONVROT_KITCHEN.md) for the latest
-rotation-assisted INT4 quality investigation and external SM75 INT8 attention
-evaluation. These are opt-in experiments, not default model changes.
+Approximate modes are judged by agreement with FP16 (not ground truth): finite
+outputs, equal detection counts, Hungarian-matched minimum mask IoU ≥ .98, score
+difference ≤ .02 and box difference ≤ 1 px, over the 5 original and 12 extended
+cases defined in [`experiments/native_quality.py`](../../native_quality.py).
+The later INT8/INT4 research uses separate COCO splits.
 
-The latest [controlled fusion OFF/ON comparison](FUSION_AB.md) measured
-573.98→540.91 ms overall (5.76% shorter) and 7.58% shorter vision intervals,
-with byte-identical outputs in all eight processes. Both variants use `908e476`;
-GELU reuse is common to both and its separate effect is excluded.
+## Current state
 
-## Upstream integration, 2026-09-24
+- **Default runtime**: exact FP16, unchanged by every experiment below. The
+  upstream exact fusions are on by default and measured 573.98 → 540.91 ms here
+  ([FUSION_AB](FUSION_AB.md)).
+- **Research baseline ("selective")**, all opt-in through
+  [experiment switches](../../../native/README.md#experiment-switches):
+  `SAM3_EXPERIMENT_PIXEL=fused_nchw` (exact), ComfyKitchen INT8 attention
+  (`kitchen_all`, `sequence` layout), W8A8 QKV with fused restore/RoPE,
+  `int8_boundary` MLP on the 4 global blocks and fused FC2/norm. It passes the
+  17 regression cases but only 31/33 COCO development prompts; the ongoing
+  search for a faster configuration that passes everywhere is in
+  [QUANT_RESEARCH_LOG.md](../../../docs/native/QUANT_RESEARCH_LOG.md).
+- Rejected paths were removed from the runtime in the 2026-09-25 cleanup
+  ([cleanup-parity.json](cleanup-parity.json): 34 retained-mode runs byte-identical,
+  CTest 62/62). Their code, and the per-experiment drivers, remain in commit
+  `7d7fddb`; the reports below are kept as records.
 
-Updated to `908e476`, including imported Windows compatibility fixes, semantic
-text reuse, vision normalization/residual/layout and paired-RoPE fusion, and
-in-place exact GELU. The old local norm prototype is archived; current runtime
-sources match upstream, with both upstream fusion options ON. Full build and
-48/48 CTests pass on Windows/Turing. A single five-sample truck check measured
-500.35 ms median and preserved masks, scores, boxes and query indices byte for
-byte against the earlier native result. This is a smoke check, not a controlled
-speedup comparison. See [update-908e476.json](update-908e476.json).
+## Experiments
 
-The subsequent [stage profile](STAGE_PROFILE.md) attributes about 77% of CUDA
-elapsed time to vision and 22% to the detector on the truck workload.
-The [cuDNN/kernel investigation](CUDNN_KERNELS.md) confirms active cuDNN and
-identifies MLP GEMMs and attention as the leading vision costs.
-The subsequent [GEMM search](GEMM_SEARCH.md) found no useful improvement from
-the cuBLASLt preference or the tested heuristic candidates.
-An opt-in [LayerNorm-to-FP16 fusion](NORM_CAST.md) subsequently reduced local
-inference median by 1.89%, with exact outputs on the tested fixtures.
+| Report | Question | Result | Decision |
+|---|---|---|---|
+| [Initial benchmark](#initial-native-benchmark-2026-09-23) (below) | Native vs Python Turing patch | 570.87 vs 565.82 ms; native allocated 3.615 vs 1.997 GiB | Memory gap closed by FP16 parameter residency |
+| [STAGE_PROFILE](STAGE_PROFILE.md) | Where does time go? | Vision 77%, detector 22% of CUDA time | Profile |
+| [CUDNN_KERNELS](CUDNN_KERNELS.md) | Is cuDNN used; does benchmark mode help? | cuDNN active; benchmark mode 0.12%, +0.63 s cold | Not adopted |
+| [GEMM_SEARCH](GEMM_SEARCH.md) | cuBLASLt preference / explicit heuristics for FP16 MLP | No model-level gain | Not adopted |
+| [NORM_CAST](NORM_CAST.md) | LayerNorm-to-FP16 fusion prototype | −1.89%, exact | Superseded by the upstream fusion |
+| [FUSION_AB](FUSION_AB.md) | Upstream exact fusions OFF vs ON | −5.76% overall, byte-identical | Default ON |
+| [CURRENT_HOTSPOTS](CURRENT_HOTSPOTS.md) | NVTX-attributed kernel time, FP16 vs INT8 MLP | Vision MLP 187 → 143 ms | Profile |
+| [APPROXIMATION_RESEARCH](APPROXIMATION_RESEARCH.md) (JA) | Literature plan for non-bit-exact options | Prioritize selective W8A8 | Plan |
+| [APPROXIMATION_EXPERIMENTS](APPROXIMATION_EXPERIMENTS.md) (JA) | tanh GELU, fused addmm, W8A8 MLP | INT8 MLP −7.77%; others no gain | INT8 kept (as `int8_boundary`); rest removed |
+| [BOUNDARY_FUSION](BOUNDARY_FUSION.md) | Fuse FC1 restore/GELU/requantization | Faster, byte-identical to unfused INT8 | Opt-in `int8_boundary` |
+| [NEXT_OPTIMIZATIONS](NEXT_OPTIMIZATIONS.md) | QKV / output-projection INT8, row restore | QKV −1.8 to −1.9%; others no gain | QKV opt-in; others removed |
+| [PORTABILITY_REASSESSMENT](PORTABILITY_REASSESSMENT.md) (JA) | Re-check an external portability review | Next: global attention d=64, QKV restore/RoPE | Plan |
+| [TURING_ATTENTION](TURING_ATTENTION.md) | External flash-attention-turing d=64 kernel | Faster global attention, fails the box gate | Removed |
+| [QKV_RESTORE_ROPE](QKV_RESTORE_ROPE.md) | Fuse QKV restore with RoPE | 409.43 → 401.04 ms, byte-identical | Opt-in |
+| [MLP_SWEEP](MLP_SWEEP.md) | Boundary launch variants; FC2 restore + residual + next norm | Variants no gain; FC2/norm −0.52% | FC2/norm opt-in; variants removed |
+| [INT8_GEMM_SEARCH](INT8_GEMM_SEARCH.md) | CUTLASS INT8 tiles, cached cuBLASLt algorithms | All tiles slower; no reliable gain | Removed |
+| [INT8_GEMM_RESTORE](INT8_GEMM_RESTORE.md) | CUTLASS GEMM with restore epilogue | Chain 9.25% slower | Removed |
+| [INT4_FC2](INT4_FC2.md) | W4A4 FC2 with SM75 INT4 tensor cores | −4.30% (all 32 FC2) but large output errors | Kept opt-in for research |
+| [CONVROT_KITCHEN](CONVROT_KITCHEN.md) | ConvRot-style INT4 rotation; ComfyKitchen INT8 attention | Kitchen all-vision −7.58%; rotation adds cost | Kitchen opt-in; INT4 rotation kept for research |
+| [KITCHEN_EXTENDED](KITCHEN_EXTENDED.md) | 12 extra cases, attention-only INT8, sequence layout | Attention-only 17/17 and −6.37%; MLP/QKV INT8 fails 3 cases | Sequence layout opt-in |
+| [PIXEL_AND_MLP_SCOPE](PIXEL_AND_MLP_SCOPE.md) | Pixel-decoder conversion copy; selective MLP INT8 | `fused_nchw` −3.24%, exact; global-4 MLP 17/17 and −5.29% vs attention-only | Opt-in; became the research baseline |
+| CUDA library passes | CUB/Thrust/NPP maintenance of the kernels | See [CUDA_LIBRARIES.md](../../../docs/native/CUDA_LIBRARIES.md) | Adopted where exact |
+| Maintenance refactor | Split vision encoder and CMake modules, shared helpers | CTest 51/51 → 54/54, nine modes byte-identical before/after (`maintenance*-model.json`) | Done |
+| INT8/INT4 research | Calibrated mixed precision, Rounds 1–8 | Best 32/33 on COCO development | Ongoing ([log](../../../docs/native/QUANT_RESEARCH_LOG.md)) |
 
-## Update after 19f8bf9
+Raw data sits next to the reports: `*.json` results and summaries, `*.log`
+CTest/sanitizer/validation logs, `*-counters.txt` Nsight Compute excerpts.
+Research rounds use the prefixes `r3-`…`r8-` / `round3-`…`round8-`,
+`quant-research-*` and the calibration/screen names cited in the log. Full
+outputs and telemetry stay under the untracked `.cache/`.
 
-The latest CRC acceleration and fixed-FP16 compute storage were integrated with
-the existing local Windows fixes. The latency tool now explicitly selects Half
-storage for vision/text. The full build and 41/41 CTests pass. One preliminary
-process (two warmups, five timed samples) measured 562.41 ms median, 4.892 s
-model/text setup and 2.214 GiB inference peak allocated. The previous three
-processes had 11.361–11.447 s setup and 3.615 GiB peak. This is an initial check,
-not a full repeated comparison; startup timings also depend on file caching.
-Truck masks, scores, boxes and query indices are byte-identical to the previous
-native result. See [update-19f8bf9.json](update-19f8bf9.json). The original
-measurements and their conditions below are retained as historical evidence.
+## Initial native benchmark (2026-09-23)
 
-## Initial results before 19f8bf9
-
-Measured 2026-09-23. Native C++ and the Python Turing FP16 patch have roughly
-equal latency on this workload; these measurements do not establish a native
-speedup. Native uses substantially more allocated GPU memory.
+Native C++ versus the Python Turing FP16 patch at `19f8bf9` plus the Windows
+fixes, before FP16 parameter residency was integrated:
 
 | Implementation | Pooled median, 15 samples | Three process medians | Inference peak allocated |
 |---|---:|---|---:|
 | Native modular C++ FP16 | 570.87 ms | 565.31 / 576.47 / 573.61 ms | 3.615 GiB |
 | Python patched eager FP16 | 565.82 ms | 567.28 / 563.99 / 565.09 ms | 1.997 GiB |
 
-The native pooled median is 0.89% slower. This is a small exploratory sample,
-not a statistically established regression. Historical CUDA 12.8 measurements
-are not a valid direct baseline for this CUDA 13.0 comparison.
+Latency was roughly equal (native 0.89% slower, not statistically established).
+Native then kept FP32 weights (3,442,050,048 bytes) while the Python patch stores
+selected weights in FP16 (1,728,215,040 bytes). With FP16 parameter residency a
+preliminary native process measured 562.41 ms, 4.892 s model/text setup (was
+11.4 s) and 2.214 GiB peak allocation, byte-identical outputs
+([update-19f8bf9.json](update-19f8bf9.json)). After importing the upstream
+fusions at `908e476`, 48/48 CTests passed and a five-sample check measured
+500.35 ms with byte-identical outputs ([update-908e476.json](update-908e476.json)).
 
-## Conditions and scope
+Conditions: Python torch 2.10.0+cu130 for the reference; four CPU threads, TF32
+and cuDNN benchmark disabled, no `torch.compile`. Each fresh process ran one cold
+inference, two warmups and five timed inferences in the order native, Python,
+Python, native, native, Python. Timing synchronizes CUDA and covers upload,
+preprocessing, vision, detection and full-resolution mask postprocessing. Native
+preprocesses a decoded RGB tensor on the GPU; Python uses its Pillow path. Peak
+allocated includes the cold inference and is allocator accounting, not physical
+VRAM (Windows WDDM can page to shared memory). Native cold inference took
+1.01–1.22 s after setup.
 
-- Windows 11, RTX 2060 Max-Q 6 GB, driver 610.88, sm_75.
-- Standalone Release LibTorch 2.10.0+cu130 versus Python torch 2.10.0+cu130;
-  MSVC 19.44.35228 and CUDA compiler 13.0.88 for native.
-- SAM3 checkpoint revision `3c879f39826c281e95690f02c7821c4de09afae7`.
-  Native export preserves the checkpoint tensors losslessly.
-- `assets/images/truck.jpg`, prompt `truck`, resolution 1008, threshold 0.5,
-  all 200 queries. Both retain text weights and cache text features.
-- Four CPU threads, TF32 disabled, cuDNN benchmark disabled, no torch.compile.
-- Each fresh process performs one cold inference, two warmups and five timed
-  inferences. Order: native, Python, Python, native, native, Python. No concurrent
-  inference workloads. Timing synchronizes CUDA and includes preprocessing,
-  upload, vision, detection and full-resolution mask postprocessing; disk reads
-  and model construction are excluded. Image features are recomputed each time.
-- Native starts from a decoded CPU RGB tensor and preprocesses on GPU; Python
-  uses the existing Pillow input path. The native modular path retains vision
-  outputs until detection completes; this is not an owning-predictor benchmark.
-- Native retains FP32 checkpoint weights, while Python's patch stores selected
-  weights in FP16. Baseline allocated bytes: 3,442,050,048 versus 1,728,215,040.
-  FP16 execution mode does not imply identical resident weight storage.
-- Peak allocated includes the cold inference (native takes the maximum of cold
-  and warm peaks). It is allocator accounting, not total physical VRAM usage.
-  External whole-device NVML samples include setup and are recorded separately;
-  Windows WDDM residency is not established by allocator statistics.
+Output agreement with the Python patch (detections matched by maximum mask IoU;
+implementation agreement, not accuracy):
 
-Native cold inference took 1.013–1.222 s after text encoding/model setup.
-Cold/setup scopes differ from Python and should not be used for a startup
-speedup claim. Python was used only to orchestrate/monitor the native executable;
-the native process ran with Windows system directories only on PATH.
-
-## Output agreement
-
-Compared with Python patched eager outputs, matching detections by maximum
-total mask IoU. This is implementation agreement, not ground-truth accuracy.
-
-| Case | Count, both | Differing mask pixels, summed | Minimum matched IoU |
+| Case | Count, both | Differing mask pixels | Minimum matched IoU |
 |---|---:|---:|---:|
 | truck | 1 | 2 | 0.99999686 |
 | paper bag | 4 | 0 | 1.0 |
@@ -106,31 +111,17 @@ total mask IoU. This is implementation agreement, not ground-truth accuracy.
 | wheel | 4 | 0 | 1.0 |
 | elephant (empty) | 0 | 0 | N/A |
 
-All outputs checked were finite. Scores match exactly after conversion to
-float32; maximum box-coordinate difference is 0.020752 pixels. Outputs are
-not bit-identical. This does not validate video, SAM3.1, other hardware, other
-prompts or the full dataset.
+Scores match exactly after conversion to float32; the maximum box difference is
+0.020752 px. Raw samples, environment and memory statistics:
+[summary.json](summary.json).
 
-## Reproduce
-
-Build using [the Windows instructions](../../../docs/native/WINDOWS_BUILD.md)
-with CUDA enabled, including target `sam3_image_latency`. Export the checkpoint
-with `native/tools/export_weights.py`. Convert the source JPEG to RGB PPM with
-Pillow and write a UTF-8 prompt file containing exactly `truck` (no newline).
-The native tool's interface is:
-
-```text
-sam3_image_latency STORE IMAGE.ppm BPE.gz PROMPT.txt WARMUPS REPEATS OUTPUT
-```
-
-From the repository root, with the paths prepared as above:
+Reproduce with a CUDA build that includes `sam3_image_latency`, weights exported
+with `native/tools/export_weights.py`, the image converted to RGB PPM and a UTF-8
+prompt file without a trailing newline:
 
 ```powershell
-.venv/Scripts/python.exe experiments/monitor_native_bench.py .cache/native-perf/native-1 build/native-windows-cu130/sam3_image_latency.exe .cache/native-weights-sam3 .cache/native-perf/truck.ppm sam3/assets/bpe_simple_vocab_16e6.txt.gz .cache/native-perf/prompt.txt 2 5 .cache/native-perf/native-1
-.venv/Scripts/python.exe experiments/monitor_native_bench.py .cache/native-perf/python-1 .venv/Scripts/python.exe experiments/local_turing_bench.py --name patched_eager --checkpoint PATH_TO_SAM3_PT --output .cache/native-perf/python-1 --reps 5
+.venv/Scripts/python.exe experiments/monitor_native_bench.py OUT build/native-windows-cu130/sam3_image_latency.exe STORE truck.ppm sam3/assets/bpe_simple_vocab_16e6.txt.gz prompt.txt 2 5 OUT
+.venv/Scripts/python.exe experiments/monitor_native_bench.py OUT_PY .venv/Scripts/python.exe experiments/local_turing_bench.py --name patched_eager --checkpoint PATH_TO_SAM3_PT --output OUT_PY --reps 5
 ```
 
-Use distinct output directories for each fresh process. The checked-in
-[summary.json](summary.json) contains raw timing samples, environment, memory
-statistics and per-case comparison results. Full local telemetry and binary
-outputs remain under `.cache/native-perf`. No checkpoint data is checked in.
+Use a new output directory for every fresh process.

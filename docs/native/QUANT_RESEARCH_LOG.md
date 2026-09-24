@@ -3,6 +3,30 @@
 開始: 2026-09-24。ブランチ: `codex/int8-int4-calibration-research`。
 開始点: `cfc27c6f971aab8680eba1ac2929b4c904c49259`。
 文献: [2026-09-24 再調査](INT8_INT4_RESEARCH_20260924_JA.md)。
+実行スクリプト: [experiments/README.md](../../experiments/README.md)、
+実験スイッチ: [native/README.md](../../native/README.md#experiment-switches)。
+
+## 現状（Round 8 終了時点）
+
+- **採用できた構成はまだない。** 固定した品質gate（下記）を開発33promptすべてで満たす候補がない。
+  最良は Round 7 の QKV 入力チャネル校正（32/33、1584人物の mask IoU .9696 のみ Fail）。
+  比較基準の現行 selective（INT8 attention/QKV + global 4 block MLP INT8）は同じ33件で 31/33。
+- 未実施: 独立 holdout 32枚68prompt、既存17例の最終回帰（`run_quant_legacy_regression.py`）、
+  候補固定後の速度測定。Round 4 の 13.25% 短縮は品質未達構成の診断値で、採用根拠にしない。
+- INT4 と SAM3.1 への有効性は未検証。通常の runtime default は変更していない。
+- 次の反復: Round 8 末尾の「次の反復の固定案」（校正32枚の実 INT8 出力 MSE による QKV alpha の層別選択）。
+
+| Round | 仮説・変更 | 開発評価 | 判断 |
+|---|---|---|---|
+| 0 | 研究基盤: 校正32枚 / 開発16枚33prompt / holdout32枚の分離、FP16一致gate | — | — |
+| 1 | FC2 入力のチャネル scale/shift 校正（UQ-ViT/SmoothQuant 型） | 難例 screen 最良 8/9 | 不採用 |
+| 2 | attention / QKV / MLP の誤差切り分け | 校正全MLPのみ 29/33、速度差 0.28% | 不採用 |
+| 3 | FC1/FC2 分離、FC2 重み量子化の平均誤差 bias 補正 | attention/QKV 併用で 6/9・5/9 | 不採用 |
+| 4 | MLP / QKV の層単位 scope | 難例 7/9（速度診断は −13.25%） | 不採用 |
+| 5 | attention の層単位 scope | block0 FP16 候補 31/33 | 不採用 |
+| 6 | K の平均中心化（`mean_half`、local/global scope） | 31/33 | 不採用 |
+| 7 | QKV 入力チャネル校正（norm1 への折り込み、mean shift、mean bias） | **32/33** | 不採用（現時点の最良） |
+| 8 | 実 QKV 出力の平均誤差 bias 補正 | 31/33 | 不採用 |
 
 ## ゴールと最初の達成条件
 
@@ -216,7 +240,7 @@ GBは10^9 bytes。NVMLは20ms間隔の全GPU標本で厳密なprocess peakでは
 [追加screen](../../experiments/results/native_rtx2060/fc2-global-attention-probe-summary.json)。
 回転付きall attentionもテレビのbox差1.33914pxで不合格だった。
 
-## 次の反復の開始点
+### Round 2 後の方針
 
 ゴールは継続中。最終評価32枚は未使用、通常設定の採用変更なし。
 まずFC1 FP16 / FC2 INT8を分離して、今回の失敗がFC1を含めた量子化から来るか確認する。

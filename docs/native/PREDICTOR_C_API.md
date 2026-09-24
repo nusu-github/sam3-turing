@@ -48,7 +48,18 @@ same owner. Forward propagation includes the start frame; reverse propagation
 starts at `start-1`, matching the source high-level host. This differs from the
 low-level tracker API. `force_tracker` is the existing SAM3-specific route.
 Image empty-point restoration follows the behavior and source-defect notes in
-[IMAGE_PREDICTOR.md](IMAGE_PREDICTOR.md).
+[VIDEO_PREDICTOR.md](VIDEO_PREDICTOR.md#image-mode).
+
+Additional owner settings, all configurable before use or after reset:
+
+- `sam3_predictor_create_from_media` retains a local file source
+  ([MEDIA_IO.md](MEDIA_IO.md)).
+- `sam3_predictor_set_preprocess` selects one of the five source video input
+  transforms ([VIDEO_PREPROCESS.md](VIDEO_PREPROCESS.md)).
+- `sam3_predictor_set_output_cache` / `sam3_predictor_output_cache_stats` store
+  displayed masks packed in CPU memory or on disk ([OUTPUT_CACHE.md](OUTPUT_CACHE.md)).
+- `sam3_predictor_set_tracking_devices` / `sam3_predictor_set_parallel_tracking`
+  place tracking ranks on several devices ([VIDEO_MULTIDEVICE.md](VIDEO_MULTIDEVICE.md)).
 
 ## Results and callbacks
 
@@ -98,37 +109,14 @@ The comparator `native/tests/predictor_c_parity.py` checks retained C++ owner
 outputs: all 10 SAM3.1 image checkpoints and all 13 video checkpoints for each
 model match exactly in IDs, probabilities, boxes and masks. Video emission timing
 also matches; retained result fields remain unchanged after owner destruction.
-The image's retained original mask matches too. These are C-boundary comparisons;
-the earlier original-reference configuration/adapters remain applicable. The
-120-pixel reverse-edit difference was later traced to a stale original pointer;
-see [REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md) for the explicit repair. Reverse execution in this C client
-is an invariant check, not a newly established original-output parity result.
+The image's retained original mask matches too. These are C-boundary comparisons
+against the C++ owner; parity of the owner with the original source is described
+in [VALIDATION.md](VALIDATION.md). Reverse execution in this C client is an
+invariant check.
 
-The existing low-level C tracker also retains 86 exact comparisons (46 SAM3,
-40 SAM3.1) after the common options conversion refactor. CTest passes 28
-CUDA-enabled and 16 custom-CUDA-disabled tests. See
-[predictor-c-validation.json](predictor-c-validation.json) for the recorded scope.
+The low-level C tracker retains its 86 exact comparisons (46 SAM3, 40 SAM3.1)
+after the shared options conversion. Evidence:
+[predictor-c-validation.json](evidence/predictor-c-validation.json).
 
-No query/point/object cap or prompt/weight variant is introduced. This is still a
-development library: broader media coverage, multi-GPU transport, CPU
-stability and broader quality/performance remain. The native dependency graph
-contains no `libpython` or `libtorch_python`; the standalone development SDK uses official LibTorch and bundled runtime
-libraries; see [SDK.md](SDK.md). Windows/Turing execution remains the user's verification task.
-No GitHub Actions are used.
-
-Local media sources can now be retained by `sam3_predictor_create_from_media`;
-see [MEDIA_IO.md](MEDIA_IO.md) for decode semantics and validation limits.
-
-Video input transforms can be selected before first frame encoding or after reset
-with `sam3_predictor_set_preprocess`; existing constructors retain the image-folder
-default. See [VIDEO_PREPROCESS.md](VIDEO_PREPROCESS.md) for all five source policies,
-OpenCV color conversion and CPU arithmetic limits. Model/image semantics and
-shared weights are unchanged.
-
-All displayed frame/object masks can now be retained in packed CPU memory or
-temporary disk archives with `sam3_predictor_set_output_cache`. Configure before
-use or after reset; reset preserves the policy. `sam3_predictor_output_cache_stats`
-returns owning scalar counters without loading cached masks. `predictor_info`
-also remains nonmaterializing. See [OUTPUT_CACHE_DESIGN.md](OUTPUT_CACHE_DESIGN.md)
-for failure behavior, memory accounting and exact regression scope. These are
-additive functions; existing ABI-1 structures retain their sizes and fields.
+No query/point/object cap or prompt/weight variant is introduced. The native
+dependency graph contains no `libpython` or `libtorch_python`.

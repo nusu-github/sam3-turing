@@ -1,49 +1,22 @@
 # Standalone LibTorch SDK (development release 0.1.0)
 
-Current recovery and platform limits: [QUICKSTART_JA.md](QUICKSTART_JA.md).
-The private `releases/20260923-1ee3440/` archives consolidate the layers below;
-new deployments need one CPU or CUDA SDK and the shared weight store.
-The final implementation passes CPU27/CUDA51 CTests after all dispatch guards.
-Profiler evidence and rejected candidates: [FINAL_PROFILE.md](FINAL_PROFILE.md).
+The native library installs as a relocatable CMake package with C and C++
+interfaces. Weights stay in the external shared store ([WEIGHTS.md](WEIGHTS.md));
+image/video and SAM3/SAM3.1 share one SDK and one store. Recovery of the
+published private release is described in [QUICKSTART_JA.md](QUICKSTART_JA.md).
 
-Semantic-replacement increment: [SEMANTIC_TEXT_REUSE.md](SEMANTIC_TEXT_REUSE.md),
-with private recipe `semantic-text-sdk-overlay/overlays.json` after compute-storage.
-It installs `sam3_semantic_text_probe` for reuse, invalidation and recovery checks.
-
-Compute-storage increment: [COMPUTE_STORAGE.md](COMPUTE_STORAGE.md), with
-private recipe `compute-storage-sdk-overlay/overlays.json` after the weight-CRC
-layer. CUDA SDK includes `sam3_compute_storage_probe` for real-weight comparison.
-
-Weight-loading increment: [WEIGHT_CRC.md](WEIGHT_CRC.md), with private
-recipe `weight-crc-sdk-overlay/overlays.json` applied after the cache-fetch layer.
-It includes the standalone `sam3_weights` integrity verifier and large-CRC test.
-
-The native library now installs as a relocatable CMake package with C and C++
-interfaces. Weights stay in the external shared modular store. Image/video and
-SAM3/SAM3.1 do not get duplicated weight packages.
-
-The attached `cppdocs/installing.md` describes standalone LibTorch archives,
-CMake use, Windows DLL copying, and release/debug ABI compatibility. This is the
-platform basis for this route; it does not require a Linux-only model exporter.
-The [official LibTorch installation guide](https://docs.pytorch.org/cppdocs/installing.html)
-and [download selector](https://pytorch.org/get-started/locally/) provide the
-upstream distribution route. This SDK validation pins **LibTorch 2.10.0 CPU and
-CUDA 13.0**; it does not substitute an unrecorded latest build. Linux archive URLs,
-hashes and build hashes are recorded in `sdk-libtorch-sources.json`. The matching
-Windows CUDA archive responded successfully but was not downloaded or executed.
-
-The prior NVIDIA development build remains useful as the original comparison
-reference. Its MPI/UCX/external-MKL dependency tree is not used for these SDK builds.
-The official CPU runtime has no such dynamic dependencies. Linux CUDA packages
-still have their platform-specific LibTorch dependencies; the inference API is
-ATen/CUDA, not an adoption of a Linux-only distributed communication API.
+The SDK builds against the official standalone LibTorch distribution, pinned to
+**LibTorch 2.10.0 CPU and CUDA 13.0** (archive URLs and hashes:
+[sdk-libtorch-sources.json](evidence/sdk-libtorch-sources.json)). The
+[LibTorch installation guide](https://docs.pytorch.org/cppdocs/installing.html)
+describes the Windows DLL layout and release/debug ABI rules this follows.
+Do not mix Python-wheel LibTorch libraries into the build's loader or linker
+search paths.
 
 ## Build and install
 
-Use a standalone LibTorch archive and ICU 72–74 (validated here with 74.2), plus
-zlib. Building the library needs a C++17 toolchain and a matching CUDA toolkit
-when custom CUDA kernels are enabled. Do not mix Python-wheel LibTorch binaries
-into this build's loader/linker search paths.
+Requirements: standalone LibTorch, ICU 72–74 (validated with 74.2), zlib, a
+C++17 toolchain, and a matching CUDA toolkit when custom CUDA kernels are enabled.
 
 ```sh
 cmake -S native -B build/sdk -G Ninja \
@@ -59,32 +32,28 @@ cmake -DSAM3_SDK_ROOT=/absolute/path/to/sdk \
   -P native/cmake/BundleRuntime.cmake
 ```
 
-Windows uses the same CMake project and `BundleRuntime.cmake`, with Windows paths
-and the matching Windows LibTorch/ICU/zlib packages. Use the Visual Studio developer
-shell and `cmake --build ... --config Release` / `cmake --install ... --config Release`.
-Keep debug and release C++ dependencies consistent, as the attached guide requires.
-`SAM3_RUNTIME_SEARCH_DIRS` supplies additional DLL directories when necessary.
-These Windows instructions are build plumbing, **not** a Windows execution result.
+For a CPU SDK use CPU-only LibTorch and `SAM3_WITH_CUDA=OFF`.
+`SAM3_BUILD_DEVELOPMENT_TOOLS=OFF` leaves regression executables and tests out
+of the build graph. The install contains the library, headers, CMake metadata,
+the BPE vocabulary, licenses and a C client example; it does not contain
+development probes or weights.
 
-For a true CPU SDK use CPU-only LibTorch and `SAM3_WITH_CUDA=OFF`. This differs
-from the earlier custom-CUDA-disabled build that still linked CUDA-capable Torch.
-`SAM3_BUILD_DEVELOPMENT_TOOLS=OFF` excludes regression executables/tests from the
-build graph. The SDK install itself contains the library, headers, CMake metadata,
-vocabulary, license, and a C client example; it does not install the development
-probes or model weights.
+Windows uses the same project and bundling script with Windows paths, the
+matching LibTorch/ICU/zlib packages and `--config Release`; see
+[WINDOWS_BUILD.md](WINDOWS_BUILD.md). `SAM3_RUNTIME_SEARCH_DIRS` adds DLL
+directories when needed.
 
-Runtime bundling follows the shared-library dependency closure and includes
-cuDNN/NVRTC/linalg plugins that can be loaded dynamically. It rejects Python and
-unexpected development libraries, checks that core Torch libraries originate
-from the supplied distribution, and permits identical already-bundled copies.
-It records file hashes and can copy supplied upstream notices. Preserve matching
-upstream license/notice material with runtime distributions. The bundle excludes
-OS C/C++ runtimes and the NVIDIA driver. Linux defaults to `lib`; use
-`SAM3_LIBDIR=lib64` when that is the SDK's installation directory.
+`BundleRuntime.cmake` follows the shared-library dependency closure, including
+dynamically loaded cuDNN/NVRTC/linalg plugins. It rejects Python and unexpected
+development libraries, checks that core Torch libraries come from the supplied
+distribution, accepts duplicate copies only when their SHA-256 values match, and
+records file hashes. It excludes OS C/C++ runtimes and the NVIDIA driver. Pass
+`SAM3_MEDIA_ROOT` / `SAM3_OPENCV_ROOT` to stage optional FFmpeg and OpenCV
+runtimes ([MEDIA_IO.md](MEDIA_IO.md), [VIDEO_PREPROCESS.md](VIDEO_PREPROCESS.md)).
+Linux defaults to `lib`; use `SAM3_LIBDIR=lib64` when that is the install
+directory. Keep the upstream license/notice material with the runtime.
 
 ## C and C++ clients
-
-A C-only application can use:
 
 ```cmake
 project(my_application LANGUAGES C)
@@ -94,95 +63,37 @@ target_link_libraries(my_application PRIVATE sam3::c)
 sam3_copy_runtime(my_application) # stages bundled DLLs on Windows
 ```
 
-No Torch headers, C++ compiler, CUDA toolkit or Python discovery occurs for this
-consumer configuration. Runtime libraries are still required. For direct C++
-ATen-facing APIs request `COMPONENTS CPP` and link `sam3::cpp`; that component
-finds the matching LibTorch version and needs its headers/toolchain ABI. Put the
-standalone LibTorch prefix before the SDK prefix in `CMAKE_PREFIX_PATH` for C++
-consumers, so Torch's own library searches consistently use that distribution.
+A C consumer needs no Torch headers, C++ compiler, CUDA toolkit or Python; it
+still needs the runtime libraries. C++ consumers request `COMPONENTS CPP` and
+link `sam3::cpp`, which finds the matching LibTorch; put the standalone LibTorch
+prefix before the SDK prefix in `CMAKE_PREFIX_PATH`.
 
-The installed example lives at `share/sam3-native/examples/c-client`. It can be
-built as C11, installed into the SDK's `bin`, and moved with the SDK. With no
-arguments it checks ABI/defaults; with `WEIGHTS VOCABULARY TEXT` it executes the
-real text encoder and checks finite output features. The Linux installed example
-and native library use relative runtime paths; Windows stages DLLs beside the
-executable. Consumers with their own layout must preserve that runtime relationship.
+The installed example `share/sam3-native/examples/c-client` builds as C11 and
+can be installed into the SDK's `bin`. Without arguments it checks the ABI and
+defaults; with `WEIGHTS VOCABULARY TEXT` it runs the text encoder. Linux builds
+use relative runtime paths; Windows stages DLLs beside the executable.
 
-An incompatible `LD_LIBRARY_PATH` from the original Python environment caused a
-consumer link to select its old Torch CUDA library even for this CPU SDK. Clear
-that environment variable for these SDK builds/tests (`env -u LD_LIBRARY_PATH ...`
-on Linux). The SDK's linker search hint is not a promise that arbitrary mixed
-LibTorch versions in one environment/process are safe. The successful isolated build is retained. When moving an SDK, configure
-consumers in a fresh build directory: cached absolute Torch library paths from
-a previous location otherwise remain stale.
+On Linux, clear an `LD_LIBRARY_PATH` inherited from a Python environment
+(`env -u LD_LIBRARY_PATH ...`): it made a consumer link against an older Torch
+library. Configure consumers in a fresh build directory after moving an SDK, as
+cached absolute Torch paths otherwise go stale.
 
-## Evidence and remaining scope
+Development tools can also be built against an installed SDK through
+`native/eval` (see [IMAGE_PRECISION_AUDIT.md](IMAGE_PRECISION_AUDIT.md#reproduction)).
 
-The following checks describe the initial SDK. Later component and SDK overlays
-have their own evidence linked below.
+## Validation
 
-- Official CPU LibTorch: all 16 CTests pass. Official CUDA LibTorch: all 28 pass.
-- Official CUDA C11 client: all 10 image and 26 video checkpoints match the
-  retained development-reference C++ outputs exactly, including video timing.
-  Existing original-reference settings/adapters remain applicable.
-- C and C++ consumers build from installed metadata. The C consumer discovers
-  only the C compiler; the C++ consumer executes an ATen-facing mask operation.
-- A C client installed into a moved CPU SDK executes the text encoder with
-  `PATH=/nonexistent`. A separate Linux chroot contains no Python files and also
-  executes that encoder. This is an isolation test, not a deployment requirement.
-  The chroot lacks `/proc/cpuinfo`, so cpuinfo reports a diagnostic but inference
-  completes; this test does not measure representative CPU performance.
-- An external C11 client linked only to the moved CUDA SDK executes the full
-  SAM3.1 image/edit lifecycle. All 10 outputs match. ELF loader tracing confirms
-  its 23 loaded core/model-runtime libraries come from the SDK, not the original
-  build or Python environment.
+- Official CPU LibTorch: all CPU CTests pass; official CUDA LibTorch: all CUDA
+  CTests pass (27 / 51 at the `1ee3440` release).
+- A C11 client of the CUDA SDK reproduces the retained C++ outputs exactly
+  (10 image and 26 video checkpoints, including emission timing), and a client
+  linked only to a moved CUDA SDK runs the full SAM3.1 image/edit lifecycle.
+  Loader tracing shows all core and model runtime libraries come from the SDK.
+- A C client in a moved CPU SDK runs the text encoder with `PATH=/nonexistent`
+  and inside a chroot without Python.
+- The recovered release (see [QUICKSTART_JA.md](QUICKSTART_JA.md)) verifies
+  every file hash and symlink and reruns the C API checks.
 
-These Linux binaries were built on this host with GCC 13.3; their actual OS/ABI
-requirements include GLIBC 2.38 and GLIBCXX 3.4.32; runtime file sizes and
-per-library required symbols are recorded in `sdk-validation.json`. They
-are not universal Linux binaries. Windows/Turing physical tests remain with the
-user. sm75 code presence is build evidence only. No GitHub Actions were used.
-The original CPU instability has not been diagnosed by this environment change;
-finite official-runtime tests do not establish long-run CPU stability.
-
-Native local media support and modular SDK overlays are described in
-[MEDIA_IO.md](MEDIA_IO.md), random access in [MEDIA_SEEK.md](MEDIA_SEEK.md),
-source input transforms in [VIDEO_PREPROCESS.md](VIDEO_PREPROCESS.md), and
-tracking ranks in [VIDEO_MULTIDEVICE.md](VIDEO_MULTIDEVICE.md) and
-[VIDEO_PARALLEL.md](VIDEO_PARALLEL.md). Broader quality/performance, codec coverage,
-source FP16 precision and platform validation remain open.
-The previously unresolved 120-pixel reverse-edit difference was subsequently
-traced to a stale original pointer; see [REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md). This SDK is a tested development distribution, not a full-function
-completion claim.
-
-The lossless displayed-mask cache adds C/C++ configuration and statistics APIs;
-see [OUTPUT_CACHE_DESIGN.md](OUTPUT_CACHE_DESIGN.md). Its CPU/CUDA SDK increment is
-`output-cache-sdk-overlay/overlays.json` in the existing private bucket. Apply it
-at the matching preceding SDK root described by `rotary-sdk-overlay/overlays.json`.
-The recipe verifies its prerequisite hash and lists changed-file hashes; all
-dependency and shared-weight layers are reused. Validation details are in
-`output-cache-validation.json`.
-
-The next increment, `cache-fetch-sdk-overlay/overlays.json`, is based on that
-output-cache SDK and removes repeated packed-cache writes during reads. See
-[CACHE_FETCH.md](CACHE_FETCH.md) for exact regression and measurement scope.
-
-The subsequent increments are `weight-crc-sdk-overlay`,
-`compute-storage-sdk-overlay`, `semantic-text-sdk-overlay`, and
-`vision-fusion-sdk-overlay`, each with a prerequisite-hashed `overlays.json`.
-See [WEIGHT_CRC.md](WEIGHT_CRC.md), [COMPUTE_STORAGE.md](COMPUTE_STORAGE.md),
-[SEMANTIC_TEXT_REUSE.md](SEMANTIC_TEXT_REUSE.md) and
-[VISION_FUSION.md](VISION_FUSION.md). The latest fusion SDK includes the native
-whole-vision benchmark, CPU26/CUDA48 validation, and the supplied Windows
-compatibility headers. Build Windows using [WINDOWS_TURING.md](WINDOWS_TURING.md);
-the included binaries are Linux builds. All increments reuse the same weight
-store and dependency layers.
-
-`vision-gelu-sdk-overlay/overlays.json` then updates the core for exact in-place
-MLP GELU. Existing installed C/C++ binary clients are reused and verified against
-the updated core; no new headers or dependencies are needed. See
-[VISION_GELU.md](VISION_GELU.md) for separate and combined performance results.
-
-`position-fusion-sdk-overlay/overlays.json` follows it, adding the exact per-axis
-position operator and FP32 norm fusion. It retains the existing binary clients
-and adds installed-header position tests. See [POSITION_FUSION.md](POSITION_FUSION.md).
+The Linux binaries were built with GCC 13.3 and require GLIBC 2.38 /
+GLIBCXX 3.4.32 / CXXABI 1.3.11; they are not universal Linux binaries. Per-library
+requirements and sizes: [sdk-validation.json](evidence/sdk-validation.json).

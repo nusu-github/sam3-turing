@@ -1,14 +1,14 @@
 # Native C API (ABI 1)
 
-`native/include/sam3/c_api.h` exposes the implemented image, low-level video and owning semantic
-predictor modules through an ordinary C ABI. A client needs that header and the
-generated `sam3_native_export.h`, plus the native shared library at link/runtime.
-It does not need Torch headers, C++ source, Python or Triton. The shared library
-still needs its LibTorch/CUDA/ICU/zlib dependencies. A relocatable development
-package is now available; see [SDK.md](SDK.md). The owning semantic API is documented in
-[PREDICTOR_C_API.md](PREDICTOR_C_API.md). The goal of full SAM3/SAM3.1 feature
-parity remains open. Native local-file decoding and owning media-backed predictors
-are documented in [MEDIA_IO.md](MEDIA_IO.md).
+`native/include/sam3/c_api.h` exposes image inference, the low-level interactive
+video tracker and the owning predictor through an ordinary C ABI. A client needs
+that header, the generated `sam3_native_export.h` and the native shared library;
+it does not need Torch headers, C++ source, Python or Triton. The shared library
+still needs its LibTorch/CUDA/ICU/zlib runtime ([SDK.md](SDK.md)).
+
+This page covers the common rules, image inference and the low-level video
+session. The owning semantic predictor is documented in
+[PREDICTOR_C_API.md](PREDICTOR_C_API.md), file input in [MEDIA_IO.md](MEDIA_IO.md).
 
 ## Ownership and errors
 
@@ -128,14 +128,9 @@ and links using `cc` directly, without any Torch include path.
 refinement/video outputs against previously validated reference fixtures.
 `c_api_grounding_parity.py` compares text/geometry/visual-feature composition
 against the previously original-validated native components. These are distinct
-validation scopes, not a claim that every high-level upstream feature is done.
-The known intermittent development CPU runtime failure remains documented in
-`CPU_RUNTIME_ISSUE.md`; passing CPU tests do not establish CPU stability.
-
-No GitHub Actions are used. Windows/Turing runtime testing remains with the user.
-The header uses standard C types and the implementation uses C++17/LibTorch and
-existing precompiled CUDA, without a Linux-only API dependency. Current local
-binaries are Linux development builds, not validated Windows/Turing releases.
+validation scopes. Evidence: [c-api-validation.json](evidence/c-api-validation.json);
+the intermittent CPU crashes seen in the development environment are described
+in [VALIDATION.md](VALIDATION.md#open-issues).
 
 ### Minimal C client build
 
@@ -151,9 +146,8 @@ PATH=/nonexistent build/c_api_c11
 ```
 
 The example uses Linux compiler/linker flags. Windows hosts use the same C
-header, generated export header and the MSVC import library/DLL from their
-native build. No Windows execution result is claimed. The pure C model client
-additionally uses the standard C math library (`-lm` on Linux).
+header, generated export header and the MSVC import library/DLL. The pure C model
+client additionally uses the standard C math library (`-lm` on Linux).
 
 Grounding tensor layouts are explicit: text features `[L,Ntext,256]` and boolean
 padding `[Ntext,L]`, visual features `[Nvisual,B,256]` and boolean padding

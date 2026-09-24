@@ -1,145 +1,129 @@
-# Owning video predictor with tracking devices
+# Tracking ranks on multiple devices
 
-The C++ owning `VideoPredictor` and C ABI now accept a list of tracking devices.
-The constructor/context device remains the coordinator for vision, detection,
-global association, output composition and displayed-frame caching. Tracking
-sessions and memory live on their assigned rank's device. All existing semantic,
-point/box/mask, forward/reverse, cached fetch, reset and cancellation routes
-remain available. Calls are synchronous and rank execution defaults to serial.
-[Opt-in parallel workers](VIDEO_PARALLEL.md) are now available; physical multi-GPU
-performance validation remains open.
+The owning `VideoPredictor` and the C ABI can place tracking sessions on a list of
+devices ("ranks"). The constructor/context device stays the coordinator for
+vision, detection, global association, output composition and the displayed-mask
+cache; tracking sessions and memory live on their rank's device. Ranks run
+serially by default, or on worker threads when parallel tracking is enabled.
+Every semantic, point/box/mask, forward/reverse, fetch, reset and cancellation
+route remains available.
+
+Only single-GPU hardware was available: two ranks on one GPU and CUDA+CPU ranks
+were tested. Physical CUDA-to-CUDA transport and multi-GPU speedups are
+unverified.
 
 ## Configuration
 
-Configure an unused predictor, or call `reset()` first:
+Configure an unused predictor or call `reset()` first:
 
 ```cpp
 predictor.set_tracking_devices({at::Device("cuda:0"), at::Device("cuda:1")});
-auto devices = predictor.tracking_devices();
+predictor.set_parallel_tracking(true); // optional; serial by default
 ```
-
-The equivalent C ABI is additive; ABI 1 structures retain their layouts:
 
 ```c
 const char *devices[] = {"cuda:0", "cuda:1"};
-sam3_status status = sam3_predictor_set_tracking_devices(predictor, devices, 2);
+sam3_predictor_set_tracking_devices(predictor, devices, 2);
+sam3_predictor_set_parallel_tracking(predictor, 1);
 ```
 
-The list must be nonempty and contain CPU/CUDA devices. Repeated entries create
-logical ranks on the same device, useful for protocol tests; they share their
-immutable tracker core and copied frame features. Unsupported/unavailable
-configuration fails before replacing the active rank configuration. Device lists
-are copied and need not outlive the call. The default is one tracking rank on
-the coordinator. `reset()` and semantic-prompt replacement preserve the selected
-devices; reset releases observations, copied features, caches and action state.
-Reconfiguration after an active prompt is rejected until reset.
+The list must be nonempty and contain CPU/CUDA devices; it is copied. Repeated
+entries create logical ranks on one device that share its tracker core and
+copied frame features (useful for protocol tests). Invalid configuration fails
+before replacing the active one. Reset and semantic-prompt replacement keep the
+settings; reconfiguring after an active prompt is rejected until reset. The C
+setters are additive and do not change ABI 1 structures.
 
-As with other owning calls, configuration is exclusive. Only `cancel()` may run
-concurrently with an active call; it retains the existing frame/callback-boundary
-cancellation contract. A failed neural update is not an all-session transaction.
+## Ownership and data flow
 
-## Module and state ownership
+- One vision encoder/detector and one text path run on the coordinator, which
+  computes complete frame features (including both SAM3.1 tracker necks) once per
+  cached frame. Each distinct tracking device loads its tracker core from the
+  same weight store and receives projected tracking features. Tracker parameters
+  are replicated per distinct device, never per object, session or repeated entry.
+- Cross-device copies stage through host memory: no NCCL or CUDA peer access is
+  required. (PyTorch's documentation excludes NCCL on Windows, so the source
+  predictor's NCCL/process-queue orchestration is not a portable deployment path.)
+- Collection follows the source: local tracker masks are cleaned, then for
+  multiple ranks masks and logits become contiguous FP32 and are concatenated in
+  rank/metadata order (a single rank keeps its dtype). Collection restores
+  metadata order and rejects missing, duplicate or cross-rank IDs; empty ranks
+  stay explicit. Masks remain global through visibility and suppression before
+  memory updates select each rank's rows.
+- New user objects go to the rank with the fewest objects (the source's
+  user-edit workload rule); detector births keep bucket-aware SAM3.1 placement. A
+  first stateless refinement re-selects the least-loaded rank. Edited masks
+  return to the coordinator before merging; partial propagation collects only the
+  requested objects from all ranks.
 
-Only one vision encoder/detector and one text-encoding path are needed. The
-coordinator computes complete frame features, including both SAM3.1 tracker
-necks, once per cached frame. A distinct tracking device loads its tracker core
-from the same shared weight store and receives the projected tracking features.
-No image/video/model-specific checkpoint variants or extra disk weight files
-are generated. Runtime replication of tracker parameters is per distinct device,
-not per object, session or repeated device-list entry.
+### Parallel workers
 
-Cross-device copies use the prior host-staged transport, without NCCL or peer
-access requirements. The attached `pytorch/2.14/distributed.md` explicitly
-excludes NCCL on Windows; this implementation instead uses the existing portable
-ATen/C++ SDK interfaces. Windows/Turing physical tests remain user-owned.
-Physical CUDA-to-CUDA transport across different GPUs is not verified here.
+The owner prepares each distinct device's frame features on the caller before
+dispatch. Workers only read that snapshot, shared module parameters and their own
+rank's sessions; they never call the shared encoder or the application's frame
+provider. Bucket counts and affected IDs merge into the coordinator after all
+workers succeed. Workers inherit ATen thread-local state and the caller's current
+stream on their device, so ranks on one GPU share a stream (no extra CUDA streams
+per GPU). Calls stay synchronous at the API boundary: every worker is joined
+before returning, and the lowest rank's exception is reported. Session updates
+are not transactional. One rank runs inline; several use scoped
+`std::async(std::launch::async)` workers.
 
-Full propagation uses global collection/planning and per-rank execution from
-[VIDEO_COLLECTIVE.md](VIDEO_COLLECTIVE.md). Interactive edits locate the owning
-rank. New user objects choose the rank with the fewest objects, matching the
-source user-edit workload argument (detector births retain bucket-aware SAM3.1
-placement). A first stateless refinement removes its old state and selects the
-least-loaded rank again. Structural point validation precedes that removal.
+## Lower-level API
 
-Selected edit masks return to the coordinator before merging with other displayed
-masks. Partial propagation collects only requested objects from all ranks and
-transfers their masks/scores before global overlap handling. Removal updates the
-correct local collection, including SAM3.1 bucket counts. The existing single-rank
-edit overloads keep local-device behavior; new overloads accept an explicit output
-device for coordinated callers.
+`sam3/video_collective.h` provides the same boundary for callers that assemble
+the update loop themselves. A rank descriptor borrows a device, a session
+collection and a factory; collections must be distinct and exclusively accessed.
 
-A mixed CUDA/CPU SAM3.1 probe exposed the same CPU autocast concatenation failure
-previously fixed in SAM3: BF16 stored spatial memory can meet FP16 pointers. CPU
-final temporal concatenation now uses ordinary dtype promotion with autocast
-locally disabled. CUDA temporal assembly and subsequent neural operations are
-unchanged. The original failure and passing rerun are retained privately.
+```cpp
+auto metadata = sam3::initialize_video_metadata(ranks.size(), coordinator);
+auto tracking = sam3::propagate_video_tracking_ranks(
+    frame, reverse, ranks, metadata, coordinator, options.cleanup_area);
+auto plan = sam3::plan_video_update(frame, reverse, detections,
+    tracking.masks, tracking.logits, metadata, options);
+sam3::execute_video_update_ranks(frame, plan, detections, ranks, options);
+auto output = sam3::build_video_outputs(plan, detections, height, width, options);
+sam3::finalize_video_scores(plan.metadata, frame, plan.previous_ids,
+                           tracking.logits);
+metadata = std::move(plan.metadata);
+```
+
+Initialize metadata once per session. `Sam3VideoRank` and `Sam31VideoRank`
+overloads share this contract; `VideoRankExecution::Parallel` selects worker
+threads and then requires factories and feature providers that are safe for
+concurrent calls.
+
+The mixed-device tests exposed a CPU autocast failure: BF16 stored spatial memory
+met FP16 pointers in CPU `cat`. CPU temporal concatenation now disables autocast
+locally and uses ordinary dtype promotion; CUDA assembly is unchanged.
 
 ## Validation
 
-See [video-multidevice-validation.json](video-multidevice-validation.json) for
-exact cases, hashes and scope. Tests run on the available RTX PRO 4500 Blackwell
-with official standalone LibTorch 2.10.0 CPU/cu130, driver 580.159.04.
+- Collection tests: FP16/BF16/FP32/FP64, noncontiguous masks, reordering, large
+  signed IDs, empty ranks and mixed CPU/CUDA inputs and destinations.
+- With actual tracker weights and synthetic projected features, two logical
+  ranks reproduce independent serial per-rank execution exactly (SAM3/SAM3.1,
+  FP16/BF16, 17 objects across the 16-slot bucket boundary; births, visibility,
+  cross-rank reconditioning, memory updates, forward/reverse, removal). Parallel
+  workers reproduce serial execution exactly as well.
+- The real-frame lifecycle probe spreads three prompted objects over two ranks;
+  ten outputs per model and precision equal the single-rank owner.
+- On the four-frame semantic fixture, single-rank and two-rank-parallel outputs
+  equal the previous serial implementation byte-for-byte. Changing the number of
+  ranks changes SAM3 masks slightly (159 pixels over both precisions, minimum IoU
+  0.99976); a source replay with the same logical ranks reproduces the BF16
+  result exactly ([VALIDATION.md](VALIDATION.md#logical-ranks)).
 
-The new real-frame lifecycle probe places three manually prompted objects across
-two ranks, checks annotation preservation, point editing, removal, forward and
-reverse propagation, fetch, callback cancellation, reset and reconfiguration.
-Two logical CUDA ranks compare ten outputs exactly against a single-rank owner
-for each model and FP16/BF16 mode. The probe additionally initializes a semantic
-prompt and checks least-loaded reassignment for stateless refinement. CUDA+CPU
-cases test both models in FP16; their numerical outputs are not claimed equal
-to CUDA-only execution. The three-frame fixture deliberately reuses one real
-image to isolate state routing; it is not a motion/quality benchmark.
+Probes (the final optional argument `1` enables parallel workers):
 
-Separate existing owning-video probes run on four real sequence frames with
-one and two logical ranks, exercising full detector/tracker propagation and
-semantic/box/combined prompt replacement. Default single-rank output is compared
-to the preceding 843709a library. Different rank partitioning can change numeric
-execution and is not presumed equal to one rank or unmodified distributed Python.
-Default output matches all 266 files exactly. Two-rank SAM3.1 output also matches
-this fixture exactly; SAM3 changes masks in five frames per precision, 159 pixels
-in total across both precisions, with minimum per-object IoU 0.99976113699.
-These differences are retained in the report, not accepted under a hidden
-comparison tolerance. A subsequent [source logical-rank replay](VIDEO_COLLECTIVE_REFERENCE.md)
-reproduces the BF16 two-rank outputs exactly; FP16 and physical distributed-source
-validation remain open.
-
-Pure C probes pass for SAM3/SAM3.1 video and SAM3.1 image in FP16 with two logical
-ranks. CPU/CUDA CTest suites pass 19/33 tests. C11 consumers compile against only
-the installed SDK prefix; the CUDA C consumer passes the image lifecycle probe.
-Installed/reconstructed C++ probes pass with Python absent from PATH. Loader
-traces resolve all workspace runtime libraries inside the selected SDK. Complete
-recovery checks 150 CPU / 183 CUDA entries, including every file hash and symlink.
-
-No detection count, query count, prompt type or output resolution is reduced.
-No Windows, Turing or two-physical-GPU execution is claimed. No Actions are used.
-Broader quality, physical multi-GPU performance and CPU long-run stability remain open;
-the complete development goal is active.
-
-## Reproduction and persistence
-
-Build against the installed SDK using `native/eval` and its matching LibTorch
-prefix, as described in [IMAGE_PRECISION_AUDIT.md](IMAGE_PRECISION_AUDIT.md#reproduction).
-The added native probe requires no Python:
-
-```bash
-sam3_video_multidevice_probe STORE sam3 cuda fp16 FRAME.ppm BPE.gz cuda:0,cuda:0
-sam3_video_multidevice_probe STORE sam3.1 cuda bf16_reference FRAME.ppm BPE.gz cuda:0,cuda:0
-sam3_video_multidevice_probe STORE sam3.1 cuda fp16 FRAME.ppm BPE.gz cuda:0,cpu
+```sh
+sam3_video_collective_test cpu|cuda
+sam3_video_collective_probe STORE sam3 cuda:0,cuda:0 fp16 [1]
+sam3_video_multidevice_probe STORE sam3.1 cuda fp16 FRAME.ppm BPE.gz cuda:0,cpu [1]
+sam3_video_predictor_probe STORE sam3 cuda fp16 FRAMES.txt BPE.gz OUTPUT 1 cuda:0,cuda:0 [1]
+sam3_predictor_c_probe ... OUTPUT video|image TRACKING_DEVICES
 ```
 
-A separate C11 consumer builds without a LibTorch development prefix:
-
-```bash
-cmake -S native/eval/c-predictor -B build/c-predictor -DCMAKE_PREFIX_PATH=/absolute/path/to/sdk
-cmake --build build/c-predictor --config Release
-```
-
-The existing development probes accept optional comma-separated tracking devices:
-`sam3_video_predictor_probe ... OUTPUT BOX_STEPS TRACKING_DEVICES` and
-`sam3_predictor_c_probe ... OUTPUT video|image TRACKING_DEVICES`.
-
-Private bucket `video-multidevice-sdk-overlay/overlays.json` pins the preceding
-collective SDK recipe and incremental CPU/CUDA patches. Dependencies and weights
-are reused. `native-foundation/video-multidevice-linux/` retains sources, fixture
-references, baseline/current outputs, logs and SDK recovery evidence separately
-from the deployable runtime.
+Evidence: [video-collective-validation.json](evidence/video-collective-validation.json),
+[video-multidevice-validation.json](evidence/video-multidevice-validation.json),
+[video-parallel-validation.json](evidence/video-parallel-validation.json).

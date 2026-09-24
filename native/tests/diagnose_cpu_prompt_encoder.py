@@ -2,7 +2,7 @@
 
 Run repeatedly in fresh processes with PYTHONFAULTHANDLER=1. This intentionally
 does not load libsam3_native or any checkpoint. It is a diagnostic, not a passing
-regression test; see docs/native/CPU_RUNTIME_ISSUE.md.
+regression test; see docs/native/VALIDATION.md (Open issues).
 """
 import torch
 from sam3.sam.prompt_encoder import PromptEncoder

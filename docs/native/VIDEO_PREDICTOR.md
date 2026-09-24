@@ -1,9 +1,10 @@
-# Owning C++ video predictor (development API)
+# Owning C++ predictor
 
-`sam3::VideoPredictor` owns a local video's semantic prompt, neural sessions,
-object metadata, action history, displayed-frame cache and output scheduling.
-A caller provides decoded RGB frames and receives IDs, scores, boxes and masks;
-it no longer has to assemble the detector/tracker update loop itself.
+`sam3::VideoPredictor` (`sam3/video_predictor.h`) owns a local video's or image's
+semantic prompt, neural sessions, object metadata, action history, displayed-mask
+cache and output scheduling. The caller supplies decoded RGB frames and receives
+IDs, scores, boxes and masks. The same class serves explicit image mode. The C
+ABI wrapper is `sam3_predictor` ([PREDICTOR_C_API.md](PREDICTOR_C_API.md)).
 
 ```cpp
 #include <sam3/video_predictor.h>
@@ -22,139 +23,103 @@ video.propagate(request, [](int64_t frame, const sam3::VideoOutput& output) {
 });
 ```
 
-The frame provider returns U8 RGB `[3,H,W]`. Semantic inputs can contain UTF-8
-text, arbitrary normalized xywh boxes and labels, or caller-encoded exemplar
-tokens. Replacing a semantic prompt resets observations, IDs, caches and action
-history while retaining the shared vision/detector/tracker modules. Text weights
-are loaded temporarily and only the encoded tokens are retained. One cached
-frame's shared trunk features feed both detector and tracker necks; the fixture's
-initial preview plus frames0–3 requires four trunk evaluations, not five.
+## Prompts and lifecycle
 
-Existing point edits, SAM3/SAM3.1 exact-mask edits, user removal, cached fetch, partial
-propagation, full forward/reverse scheduling and reset are available through this
-owner. Calls must be exclusive, except `cancel()` can be called from another
-thread. Cancellation is checked between frames; it does not interrupt a running
-CUDA kernel. Callback cancellation discards pending buffered emissions. Requested
-centers are returned on preview/fetch/partial/full paths. Semantic shape/range
-validation precedes reset; neural execution is not an all-session transaction.
-Custom cleanup/confirmation settings are passed through to edit helpers.
+- The frame provider returns U8 RGB `[3,H,W]`. Semantic prompts contain UTF-8
+  text, arbitrary normalized xywh boxes with labels, or caller-encoded exemplar
+  tokens.
+- `add_prompt` replaces the semantic prompt: observations, IDs, caches and action
+  history reset while the shared vision/detector/tracker modules stay loaded.
+  Text weights are loaded temporarily; only the encoded tokens are kept, and an
+  identical text reuses the previous encoding ([PERFORMANCE.md](PERFORMANCE.md#semantic-text-reuse)).
+- One cached frame's trunk features feed both the detector and tracker necks.
+- Point edits, exact-mask edits, user removal, cached fetch, partial propagation,
+  forward/reverse propagation and reset are available on the owner
+  ([VIDEO_EDIT.md](VIDEO_EDIT.md), [VIDEO_PIPELINE.md](VIDEO_PIPELINE.md)).
+- Calls must be exclusive, except `cancel()`, which may be called from another
+  thread. Cancellation is checked between frames and does not interrupt a
+  running kernel; callback cancellation discards pending buffered emissions.
+- Requested centers are returned on preview, fetch, partial and full paths.
+  Semantic shape/range validation happens before reset. Neural execution is not
+  an all-session transaction.
+- Point-only initialization seeds an empty displayed-frame cache so that a new
+  SAM3.1 object is returned (the original source's missing-cache merge would
+  drop it).
+- Revisiting a SAM3.1 prompt frame and then running its periodic detector
+  correction keeps an already-conditioning frame in conditioning history
+  (`all_edits_conditioning=false` would otherwise demote the only annotation).
+  Corrections on newly tracked frames stay non-conditioning.
 
-Point-only initialization seeds an empty displayed-frame cache so that a newly
-added SAM3.1 object is returned. This deliberately avoids the original missing-cache
-merge behavior. The regression checks that object/cache initialization, removal,
-invalid semantic input state preservation and callback cancellation work; these
-extra checks are native invariants, not original-output parity claims.
+Other owner settings: tracking devices and parallel ranks
+([VIDEO_MULTIDEVICE.md](VIDEO_MULTIDEVICE.md)), displayed-mask storage
+([OUTPUT_CACHE.md](OUTPUT_CACHE.md)) and video input preprocessing
+([VIDEO_PREPROCESS.md](VIDEO_PREPROCESS.md)).
 
-## Conditioning correction
+Single-model cores are shared within an owner. The `VideoPredictorModules`
+constructor shares immutable cores across owners; the C API does this
+automatically for children of one context. Features and state stay per owner.
 
-Revisiting an initial SAM3.1 prompt frame and then running its periodic detector
-correction previously moved the sole conditioning frame into tracked history when
-`all_edits_conditioning=false`. The next frame failed with no annotation. Mask edits
-and detector reconditioning now preserve an already-conditioning frame. Corrections
-on new tracked frames remain non-conditioning. Full-grid synthetic neural tests
-cover both routes, repeated point-memory refresh, and subsequent propagation.
+## Image mode
 
-## Actual video comparison
+`VideoPredictorOptions::image_only=true` selects the original predictor's
+image-source policy and requires exactly one frame. A one-frame video keeps
+`image_only=false`: frame count alone cannot distinguish the two. Both use the
+same cores and weights at full resolution with all queries. For SAM3.1, image
+mode uses `image_detection_threshold` (default 0.5) instead of the video birth
+threshold (default 0.65), as in `sam3_multiplex_tracking.py:init_state` and
+`sam3_multiplex_base.py:run_tracker_update_planning_phase`.
 
-`sam3_video_predictor_probe` exercises semantic replacement and reset using actual
-full1008 neural execution, all200queries, arbitrary library inputs and shared
-modular weights. Its fixed person/box/point sequence is only a regression fixture:
-
-```sh
-env PATH=/nonexistent build/native/sam3_video_predictor_probe \
-  STORE sam3 cuda bf16_reference FRAMES.txt BPE.gz OUTPUT
+```cpp
+auto options = sam3::video_predictor_defaults(sam3::AssociationPolicy::Sam31);
+options.image_only = true;
+sam3::VideoPredictor image(store, vocabulary, read_rgb, 1, height, width,
+                          at::Device("cuda"), options);
+sam3::VideoSemanticPrompt prompt;
+prompt.text = user_text;
+auto detection = image.add_prompt(0, prompt);
+auto refinement = image.add_points(0, object_id, user_points);
+sam3::TrackingPoints cleared;
+cleared.points = at::empty({0, 2}, at::kFloat);
+cleared.labels = at::empty({0}, at::kLong);
+auto restored = image.add_points(0, object_id, cleared);
+auto mask_edit = image.add_mask(0, object_id, user_mask);
 ```
 
-The original comparison is `native/tests/video_predictor_parity.py`. Both sides
-use BF16/noTF32 on Blackwell; SAM3.1 source grounding uses batch1 and complex RoPE.
-This is not the original default batch16/real-RoPE configuration.
+The owner keeps each detector-created object's initial video-resolution binary
+mask on the CPU. Clearing all point prompts re-feeds that mask, clears the frame's
+point state and rebuilds conditioning memory; repeated clears keep the annotation
+usable. An explicit mask replaces the restoration baseline; removal, semantic
+replacement and reset discard it. Objects created only from points have no
+baseline and use ordinary empty-point inference.
 
-- **SAM3:** all11 output sets match exactly in IDs, probabilities, boxes and binary
-  masks, including text propagation, box-only replacement/propagation, combined
-  negative-box/text replacement, fetch and reset. Live comparison also matches
-  emission timing. The latest native build matches retained original tensors;
-  older SAM3 cache files lack timing metadata, so that cached rerun does not
-  independently recheck timing. Center shape and point-only/cancel invariants pass.
-- **SAM3.1:** all11 output sets now match exactly in IDs, probabilities, boxes,
-  binary masks and emission timing against a reference with an explicitly repaired
-  forward detector bound. The original generator includes `start+max_steps`, while
-  its batched detector excludes that endpoint and raises `IndexError` in
-  `_batch_find_inputs`. `--sam31-inclusive-grounding-bound` adds one only to the
-  detector bound; generator range and output scheduling stay unchanged. This is
-  an adapted-reference result, not unmodified default-configuration parity.
+The original source cannot run this path: its empty-point branch calls
+`tracker.add_new_mask`, which `Sam3VideoTrackingMultiplexDemo` does not define,
+so direct-empty and point-then-empty calls raise `AttributeError`. The native
+behavior implements the intended restoration and is checked by invariants; the
+restored input mask equals the original detector input mask exactly.
 
-### Precision audit and output visibility correction
+`add_mask` works for both models, retains the mask as an authoritative input and
+marks the object confirmed; point cleanup never removes components from it. As in
+video, `cached_masks` hold masks before final overlap arbitration, so a displayed
+mask can still lose pixels to another object's higher tracker score.
 
-The earlier SAM3.1 reports incorrectly described both sides as TF32-disabled.
-`Sam3MultiplexVideoPredictor.__init__` enables TF32 after the previous test driver's
-initial configuration. Layer traces showed identical first-layer attention and
-normalization up to the FP32 FFN, where the results diverged. A controlled replay
-with native TF32 enabled matches all84captured decoder-layer tensors from two
-frames exactly; disabling it reproduces that first divergence. Configuring both
-TF32 flags **after construction**, recording them, and asserting them before each
-frame makes ten previously differing output sets exact without changing native
-neural code. Historical non-exact reports are retained with `precision_audit`;
-they must not be interpreted as equal-precision comparisons. New cached-reference
-metadata records the actual post-construction flags.
+## Probes and validation
 
-The remaining box-track frame was hidden only by native output orchestration.
-The original computes a GPU `to_suppress_mask` candidate, but its planning code
-never publishes that candidate into `rank0_metadata["suppressed_obj_ids"]`. Its
-predictor filters by that published host set. The native owner and coherent probe
-now follow this output policy; the low-level GPU candidate calculation remains
-available separately. On the regression frame, a native keep-alive counter of0
-no longer hides ID0; its23058mask pixels match the source exactly. This also keeps
-its cached output available for subsequent fetch/refinement.
+`sam3_video_predictor_probe` (video) and `sam3_image_predictor_probe` (image,
+one-frame video or the `image-edits` sequence) run the owner on real frames with
+all 200 queries and runtime text; their fixed prompt sequences are regression
+fixtures, not API limits:
 
-A separate original behavior remains relevant: batched detection reconstructs
-geometry from `find_inputs`, while semantic add_prompt stores boxes in a per-frame
-map. Native retains that geometry. The optional test-only
-`--sam31-preserve-batched-geometry` passes stored geometry to the original prompt
-builder for investigation. **It is not enabled in the primary11-output exact
-comparison.** Internal keep-alive counters can consequently differ (native0 versus
-original-2 in this fixture) even though displayed outputs match. The11-output
-result does not establish state equivalence. A separate extended fixture supplies
-`BOX_STEPS=5` to the native probe and `--box-steps 5` to the reference, tracking the
-box from frame1through6. With both explicit source adapters enabled, all15output
-sets match exactly, including masks and emission timing. The geometry adapter's
-actual use is recorded and asserted. This remains a finite fixture, not proof of
-arbitrary trajectories, all states or dataset-wide quality.
-The prior 120-pixel reverse-edit difference was later traced to a stale original
-pointer; see [REVERSE_EDIT_POINTER.md](REVERSE_EDIT_POINTER.md).
+```sh
+env PATH=/nonexistent sam3_video_predictor_probe STORE sam3 cuda bf16_reference FRAMES.txt BPE.gz OUTPUT
+env PATH=/nonexistent sam3_image_predictor_probe STORE sam3.1 cuda bf16_reference IMAGE.ppm BPE.gz PROMPT.txt OUTPUT image
+```
 
-The existing34-frame SAM3.1 pipeline also remains exact in raw masks, tracker
-values, scores, final displayed outputs and emission timing against retained
-original references after the conditioning correction. That text-only baseline
-does not exercise this owner's new semantic replacements.
-
-## Remaining scope and persistence
-
-This is a development C++ API, not the finished full-function distribution.
-Explicit image mode, original-mask restoration and SAM3.1 high-level exact-mask
-edits are described in [IMAGE_PREDICTOR.md](IMAGE_PREDICTOR.md). Its owning C ABI is now available; see [PREDICTOR_C_API.md](PREDICTOR_C_API.md). Codecs,
-multi-GPU transport, resumed-session checkpoints, broader
-quality/performance remain. Caller-encoded visual tokens and reverse scheduling
-are available through the owner but are not newly compared by this semantic fixture.
-Single-model cores are shared within an owner. The optional `VideoPredictorModules`
-constructor also shares immutable cores across owners; the C API does this automatically
-for children of the same context. Per-owner features and state remain separate. No Python/Triton process is needed by the standalone executable.
-The current binaries still depend on this development environment's LibTorch.
-
-CTest passes28 CUDA-enabled and16 custom-CUDA-disabled tests (the latter build
-still links the installed CUDA-capable LibTorch). Actual Windows/Turing execution
-is left to the user. sm75 cubins and DLL export/copy plumbing are build evidence,
-not hardware validation. No GitHub Actions are used. Code is in the development
-branch; weights, reference tensors and Linux build snapshots stay in the private
-Hugging Face bucket named in the project onboarding notes.
-
-Standalone development SDK installation and runtime isolation are documented in
-[SDK.md](SDK.md); Windows execution and older-Linux distribution remain unverified.
-
-Local image/video/folder sources and their ownership are now available through
-[MEDIA_IO.md](MEDIA_IO.md); full codec/preprocessing parity remains scoped there.
-
-Optional displayed-mask storage now retains every cached frame/object in packed
-CPU memory or temporary disk archives. See
-[OUTPUT_CACHE_DESIGN.md](OUTPUT_CACHE_DESIGN.md) for configuration, fetch/edit
-semantics, legacy inspection behavior and memory accounting. This is separate
-from neural tracker history and requires no additional model weights.
+Against the original predictor (`native/tests/video_predictor_parity.py`,
+`image_predictor_parity.py`) all 11 semantic-lifecycle output sets match exactly
+for both models, the extended SAM3.1 box track (15 outputs) matches, and the three
+image/one-frame-video previews match an unmodified reference (including the 0.5
+versus 0.65 birth threshold). The reference settings and the explicit source
+repairs these comparisons need are listed in [VALIDATION.md](VALIDATION.md).
+Evidence: `evidence/video-predictor-*.json`,
+[image-predictor-validation.json](evidence/image-predictor-validation.json).

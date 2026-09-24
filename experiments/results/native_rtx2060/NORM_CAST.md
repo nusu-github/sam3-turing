@@ -2,7 +2,7 @@
 
 Historical experiment: superseded locally by upstream `571edc8`/`908e476` on
 2026-09-24. The old `SAM3_FUSED_NORM_CAST` switch is no longer used by the current
-runtime. See [VISION_FUSION.md](../../../docs/native/VISION_FUSION.md) for the
+runtime. See [PERFORMANCE.md](../../../docs/native/PERFORMANCE.md#vision-normlayoutresidual-fusion) for the
 upstream implementation and CMake controls. The old prototype is preserved in
 the pre-update stash and `.cache/local-prototype-before-908e476`.
 
