@@ -4,6 +4,10 @@
 #include <cmath>
 #include <iostream>
 #ifdef SAM3_TEST_CUDA_STREAM
+#include <ATen/cuda/CUDAEvent.h>
+#include <ATen/cuda/CUDAGraph.h>
+#include <algorithm>
+#include <string>
 #include <c10/cuda/CUDAGuard.h>
 #include <c10/cuda/CUDAStream.h>
 #endif
@@ -90,6 +94,29 @@ int main(int argc, char **argv) {
     std::cout << "PASS position " << count
               << " exact cases, layout, empty/strided inputs, independent "
                  "outputs and invalid inputs\n";
+#ifdef SAM3_TEST_CUDA_STREAM
+    if (argc > 2 && std::string(argv[2]) == "--bench") {
+      for (auto type : {at::kHalf, at::kFloat}) for (int side : {72,144,288}) {
+        auto input = at::empty({1,3,side,side}, x.options().dtype(type));
+        for (int i=0;i<50;++i) sam3::vision_position_encoding(input);
+        at::cuda::CUDAGraph graph;
+        graph.capture_begin();
+        auto output=sam3::vision_position_encoding(input);
+        graph.capture_end();
+        for (int i=0;i<10;++i) graph.replay();
+        std::vector<float> times;
+        for (int i=0;i<30;++i) {
+          at::cuda::CUDAEvent start(cudaEventDefault), end(cudaEventDefault);
+          start.record();
+          for (int j=0;j<20;++j) graph.replay();
+          end.record(); end.synchronize(); times.push_back(start.elapsed_time(end)/20);
+        }
+        std::sort(times.begin(),times.end());
+        std::cout << "POSITION_GRAPH_MS " << int(type) << ' ' << side << ' '
+                  << (times[14]+times[15])*.5f << '\n';
+      }
+    }
+#endif
     return 0;
   } catch (const std::exception &e) {
     std::cerr << e.what() << '\n';

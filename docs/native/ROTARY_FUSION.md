@@ -1,5 +1,13 @@
 # Precompiled rotary encoding
 
+Windows/Turing follow-up: the fused kernel now fixes the imaginary component's
+FMA rounding order on Windows to match standalone LibTorch 2.10.0+cu130.
+The RTX 2060 local build passes all 40 CTests, including exact FP32/FP16/BF16
+rotary checks on default and nondefault streams. See
+[Windows validation](WINDOWS_BUILD.md#rtx-2060-local-validation-2026-09-23)
+for the diagnostic evidence and scope. The Blackwell results below describe
+the earlier Linux validation and were not rerun on this Windows machine.
+
 The vision trunk and tracking memory attention use a C++ `rotary_embedding`
 operation that fuses FP32 conversion, complex multiplication and conversion back
 to the input dtype into one CUDA kernel. It accepts floating `[B,H,N,D]` values

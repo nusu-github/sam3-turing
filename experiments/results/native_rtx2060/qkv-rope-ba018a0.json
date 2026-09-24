@@ -1,0 +1,252 @@
+{
+  "base": "ba018a0",
+  "mlp": "int8_boundary",
+  "projection": "qkv",
+  "attention": "exact",
+  "gate": "bit-identical masks/scores/boxes/queries",
+  "timing": {
+    "exact": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\qkv-rope-ba018a0\\timing-exact-truck-1",
+          "median_ms": 410.0501,
+          "wall_ms": [
+            418.4551,
+            405.73900000000003,
+            410.0501,
+            414.5931,
+            411.4618,
+            414.0783,
+            404.6088,
+            396.83570000000003,
+            417.7696,
+            405.4058,
+            404.0061,
+            419.3651,
+            414.8067,
+            397.28540000000004,
+            406.8469
+          ],
+          "stage_mean_ms": [
+            1.2536149263386667,
+            1.8177557309480001,
+            287.539642334,
+            117.33678894059999,
+            1.4245909372966665
+          ],
+          "peak_allocated_bytes": 2788970496,
+          "sm_mhz_tail_median": 1275.0,
+          "temperature_max": 62
+        },
+        {
+          "path": ".cache\\native-perf\\qkv-rope-ba018a0\\timing-exact-truck-2",
+          "median_ms": 409.2559,
+          "wall_ms": [
+            413.96250000000003,
+            406.92810000000003,
+            416.0666,
+            429.71189999999996,
+            408.3076,
+            407.4133,
+            409.03159999999997,
+            413.43580000000003,
+            410.4297,
+            413.1766,
+            407.10429999999997,
+            406.18969999999996,
+            406.7328,
+            409.2559,
+            409.603
+          ],
+          "stage_mean_ms": [
+            1.2026197274519999,
+            1.8199381430939998,
+            292.80305175780006,
+            113.94559529626667,
+            1.3398741245266665
+          ],
+          "peak_allocated_bytes": 2788970496,
+          "sm_mhz_tail_median": 1245.0,
+          "temperature_max": 68
+        }
+      ],
+      "pooled_median_ms": 409.42945,
+      "p95_ms": 418.9556,
+      "stage_mean_ms": [
+        1.2281173268953332,
+        1.818846937021,
+        290.1713470459,
+        115.64119211843334,
+        1.3822325309116665
+      ]
+    },
+    "fused": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\qkv-rope-ba018a0\\timing-fused-truck-1",
+          "median_ms": 398.6667,
+          "wall_ms": [
+            393.9984,
+            391.8295,
+            396.9432,
+            408.2294,
+            394.5138,
+            404.95750000000004,
+            401.0104,
+            395.4488,
+            398.6667,
+            408.0118,
+            396.5658,
+            397.09270000000004,
+            429.27729999999997,
+            436.7334,
+            417.2749
+          ],
+          "stage_mean_ms": [
+            1.2276074727386665,
+            1.8139840126026667,
+            281.35817464186664,
+            118.81727294926665,
+            1.4376341342933334
+          ],
+          "peak_allocated_bytes": 2788839424,
+          "sm_mhz_tail_median": 1275.0,
+          "temperature_max": 64
+        },
+        {
+          "path": ".cache\\native-perf\\qkv-rope-ba018a0\\timing-fused-truck-2",
+          "median_ms": 402.945,
+          "wall_ms": [
+            401.0723,
+            393.6286,
+            392.5504,
+            395.5335,
+            394.2039,
+            413.9124,
+            405.4808,
+            403.3915,
+            395.05879999999996,
+            411.3678,
+            404.0376,
+            393.76689999999996,
+            412.9257,
+            402.945,
+            403.43010000000004
+          ],
+          "stage_mean_ms": [
+            1.215869863828,
+            1.812326399484,
+            283.1267618815334,
+            114.07530822746666,
+            1.2774165471386667
+          ],
+          "peak_allocated_bytes": 2788839424,
+          "sm_mhz_tail_median": 1260.0,
+          "temperature_max": 66
+        }
+      ],
+      "pooled_median_ms": 401.04134999999997,
+      "p95_ms": 423.87621999999993,
+      "stage_mean_ms": [
+        1.2217386682833333,
+        1.8131552060433334,
+        282.2424682617,
+        116.44629058836665,
+        1.3575253407160002
+      ]
+    }
+  },
+  "quality": {
+    "truck/exact": {
+      "count": 1,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "truck/fused": {
+      "count": 1,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "bag/exact": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "bag/fused": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "child/exact": {
+      "count": 6,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "child/fused": {
+      "count": 6,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "wheel/exact": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "wheel/fused": {
+      "count": 4,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "empty/exact": {
+      "count": 0,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "empty/fused": {
+      "count": 0,
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    }
+  },
+  "gate_failures": []
+}

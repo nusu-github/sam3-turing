@@ -4,8 +4,30 @@ This is a Python-independent ATen C++/CUDA library with owning image/video
 predictors, C ABI 1, media input, shared model modules and tracking ranks.
 The Linux SDK runs without Python or Triton. Start with the current
 [Japanese quickstart and recovery guide](../docs/native/QUICKSTART_JA.md).
-The user confirmed Windows/Turing execution at `19f8bf9` plus the imported
-compatibility patch; later fusion changes still need their own physical checks.
+Windows/Turing execution through `ba018a0`, including the local INT8 boundary
+experiment, is recorded in the [boundary-fusion report](../experiments/results/native_rtx2060/BOUNDARY_FUSION.md).
+Further projection-quantization measurements and tradeoffs are in the
+[optimization follow-up](../experiments/results/native_rtx2060/NEXT_OPTIMIZATIONS.md).
+The optional external FP16 global Attention experiment and its failed 1-pixel
+box gate are documented in the [Turing Attention report](../experiments/results/native_rtx2060/TURING_ATTENTION.md).
+The subsequent [QKV restoration + RoPE fusion](../experiments/results/native_rtx2060/QKV_RESTORE_ROPE.md)
+retains byte-identical outputs in the five image cases and reduces median latency on the existing INT8 path.
+The [MLP boundary/FC2 sweep](../experiments/results/native_rtx2060/MLP_SWEEP.md)
+records rejected boundary variants, a small opt-in FC2/norm fusion gain, and updated hardware counters.
+The [INT8 GEMM search](../experiments/results/native_rtx2060/INT8_GEMM_SEARCH.md)
+compares six CUTLASS tiles and explicit/cached cuBLASLt selection; none establishes an additional model speedup.
+The [GEMM + restoration fusion](../experiments/results/native_rtx2060/INT8_GEMM_RESTORE.md)
+removes an INT32 intermediate but loses against the existing FC2/next-Norm operator chain.
+The [native INT4 FC2 experiment](../experiments/results/native_rtx2060/INT4_FC2.md)
+tests W4A4 tensor operations and five mixed-precision scopes; its quality limits prevent default adoption.
+The [ConvRot / ComfyKitchen follow-up](../experiments/results/native_rtx2060/CONVROT_KITCHEN.md)
+tests fused regular-Hadamard INT4 quantization and an optional external SM75 INT8 attention adapter.
+The [extended attention evaluation](../experiments/results/native_rtx2060/KITCHEN_EXTENDED.md)
+adds 12 quality cases, isolates attention-only quantization, and removes an output-layout copy without changing values.
+The [pixel-decoder / selective-MLP follow-up](../experiments/results/native_rtx2060/PIXEL_AND_MLP_SCOPE.md)
+removes an expensive GroupNorm layout conversion and evaluates retaining FP16 in most MLP blocks.
+Earlier component tests and actual-model profiling are in the
+[Windows measurements](../experiments/results/native_rtx2060/README.md).
 Source-reference precision and broader quality/performance work remain open.
 No GitHub Actions are used.
 
@@ -26,6 +48,9 @@ See [the onboarding report](../docs/native/ONBOARDING.md) and
 [progress](../docs/native/PROGRESS.md) for constraints and remaining work.
 
 Provide LibTorch (or compatible development PyTorch exposing TorchConfig.cmake):
+
+For the Windows CUDA 13.0 / MSVC 14.44 build with pinned vcpkg dependencies,
+see [Windows build instructions and local test results](../docs/native/WINDOWS_BUILD.md).
 
 The text frontend also needs ICU 72–74 (74.2 recommended) and zlib development
 libraries. ICU 74.2 is the tested Unicode 15.x profile; newer Unicode lowercasing
@@ -1072,3 +1097,6 @@ an explicitly endpoint-repaired reference with verified TF32 settings. Historica
 precision claims are corrected and broader state/trajectory parity remains. This is a
 development interface with remaining high-level/API/packaging work. See
 [the owning video API notes](../docs/native/VIDEO_PREDICTOR.md).
+
+For the native source layout, experimental CUDA interfaces and build-module
+boundaries, see the [maintenance notes](../docs/native/REFACTORING.md).

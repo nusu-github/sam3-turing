@@ -1,0 +1,125 @@
+{
+  "cases": [
+    {
+      "height": 64,
+      "width": 64,
+      "kind": "random",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 98840,
+      "npp_preallocated_ms": 0.4097120016813278,
+      "native_ms": 0.5843199789524078
+    },
+    {
+      "height": 64,
+      "width": 64,
+      "kind": "single_site",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 98840,
+      "npp_preallocated_ms": 0.27476800233125687,
+      "native_ms": 0.49398399889469147
+    },
+    {
+      "height": 64,
+      "width": 64,
+      "kind": "all_sites",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 98840,
+      "npp_preallocated_ms": 0.17905600368976593,
+      "native_ms": 0.4115999937057495
+    },
+    {
+      "height": 65,
+      "width": 97,
+      "kind": "random",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 331800,
+      "npp_preallocated_ms": 0.2131360024213791,
+      "native_ms": 0.7741120159626007
+    },
+    {
+      "height": 65,
+      "width": 97,
+      "kind": "single_site",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 331800,
+      "npp_preallocated_ms": 0.19705599546432495,
+      "native_ms": 0.681984007358551
+    },
+    {
+      "height": 65,
+      "width": 97,
+      "kind": "all_sites",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 331800,
+      "npp_preallocated_ms": 0.2335520014166832,
+      "native_ms": 0.5642719864845276
+    },
+    {
+      "height": 288,
+      "width": 288,
+      "kind": "random",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 2306584,
+      "npp_preallocated_ms": 0.3051680028438568,
+      "native_ms": 2.55185604095459
+    },
+    {
+      "height": 288,
+      "width": 288,
+      "kind": "single_site",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 2306584,
+      "npp_preallocated_ms": 0.2057119980454445,
+      "native_ms": 2.1017760038375854
+    },
+    {
+      "height": 288,
+      "width": 288,
+      "kind": "all_sites",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 2306584,
+      "npp_preallocated_ms": 0.2994080036878586,
+      "native_ms": 1.1166079640388489
+    },
+    {
+      "height": 1008,
+      "width": 1008,
+      "kind": "random",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 25034776,
+      "npp_preallocated_ms": 0.8125759959220886,
+      "native_ms": 6.224896192550659
+    },
+    {
+      "height": 1008,
+      "width": 1008,
+      "kind": "single_site",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 25034776,
+      "npp_preallocated_ms": 0.4734399914741516,
+      "native_ms": 4.492287874221802
+    },
+    {
+      "height": 1008,
+      "width": 1008,
+      "kind": "all_sites",
+      "max_abs_error": 0.0,
+      "bit_equal": true,
+      "scratch_bytes": 25034776,
+      "npp_preallocated_ms": 0.8206239938735962,
+      "native_ms": 4.176783800125122
+    }
+  ],
+  "limitations": "NPP requires dimensions >=64 and at least one site; B=1 only tested. NPP buffers preallocated; native includes allocation."
+}

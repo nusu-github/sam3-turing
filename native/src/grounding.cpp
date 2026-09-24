@@ -8,6 +8,7 @@ GroundingDetector::GroundingDetector(const WeightStore& store,const std::string&
     :geometry_(store,model,device),encoder_(store,model,device),decoder_(store,model,device),heads_(store,model,device),device_(device) {}
 GroundingOutput GroundingDetector::forward(const std::vector<at::Tensor>& pyramid,const at::Tensor& positions,
     const GroundingPrompt& request,bool joint_scores,const std::string& mode) const {
+  detail::ProfileRange range("detector.total");
   c10::InferenceMode inference;
   detail::check_mode(mode);
   AutocastGuard autocast(device_.type(),mode!="fp32",mode=="fp16" ? at::kHalf : at::kBFloat16);

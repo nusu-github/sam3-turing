@@ -3,6 +3,10 @@
 #include "detector_layers.h"
 #include <ATen/TensorIndexing.h>
 #include <c10/core/InferenceMode.h>
+#include <cstdlib>
+#ifdef SAM3_WITH_CUDA
+#include "sam3/pixel_transform.h"
+#endif
 namespace sam3 {
 namespace {
 at::Tensor inverse_sigmoid(const at::Tensor& value) {
@@ -25,6 +29,7 @@ DetectionHeads::DetectionHeads(const WeightStore& store,const std::string& model
 DetectionOutput DetectionHeads::forward(const std::vector<at::Tensor>& pyramid,const at::Tensor& image_ids,
     const FusionFeatures& encoded,const at::Tensor& prompt_padding,const DecoderFeatures& decoded,
     bool joint_scores,const std::string& mode) const {
+  detail::ProfileRange range("detector.heads");
   c10::InferenceMode inference;
   detail::check_mode(mode);
   AutocastGuard autocast(device_.type(),mode!="fp32",mode=="fp16" ? at::kHalf : at::kBFloat16);
@@ -58,20 +63,39 @@ DetectionOutput DetectionHeads::forward(const std::vector<at::Tensor>& pyramid,c
       encoded.prompt,encoded.prompt,prompt_padding,"seg.cross_attend_prompt",detail::Projection::SharedKV);
   const auto memory=attended+encoded.memory;
   auto pixel=memory.permute({1,2,0}).slice(2,0,h*w).reshape({batch,256,h,w});
+  const auto* experiment_env=std::getenv("SAM3_EXPERIMENT_PIXEL");
+  const std::string experiment=experiment_env?experiment_env:"exact";
+  TORCH_CHECK(experiment=="exact" || experiment=="borrow" || experiment=="borrow_relu" || experiment=="nchw" || experiment=="fused_nchw","invalid pixel experiment: ",experiment);
   for (int64_t level=static_cast<int64_t>(pyramid.size())-2,layer=0;level>=0;--level,++layer) {
+    const auto range_name="detector.heads.pixel."+std::to_string(layer);
     const auto& feature=pyramid[level];
-    const auto source=sources>1 ? feature.index({image_ids.to(feature.device())}).to(device_) : feature.clone().to(device_);
-    pixel=source+at::upsample_nearest2d(pixel,{source.size(2),source.size(3)});
+    const auto source=detail::profile_call(range_name+".source",[&] {
+      if(sources>1)return feature.index({image_ids.to(feature.device())}).to(device_);
+      return experiment=="exact"?feature.clone().to(device_):feature.to(device_);
+    });
+    auto upsampled=detail::profile_call(range_name+".upsample",[&] {return at::upsample_nearest2d(pixel,{source.size(2),source.size(3)});});
+    pixel=detail::profile_call(range_name+".add",[&] {return source+upsampled;});
+    upsampled=at::Tensor();
     const auto conv="seg.pixel_decoder.conv_layers."+std::to_string(layer);
-    pixel=at::conv2d(pixel,detail::weight(weights_,conv+".weight"),detail::weight(weights_,conv+".bias"),{1,1},{1,1});
+    pixel=detail::profile_call(range_name+".conv",[&] {return at::conv2d(pixel,detail::weight(weights_,conv+".weight"),detail::weight(weights_,conv+".bias"),{1,1},{1,1});});
     const auto norm="seg.pixel_decoder.norms."+std::to_string(layer);
-    pixel=at::relu(at::group_norm(pixel,8,detail::weight(weights_,norm+".weight"),detail::weight(weights_,norm+".bias"),1e-5));
+    if(experiment=="nchw" || experiment=="fused_nchw") {
+      pixel=detail::profile_call(range_name+".pre_norm",[&] {
+        TORCH_CHECK(pixel.is_cuda() && pixel.scalar_type()==at::kHalf,"pixel layout experiment requires CUDA FP16 convolution output");
+#ifdef SAM3_WITH_CUDA
+        if(experiment=="fused_nchw")return pixel_nchw_float(pixel);
+#endif
+        return pixel.contiguous().to(at::kFloat);
+      });
+    }
+    auto normalized=detail::profile_call(range_name+".group_norm",[&] {return at::group_norm(pixel,8,detail::weight(weights_,norm+".weight"),detail::weight(weights_,norm+".bias"),1e-5);});
+    pixel=detail::profile_call(range_name+".relu",[&] {return experiment=="borrow_relu"?at::relu_(normalized):at::relu(normalized);});
   }
-  const auto instances=at::conv2d(pixel,detail::weight(weights_,"seg.instance_seg_head.weight"),detail::weight(weights_,"seg.instance_seg_head.bias"));
+  const auto instances=detail::profile_call("detector.heads.instances",[&] {return at::conv2d(pixel,detail::weight(weights_,"seg.instance_seg_head.weight"),detail::weight(weights_,"seg.instance_seg_head.bias"));});
   const auto queries=hs[-1];
   const auto mask_queries=detail::mlp(weights_,queries,"seg.mask_predictor.mask_embed",3);
-  const auto masks=at::einsum("bqc,bchw->bqhw",{mask_queries,instances});
-  const auto semantic=at::conv2d(pixel,detail::weight(weights_,"seg.semantic_seg_head.weight"),detail::weight(weights_,"seg.semantic_seg_head.bias"));
+  const auto masks=detail::profile_call("detector.heads.masks",[&] {return at::einsum("bqc,bchw->bqhw",{mask_queries,instances});});
+  const auto semantic=detail::profile_call("detector.heads.semantic",[&] {return at::conv2d(pixel,detail::weight(weights_,"seg.semantic_seg_head.weight"),detail::weight(weights_,"seg.semantic_seg_head.bias"));});
   return {scores[-1],boxes[-1],xyxy(boxes)[-1],masks,semantic,queries,presence[-1],decoded.presence};
 }
 }

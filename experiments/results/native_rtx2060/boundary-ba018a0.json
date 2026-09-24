@@ -1,0 +1,351 @@
+{
+  "base": "ba018a0",
+  "root": ".cache\\native-perf\\boundary-ba018a0",
+  "timing": {
+    "exact": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\boundary-ba018a0\\timing-exact-truck-1",
+          "median_ms": 483.95149999999995,
+          "wall_ms": [
+            484.71360000000004,
+            477.92679999999996,
+            491.32160000000005,
+            478.6125,
+            483.95149999999995,
+            476.6902,
+            477.7192,
+            464.6013,
+            487.7192,
+            488.65209999999996,
+            479.1837,
+            499.1044,
+            493.6275,
+            480.7742,
+            498.20360000000005
+          ],
+          "stage_mean_ms": [
+            1.2267136017479998,
+            1.8256853421526666,
+            365.56960652666663,
+            114.17286834713335,
+            1.3479658683140001
+          ],
+          "peak_allocated_bytes": 2375946240,
+          "sm_mhz_tail_median": 1305.0,
+          "temperature_max": 63
+        },
+        {
+          "path": ".cache\\native-perf\\boundary-ba018a0\\timing-exact-truck-2",
+          "median_ms": 496.5994,
+          "wall_ms": [
+            491.4697,
+            501.84830000000005,
+            495.6658,
+            496.5994,
+            491.9117,
+            495.88300000000004,
+            491.5496,
+            489.166,
+            488.4973,
+            500.3396,
+            503.71869999999996,
+            500.6436,
+            507.38839999999993,
+            502.6764,
+            508.6269
+          ],
+          "stage_mean_ms": [
+            1.2153514544166666,
+            1.8297813415526663,
+            377.13579508473333,
+            116.14744873046666,
+            1.3585557301826665
+          ],
+          "peak_allocated_bytes": 2375946240,
+          "sm_mhz_tail_median": 1260.0,
+          "temperature_max": 69
+        }
+      ],
+      "pooled_median_ms": 491.50964999999997,
+      "p95_ms": 505.73703499999993,
+      "stage_mean_ms": [
+        1.221032528082333,
+        1.8277333418526664,
+        371.3527008057,
+        115.1601585388,
+        1.3532607992483334
+      ]
+    },
+    "int8": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\boundary-ba018a0\\timing-int8-truck-1",
+          "median_ms": 438.8662,
+          "wall_ms": [
+            441.083,
+            451.7669,
+            436.53189999999995,
+            441.0786,
+            435.59819999999996,
+            445.7451,
+            441.0694,
+            433.48429999999996,
+            437.50440000000003,
+            435.8316,
+            436.06919999999997,
+            439.0074,
+            442.2914,
+            438.8662,
+            434.2116
+          ],
+          "stage_mean_ms": [
+            1.2098282655093335,
+            1.815639472008,
+            321.9912434896001,
+            112.87466684979998,
+            1.4017962614693336
+          ],
+          "peak_allocated_bytes": 2687193088,
+          "sm_mhz_tail_median": 1275.0,
+          "temperature_max": 65
+        },
+        {
+          "path": ".cache\\native-perf\\boundary-ba018a0\\timing-int8-truck-2",
+          "median_ms": 448.6766,
+          "wall_ms": [
+            453.6134,
+            445.44939999999997,
+            444.2893,
+            464.5353,
+            457.5022,
+            462.7326,
+            448.6766,
+            435.6005,
+            453.9103,
+            458.9567,
+            439.6315,
+            446.5815,
+            448.7292,
+            439.0076,
+            441.1743
+          ],
+          "stage_mean_ms": [
+            1.2196672201153334,
+            1.82693546613,
+            325.7717569986667,
+            118.85718536373334,
+            1.6334421475719998
+          ],
+          "peak_allocated_bytes": 2687193088,
+          "sm_mhz_tail_median": 1260.0,
+          "temperature_max": 68
+        }
+      ],
+      "pooled_median_ms": 441.12865,
+      "p95_ms": 461.033445,
+      "stage_mean_ms": [
+        1.2147477428123334,
+        1.821287469069,
+        323.8815002441334,
+        115.86592610676666,
+        1.5176192045206667
+      ]
+    },
+    "int8_boundary": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\boundary-ba018a0\\timing-int8_boundary-truck-1",
+          "median_ms": 419.4924,
+          "wall_ms": [
+            427.3628,
+            410.8907,
+            426.5282,
+            431.72139999999996,
+            413.1612,
+            414.26869999999997,
+            416.50140000000005,
+            420.1386,
+            428.9026,
+            418.1774,
+            411.1696,
+            425.5221,
+            417.46139999999997,
+            419.4924,
+            432.9348
+          ],
+          "stage_mean_ms": [
+            1.2164714733746667,
+            1.8215850830086668,
+            299.72434488939996,
+            116.64708099366666,
+            1.4891306797659998
+          ],
+          "peak_allocated_bytes": 2688241664,
+          "sm_mhz_tail_median": 1275.0,
+          "temperature_max": 66
+        },
+        {
+          "path": ".cache\\native-perf\\boundary-ba018a0\\timing-int8_boundary-truck-2",
+          "median_ms": 420.47790000000003,
+          "wall_ms": [
+            430.9252,
+            419.3345,
+            420.47790000000003,
+            412.86879999999996,
+            419.5653,
+            417.90290000000005,
+            435.3121,
+            425.34860000000003,
+            421.703,
+            422.53180000000003,
+            413.2398,
+            419.14439999999996,
+            418.62850000000003,
+            430.033,
+            424.0437
+          ],
+          "stage_mean_ms": [
+            1.19470292727,
+            1.8115498542786665,
+            300.7777669270666,
+            116.99476826986667,
+            1.2516970634446667
+          ],
+          "peak_allocated_bytes": 2688241664,
+          "sm_mhz_tail_median": 1252.5,
+          "temperature_max": 67
+        }
+      ],
+      "pooled_median_ms": 419.85195,
+      "p95_ms": 432.38876999999997,
+      "stage_mean_ms": [
+        1.2055872003223334,
+        1.8165674686436666,
+        300.2510559082333,
+        116.82092463176667,
+        1.3704138716053333
+      ]
+    }
+  },
+  "quality": {
+    "truck/int8": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9996700027814052
+      ],
+      "max_score_error": 0.01123046875,
+      "max_box_error_px": 0.0943603515625,
+      "byte_equal_to_original_int8": true
+    },
+    "truck/int8_boundary": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "matched_ious": [
+        0.9996700027814052
+      ],
+      "max_score_error": 0.01123046875,
+      "max_box_error_px": 0.0943603515625,
+      "byte_equal_to_original_int8": true
+    },
+    "bag/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9988118087926149,
+        0.9996837778012017,
+        0.998122286116653,
+        0.9983272347098797
+      ],
+      "max_score_error": 0.00537109375,
+      "max_box_error_px": 0.118743896484375,
+      "byte_equal_to_original_int8": true
+    },
+    "bag/int8_boundary": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9988118087926149,
+        0.9996837778012017,
+        0.998122286116653,
+        0.9983272347098797
+      ],
+      "max_score_error": 0.00537109375,
+      "max_box_error_px": 0.118743896484375,
+      "byte_equal_to_original_int8": true
+    },
+    "child/int8": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9980253878702398,
+        0.9979456477079298,
+        0.9969273581077164,
+        0.9985119680285702,
+        0.9983097533491925,
+        0.9977632296781233
+      ],
+      "max_score_error": 0.0029296875,
+      "max_box_error_px": 0.6485595703125,
+      "byte_equal_to_original_int8": true
+    },
+    "child/int8_boundary": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "matched_ious": [
+        0.9980253878702398,
+        0.9979456477079298,
+        0.9969273581077164,
+        0.9985119680285702,
+        0.9983097533491925,
+        0.9977632296781233
+      ],
+      "max_score_error": 0.0029296875,
+      "max_box_error_px": 0.6485595703125,
+      "byte_equal_to_original_int8": true
+    },
+    "wheel/int8": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9984059126150279,
+        0.9965982140623828,
+        0.9915693904020753,
+        0.9897149573905377
+      ],
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.37152099609375,
+      "byte_equal_to_original_int8": true
+    },
+    "wheel/int8_boundary": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "matched_ious": [
+        0.9984059126150279,
+        0.9965982140623828,
+        0.9915693904020753,
+        0.9897149573905377
+      ],
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.37152099609375,
+      "byte_equal_to_original_int8": true
+    },
+    "empty/int8": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "byte_equal_to_original_int8": true
+    },
+    "empty/int8_boundary": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "matched_ious": [],
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "byte_equal_to_original_int8": true
+    }
+  }
+}

@@ -1,0 +1,344 @@
+{
+  "date": "2026-09-23",
+  "base_commit": "fe87ffbc3b27623cc58b7cd1048ead6e4ba0a895",
+  "source_state": "Uncommitted Windows build/rotary fixes plus native image latency tool",
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu130",
+    "cuda": "13.0",
+    "cudnn": 91200,
+    "gpu": "NVIDIA GeForce RTX 2060 with Max-Q Design",
+    "capability": [
+      7,
+      5
+    ],
+    "physical_vram_bytes": 6442123264,
+    "tf32_matmul": false,
+    "tf32_cudnn": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "cublas_workspace_config": ":4096:8",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "checkpoint_revision": "3c879f39826c281e95690f02c7821c4de09afae7",
+  "run_order": [
+    "native-1",
+    "python-1",
+    "python-2",
+    "native-2",
+    "native-3",
+    "python-3"
+  ],
+  "runs": {
+    "native": {
+      "runs": [
+        {
+          "run": 1,
+          "metrics": {
+            "model": "sam3",
+            "mode": "fp16",
+            "resolution": 1008,
+            "threshold": 0.5,
+            "scope": "CPU RGB tensor transfer + preprocessing + vision + detector + postprocessing; cached text; no image feature reuse; excludes disk IO and setup",
+            "text_weights_resident": true,
+            "height": 1200,
+            "width": 1800,
+            "count": 1,
+            "finite": true,
+            "warmups": 2,
+            "repeats": 5,
+            "setup_seconds": 11.4246923,
+            "cold_seconds": 1.2217452,
+            "median_wall_seconds": 0.5653094,
+            "allocated_before_bytes": 3442050048,
+            "cold_peak_allocated_bytes": 3881186304,
+            "peak_allocated_bytes": 3880596480,
+            "peak_reserved_bytes": 4154458112,
+            "wall_seconds": [
+              0.5752341,
+              0.5680383,
+              0.5601826,
+              0.5632344,
+              0.5653094
+            ]
+          },
+          "whole_device_including_setup_sampled_peak_bytes": 5012975616
+        },
+        {
+          "run": 2,
+          "metrics": {
+            "model": "sam3",
+            "mode": "fp16",
+            "resolution": 1008,
+            "threshold": 0.5,
+            "scope": "CPU RGB tensor transfer + preprocessing + vision + detector + postprocessing; cached text; no image feature reuse; excludes disk IO and setup",
+            "text_weights_resident": true,
+            "height": 1200,
+            "width": 1800,
+            "count": 1,
+            "finite": true,
+            "warmups": 2,
+            "repeats": 5,
+            "setup_seconds": 11.4466205,
+            "cold_seconds": 1.0206801,
+            "median_wall_seconds": 0.5764731,
+            "allocated_before_bytes": 3442050048,
+            "cold_peak_allocated_bytes": 3881186304,
+            "peak_allocated_bytes": 3880596480,
+            "peak_reserved_bytes": 4154458112,
+            "wall_seconds": [
+              0.5695487,
+              0.5789898,
+              0.5708665,
+              0.5783566,
+              0.5764731
+            ]
+          },
+          "whole_device_including_setup_sampled_peak_bytes": 5016743936
+        },
+        {
+          "run": 3,
+          "metrics": {
+            "model": "sam3",
+            "mode": "fp16",
+            "resolution": 1008,
+            "threshold": 0.5,
+            "scope": "CPU RGB tensor transfer + preprocessing + vision + detector + postprocessing; cached text; no image feature reuse; excludes disk IO and setup",
+            "text_weights_resident": true,
+            "height": 1200,
+            "width": 1800,
+            "count": 1,
+            "finite": true,
+            "warmups": 2,
+            "repeats": 5,
+            "setup_seconds": 11.3612924,
+            "cold_seconds": 1.0134432,
+            "median_wall_seconds": 0.573612,
+            "allocated_before_bytes": 3442050048,
+            "cold_peak_allocated_bytes": 3881186304,
+            "peak_allocated_bytes": 3880596480,
+            "peak_reserved_bytes": 4154458112,
+            "wall_seconds": [
+              0.5781123,
+              0.5672872,
+              0.5898289,
+              0.573612,
+              0.5699394
+            ]
+          },
+          "whole_device_including_setup_sampled_peak_bytes": 5014188032
+        }
+      ],
+      "pooled_median_wall_seconds": 0.5708665,
+      "min_wall_seconds": 0.5601826,
+      "max_wall_seconds": 0.5898289
+    },
+    "python": {
+      "runs": [
+        {
+          "run": 1,
+          "metrics": {
+            "cold_seconds": 1.5638332999660634,
+            "warmups": 2,
+            "repetitions": 5,
+            "wall_seconds": [
+              0.6003903999808244,
+              0.5708171000005677,
+              0.5672837999882177,
+              0.5671555000008084,
+              0.5654450000147335
+            ],
+            "gpu_seconds": [
+              0.5902049560546875,
+              0.5707553100585937,
+              0.5672439575195313,
+              0.5671157836914062,
+              0.5653931884765625
+            ],
+            "median_wall_seconds": 0.5672837999882177,
+            "median_gpu_seconds": 0.5672439575195313,
+            "peak_allocated_bytes": 2144435712,
+            "peak_reserved_bytes": 2510290944,
+            "allocated_before_bytes": 1728215040,
+            "reserved_before_bytes": 2025848832,
+            "end_device_used_bytes": 3643473920,
+            "physical_vram_bytes": 6442123264,
+            "nvml": {
+              "sampled_device_used_peak_bytes": 3370479616,
+              "sampled_device_used_min_bytes": 2845339648,
+              "samples": 365,
+              "requested_interval_ms": 5,
+              "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+            }
+          },
+          "whole_device_including_setup_sampled_peak_bytes": 4613238784
+        },
+        {
+          "run": 2,
+          "metrics": {
+            "cold_seconds": 1.038831299985759,
+            "warmups": 2,
+            "repetitions": 5,
+            "wall_seconds": [
+              0.5636728000245057,
+              0.5797610999434255,
+              0.5639864999684505,
+              0.5594836000236683,
+              0.5658162999898195
+            ],
+            "gpu_seconds": [
+              0.5635974731445312,
+              0.5797167358398437,
+              0.5639293823242187,
+              0.559409912109375,
+              0.5657716064453125
+            ],
+            "median_wall_seconds": 0.5639864999684505,
+            "median_gpu_seconds": 0.5639293823242187,
+            "peak_allocated_bytes": 2144435712,
+            "peak_reserved_bytes": 2510290944,
+            "allocated_before_bytes": 1728215040,
+            "reserved_before_bytes": 2025848832,
+            "end_device_used_bytes": 3643473920,
+            "physical_vram_bytes": 6442123264,
+            "nvml": {
+              "sampled_device_used_peak_bytes": 3367596032,
+              "sampled_device_used_min_bytes": 2843308032,
+              "samples": 323,
+              "requested_interval_ms": 5,
+              "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+            }
+          },
+          "whole_device_including_setup_sampled_peak_bytes": 4611207168
+        },
+        {
+          "run": 3,
+          "metrics": {
+            "cold_seconds": 1.0593416999909095,
+            "warmups": 2,
+            "repetitions": 5,
+            "wall_seconds": [
+              0.5650898000458255,
+              0.571311199979391,
+              0.56692309997743,
+              0.5646730999578722,
+              0.564108699967619
+            ],
+            "gpu_seconds": [
+              0.5649469604492188,
+              0.5712236938476563,
+              0.5668775634765625,
+              0.5646331176757813,
+              0.564027587890625
+            ],
+            "median_wall_seconds": 0.5650898000458255,
+            "median_gpu_seconds": 0.5649469604492188,
+            "peak_allocated_bytes": 2144435712,
+            "peak_reserved_bytes": 2510290944,
+            "allocated_before_bytes": 1728215040,
+            "reserved_before_bytes": 2025848832,
+            "end_device_used_bytes": 3643473920,
+            "physical_vram_bytes": 6442123264,
+            "nvml": {
+              "sampled_device_used_peak_bytes": 3367333888,
+              "sampled_device_used_min_bytes": 2842456064,
+              "samples": 323,
+              "requested_interval_ms": 5,
+              "scope": "Whole GPU NVML sampled usage, not an exact instantaneous peak"
+            }
+          },
+          "whole_device_including_setup_sampled_peak_bytes": 4610748416
+        }
+      ],
+      "pooled_median_wall_seconds": 0.5658162999898195,
+      "min_wall_seconds": 0.5594836000236683,
+      "max_wall_seconds": 0.6003903999808244
+    }
+  },
+  "checks": {
+    "truck": {
+      "native_count": 1,
+      "python_count": 1,
+      "native_finite": true,
+      "matching": "maximum total pairwise mask IoU",
+      "mask_ious": [
+        0.9999968566210562
+      ],
+      "different_mask_pixels": [
+        2
+      ],
+      "max_abs_score_error": 0.0,
+      "max_abs_box_error_pixels": 0.0084228515625
+    },
+    "bag": {
+      "native_count": 4,
+      "python_count": 4,
+      "native_finite": true,
+      "matching": "maximum total pairwise mask IoU",
+      "mask_ious": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "different_mask_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "max_abs_score_error": 0.0,
+      "max_abs_box_error_pixels": 0.01483154296875
+    },
+    "child": {
+      "native_count": 6,
+      "python_count": 6,
+      "native_finite": true,
+      "matching": "maximum total pairwise mask IoU",
+      "mask_ious": [
+        0.9998870885790098,
+        1.0,
+        0.9998839166521563,
+        1.0,
+        0.999937362981522,
+        1.0
+      ],
+      "different_mask_pixels": [
+        2,
+        0,
+        2,
+        0,
+        1,
+        0
+      ],
+      "max_abs_score_error": 0.0,
+      "max_abs_box_error_pixels": 0.020751953125
+    },
+    "wheel": {
+      "native_count": 4,
+      "python_count": 4,
+      "native_finite": true,
+      "matching": "maximum total pairwise mask IoU",
+      "mask_ious": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "different_mask_pixels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "max_abs_score_error": 0.0,
+      "max_abs_box_error_pixels": 0.0146484375
+    },
+    "empty": {
+      "native_count": 0,
+      "python_count": 0,
+      "native_finite": true,
+      "matching": "maximum total pairwise mask IoU"
+    }
+  }
+}

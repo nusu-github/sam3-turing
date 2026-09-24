@@ -1,0 +1,335 @@
+{
+  "quality_gates": {
+    "same_count": true,
+    "min_mask_iou": 0.98,
+    "max_score_error": 0.02,
+    "max_box_error_px": 1.0
+  },
+  "quality": {
+    "truck/head/head": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/head/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995883215303126,
+      "max_score_error": 0.00830078125,
+      "max_box_error_px": 0.113189697265625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/head/head": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "bag/head/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9982223151730628,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.141143798828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/head/head": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "child/head/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9966992877410389,
+      "max_score_error": 0.0107421875,
+      "max_box_error_px": 0.401885986328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/head/head": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "wheel/head/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9920494699646644,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.3370361328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/head/head": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/head/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/sequence/head": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "truck/sequence/fp16": {
+      "reference_count": 1,
+      "candidate_count": 1,
+      "min_mask_iou": 0.9995883215303126,
+      "max_score_error": 0.00830078125,
+      "max_box_error_px": 0.113189697265625,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "bag/sequence/head": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "bag/sequence/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9982223151730628,
+      "max_score_error": 0.0009765625,
+      "max_box_error_px": 0.141143798828125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "child/sequence/head": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "child/sequence/fp16": {
+      "reference_count": 6,
+      "candidate_count": 6,
+      "min_mask_iou": 0.9966992877410389,
+      "max_score_error": 0.0107421875,
+      "max_box_error_px": 0.401885986328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "wheel/sequence/head": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 1.0,
+      "max_score_error": 0.0,
+      "max_box_error_px": 0.0,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "wheel/sequence/fp16": {
+      "reference_count": 4,
+      "candidate_count": 4,
+      "min_mask_iou": 0.9920494699646644,
+      "max_score_error": 0.00146484375,
+      "max_box_error_px": 0.3370361328125,
+      "gate_pass": true,
+      "byte_equal": false
+    },
+    "empty/sequence/head": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    },
+    "empty/sequence/fp16": {
+      "reference_count": 0,
+      "candidate_count": 0,
+      "min_mask_iou": null,
+      "max_score_error": null,
+      "max_box_error_px": null,
+      "gate_pass": true,
+      "byte_equal": true
+    }
+  },
+  "timing": {
+    "head": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\kitchen-layout-ba018a0\\timing-head-truck-1",
+          "median_ms": 380.4489,
+          "wall_ms": [
+            378.6538,
+            379.78790000000004,
+            368.5991,
+            381.1486,
+            382.5673,
+            381.8139,
+            380.4489,
+            391.4718,
+            378.4688,
+            385.7944,
+            371.79400000000004,
+            377.4927,
+            386.7547,
+            380.8806,
+            376.6884
+          ],
+          "stage_mean_ms": [
+            1.2202261288953333,
+            1.8410304069513335,
+            257.9040771484667,
+            117.58341064460002,
+            1.5563221136713332
+          ],
+          "peak_allocated_bytes": 2788970496
+        },
+        {
+          "path": ".cache\\native-perf\\kitchen-layout-ba018a0\\timing-head-truck-2",
+          "median_ms": 386.6238,
+          "wall_ms": [
+            384.2953,
+            382.79540000000003,
+            388.4899,
+            387.0242,
+            382.6037,
+            389.6592,
+            382.92330000000004,
+            395.3046,
+            393.65749999999997,
+            386.6238,
+            378.0327,
+            386.85560000000004,
+            376.165,
+            388.337,
+            385.27860000000004
+          ],
+          "stage_mean_ms": [
+            1.219481595357333,
+            1.8510677337646668,
+            262.67257283526664,
+            118.74071655273332,
+            1.3405738751093332
+          ],
+          "peak_allocated_bytes": 2788970496
+        }
+      ],
+      "median_ms": 382.69955000000004,
+      "p95_ms": 392.673935,
+      "stage_mean_ms": [
+        1.219853862126333,
+        1.8460490703580001,
+        260.28832499186666,
+        118.16206359866666,
+        1.4484479943903332
+      ]
+    },
+    "sequence": {
+      "runs": [
+        {
+          "path": ".cache\\native-perf\\kitchen-layout-ba018a0\\timing-sequence-truck-1",
+          "median_ms": 377.75079999999997,
+          "wall_ms": [
+            383.0777,
+            380.1413,
+            377.75079999999997,
+            371.55129999999997,
+            375.10749999999996,
+            378.0281,
+            384.0765,
+            368.79040000000003,
+            379.4976,
+            374.12420000000003,
+            381.9883,
+            393.63550000000004,
+            375.0399,
+            377.5901,
+            372.2315
+          ],
+          "stage_mean_ms": [
+            1.1989823977160001,
+            1.8450303951900002,
+            255.92305908200004,
+            117.86297709153335,
+            1.3017152070993334
+          ],
+          "peak_allocated_bytes": 2788970496
+        },
+        {
+          "path": ".cache\\native-perf\\kitchen-layout-ba018a0\\timing-sequence-truck-2",
+          "median_ms": 377.4632,
+          "wall_ms": [
+            372.108,
+            376.80780000000004,
+            369.9101,
+            385.4937,
+            375.1502,
+            377.9096,
+            379.7874,
+            382.6797,
+            372.3501,
+            377.4632,
+            375.4614,
+            396.62170000000003,
+            376.9651,
+            391.9264,
+            387.45039999999995
+          ],
+          "stage_mean_ms": [
+            1.219816533723333,
+            1.8433770815526664,
+            257.9042154948,
+            117.31883850093332,
+            1.5372608025860002
+          ],
+          "peak_allocated_bytes": 2788970496
+        }
+      ],
+      "median_ms": 377.67044999999996,
+      "p95_ms": 392.86640500000004,
+      "stage_mean_ms": [
+        1.2093994657196667,
+        1.8442037383713332,
+        256.9136372884,
+        117.59090779623334,
+        1.4194880048426668
+      ]
+    }
+  },
+  "gate_failures": []
+}

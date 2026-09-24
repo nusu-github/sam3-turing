@@ -1,3 +1,4 @@
+#include "approx_kernels.h"
 // Welford helpers adapted from PyTorch layer_norm_kernel.cu.
 // Copyright PyTorch contributors; see ../third_party/LICENSE-PyTorch.
 #include <ATen/ATen.h>
@@ -267,6 +268,64 @@ residual_norm_kernel(const float *input, const Attention *attention,
     out[i] = normalized;
   }
 }
+__global__ void
+fc2_residual_norm_kernel(const float *input, const int *accum,
+                     const float *xs,const float *ws,const c10::Half *bias,
+                     const float *gamma, const float *beta, float *sum,
+                     c10::Half *output, int64_t height, int64_t width,
+                     bool partition_output) {
+  extern __shared__ float buffer[];
+  const int64_t row = blockIdx.x;
+  int64_t other = row;
+  if (partition_output) {
+    const auto x = row % width, y = (row / width) % height,
+               batch = row / (height * width);
+    other = (((batch * (height / 24) + y / 24) * (width / 24) + x / 24) * 24 +
+             y % 24) *
+                24 +
+            x % 24;
+  }
+  const int lane = threadIdx.x + threadIdx.y * blockDim.x;
+  const auto *in =
+      reinterpret_cast<const aligned_vector<float, 4> *>(input + row * 1024);
+  const auto *acc = reinterpret_cast<const aligned_vector<int,4> *>(accum+row*1024);
+  aligned_vector<float, 4> values[2];
+  WelfordDataLN stats(0.f, 0.f, 0.f);
+  for (int part = 0; part < 2; ++part) {
+    const int i = lane + part * 128;
+    auto a = in[i];
+    auto raw = acc[i];
+#pragma unroll
+    for (int j = 0; j < 4; ++j) {
+      const int col=i*4+j;
+      const float restored=float(raw.val[j])*xs[row]*ws[col]+float(bias[col]);
+      const float rounded=float(c10::Half(restored));
+      values[part].val[j] = a.val[j] + rounded;
+      stats = cuWelfordOnlineSum<float, false>(values[part].val[j], stats);
+    }
+  }
+  stats = reduce_residual_stats(stats, buffer);
+  const float rstd = c10::cuda::compat::rsqrt(stats.sigma2 + 1e-5f);
+  const auto *g = reinterpret_cast<const aligned_vector<float, 4> *>(gamma);
+  const auto *b = reinterpret_cast<const aligned_vector<float, 4> *>(beta);
+  auto *residual =
+      reinterpret_cast<aligned_vector<float, 4> *>(sum + row * 1024);
+  auto *out = reinterpret_cast<aligned_vector<c10::Half, 4> *>(
+      output + (partition_output ? other : row) * 1024);
+  for (int part = 0; part < 2; ++part) {
+    const int i = lane + part * 128;
+    aligned_vector<c10::Half, 4> normalized;
+#pragma unroll
+    for (int j = 0; j < 4; ++j) {
+      const float value =
+          g[i].val[j] * (rstd * (values[part].val[j] - stats.mean)) +
+          b[i].val[j];
+      normalized.val[j] = c10::Half(value);
+    }
+    residual[i] = values[part];
+    out[i] = normalized;
+  }
+}
 template <typename Attention>
 void launch_residual(const at::Tensor &input, const at::Tensor &attention,
                      const at::Tensor &gamma, const at::Tensor &beta,
@@ -332,6 +391,24 @@ void vision_residual_norm_cuda(const at::Tensor &input,
     launch_residual<float>(input, attention, gamma, beta, sum, output, windowed,
                            partition_output);
   C10_CUDA_KERNEL_LAUNCH_CHECK();
+}
+
+// Opt-in FC2 restoration + residual + next-layer norm; keep Welford order.
+std::tuple<at::Tensor,at::Tensor> approx_fc2_norm(const at::Tensor& input,
+    const at::Tensor& accum,const at::Tensor& xs,const at::Tensor& ws,
+    const at::Tensor& bias,const at::Tensor& gamma,const at::Tensor& beta,bool partition) {
+  TORCH_CHECK(input.is_cuda() && input.scalar_type()==at::kFloat && input.dim()==4 && input.size(3)==1024 && input.is_contiguous() && input.numel()>0,"FC2 norm requires contiguous CUDA FP32 BHWC");
+  const auto rows=input.numel()/1024;
+  TORCH_CHECK(rows<=2147483647 && accum.scalar_type()==at::kInt && accum.sizes()==at::IntArrayRef({rows,1024}) && xs.scalar_type()==at::kFloat && xs.numel()==rows && ws.scalar_type()==at::kFloat && ws.numel()==1024 && bias.scalar_type()==at::kHalf && bias.numel()==1024 && gamma.scalar_type()==at::kFloat && gamma.numel()==1024 && beta.scalar_type()==at::kFloat && beta.numel()==1024,"FC2 norm operands mismatch");
+  for(const auto& t:{input,accum,xs,ws,bias,gamma,beta})
+    TORCH_CHECK(t.device()==input.device() && t.is_contiguous() && !t.is_neg() && reinterpret_cast<uintptr_t>(t.const_data_ptr())%16==0,"FC2 norm alignment/device/layout mismatch");
+  const auto b=input.size(0),h=input.size(1),w=input.size(2);
+  TORCH_CHECK(!partition || (h%24==0 && w%24==0),"FC2 norm window dimensions");
+  const c10::cuda::CUDAGuard guard(input.device());
+  auto sum=at::empty_like(input);
+  auto out=at::empty(partition?std::vector<int64_t>{b*(h/24)*(w/24),24,24,1024}:input.sizes().vec(),input.options().dtype(at::kHalf));
+  fc2_residual_norm_kernel<<<rows,dim3(32,4),6*sizeof(float),c10::cuda::getCurrentCUDAStream()>>>(input.const_data_ptr<float>(),accum.const_data_ptr<int>(),xs.const_data_ptr<float>(),ws.const_data_ptr<float>(),bias.const_data_ptr<at::Half>(),gamma.const_data_ptr<float>(),beta.const_data_ptr<float>(),sum.mutable_data_ptr<float>(),out.mutable_data_ptr<at::Half>(),h,w,partition);
+  C10_CUDA_KERNEL_LAUNCH_CHECK();return {sum,out};
 }
 
 } // namespace sam3

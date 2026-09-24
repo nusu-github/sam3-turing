@@ -1,0 +1,52 @@
+{
+  "commit": "908e4763d44310d0567ab400e390f667905cf866",
+  "runtime_source": "Upstream unchanged; local CMake adds latency and GEMM diagnostic tools only",
+  "fusion_options": {
+    "SAM3_FUSE_VISION_NORM": true,
+    "SAM3_FUSE_VISION_QK": true
+  },
+  "ctest": {
+    "passed": 48,
+    "total": 48,
+    "seconds": 139.82
+  },
+  "metrics": {
+    "model": "sam3",
+    "mode": "fp16",
+    "resolution": 1008,
+    "threshold": 0.5,
+    "scope": "CPU RGB tensor transfer + preprocessing + vision + detector + postprocessing; cached text; no image feature reuse; excludes disk IO and setup",
+    "cudnn_available": true,
+    "cudnn_runtime_version": 91200,
+    "cudnn_benchmark": false,
+    "compute_storage": "fp16",
+    "text_weights_resident": true,
+    "height": 1200,
+    "width": 1800,
+    "count": 1,
+    "finite": true,
+    "warmups": 2,
+    "repeats": 5,
+    "setup_seconds": 4.3458403,
+    "cold_seconds": 0.9265082,
+    "median_wall_seconds": 0.5003539,
+    "allocated_before_bytes": 1938488832,
+    "cold_peak_allocated_bytes": 2377715712,
+    "peak_allocated_bytes": 2375946240,
+    "peak_reserved_bytes": 2604662784,
+    "wall_seconds": [
+      0.5038415,
+      0.5000845,
+      0.5003539,
+      0.4989561,
+      0.5047738
+    ]
+  },
+  "truck_byte_equal_to_19f8bf9": {
+    "masks.u8.bin": true,
+    "scores.f32.bin": true,
+    "boxes.f32.bin": true,
+    "queries.i64.bin": true
+  },
+  "note": "Single fresh-process smoke measurement, not an alternating performance comparison. Old local norm prototype archived and no longer built."
+}

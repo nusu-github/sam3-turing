@@ -1,0 +1,1 @@
+{"cases":[{"m":80,"n":80,"k":128,"bit_equal":true,"timings_ms":[[],[],[],[]]},{"m":5184,"n":1024,"k":4736,"bit_equal":true,"timings_ms":[[],[],[],[]]}]}

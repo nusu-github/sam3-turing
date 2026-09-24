@@ -1,0 +1,801 @@
+{
+  "method": "Four fresh processes, default/Lt/Lt/default, 2 warmups and 10 samples. TORCH_BLAS_PREFER_CUBLASLT=0 or 1; inherited by monitor. Same FP16 truck workload and CUBLAS_WORKSPACE_CONFIG=:4096:8.",
+  "runs": {
+    "blas-default-1": {
+      "metrics": {
+        "model": "sam3",
+        "mode": "fp16",
+        "resolution": 1008,
+        "threshold": 0.5,
+        "scope": "CPU RGB tensor transfer + preprocessing + vision + detector + postprocessing; cached text; no image feature reuse; excludes disk IO and setup",
+        "cudnn_available": true,
+        "cudnn_runtime_version": 91200,
+        "cudnn_benchmark": false,
+        "compute_storage": "fp16",
+        "text_weights_resident": true,
+        "height": 1200,
+        "width": 1800,
+        "count": 1,
+        "finite": true,
+        "warmups": 2,
+        "repeats": 10,
+        "setup_seconds": 4.7541127,
+        "cold_seconds": 0.9986875,
+        "median_wall_seconds": 0.55343455,
+        "allocated_before_bytes": 1938488832,
+        "cold_peak_allocated_bytes": 2377584640,
+        "peak_allocated_bytes": 2376994816,
+        "peak_reserved_bytes": 2610954240,
+        "wall_seconds": [
+          0.5626742,
+          0.5509983,
+          0.5519754,
+          0.558546,
+          0.5556401,
+          0.5509792,
+          0.5511486,
+          0.5492032,
+          0.5548937,
+          0.555687
+        ]
+      },
+      "stages": {
+        "stages": [
+          "upload",
+          "preprocess",
+          "vision",
+          "detector",
+          "postprocess"
+        ],
+        "method": "CUDA events on current stream; no added inter-stage synchronization. Host durations include enqueue and any internal blocking, not CPU compute alone. GPU intervals may include host launch gaps.",
+        "gpu_ms": [
+          [
+            1.45212805271,
+            2.9722878933,
+            425.453582764,
+            131.337722778,
+            1.41363203526
+          ],
+          [
+            1.18694400787,
+            1.77856004238,
+            428.750854492,
+            117.690368652,
+            1.54623997211
+          ],
+          [
+            1.20272004604,
+            1.77923202515,
+            427.532287598,
+            120.164352417,
+            1.25747203827
+          ],
+          [
+            3.39059209824,
+            2.01539206505,
+            427.020690918,
+            124.895523071,
+            1.16326403618
+          ],
+          [
+            1.18143999577,
+            1.76287996769,
+            428.024505615,
+            123.28755188,
+            1.34528005123
+          ],
+          [
+            1.1641600132,
+            1.78271996975,
+            429.264923096,
+            117.503456116,
+            1.22934401035
+          ],
+          [
+            1.14358401299,
+            3.69561600685,
+            426.071563721,
+            118.901473999,
+            1.29420804977
+          ],
+          [
+            1.31238400936,
+            3.21075201035,
+            426.406768799,
+            116.549629211,
+            1.65238404274
+          ],
+          [
+            2.32313609123,
+            2.7169919014,
+            426.356109619,
+            120.114944458,
+            3.30751991272
+          ],
+          [
+            1.36025595665,
+            1.87011194229,
+            430.444549561,
+            120.767677307,
+            1.20300805569
+          ]
+        ],
+        "host_ms": [
+          [
+            1.4708,
+            0.3294,
+            22.5155,
+            503.5885,
+            34.7192
+          ],
+          [
+            1.189,
+            0.2872,
+            20.3684,
+            496.6882,
+            32.4169
+          ],
+          [
+            1.2049,
+            0.2932,
+            24.9098,
+            493.3871,
+            32.1375
+          ],
+          [
+            3.3581,
+            0.5858,
+            23.1244,
+            496.1213,
+            35.225
+          ],
+          [
+            1.1835,
+            0.2788,
+            19.7887,
+            500.5349,
+            33.8112
+          ],
+          [
+            1.1667,
+            0.2718,
+            23.1274,
+            493.3309,
+            33.043
+          ],
+          [
+            1.146,
+            0.6526,
+            20.1522,
+            498.0345,
+            31.1181
+          ],
+          [
+            1.3076,
+            0.4443,
+            24.6124,
+            489.8906,
+            32.874
+          ],
+          [
+            2.3297,
+            0.7407,
+            22.6974,
+            496.913,
+            32.1342
+          ],
+          [
+            1.3641,
+            0.4621,
+            18.8879,
+            499.8034,
+            35.1238
+          ]
+        ]
+      },
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "blas-lt-1": {
+      "metrics": {
+        "model": "sam3",
+        "mode": "fp16",
+        "resolution": 1008,
+        "threshold": 0.5,
+        "scope": "CPU RGB tensor transfer + preprocessing + vision + detector + postprocessing; cached text; no image feature reuse; excludes disk IO and setup",
+        "cudnn_available": true,
+        "cudnn_runtime_version": 91200,
+        "cudnn_benchmark": false,
+        "compute_storage": "fp16",
+        "text_weights_resident": true,
+        "height": 1200,
+        "width": 1800,
+        "count": 1,
+        "finite": true,
+        "warmups": 2,
+        "repeats": 10,
+        "setup_seconds": 4.6824479,
+        "cold_seconds": 1.0297289,
+        "median_wall_seconds": 0.56495795,
+        "allocated_before_bytes": 1938488832,
+        "cold_peak_allocated_bytes": 2377584640,
+        "peak_allocated_bytes": 2376994816,
+        "peak_reserved_bytes": 2610954240,
+        "wall_seconds": [
+          0.5685119,
+          0.5627944,
+          0.6212974,
+          0.5713929,
+          0.558267,
+          0.5671215,
+          0.5622635,
+          0.5600331,
+          0.552327,
+          0.5717205
+        ]
+      },
+      "stages": {
+        "stages": [
+          "upload",
+          "preprocess",
+          "vision",
+          "detector",
+          "postprocess"
+        ],
+        "method": "CUDA events on current stream; no added inter-stage synchronization. Host durations include enqueue and any internal blocking, not CPU compute alone. GPU intervals may include host launch gaps.",
+        "gpu_ms": [
+          [
+            1.51500797272,
+            1.77174401283,
+            430.393707275,
+            131.559417725,
+            3.16607999802
+          ],
+          [
+            2.20732808113,
+            2.36899209023,
+            427.630645752,
+            129.399551392,
+            1.13878405094
+          ],
+          [
+            1.31913602352,
+            1.81324803829,
+            429.354858398,
+            187.019424438,
+            1.65478396416
+          ],
+          [
+            1.82681596279,
+            1.97395205498,
+            426.541381836,
+            139.300003052,
+            1.61657595634
+          ],
+          [
+            1.41052794456,
+            1.77616000175,
+            432.248840332,
+            121.528320312,
+            1.25132799149
+          ],
+          [
+            1.24844801426,
+            1.84694397449,
+            435.290100098,
+            127.309379578,
+            1.38080000877
+          ],
+          [
+            1.16572797298,
+            3.46700811386,
+            430.749694824,
+            125.665283203,
+            1.17555201054
+          ],
+          [
+            1.15340805054,
+            1.78316795826,
+            431.393035889,
+            121.606147766,
+            4.02022409439
+          ],
+          [
+            1.46912002563,
+            1.92121601105,
+            431.038452148,
+            116.141120911,
+            1.69996798038
+          ],
+          [
+            1.21088004112,
+            1.81599998474,
+            432.519226074,
+            134.940261841,
+            1.19564795494
+          ]
+        ],
+        "host_ms": [
+          [
+            1.5018,
+            0.3411,
+            45.2959,
+            484.313,
+            36.9497
+          ],
+          [
+            2.1293,
+            0.3389,
+            27.8945,
+            496.7997,
+            35.498
+          ],
+          [
+            1.3235,
+            0.3282,
+            27.3519,
+            558.1187,
+            34.0662
+          ],
+          [
+            1.8267,
+            0.4697,
+            27.3032,
+            504.9267,
+            36.7213
+          ],
+          [
+            1.4124,
+            0.2909,
+            20.5445,
+            504.9377,
+            31.0274
+          ],
+          [
+            1.2741,
+            0.4525,
+            28.3209,
+            504.6056,
+            32.4195
+          ],
+          [
+            1.1682,
+            0.4039,
+            21.7393,
+            504.3945,
+            34.5134
+          ],
+          [
+            1.1548,
+            0.2815,
+            19.1371,
+            505.3773,
+            34.0019
+          ],
+          [
+            1.4761,
+            0.4214,
+            19.4837,
+            499.3197,
+            31.5673
+          ],
+          [
+            1.2134,
+            0.3263,
+            24.2542,
+            511.526,
+            34.3563
+          ]
+        ]
+      },
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "blas-lt-2": {
+      "metrics": {
+        "model": "sam3",
+        "mode": "fp16",
+        "resolution": 1008,
+        "threshold": 0.5,
+        "scope": "CPU RGB tensor transfer + preprocessing + vision + detector + postprocessing; cached text; no image feature reuse; excludes disk IO and setup",
+        "cudnn_available": true,
+        "cudnn_runtime_version": 91200,
+        "cudnn_benchmark": false,
+        "compute_storage": "fp16",
+        "text_weights_resident": true,
+        "height": 1200,
+        "width": 1800,
+        "count": 1,
+        "finite": true,
+        "warmups": 2,
+        "repeats": 10,
+        "setup_seconds": 4.6871449,
+        "cold_seconds": 1.0456683,
+        "median_wall_seconds": 0.5620137,
+        "allocated_before_bytes": 1938488832,
+        "cold_peak_allocated_bytes": 2377584640,
+        "peak_allocated_bytes": 2376994816,
+        "peak_reserved_bytes": 2610954240,
+        "wall_seconds": [
+          0.5772513,
+          0.559178,
+          0.5589237,
+          0.559023,
+          0.561241,
+          0.5648264,
+          0.5571199,
+          0.5678206,
+          0.5669742,
+          0.5627864
+        ]
+      },
+      "stages": {
+        "stages": [
+          "upload",
+          "preprocess",
+          "vision",
+          "detector",
+          "postprocess"
+        ],
+        "method": "CUDA events on current stream; no added inter-stage synchronization. Host durations include enqueue and any internal blocking, not CPU compute alone. GPU intervals may include host launch gaps.",
+        "gpu_ms": [
+          [
+            1.17206394672,
+            1.78729605675,
+            431.270965576,
+            141.513656616,
+            1.45206403732
+          ],
+          [
+            1.64528000355,
+            1.96518397331,
+            432.332000732,
+            121.97769928,
+            1.19548797607
+          ],
+          [
+            1.18323194981,
+            1.79452800751,
+            434.517944336,
+            118.140991211,
+            3.21126389503
+          ],
+          [
+            1.77961599827,
+            1.87808001041,
+            432.893951416,
+            121.149436951,
+            1.22880005836
+          ],
+          [
+            1.14537596703,
+            1.7930239439,
+            432.929260254,
+            123.65599823,
+            1.66931200027
+          ],
+          [
+            1.20476794243,
+            1.81356799603,
+            433.297698975,
+            126.567649841,
+            1.8665920496
+          ],
+          [
+            1.31071996689,
+            1.86163198948,
+            434.278411865,
+            118.554626465,
+            1.07728004456
+          ],
+          [
+            1.16636800766,
+            1.7794239521,
+            432.443389893,
+            131.212646484,
+            1.18342399597
+          ],
+          [
+            1.17123198509,
+            1.76575994492,
+            436.829437256,
+            124.818016052,
+            2.32259202003
+          ],
+          [
+            1.27340805531,
+            1.80198395252,
+            436.328491211,
+            122.137023926,
+            1.21049594879
+          ]
+        ],
+        "host_ms": [
+          [
+            1.1748,
+            0.2756,
+            18.5837,
+            526.7292,
+            30.4312
+          ],
+          [
+            1.6412,
+            0.4204,
+            20.2437,
+            504.6359,
+            32.1631
+          ],
+          [
+            1.1858,
+            0.28,
+            25.6098,
+            498.7787,
+            31.7961
+          ],
+          [
+            1.702,
+            0.495,
+            22.0722,
+            498.9661,
+            35.6066
+          ],
+          [
+            1.148,
+            0.2783,
+            24.8324,
+            499.611,
+            35.3199
+          ],
+          [
+            1.2075,
+            0.3042,
+            21.8976,
+            507.3308,
+            34.0091
+          ],
+          [
+            1.3181,
+            0.3478,
+            19.646,
+            502.8286,
+            32.9391
+          ],
+          [
+            1.1698,
+            0.2707,
+            26.1805,
+            505.6018,
+            34.5583
+          ],
+          [
+            1.1734,
+            0.2673,
+            25.0206,
+            502.8589,
+            37.5829
+          ],
+          [
+            1.2765,
+            0.3615,
+            20.4387,
+            507.1674,
+            33.5021
+          ]
+        ]
+      },
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    },
+    "blas-default-2": {
+      "metrics": {
+        "model": "sam3",
+        "mode": "fp16",
+        "resolution": 1008,
+        "threshold": 0.5,
+        "scope": "CPU RGB tensor transfer + preprocessing + vision + detector + postprocessing; cached text; no image feature reuse; excludes disk IO and setup",
+        "cudnn_available": true,
+        "cudnn_runtime_version": 91200,
+        "cudnn_benchmark": false,
+        "compute_storage": "fp16",
+        "text_weights_resident": true,
+        "height": 1200,
+        "width": 1800,
+        "count": 1,
+        "finite": true,
+        "warmups": 2,
+        "repeats": 10,
+        "setup_seconds": 4.6621866,
+        "cold_seconds": 1.0505783,
+        "median_wall_seconds": 0.5617582,
+        "allocated_before_bytes": 1938488832,
+        "cold_peak_allocated_bytes": 2377584640,
+        "peak_allocated_bytes": 2376994816,
+        "peak_reserved_bytes": 2610954240,
+        "wall_seconds": [
+          0.5612724,
+          0.5597092,
+          0.562244,
+          0.5577935,
+          0.5684721,
+          0.5626576,
+          0.5570942,
+          0.5589702,
+          0.5628521,
+          0.5627778
+        ]
+      },
+      "stages": {
+        "stages": [
+          "upload",
+          "preprocess",
+          "vision",
+          "detector",
+          "postprocess"
+        ],
+        "method": "CUDA events on current stream; no added inter-stage synchronization. Host durations include enqueue and any internal blocking, not CPU compute alone. GPU intervals may include host launch gaps.",
+        "gpu_ms": [
+          [
+            1.25174403191,
+            1.7895359993,
+            433.137084961,
+            123.748161316,
+            1.29475200176
+          ],
+          [
+            1.61321604252,
+            2.08527994156,
+            436.195526123,
+            118.535202026,
+            1.20521605015
+          ],
+          [
+            1.18863999844,
+            1.78915202618,
+            434.30847168,
+            123.525665283,
+            1.3927359581
+          ],
+          [
+            1.18172800541,
+            1.77167999744,
+            434.173858643,
+            119.425117493,
+            1.20217597485
+          ],
+          [
+            1.1853120327,
+            1.80016005039,
+            435.743255615,
+            128.435684204,
+            1.26927995682
+          ],
+          [
+            1.28857600689,
+            3.48716807365,
+            435.958709717,
+            120.369148254,
+            1.50323200226
+          ],
+          [
+            1.20675194263,
+            1.81801605225,
+            434.157592773,
+            116.876541138,
+            3.01302409172
+          ],
+          [
+            1.71670401096,
+            1.87958395481,
+            432.861175537,
+            121.195709229,
+            1.25385594368
+          ],
+          [
+            1.18592000008,
+            1.76815998554,
+            430.02041626,
+            128.694396973,
+            1.14489603043
+          ],
+          [
+            1.16908800602,
+            1.78435194492,
+            435.007476807,
+            123.018722534,
+            1.75311994553
+          ]
+        ],
+        "host_ms": [
+          [
+            1.2554,
+            0.2784,
+            19.252,
+            505.726,
+            34.7075
+          ],
+          [
+            1.6093,
+            0.3671,
+            20.9398,
+            502.7317,
+            33.9758
+          ],
+          [
+            1.1911,
+            0.2783,
+            19.9986,
+            504.6179,
+            36.1145
+          ],
+          [
+            1.1845,
+            0.2829,
+            20.2956,
+            501.3592,
+            34.6287
+          ],
+          [
+            1.1878,
+            0.2833,
+            19.6315,
+            512.9957,
+            34.3308
+          ],
+          [
+            1.2978,
+            0.4251,
+            22.2816,
+            503.0416,
+            35.5579
+          ],
+          [
+            1.2113,
+            0.3037,
+            21.7439,
+            501.4315,
+            30.875
+          ],
+          [
+            1.7163,
+            0.4812,
+            19.9482,
+            500.927,
+            35.8264
+          ],
+          [
+            1.1882,
+            0.2773,
+            18.8634,
+            511.0045,
+            31.4763
+          ],
+          [
+            1.1715,
+            0.2761,
+            20.3559,
+            502.9408,
+            37.9847
+          ]
+        ]
+      },
+      "byte_equal": {
+        "masks.u8.bin": true,
+        "scores.f32.bin": true,
+        "boxes.f32.bin": true,
+        "queries.i64.bin": true
+      }
+    }
+  }
+}

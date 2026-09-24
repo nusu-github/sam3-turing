@@ -26,6 +26,7 @@ DetectorDecoder::DetectorDecoder(const WeightStore& store,const std::string& mod
   for (int i=0;i<6;++i) detail::weight(weights_,"layers."+std::to_string(i)+".self_attn.in_proj_weight");
 }
 at::Tensor DetectorDecoder::relative_position_bias(const at::Tensor& boxes,int64_t h,int64_t w) const {
+  detail::ProfileRange range("detector.decoder.rpb");
   const auto cx=boxes.select(2,0),cy=boxes.select(2,1),bw=boxes.select(2,2),bh=boxes.select(2,3);
   const auto xyxy=at::stack({cx-.5*bw,cy-.5*bh,cx+.5*bw,cy+.5*bh},-1).transpose(0,1);
   const auto batch=xyxy.size(0),queries=xyxy.size(1);
@@ -49,6 +50,7 @@ at::Tensor DetectorDecoder::relative_position_bias(const at::Tensor& boxes,int64
   return (dy.unsqueeze(3)+dx.unsqueeze(2)).flatten(2,3).permute({0,3,1,2}).contiguous();
 }
 DecoderFeatures DetectorDecoder::forward(const FusionFeatures& encoded,const at::Tensor& prompt_padding,const std::string& mode,std::map<std::string,at::Tensor>* trace) const {
+  detail::ProfileRange range("detector.decoder");
   c10::InferenceMode inference;
   detail::check_mode(mode);
   AutocastGuard autocast(device_.type(),mode!="fp32",mode=="fp16" ? at::kHalf : at::kBFloat16);
@@ -97,6 +99,7 @@ DecoderFeatures DetectorDecoder::forward(const FusionFeatures& encoded,const at:
     at::Tensor ffn;
     {
       // The source disables CUDA autocast specifically for the decoder FFN.
+      detail::ProfileRange ffn_range("detector.decoder.ffn_fp32");
       std::optional<AutocastGuard> full_precision;
       if (device_.is_cuda()) full_precision.emplace(at::kCUDA,false,at::kFloat);
       ffn=detail::linear(weights_,at::relu(detail::linear(weights_,tgt,prefix+".linear1")),prefix+".linear2");

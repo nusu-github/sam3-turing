@@ -2,32 +2,25 @@
 #include <c10/cuda/CUDAGuard.h>
 #include <c10/cuda/CUDAException.h>
 #include <c10/cuda/CUDAStream.h>
-#include <algorithm>
+#include <cub/device/device_transform.cuh>
+#include <thrust/iterator/counting_iterator.h>
+#include <thrust/tabulate.h>
+#include <thrust/system/cuda/execution_policy.h>
 
 namespace sam3 {
 namespace {
 constexpr int threads = 256;
-int blocks(int64_t elements) {
-  return static_cast<int>(std::min<int64_t>((elements - 1) / threads + 1, 4096));
-}
-__global__ void pack_kernel(const bool* src, uint8_t* dst, int64_t total, int64_t pixels, int64_t bytes) {
-  for (int64_t i = static_cast<int64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
-       i < total; i += static_cast<int64_t>(blockDim.x) * gridDim.x) {
-    const auto row = i / bytes;
-    const auto offset = (i % bytes) * 8;
+struct PackMask {
+  const bool* src;
+  int64_t pixels, bytes;
+  __device__ uint8_t operator()(int64_t i) const {
+    const auto row = i / bytes, offset = (i % bytes) * 8;
     uint8_t value = 0;
     for (int bit = 0; bit < 8 && offset + bit < pixels; ++bit)
       value |= static_cast<uint8_t>(src[row * pixels + offset + bit]) << bit;
-    dst[i] = value;
+    return value;
   }
-}
-__global__ void unpack_kernel(const uint8_t* src, bool* dst, int64_t total, int64_t pixels, int64_t bytes) {
-  for (int64_t i = static_cast<int64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
-       i < total; i += static_cast<int64_t>(blockDim.x) * gridDim.x) {
-    const auto p = i % pixels;
-    dst[i] = (src[(i / pixels) * bytes + p / 8] >> (p % 8)) & 1;
-  }
-}
+};
 __global__ void nms_kernel(const bool* suppress, bool* keep, int64_t n) {
   __shared__ int active;
   for (int64_t i = 0; i < n; ++i) {
@@ -47,9 +40,9 @@ at::Tensor pack_masks_cuda(const at::Tensor& masks) {
   const auto bytes = pixels / 8 + (pixels % 8 != 0);
   auto output = at::empty({masks.size(0), bytes}, masks.options().dtype(at::kByte));
   if (output.numel()) {
-    pack_kernel<<<blocks(output.numel()), threads, 0, c10::cuda::getCurrentCUDAStream()>>>(
-        masks.const_data_ptr<bool>(), output.mutable_data_ptr<uint8_t>(), output.numel(), pixels, bytes);
-    C10_CUDA_KERNEL_LAUNCH_CHECK();
+    C10_CUDA_CHECK(cub::DeviceTransform::Transform(
+        thrust::counting_iterator<int64_t>(0), output.mutable_data_ptr<uint8_t>(), output.numel(),
+        PackMask{masks.const_data_ptr<bool>(), pixels, bytes}, c10::cuda::getCurrentCUDAStream()));
   }
   return output;
 }
@@ -59,9 +52,13 @@ at::Tensor unpack_masks_cuda(const at::Tensor& packed, int64_t height, int64_t w
   const auto bytes = pixels / 8 + (pixels % 8 != 0);
   auto output = at::empty({packed.size(0), 1, height, width}, packed.options().dtype(at::kBool));
   if (output.numel()) {
-    unpack_kernel<<<blocks(output.numel()), threads, 0, c10::cuda::getCurrentCUDAStream()>>>(
-        packed.const_data_ptr<uint8_t>(), output.mutable_data_ptr<bool>(), output.numel(), pixels, bytes);
-    C10_CUDA_KERNEL_LAUNCH_CHECK();
+    const auto* src = packed.const_data_ptr<uint8_t>();
+    auto* first = output.mutable_data_ptr<bool>();
+    thrust::tabulate(thrust::cuda::par_nosync.on(c10::cuda::getCurrentCUDAStream()),
+        first, first + output.numel(), [src, pixels, bytes] __device__(int64_t i) {
+          const auto p = i % pixels;
+          return bool((src[(i / pixels) * bytes + p / 8] >> (p % 8)) & 1);
+        });
   }
   return output;
 }
