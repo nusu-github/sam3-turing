@@ -20,7 +20,7 @@ at::Tensor VisionEncoder::linear(const at::Tensor& x, const std::string& prefix)
   if(prefix.find(".attn.")!=std::string::npos && weights_.count(prefix+".int8")) {
     const auto& w = weight(prefix + ".int8");
     auto result = detail::quantized_linear(x, w, weight(prefix + ".scale"),
-        weight(prefix + ".bias"), false, false, "vision.projection");
+        weight(prefix + (weights_.count(prefix+".calib_bias")?".calib_bias":".bias")), false, false, "vision.projection");
     auto shape=x.sizes().vec();shape.back()=w.size(0);
     return result.view(shape);
   }
@@ -45,7 +45,8 @@ at::Tensor VisionEncoder::attention(const at::Tensor& x, const std::string& pref
       auto flat=x.to(at::kHalf).reshape({-1,1024}).contiguous();
       auto [quant, scales] = detail::quantize_rows(flat, "vision.projection");
       auto accum=detail::profile_call("vision.projection.int8_gemm",[&]{return detail::experimental_int_mm(quant,weight(name+".int8"));});
-      return detail::profile_call("vision.projection.restore_rope",[&]{return approx_restore_rope(accum,scales,weight(name+".scale"),weight(name+".bias"),frequencies,b);});
+      const auto& bias=weight(name+(weights_.count(name+".calib_bias")?".calib_bias":".bias"));
+      return detail::profile_call("vision.projection.restore_rope",[&]{return approx_restore_rope(accum,scales,weight(name+".scale"),bias,frequencies,b);});
     });
     q=packed[0];k=packed[1];v=packed[2];fused=true;
   }

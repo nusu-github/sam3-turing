@@ -1,0 +1,11 @@
+[
+  {
+    "run": "r7-qkv-observe",
+    "kind": "observe",
+    "mode": "fp16",
+    "completed": 32,
+    "process_wall_seconds": 295.85036063194275,
+    "max_peak_allocated_bytes": 2291008512,
+    "max_sampled_whole_gpu_bytes": 3709480960
+  }
+]

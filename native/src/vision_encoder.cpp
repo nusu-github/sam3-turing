@@ -120,6 +120,16 @@ VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
       {"exact","fused"},"invalid QKV RoPE experiment: ");
   TORCH_CHECK(qkv_fusion!="fused" || projection_mode=="qkv" || projection_mode=="both",
       "QKV RoPE fusion requires QKV INT8 mode");
+  const auto qkv_calibration=detail::read_experiment("SAM3_EXPERIMENT_QKV_CALIBRATION", "");
+  const bool qkv_mean_bias=detail::checked_experiment("SAM3_EXPERIMENT_QKV_MEAN_BIAS",
+      {"exact","enabled"},"invalid QKV mean bias experiment: ")=="enabled";
+  TORCH_CHECK(qkv_calibration.empty() || projection_mode=="qkv" || projection_mode=="both",
+      "QKV calibration requires QKV INT8 mode");
+  TORCH_CHECK(!qkv_mean_bias || !qkv_calibration.empty(),"QKV mean bias requires calibration data");
+  TORCH_CHECK(detail::read_experiment("SAM3_EXPERIMENT_OBSERVE_QKV", "").empty() ||
+      (compute_storage==at::kHalf && projection_mode=="exact" && experiment=="exact" &&
+       detail::read_experiment("SAM3_EXPERIMENT_ATTENTION")=="exact" && qkv_calibration.empty()),
+      "QKV observations require the unquantized FP16 path");
   if(projection_mode!="exact") {
     TORCH_CHECK(device.is_cuda() && compute_storage==at::kHalf,
                 "experimental projection INT8 requires CUDA FP16 compute storage");
@@ -127,10 +137,32 @@ VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
       if(!detail::projection_int8_layer(layer))continue;
       if(projection_mode!="both" && projection_mode!=part)continue;
       const auto name="trunk.blocks."+std::to_string(layer)+".attn."+part;
-      const auto& w=weight(name+".weight");
+      auto w=weight(name+".weight");
+      at::Tensor r,shift;
+      if(part=="qkv" && !qkv_calibration.empty()) {
+        const auto values=detail::read_qkv_data(layer,std::filesystem::u8path(qkv_calibration),true,device);
+        r=values[0].contiguous();shift=values[1].contiguous();
+        const auto norm_name="trunk.blocks."+std::to_string(layer)+".norm1";
+        auto [gamma,beta]=detail::fold_qkv_norm(weight(norm_name+".weight"),weight(norm_name+".bias"),r,shift);
+        w=(w.to(at::kFloat)*r).to(at::kHalf).contiguous();
+        auto bias=(weight(name+".bias").to(at::kFloat)+at::mv(w.to(at::kFloat),shift)).to(at::kHalf).contiguous();
+        TORCH_CHECK(at::isfinite(w).all().item<bool>() && at::isfinite(bias).all().item<bool>(),
+            "QKV calibration overflows FP16");
+        // Only scoped-in INT8 QKV layers receive transformed normalization.
+        weights_.at(norm_name+".weight")=std::move(gamma);
+        weights_.at(norm_name+".bias")=std::move(beta);
+        weights_.emplace(name+".calib_bias",std::move(bias));
+      }
       auto q=at::empty(w.sizes(),w.options().dtype(at::kChar));
       auto scales=at::empty({w.size(0)},w.options().dtype(at::kFloat));
       approx_quant(w,q,scales);
+      if(part=="qkv" && qkv_mean_bias) {
+        const auto mean=detail::read_qkv_data(layer,std::filesystem::u8path(qkv_calibration),false,device)[0];
+        auto bias=detail::linear_mean_bias(weight(name+".weight"),weight(name+".bias"),q,scales,
+            mean,r,shift).to(at::kHalf).contiguous();
+        TORCH_CHECK(at::isfinite(bias).all().item<bool>(),"QKV mean bias overflows FP16");
+        weights_.at(name+".calib_bias")=std::move(bias);
+      }
       weights_.emplace(name+".int8",std::move(q));
       weights_.emplace(name+".scale",std::move(scales));
     }

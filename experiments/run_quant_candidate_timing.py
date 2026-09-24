@@ -38,6 +38,11 @@ def main():
     assert source['calibration_sha256'] == sha(cal / 'fc2-affine.f32.bin')
     if 'mean_sha256' in source:
         assert source['mean_sha256'] == sha(cal / 'fc2-mean.f32.bin')
+    if 'qkv_calibration_sha256' in source:
+        qkv_cal = Path(source['args']['qkv_calibration'])
+        assert source['qkv_calibration_sha256'] == sha(qkv_cal / 'qkv-affine.f32.bin')
+        if 'qkv_mean_sha256' in source:
+            assert source['qkv_mean_sha256'] == sha(qkv_cal / 'qkv-mean.f32.bin')
     report_path = Path('experiments/results/native_rtx2060')
     completed = json.loads((report_path / (args.candidate_run + '.json')).read_text())
     assert completed['signature'] == source and completed['results'], 'source quality report is incomplete'

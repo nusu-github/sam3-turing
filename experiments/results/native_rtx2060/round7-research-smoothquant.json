@@ -1,0 +1,24 @@
+{
+  "source": "Targeted algorithm provenance, not a new latest-method ranking",
+  "github": {
+    "url": "https://github.com/mit-han-lab/smoothquant/blob/main/smoothquant/smooth.py",
+    "blob_sha": "c2a70e70fe645c69f970392940511da1465ed71d",
+    "observed": "smooth_ln_fcs uses activation and weight channel maxima, alpha balancing, division of LayerNorm weight/bias, multiplication of each consuming linear weight."
+  },
+  "scite": [
+    {
+      "doi": "10.48550/arxiv.2211.10438",
+      "title": "SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models",
+      "year": 2022,
+      "tally": {
+        "total": 80,
+        "supporting": 0,
+        "contrasting": 0,
+        "mentioning": 80,
+        "citingPublications": 136
+      }
+    }
+  ],
+  "primary_publication": "https://proceedings.mlr.press/v202/xiao23c.html",
+  "interpretation": "SmoothQuant's ICML 2023 result concerns LLM W8A8. We independently adapt the algebra to SAM3 QKV; shift, clipped/geomean-normalized scales, FP32 norm folding, FP16 transformed weights, and optional weight mean-bias correction are separate experimental choices. No SAM3 or SM75 accuracy/speed transfer is assumed."
+}

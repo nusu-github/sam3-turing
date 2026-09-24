@@ -34,6 +34,11 @@ def main():
         assert json.loads((source / row['case'] / 'complete.json').read_text()) == row, 'candidate case incomplete'
     assert candidate['binary_sha256'] == sha(EXE), 'candidate executable changed'
     assert candidate['runtime_sha256'] == sha(EXE.parent / 'sam3_native.dll'), 'candidate DLL changed'
+    if 'qkv_calibration_sha256' in candidate:
+        qkv_cal = Path(candidate['args']['qkv_calibration'])
+        assert candidate['qkv_calibration_sha256'] == sha(qkv_cal / 'qkv-affine.f32.bin')
+        if 'qkv_mean_sha256' in candidate:
+            assert candidate['qkv_mean_sha256'] == sha(qkv_cal / 'qkv-mean.f32.bin')
     if 'calibration_sha256' in candidate:
         cal = Path(candidate['args']['calibration'])
         assert candidate['calibration_sha256'] == sha(cal / 'fc2-affine.f32.bin')

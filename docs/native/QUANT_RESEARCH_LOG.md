@@ -736,3 +736,194 @@ microbenchの数値/layout check・モデル51件・CTestで検証し、hashを�
 [検証要約](../../experiments/results/native_rtx2060/round6-validation.json)、
 [CTest log](../../experiments/results/native_rtx2060/round6-ctest.log)。
 研究上の反証と再現性検証が増えたprogressとして継続する。採用構成は未確定、ゴールは未達。
+
+## Round 7 — QKV入力のチャネル校正
+
+開始commit `5f72470`、clean tree、GPU利用率0%、56℃、382MiBを確認。
+前roundはK中心化の93評価、operator costと再現性の検証を追加したprogressとして継続する。
+固定品質gate、split、従来selective速度対照は維持する。
+
+### 変換と実装
+
+FP16経路のnorm1出力から、各blockのQKV入力チャネル1024個についてmin/max/mean/RMSと
+重み列absmaxを記録する。観測は校正32枚限定、1画像1processで各blockの初回だけ。
+開発画像やholdoutは統計に混ぜない。
+
+`x' = x/r - shift`, `W' = W*r`, `b' = b + W'@shift` の等価変換を使う。
+norm1のgammaをgamma/r、betaをbeta/r-shiftへsetup時に変更することで、
+推論時の追加affine演算を避ける。INT8対象外のQKV blockはnorm/重み/biasとも変更しない。
+QKV restore/RoPEのfused経路と、通常のquantized linearの両方に補正biasを渡す。
+既定のFP16経路および校正未指定のINT8経路は従来の値を使う。
+
+`r` はactivation/weightのチャネル最大値からalphaで分配し、幾何平均で正規化、
+[1/16,16]にclipする。shiftなし／チャネル平均shiftを分離する。
+norm affineはFP32、変換重みと補正biasはFP16保存。foldがHalfへのcastより先なので、
+既にHalfへ丸めたxを変換する方法とのbit同値は仮定しない。
+任意のmean biasは `b + W_original@mu - W_dequantized@(mu/r-shift)` をFP32で計算し、
+Halfへ丸める。これは重み量子化の平均誤差だけを補正し、活性量子化や上流の誤差は扱わない。
+元のFP16重みを保持しており、weight VRAM圧縮の実証ではない。
+
+一次実装の再確認: [SmoothQuant公式smooth.py](https://github.com/mit-han-lab/smoothquant/blob/main/smoothquant/smooth.py)
+のblob SHA `c2a70e70fe645c69f970392940511da1465ed71d`をGitHub connectorで取得。
+LayerNormと全消費先Linearのscale移動が確認できる。
+[ICML 2023原論文](https://proceedings.mlr.press/v202/xiao23c.html)はLLMのW8A8の結果であり、
+SAM3/SM75の品質・速度を保証する資料としては使わない。
+Sciteで同論文を照合（支持0／反証0／言及80）、HF公式paper APIでもタイトルと
+2022-11-18初公開日を確認した。引用件数は独立再現の証明にはしない。
+shift、clip、FP32 norm foldingとmean biasは今回の実験上の選択として区別する。
+[照合記録](../../experiments/results/native_rtx2060/round7-research-smoothquant.json)、
+[HF metadata](../../experiments/results/native_rtx2060/round7-hf-smoothquant.json)。
+
+### 基礎検証
+
+専用CPU/CUDAテストを追加し、最初のbuildで2/2 Pass（2.54秒）。
+独立FP64参照によるnorm+QKV等価変換の最大差7.55e-15、量子化重みの経験平均を
+補正した差1.38e-6。恒等変換でnormパラメータとCUDA投影がbyte一致する。
+global/local用のnorm出力（72×72 grid）はFP64参照とのmax差 .003822、RMSE .0002245。
+残差から次blockのnormを準備する経路も、同じ残差和の直接normとbyte一致。
+実QKV寸法5184×1024×3072のinteger GEMMを8行のCPU INT64内積で照合し完全一致、
+bias復元はFP64参照との最大差 .0009752以下。非default CUDA streamで実行した。
+これらはoperator検証であり、モデル品質合格や速度改善の主張ではない。
+[詳細log](../../experiments/results/native_rtx2060/round7-qkv-operator-detail.log)。
+
+校正32枚の収集は完了（子process合計295.85秒）。QKV observer追加後も、従来の
+FP16校正出力と32/32件で全4ファイルがbyte一致した。
+[観測要約](../../experiments/results/native_rtx2060/round7-qkv-observe-summary.json)、
+[FP16対照](../../experiments/results/native_rtx2060/round7-observer-controls.json)。
+1024観測ファイルのSHAと3種類の校正を
+[provenance](../../experiments/results/native_rtx2060/round7-qkv-calibration-provenance.json)に記録。
+scaleの全block範囲はshiftなし .079790〜2.890540、mean shiftあり .0625〜3.688550、
+後者の最大abs shiftは6.651053。FP16校正入力の最大absは34.4375。
+
+恒等校正を従来候補と対照した後、同じMLP0/QKV6/attention0 FP16の
+anchor構成上で、mean biasのみ／scaleのみ／scale+mean bias／shift+scale+mean biasを
+開発7画像15promptで比較する。holdoutは使わない。
+
+モデルintegration対照を1425の2promptで実施した。新旧default、恒等校正、
+QKV全層をFP16へ除外した際の校正有無、補正済みbiasを使うfused/unfused RoPEの
+4組×2件、すべて全4出力ファイルがbyte一致した（fresh model 12 process）。
+[対照結果](../../experiments/results/native_rtx2060/r7-qkv-controls-summary.json)。
+scale+mean shift+mean biasでは1425 bowlのbox差が2.317856→.300903pxへ縮まった。
+これは最初の1画像の観察であり、全開発評価を通過した意味ではない。
+
+追加調査では[GCQ-ViT](https://journals.sagepub.com/doi/10.3233/FAIA250834)の
+出版社HTML（手法・実験設定）とSciteを照合した。ページのonline日は2026-08-25だが
+巻はECAI 2025、Scite年も2025であり、単に「2026年の新方式」とは数えない。
+LayerNorm後のgroup化、logarithmic softmax、次元別の平均誤差補正を組み合わせる。
+実験はViT/DeiT/SwinとSwin検出・segmentation、RTX 3090。確認した本文にGitHubリンクはなく、
+SAM3/SM75のinteger kernelや全体latencyを検証できた資料ではない。
+group scaleを現在の1つのINT32 GEMM結果へそのまま適用することもできない。
+
+そこから辿った[Bias Compensation原論文](https://arxiv.org/abs/2404.01892)のabstractと
+[公式実装](https://github.com/GongCheng1919/bias-compensation/blob/main/bias_compensation/quantizers/BiasCompensation.py)
+（blob `709baaa9948e2535e743e66899c7ebc54d0d6ffc`）を確認。
+校正時の浮動小数点出力と量子化出力の平均差を、出力チャネルごとのbiasへ蓄積している。
+現在のweight-only mean補正が省いているactivation誤差を、実出力で測って補う次の仮説になる。
+この方式のSAM3実装・実測はまだない。MTLQ-ViT（2026）もScite metadataで確認したが、
+出版社本文取得に失敗したため、手法の採否は保留。
+[追加照合記録](../../experiments/results/native_rtx2060/round7-bias-followup.json)。
+
+### 4方式の比較
+
+固定7画像15prompt（非空12）での結果は以下。
+
+| QKV校正 | 合格 | 主なFail |
+|---|---:|---|
+| r=1、shift=0、mean biasのみ | 11/15 | 1584人物IoU、4795テレビscore、9590人物の検出数/IoU/score、spoon score |
+| alpha .5、shiftなし、mean biasなし | 12/15 | 7574 bowl score、1425 bowl box、9590 spoon IoU/score |
+| alpha .5、shiftなし、mean biasあり | 12/15 | 1584人物IoU/score、4795テレビscore、9590人物検出数 |
+| alpha .5、mean shift、mean biasあり | 14/15 | 1584人物IoU .969636 |
+
+[全60評価](../../experiments/results/native_rtx2060/r7-qkv-screen-summary.json)。
+全方式ともこの時点では採用しない。最後の候補は検出数・score・boxが全15件基準内で、
+9590 spoon IoUは1.0。残る1584人物maskの誤差がQKV校正とINT8 attentionの組み合わせに
+依存するか確認するため、同じQKV/MLP構成でattentionをFP16にして同じ15件を評価する。
+これは開発上の相互作用の切り分けであり、独立評価や速度の実証ではない。
+
+attentionを全FP16にした結果は **12/15**。1584人物IoUは .986755へ戻ったが、
+7574 bowl score差 .027832、9590人物5→6検出、spoon IoU .978723がFail。
+[FP16 attention比較](../../experiments/results/native_rtx2060/r7-qkv-fp16-attention-summary.json)。
+次にglobal4層だけINT8 attentionにした結果は **13/15**。1584人物は .989451だが、
+1425 bowl box差1.722488pxと9590 spoon IoU .978571がFail。
+[global attention比較](../../experiments/results/native_rtx2060/r7-qkv-global-attention-summary.json)。
+丸めを減らせば全指標が単調に改善する状況ではなく、これらの構成も採用しない。
+
+1584の失敗maskを個体ごとに調べると、FP16面積493pxの人物（query146）に対して
+14/15候補は15px不一致、union494pxでIoU .969636。旧Round5候補は8px不一致だった。
+比較は元解像度612×612で行い、maskの縮小やgateの緩和はしていない。
+これはFP16との一致の分析であり、GTに対する正誤を意味しない。
+[個体別診断](../../experiments/results/native_rtx2060/round7-small-mask-diagnostic.json)。
+
+最良だった元のattention設定＋QKV scale/mean shift/mean biasを、旧Round5/6と
+評価範囲を揃えるため全33件でも確認する。既知のFailがあるので採用・holdout解禁には使わず、
+局所改善が他の画像で維持されるかの診断として扱う。
+
+再現コマンド例（calibration出力は既存directoryを上書きしない。新規cacheへの作成時に使用）:
+
+```powershell
+.venv/Scripts/python.exe experiments/run_quant_research.py observe --role calibration --mode fp16 --observe-target qkv --name <observe-name>
+.venv/Scripts/python.exe experiments/make_qkv_calibration.py .cache/quant-research-20260924/runs/<observe-name> .cache/quant-research-20260924/calibrations/qkv-identity --identity
+.venv/Scripts/python.exe experiments/make_qkv_calibration.py .cache/quant-research-20260924/runs/<observe-name> .cache/quant-research-20260924/calibrations/qkv-a050-none
+.venv/Scripts/python.exe experiments/make_qkv_calibration.py .cache/quant-research-20260924/runs/<observe-name> .cache/quant-research-20260924/calibrations/qkv-a050-mean --shift mean
+.venv/Scripts/python.exe experiments/run_quant_qkv_controls.py --name <controls-name>
+.venv/Scripts/python.exe experiments/run_quant_qkv_screen.py --name <screen-name>
+.venv/Scripts/python.exe experiments/run_quant_qkv_screen.py --name <interaction-name> --variants shift_bias --attention kitchen
+```
+
+単一の全開発候補:
+
+```powershell
+.venv/Scripts/python.exe experiments/run_quant_research.py quality --mode calibrated --scope mask:0xfffffffe --calibration .cache/quant-research-20260924/calibrations/a050-none-mean-bias --mean-bias --projection-scope mask:0xffffffbf --attention-scope mask:0xfffffffe --qkv-calibration .cache/quant-research-20260924/calibrations/qkv-a050-mean --qkv-mean-bias --name <development-name>
+```
+
+### 全開発セットの結果と次の仮説
+
+全33件の結果は **32/33**（非空24/25）。検出数は全件維持され、最大score差 .01708984、
+最大box差 .974121px。残るFailは1584人物のmin mask IoU .96963563だけだった。
+旧Round5/6の31/33から合格数は増えたが、固定gate未達のため採用しない。
+[全開発集計](../../experiments/results/native_rtx2060/round7-qkv-shift-development-summary.json)。
+先行screenと重なる15件は、別processでの全開発再実行と出力4ファイルがすべてbyte一致した。
+[再実行対照](../../experiments/results/native_rtx2060/round7-repeat-controls.json)。
+
+次はQKVのFP16出力と実INT8演算の出力との差を校正32枚で測り、出力チャネルごとの
+平均誤差をbiasへ折り込む。現方式のweight-only補正で扱えない、norm foldingの丸めと
+activation量子化の誤差を含める仮説である。FP16の上流を維持したshadow計算なら、
+上流blockの量子化誤差までは補正していないと明記する。
+校正は開発例や独立holdoutから採取せず、対象・式・評価条件を先に固定する。
+学習・校正の追加コストと推論時の追加演算を区別して記録する。
+
+次の実験の固定案: Round7のalpha .5/mean shiftとweight mean biasを初期値にする。
+各FP16 blockへの残差入力から、fold済みnormと実INT8 QKVをshadow実行し、RoPE前の
+`delta = mean(QKV_fp16 - QKV_int8)` を出力3072チャネルについて採取する。
+同じtoken数の32校正画像を等重み平均し、`bias_new = Half(bias_old + mean_image(delta))`
+をsetupで適用する。全INT8対象QKVに同じ規則を使い、開発例別の補正はしない。
+shadow計算で本来のFP16出力が変わらないこと、独立した数値参照、補正なしの再現性、
+fused/unfused経路を先に検証する。出力Halfへの再丸めにより平均誤差が厳密に0になる
+保証はなく、最終判断は同じ開発gateと、その後の独立評価・速度評価で行う。
+
+Round7では全体latencyを計測していない。以前の候補の速度をこの構成の実測値として
+流用しない。独立holdout 32枚68promptと既存17例の最終回帰は未実行である。
+INT4とSAM3.1への有効性も未確定で、研究ゴールは継続する。
+
+### Round7の検証記録
+
+全CTest **62/62、185.32秒**、QKV CUDAのcompute-sanitizer memcheck **0 errors**。
+校正観測32/32、パラメータ・経路対照8/8、screen再実行15/15のbyte一致を確認した。
+Python構文検査と`git diff --check`もPass。weight/data manifest SHAは変わらず、
+全167モデルprocessで同じDLL SHA `c87c030a417a7e9f1276b3fd56cff076fc4c68cc1cd87b9cfa8bee30155d6dba`
+を使用した。CUDA kernel本体と通常のruntime defaultは変更していない。
+[検証要約](../../experiments/results/native_rtx2060/round7-validation.json)、
+[CTest](../../experiments/results/native_rtx2060/round7-ctest.log)、
+[memcheck](../../experiments/results/native_rtx2060/round7-qkv-memcheck.log)。
+
+qualityは **135 process / 49 run / 16画像**、子process時間合計1,256.68秒。
+最大cold allocated 2.695GB、whole GPU標本最大4.256GB。観測32 processは別に295.85秒、
+最大allocated 2.291GB、whole GPU標本最大3.709GB。NVMLは20ms間隔のwhole device標本で、
+厳密なprocess peakではない。推論時のbias折り込みに追加GEMMはないが、setup・校正は
+別コストとして記録し、cold quality時間から速度の採否は判断しない。
+[process集計](../../experiments/results/native_rtx2060/round7-process-summary.json)。
+
+FC2と共通化したmean bias helperの回帰も、幅1/31/32/257/1024/4736/8192の7条件で確認。
+境界量子化・affine・FP16 GELUの比較は全件一致、独立FP64参照に対するweight mean補正の
+最大差は1.997e-6。これは数値検証のみでtimingは実行していない。
+[FC2回帰結果](../../experiments/results/native_rtx2060/round7-fc2-boundary.json)。

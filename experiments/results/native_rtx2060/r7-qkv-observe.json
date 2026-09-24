@@ -1,0 +1,216 @@
+{
+  "signature": {
+    "args": {
+      "kind": "observe",
+      "role": "calibration",
+      "mode": "fp16",
+      "name": "r7-qkv-observe",
+      "scope": "all",
+      "calibration": null,
+      "limit_images": null,
+      "primary_only": false,
+      "observe_target": "qkv"
+    },
+    "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+    "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+    "runtime_sha256": "c87c030a417a7e9f1276b3fd56cff076fc4c68cc1cd87b9cfa8bee30155d6dba",
+    "environment": {
+      "TORCH_BLAS_PREFER_CUBLASLT": "0",
+      "SAM3_EXPERIMENT_PIXEL": "fused_nchw"
+    }
+  },
+  "results": [
+    {
+      "case": "coco-train-000000000009-p0",
+      "image_id": 9,
+      "mode": "fp16",
+      "count": 0
+    },
+    {
+      "case": "coco-train-000000000034-p0",
+      "image_id": 34,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000042-p0",
+      "image_id": 42,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000049-p0",
+      "image_id": 49,
+      "mode": "fp16",
+      "count": 2
+    },
+    {
+      "case": "coco-train-000000000064-p0",
+      "image_id": 64,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000074-p0",
+      "image_id": 74,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000077-p0",
+      "image_id": 77,
+      "mode": "fp16",
+      "count": 5
+    },
+    {
+      "case": "coco-train-000000000086-p0",
+      "image_id": 86,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000094-p0",
+      "image_id": 94,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000109-p0",
+      "image_id": 109,
+      "mode": "fp16",
+      "count": 2
+    },
+    {
+      "case": "coco-train-000000000110-p0",
+      "image_id": 110,
+      "mode": "fp16",
+      "count": 13
+    },
+    {
+      "case": "coco-train-000000000113-p0",
+      "image_id": 113,
+      "mode": "fp16",
+      "count": 3
+    },
+    {
+      "case": "coco-train-000000000127-p0",
+      "image_id": 127,
+      "mode": "fp16",
+      "count": 2
+    },
+    {
+      "case": "coco-train-000000000133-p0",
+      "image_id": 133,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000149-p0",
+      "image_id": 149,
+      "mode": "fp16",
+      "count": 12
+    },
+    {
+      "case": "coco-train-000000000196-p0",
+      "image_id": 196,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000208-p0",
+      "image_id": 208,
+      "mode": "fp16",
+      "count": 2
+    },
+    {
+      "case": "coco-train-000000000241-p0",
+      "image_id": 241,
+      "mode": "fp16",
+      "count": 5
+    },
+    {
+      "case": "coco-train-000000000260-p0",
+      "image_id": 260,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000308-p0",
+      "image_id": 308,
+      "mode": "fp16",
+      "count": 7
+    },
+    {
+      "case": "coco-train-000000000312-p0",
+      "image_id": 312,
+      "mode": "fp16",
+      "count": 6
+    },
+    {
+      "case": "coco-train-000000000315-p0",
+      "image_id": 315,
+      "mode": "fp16",
+      "count": 12
+    },
+    {
+      "case": "coco-train-000000000322-p0",
+      "image_id": 322,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000368-p0",
+      "image_id": 368,
+      "mode": "fp16",
+      "count": 17
+    },
+    {
+      "case": "coco-train-000000000384-p0",
+      "image_id": 384,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000397-p0",
+      "image_id": 397,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000428-p0",
+      "image_id": 428,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000431-p0",
+      "image_id": 431,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000459-p0",
+      "image_id": 459,
+      "mode": "fp16",
+      "count": 1
+    },
+    {
+      "case": "coco-train-000000000488-p0",
+      "image_id": 488,
+      "mode": "fp16",
+      "count": 7
+    },
+    {
+      "case": "coco-train-000000000514-p0",
+      "image_id": 514,
+      "mode": "fp16",
+      "count": 2
+    },
+    {
+      "case": "coco-train-000000000540-p0",
+      "image_id": 540,
+      "mode": "fp16",
+      "count": 1
+    }
+  ]
+}

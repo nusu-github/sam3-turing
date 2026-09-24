@@ -1,0 +1,34 @@
+{
+  "scite": [
+    {
+      "doi": "10.1016/j.patcog.2026.113769",
+      "title": "MTLQ-ViT: Multi-granularity Tail-enhanced Logarithmic Quantization for Vision Transformers",
+      "year": 2026
+    },
+    {
+      "doi": "10.3233/faia250834",
+      "title": "GCQ-ViT: Group-Aware Collaborative Post-Training Quantization for Vision Transformers",
+      "year": 2025
+    }
+  ],
+  "gcq": {
+    "url": "https://journals.sagepub.com/doi/10.3233/FAIA250834",
+    "read": "Publisher HTML sections 3.2-3.4 and 4.1, references",
+    "publisher_online": "2026-08-25",
+    "conference_volume": "ECAI 2025",
+    "summary": "Post-LayerNorm activation grouping, displaced logarithmic softmax quantization, and dimension-aware empirical mean error correction. Reported experiments use ViT/DeiT/Swin and Swin detection/segmentation on RTX 3090, not SAM3 or SM75.",
+    "implementation_limit": "No Github link found in the inspected article. No verified SM75 integer-kernel implementation or end-to-end latency result. Group-dependent K scales need different GEMM accumulation support."
+  },
+  "bc": {
+    "paper": "https://arxiv.org/abs/2404.01892",
+    "code": "https://github.com/GongCheng1919/bias-compensation/blob/main/bias_compensation/quantizers/BiasCompensation.py",
+    "blob_sha": "709baaa9948e2535e743e66899c7ebc54d0d6ffc",
+    "read": "Paper abstract and official BiasCompensation implementation",
+    "summary": "Accumulates the mean difference between floating and quantized outputs over calibration batches, retaining the output-channel axes. Handles whether the observed quantized output already includes compensation.",
+    "next_hypothesis": "Empirical output-mean correction can include activation quantization error omitted by the current weight-only formula. This is a hypothesis for a subsequent calibration-only experiment, not implemented or validated here."
+  },
+  "mtlq": {
+    "doi": "10.1016/j.patcog.2026.113769",
+    "access": "Metadata located in Scite; publisher page failed to open. Full paper not read, no implementation decision."
+  }
+}

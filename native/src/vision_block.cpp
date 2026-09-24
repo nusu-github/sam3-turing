@@ -37,6 +37,7 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
     if (hp != h || wp != w) x = at::constant_pad_nd(x, {0,0,0,wp-w,0,hp-h}, 0);
     x = x.view({b,hp/24,24,wp/24,24,1024}).permute({0,1,3,2,4,5}).reshape({-1,24,24,1024});
   }
+  detail::observe_qkv(x,weight(prefix+".attn.qkv.weight"),int(layer));
   x = attention(x, prefix + ".attn");
   at::Tensor normalized;
   if (fuse_norm) {

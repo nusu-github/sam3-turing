@@ -1,0 +1,37 @@
+Start testing: Sep 24 22:08 東京 (標準時)
+----------------------------------------------------------
+14/62 Testing: qkv_calibration_cpu
+14/62 Test: qkv_calibration_cpu
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_qkv_calibration_test.exe" "cpu"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"qkv_calibration_cpu" start time: Sep 24 22:08 東京 (標準時)
+Output:
+----------------------------------------------------------
+fp64_equivalence_max=7.54952e-15 compensated_mean_max=1.38225e-06
+<end of output>
+Test time =   0.97 sec
+----------------------------------------------------------
+Test Passed.
+"qkv_calibration_cpu" end time: Sep 24 22:08 東京 (標準時)
+"qkv_calibration_cpu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/62 Testing: qkv_calibration_cuda
+15/62 Test: qkv_calibration_cuda
+Command: "D:/PycharmProjects/sam3-turing/build/native-windows-cu130/sam3_qkv_calibration_test.exe" "cuda"
+Directory: D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+"qkv_calibration_cuda" start time: Sep 24 22:08 東京 (標準時)
+Output:
+----------------------------------------------------------
+fp64_equivalence_max=7.54952e-15 compensated_mean_max=1.38225e-06
+windowed=0 norm_max=0.00382215 norm_rmse=0.000224483 restore_max=0.000937759
+windowed=1 norm_max=0.00382215 norm_rmse=0.000224483 restore_max=0.000975123
+<end of output>
+Test time =   1.56 sec
+----------------------------------------------------------
+Test Passed.
+"qkv_calibration_cuda" end time: Sep 24 22:08 東京 (標準時)
+"qkv_calibration_cuda" time elapsed: 00:00:01
+----------------------------------------------------------
+
+End testing: Sep 24 22:08 東京 (標準時)
