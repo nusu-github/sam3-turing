@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <string_view>
 #include <cstdlib>
+#include <cstdint>
 #include <string>
 
 namespace sam3::detail {
@@ -27,11 +28,49 @@ inline std::string checked_experiment(const char* name,
   return value;
 }
 
+// Bit 0 is block 0. Explicit masks permit single-block counterfactuals without
+// rebuilding or relying on an image-dependent precision policy.
+inline uint32_t quant_layer_mask(const std::string& scope) {
+  constexpr uint32_t all=0xffffffffu,global=0x80808080u;
+  if(scope=="all")return all;
+  if(scope=="global")return global;
+  if(scope=="local")return all^global;
+  const bool first=scope.rfind("first",0)==0,last=scope.rfind("last",0)==0;
+  if(first || last) {
+    const auto digits=scope.substr(first?5:4);
+    TORCH_CHECK(!digits.empty() && digits.size()<=2 &&
+        std::all_of(digits.begin(),digits.end(),[](char c){return c>='0' && c<='9';}),
+        "invalid quantization layer scope: ",scope);
+    const int count=std::stoi(digits);
+    TORCH_CHECK(count>=1 && count<=32,"quantization layer count must be in [1,32]");
+    return first?all>>(32-count):all<<(32-count);
+  }
+  if(scope.rfind("mask:0x",0)==0) {
+    const auto digits=scope.substr(7);
+    TORCH_CHECK(!digits.empty() && digits.size()<=8,"invalid 32-bit layer mask: ",scope);
+    uint32_t mask=0;
+    for(char c:digits) {
+      const int digit=c>='0' && c<='9'?c-'0':c>='a' && c<='f'?c-'a'+10:c>='A' && c<='F'?c-'A'+10:-1;
+      TORCH_CHECK(digit>=0,"invalid layer mask digit: ",scope);
+      mask=(mask<<4)|uint32_t(digit);
+    }
+    return mask;
+  }
+  TORCH_CHECK(false,"invalid quantization layer scope: ",scope);
+}
+inline bool quant_mask_layer(uint32_t mask,int layer) {
+  TORCH_CHECK(layer>=0 && layer<32,"quantization block index outside [0,31]");
+  return (mask & (uint32_t(1)<<layer))!=0;
+}
 inline bool mlp_int8_layer(int layer) {
   static const std::string scope=read_experiment("SAM3_EXPERIMENT_MLP_SCOPE", "all");
-  check_experiment(scope, {"all", "first8", "first16", "first24", "last8", "last16",
-      "last24", "global", "local"}, "invalid MLP INT8 scope: ");
-  return scope=="all" || (scope=="first8" && layer<8) || (scope=="first16" && layer<16) || (scope=="first24" && layer<24) || (scope=="last8" && layer>=24) || (scope=="last16" && layer>=16) || (scope=="last24" && layer>=8) || (scope=="global" && (layer+1)%8==0) || (scope=="local" && (layer+1)%8!=0);
+  static const uint32_t mask=quant_layer_mask(scope);
+  return quant_mask_layer(mask,layer);
+}
+inline bool projection_int8_layer(int layer) {
+  static const std::string scope=read_experiment("SAM3_EXPERIMENT_PROJECTION_SCOPE", "all");
+  static const uint32_t mask=quant_layer_mask(scope);
+  return quant_mask_layer(mask,layer);
 }
 inline const std::string& mlp_int8_part() {
   static const std::string part=read_experiment("SAM3_EXPERIMENT_MLP_PART", "both");

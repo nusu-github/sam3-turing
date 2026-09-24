@@ -14,7 +14,8 @@ SAM3.1 動画への適用は、画像の成功から自動的に推定せず別�
 - 基準: INT8 attention / QKV + global 4 block MLP INT8、sequence attention output。
 - 品質: finite、検出数一致、Hungarian 対応付け後の最小 mask IoU >= .98、
   最大 score 差 <= .02、最大 box 座標差 <= 1px。参照は FP16。
-- 速度の採用目安: 同一の pixel / attention 設定で全体 median 5%以上短縮、
+- 速度の採用目安: pixel変換・attention出力layout等の共通最適化と入出力条件を揃え、
+  固定した現行構成に対して全体 median 5%以上短縮、
   p95が5%以上悪化しないこと。複数の fresh process で交互比較し、単一画像の偶然の差に依存しない。
 - メモリ: 6 GB実機に収まり、peak allocated / whole-GPUを記録。
 - 校正・候補選択・最終評価の画像を分離する。既存17例は回帰用。
@@ -353,3 +354,137 @@ FC2単独は `--mlp-part fc2`、全attention/QKV INT8との組み合わせはatt
 
 今回も新しい切り分け・校正実装・検証・反証が増えたためprogressとして継続。
 ゴール達成ではなく、採用候補は未確定。最終評価32枚は未使用。
+
+## Round 4 — MLP / QKVの層ごとの混合精度
+
+前roundは実装と検証・反証結果を増やしたprogressとして継続。
+開始commit `ca99271`、作業ツリーclean、GPU使用率0%、56℃、使用382MiBを確認。
+まず既存バイナリで、両FC/alpha=.5/平均補正・attention/QKV FP16を固定し、
+MLP first24 / last24を同じ難例5枚9promptで比較する。
+校正32枚と品質基準は変更せず、最終評価セットは未使用。
+
+MLPとQKVを1層単位で切り分けるため、共有の層mask解釈を追加する。
+`all/global/local` に加え、`firstN/lastN`（N=1..32）、`mask:0xHHHHHHHH` を許可。
+bit0がblock0、bit31がblock31。mask0は切り分け用の全FP16指定。
+MLPは既存 `SAM3_EXPERIMENT_MLP_SCOPE`、projectionは新規
+`SAM3_EXPERIMENT_PROJECTION_SCOPE` で指定し、重み確保と実行を一致させる。
+QKV fusionはINT8対象層だけに適用し、対象外は既存のFP16 linear/rotaryへ戻す。
+入力画像に応じて層構成を変える仕組みではなく、process開始時に構成を固定する。
+
+first24は8/9で、9590人物の5→6検出が残った。last24は7/9で人物は5検出に戻るが、
+テレビのscore差 .02246とspoonのIoU .97163がFail。
+[粗い範囲の比較](../../experiments/results/native_rtx2060/round4-coarse-mlp-summary.json)。
+次はblock0〜7のそれぞれ1層だけをFP16に戻し、残り31層は同じ校正INT8とする。
+まず9590の2promptで検出数とspoon品質のトレードオフを調べる。
+
+共有mask parserはN=1..32の全境界、global/local、0/all/上位bit付きmask、
+不正文字・範囲外・環境設定cacheをCPUで検証し、5/5 test Pass。
+全層mask0+attention FP16はFP16参照とbyte一致、projection allは従来INT8とbyte一致、
+MLP first24も改修前とbyte一致。maskの指定で重み準備と実行が食い違わないことを対照確認した。
+[3対照](../../experiments/results/native_rtx2060/round4-control.json)。
+`--scope` はcalibratedだけでなくallにも適用可能にした。selectiveは従来global4固定で、
+無視されるscope指定はrunnerで拒否する。QKV範囲は `--projection-scope` で指定する。
+
+block0〜7の1層だけを除外した比較では、人物の5→6検出が解消したのはblock0のみ。
+block0除外時は人物IoU .99248、score差 .00293、box差 .40448pxでPass。
+同じ画像のspoonはIoU .98571だがscore差 .02295でFail。
+その他の7候補はすべて人物検出数が6のままだった。
+[16評価の結果](../../experiments/results/native_rtx2060/round4-mlp-single-block-summary.json)。
+
+次にMLP block0だけFP16を固定し、attention全層INT8の下でQKV範囲を
+all / block0除外 / first24 / last24の4構成で比較する。
+まずテレビ・laptopの4795と人物・spoonの9590（計4prompt）を使い、
+部分系だけで改善したmaskを最終構成で採用できるか判断する。
+
+QKVの粗い範囲比較はall 3/4、block0除外2/4、first24 3/4、last24 1/4。
+[組み合わせ結果](../../experiments/results/native_rtx2060/round4-joint-coarse-summary.json)。
+QKVをすべてFP16とする対照も3/4で、spoonのIoU .97183がFailだった。
+QKV block0のINT8はこの組み合わせで人物の検出数を保つ側に作用する一方、
+テレビの誤差には悪化側に働く。単純にFP16を増やす規則では解決しない。
+
+テレビに対してQKV block1〜7を1層ずつ除外すると、block2 / block6がPass。
+score差 .00830 / .01025、box差 .22986 / .13144px。
+block7はscore差 .00195まで小さくなるがbox差1.74185pxでFailなので選ばない。
+[QKV 7候補](../../experiments/results/native_rtx2060/round4-qkv-single-block-summary.json)。
+MLP block0 FP16 + QKV block2 FP16（それ以外は従来の校正INT8/all attention INT8）と、
+QKV block6に置き換えた2候補を同じ5画像9promptで比較する。
+
+難例9件へ広げると、QKV block2 FP16候補は6/9、block6 FP16候補は7/9。
+block6候補は検出数・score・boxが全件基準内だが、小さい人物mask .97890と
+spoon .97872のIoUがFail。
+[9件での比較](../../experiments/results/native_rtx2060/round4-candidate-summary.json)。
+
+block6候補からさらにMLP末尾2 / 4 / 8層をFP16に戻したところ、
+1584/9590の4promptはすべて2/4のまま。spoonのIoUは全候補で .97872。
+後段MLPを戻すだけではこの失敗は解消しなかった。
+[末尾MLP比較](../../experiments/results/native_rtx2060/round4-tail-summary.json)。
+
+local attentionをFP16（global4のみINT8）にすると、小さい人物maskは .98523へ改善するが、
+9590人物が再び5→6検出、spoonも .97163でFail、合計7/9。
+[global attentionのみ](../../experiments/results/native_rtx2060/round4-global-attention-summary.json)。
+いずれも採用不可。品質が通る前にholdoutへ移ったり、IoU .98の基準を変更したりしない。
+
+速度上の余地を確認するため、block6候補のall attention / global attentionのみの2条件と
+現行selectiveを診断比較する。`run_quant_scope_timing.py --name r4-scope-timing` は
+現行構成で180 warmup画像＋5測定の事前加熱を行い、その後、開発7574/1425の主promptで
+各構成2 fresh process、各5 warmup＋15測定を実行する。2巡目は構成と画像の順を逆にする。
+1構成60測定、3構成計180測定。GPU clockは固定せず、NVML温度・clockを記録する。
+候補は品質未達のままなので、速度が出ても採用とは扱わない。
+
+比較条件の表現を明確化: 初期の「同一pixel/attention設定」は、無関係な実装最適化の差を
+混ぜないための条件として記した。今回以降、attentionのINT8/FP16配分自体も混合精度の
+候補変数として評価する。共通のpixel変換・layout指定・入力解像度・cached text/fresh image・
+warmup/repeat条件は揃え、比較対象の現行global4 MLP + all attention/QKV INT8は固定する。
+品質閾値、5% median改善、p95の上限、独立評価の要件は変更しない。
+
+### 速度診断の結果
+
+| 構成 | pooled median ms | pooled p95 ms | median短縮 | 最大allocated GB | sampled whole GPU GB |
+|---|---:|---:|---:|---:|---:|
+| 現行selective | 438.09 | 455.06 | — | 2.432 | 3.470 |
+| MLP block0・QKV block6はFP16、他の対象LinearはINT8、all attention INT8 | 380.03 | 395.28 | 13.25% | 2.692 | 3.744 |
+| 同MLP/QKV、global4 attentionのみINT8 | 386.91 | 400.17 | 11.68% | 2.692 | 3.744 |
+
+all attention候補は画像別medianでも13.39% / 13.29%短縮。
+global attention候補は11.17% / 12.36%短縮。両者とも各fresh processのmedianが現行より小さかった。
+測定processの開始温度74〜76℃、終了75〜77℃で、Round 2より温度条件が揃った。
+ただしclock固定や別日再測定はしていない。比較2画像では全timing processが品質gateを通るが、
+難例screenではいずれも7/9なので **採用条件未達**。速度だけを成功としない。
+
+[all attentionの全サンプル](../../experiments/results/native_rtx2060/r4-scope-timing-all-attention-summary.json)、
+[globalのみ](../../experiments/results/native_rtx2060/r4-scope-timing-global-attention-summary.json)、
+[事前加熱NVML・実行順](../../experiments/results/native_rtx2060/r4-scope-timing-protocol.json)。
+対象はvision trunkのMLP/QKV/attention。FC2だけにscale/mean校正を適用し、FC1・QKVは
+従来のrow INT8である。decoder等の精度は従来どおり。
+GBは10^9bytes。whole GPUは標本による下限でprocess専有peakではない。
+元のFP16重みを保持する研究実装なので、今回のINT8適用拡大はVRAM圧縮の主張ではない。
+
+この結果から、MLPのINT8範囲を一律に大きく削るより、誤差を生むattention演算を
+少数ずつFP16へ戻す方向にも速度上の余地がある。まず同じMLP0/QKV6構成で
+attentionをすべてFP16とする9件の対照を追加し、次の層別attention実験の起点を確認する。
+
+### 最後の対照・検証と次の反復
+
+同じMLP0/QKV6構成でattentionをすべてFP16にしても7/9。
+小さい人物maskは .98734へ改善するが、9590人物は5→6検出、spoonは .97872でFail。
+[FP16 attention対照](../../experiments/results/native_rtx2060/round4-fp16-attention-summary.json)。
+attentionの一律な精度変更だけで解決したとは言えず、QKV/MLPの組み合わせも再点検する。
+
+全CTest **56/56、141.85秒**、selector専用test 5/5、3つのモデル対照はbyte一致。
+今回の変更は層選択とdispatcherで、CUDA演算kernelは変更していない。
+既存kernelへの新たなmemcheck結果を主張せず、Round 3の検査と今回の構成別モデル実行を区別する。
+Python構文検査と `git diff --check` もPass。
+[検証要約とバイナリSHA](../../experiments/results/native_rtx2060/round4-validation.json)、
+[全CTest](../../experiments/results/native_rtx2060/round4-ctest.log)。
+
+品質process112（対照を含む）＋timing process12、別途preheat1。
+timingは3構成×60=180サンプル。使用画像は開発7枚、独立holdoutは未使用。
+全候補は品質未達で採用しない。通常設定も変更しない。
+
+前進した点は、1層単位のMLP/QKV切り分けを可能にし、検出数・score・小maskの
+異なる感度を特定したこと、かつ品質調整へ使える11〜13%の速度差を同一条件で実測したこと。
+次はMLP0 FP16＋QKV全層INT8＋all attention INT8の未測定3画像を補い、
+QKV6をFP16にした際のmask悪化とattention側の誤差を切り分ける。
+その結果に応じてattentionの層指定、または校正32枚からのQKV入力/LayerNorm校正へ進む。
+開発例の偶然の誤差相殺だけを追わず、候補固定後の全33例・既存17例・独立評価と
+再測定が揃うまで、ゴール完了とはしない。

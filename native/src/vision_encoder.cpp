@@ -116,10 +116,15 @@ VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
   }
   const auto projection_mode = detail::checked_experiment("SAM3_EXPERIMENT_PROJECTION",
       {"exact", "qkv", "proj", "both"}, "invalid SAM3_EXPERIMENT_PROJECTION: ");
+  const auto qkv_fusion=detail::checked_experiment("SAM3_EXPERIMENT_QKV_ROPE",
+      {"exact","fused"},"invalid QKV RoPE experiment: ");
+  TORCH_CHECK(qkv_fusion!="fused" || projection_mode=="qkv" || projection_mode=="both",
+      "QKV RoPE fusion requires QKV INT8 mode");
   if(projection_mode!="exact") {
     TORCH_CHECK(device.is_cuda() && compute_storage==at::kHalf,
                 "experimental projection INT8 requires CUDA FP16 compute storage");
     for(int layer=0;layer<32;++layer) for(const std::string part : {"qkv","proj"}) {
+      if(!detail::projection_int8_layer(layer))continue;
       if(projection_mode!="both" && projection_mode!=part)continue;
       const auto name="trunk.blocks."+std::to_string(layer)+".attn."+part;
       const auto& w=weight(name+".weight");

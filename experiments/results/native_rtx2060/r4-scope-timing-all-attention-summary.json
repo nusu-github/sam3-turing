@@ -1,0 +1,644 @@
+{
+  "scope": "Diagnostic speed comparison; independent quality gate is required before adoption.",
+  "protocol": "Two fresh processes/mode/image, 5 warmups and 15 samples; forward/reverse order.",
+  "results": {
+    "coco-val-000000001425-p0": {
+      "calibrated": {
+        "processes": 2,
+        "samples": 30,
+        "median_ms": 381.187,
+        "p95_ms": 396.159645,
+        "process_medians_ms": [
+          380.75399999999996,
+          382.7282
+        ],
+        "max_peak_allocated_bytes": 2691931648,
+        "max_sampled_whole_gpu_bytes": 3744378880
+      },
+      "selective": {
+        "processes": 2,
+        "samples": 30,
+        "median_ms": 439.61495,
+        "p95_ms": 456.08653,
+        "process_medians_ms": [
+          444.8433,
+          435.9468
+        ],
+        "max_peak_allocated_bytes": 2432068608,
+        "max_sampled_whole_gpu_bytes": 3469651968
+      },
+      "median_reduction_percent": 13.290710427386509,
+      "p95_change_percent": -13.139367435385552
+    },
+    "coco-val-000000007574-p0": {
+      "calibrated": {
+        "processes": 2,
+        "samples": 30,
+        "median_ms": 379.3374,
+        "p95_ms": 392.34779,
+        "process_medians_ms": [
+          378.0173,
+          379.79249999999996
+        ],
+        "max_peak_allocated_bytes": 2691931648,
+        "max_sampled_whole_gpu_bytes": 3744378880
+      },
+      "selective": {
+        "processes": 2,
+        "samples": 30,
+        "median_ms": 438.0007,
+        "p95_ms": 452.627685,
+        "process_medians_ms": [
+          436.7795,
+          440.7869
+        ],
+        "max_peak_allocated_bytes": 2432068608,
+        "max_sampled_whole_gpu_bytes": 3469651968
+      },
+      "median_reduction_percent": 13.393426083565618,
+      "p95_change_percent": -13.31776579243048
+    },
+    "pooled": {
+      "calibrated": {
+        "processes": 4,
+        "samples": 60,
+        "median_ms": 380.03419999999994,
+        "p95_ms": 395.283695,
+        "process_medians_ms": [
+          378.0173,
+          380.75399999999996,
+          382.7282,
+          379.79249999999996
+        ],
+        "max_peak_allocated_bytes": 2691931648,
+        "max_sampled_whole_gpu_bytes": 3744378880
+      },
+      "selective": {
+        "processes": 4,
+        "samples": 60,
+        "median_ms": 438.08910000000003,
+        "p95_ms": 455.0577,
+        "process_medians_ms": [
+          436.7795,
+          444.8433,
+          435.9468,
+          440.7869
+        ],
+        "max_peak_allocated_bytes": 2432068608,
+        "max_sampled_whole_gpu_bytes": 3469651968
+      },
+      "median_reduction_percent": 13.251847626430347,
+      "p95_change_percent": -13.135478204192562
+    }
+  },
+  "processes": [
+    {
+      "run": "r4-scope-timing-selective-7574-p0",
+      "case": "coco-val-000000007574-p0",
+      "mode": "selective",
+      "signature": {
+        "args": {
+          "kind": "timing",
+          "role": "development",
+          "mode": "selective",
+          "name": "r4-scope-timing-selective-7574-p0",
+          "scope": "all",
+          "calibration": null,
+          "limit_images": null,
+          "primary_only": true,
+          "image_id": 7574
+        },
+        "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+        "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+        "runtime_sha256": "feb8266eb738a0c133b5f62ef23b7c778e7592425e33bca3d4f140485c7284bd",
+        "environment": {
+          "TORCH_BLAS_PREFER_CUBLASLT": "0",
+          "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+          "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+          "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+          "SAM3_EXPERIMENT_MLP": "int8_boundary",
+          "SAM3_EXPERIMENT_PROJECTION": "qkv",
+          "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+          "SAM3_EXPERIMENT_FC2_NORM": "fused",
+          "SAM3_EXPERIMENT_MLP_SCOPE": "global"
+        }
+      },
+      "ms": [
+        441.7566,
+        432.4891,
+        431.8659,
+        445.3997,
+        445.4013,
+        438.1007,
+        433.353,
+        438.87949999999995,
+        432.9381,
+        431.9116,
+        441.5468,
+        433.7423,
+        451.7561,
+        436.7795,
+        436.4777
+      ],
+      "median_ms": 436.7795,
+      "peak_allocated_bytes": 2432068608,
+      "sampled_whole_gpu_peak_bytes": 3469651968,
+      "temperature_start_c": 75,
+      "temperature_end_c": 75,
+      "process_peak_sm_mhz": 1785,
+      "quality": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9995375603740623,
+        "max_score_error": 0.0009765625,
+        "max_box_error_px": 0.06649017333984375,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "run": "r4-scope-timing-selective-1425-p0",
+      "case": "coco-val-000000001425-p0",
+      "mode": "selective",
+      "signature": {
+        "args": {
+          "kind": "timing",
+          "role": "development",
+          "mode": "selective",
+          "name": "r4-scope-timing-selective-1425-p0",
+          "scope": "all",
+          "calibration": null,
+          "limit_images": null,
+          "primary_only": true,
+          "image_id": 1425
+        },
+        "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+        "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+        "runtime_sha256": "feb8266eb738a0c133b5f62ef23b7c778e7592425e33bca3d4f140485c7284bd",
+        "environment": {
+          "TORCH_BLAS_PREFER_CUBLASLT": "0",
+          "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+          "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+          "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+          "SAM3_EXPERIMENT_MLP": "int8_boundary",
+          "SAM3_EXPERIMENT_PROJECTION": "qkv",
+          "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+          "SAM3_EXPERIMENT_FC2_NORM": "fused",
+          "SAM3_EXPERIMENT_MLP_SCOPE": "global"
+        }
+      },
+      "ms": [
+        436.7314,
+        446.8178,
+        455.0423,
+        441.1524,
+        465.2597,
+        437.5333,
+        448.1807,
+        445.0575,
+        446.7242,
+        444.8433,
+        434.6884,
+        438.0775,
+        437.2276,
+        446.57770000000005,
+        433.07079999999996
+      ],
+      "median_ms": 444.8433,
+      "peak_allocated_bytes": 2432068608,
+      "sampled_whole_gpu_peak_bytes": 3469651968,
+      "temperature_start_c": 75,
+      "temperature_end_c": 76,
+      "process_peak_sm_mhz": 1785,
+      "quality": {
+        "reference_count": 2,
+        "candidate_count": 2,
+        "min_mask_iou": 0.9991848379865498,
+        "max_score_error": 0.00244140625,
+        "max_box_error_px": 0.07355499267578125,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "run": "r4-scope-timing-selective-1425-p1",
+      "case": "coco-val-000000001425-p0",
+      "mode": "selective",
+      "signature": {
+        "args": {
+          "kind": "timing",
+          "role": "development",
+          "mode": "selective",
+          "name": "r4-scope-timing-selective-1425-p1",
+          "scope": "all",
+          "calibration": null,
+          "limit_images": null,
+          "primary_only": true,
+          "image_id": 1425
+        },
+        "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+        "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+        "runtime_sha256": "feb8266eb738a0c133b5f62ef23b7c778e7592425e33bca3d4f140485c7284bd",
+        "environment": {
+          "TORCH_BLAS_PREFER_CUBLASLT": "0",
+          "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+          "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+          "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+          "SAM3_EXPERIMENT_MLP": "int8_boundary",
+          "SAM3_EXPERIMENT_PROJECTION": "qkv",
+          "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+          "SAM3_EXPERIMENT_FC2_NORM": "fused",
+          "SAM3_EXPERIMENT_MLP_SCOPE": "global"
+        }
+      },
+      "ms": [
+        443.0978,
+        434.35020000000003,
+        433.6821,
+        432.9049,
+        442.09900000000005,
+        432.4753,
+        435.9468,
+        444.9053,
+        436.5497,
+        433.1819,
+        455.3503,
+        433.7142,
+        444.5869,
+        456.6889,
+        435.7131
+      ],
+      "median_ms": 435.9468,
+      "peak_allocated_bytes": 2432068608,
+      "sampled_whole_gpu_peak_bytes": 3469651968,
+      "temperature_start_c": 75,
+      "temperature_end_c": 76,
+      "process_peak_sm_mhz": 1785,
+      "quality": {
+        "reference_count": 2,
+        "candidate_count": 2,
+        "min_mask_iou": 0.9991848379865498,
+        "max_score_error": 0.00244140625,
+        "max_box_error_px": 0.07355499267578125,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "run": "r4-scope-timing-selective-7574-p1",
+      "case": "coco-val-000000007574-p0",
+      "mode": "selective",
+      "signature": {
+        "args": {
+          "kind": "timing",
+          "role": "development",
+          "mode": "selective",
+          "name": "r4-scope-timing-selective-7574-p1",
+          "scope": "all",
+          "calibration": null,
+          "limit_images": null,
+          "primary_only": true,
+          "image_id": 7574
+        },
+        "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+        "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+        "runtime_sha256": "feb8266eb738a0c133b5f62ef23b7c778e7592425e33bca3d4f140485c7284bd",
+        "environment": {
+          "TORCH_BLAS_PREFER_CUBLASLT": "0",
+          "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+          "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+          "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+          "SAM3_EXPERIMENT_MLP": "int8_boundary",
+          "SAM3_EXPERIMENT_PROJECTION": "qkv",
+          "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+          "SAM3_EXPERIMENT_FC2_NORM": "fused",
+          "SAM3_EXPERIMENT_MLP_SCOPE": "global"
+        }
+      },
+      "ms": [
+        435.5539,
+        436.6779,
+        440.7869,
+        441.2772,
+        436.4418,
+        437.255,
+        446.4026,
+        443.1081,
+        437.39820000000003,
+        443.2721,
+        437.1271,
+        437.9007,
+        453.68510000000003,
+        446.45849999999996,
+        453.3408
+      ],
+      "median_ms": 440.7869,
+      "peak_allocated_bytes": 2432068608,
+      "sampled_whole_gpu_peak_bytes": 3469651968,
+      "temperature_start_c": 76,
+      "temperature_end_c": 77,
+      "process_peak_sm_mhz": 1785,
+      "quality": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9995375603740623,
+        "max_score_error": 0.0009765625,
+        "max_box_error_px": 0.06649017333984375,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "run": "r4-scope-timing-all-attention-7574-p0",
+      "case": "coco-val-000000007574-p0",
+      "mode": "calibrated",
+      "signature": {
+        "args": {
+          "kind": "timing",
+          "role": "development",
+          "mode": "calibrated",
+          "name": "r4-scope-timing-all-attention-7574-p0",
+          "scope": "mask:0xfffffffe",
+          "calibration": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+          "limit_images": null,
+          "primary_only": true,
+          "image_id": 7574,
+          "projection_scope": "mask:0xffffffbf",
+          "mean_bias": true
+        },
+        "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+        "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+        "runtime_sha256": "feb8266eb738a0c133b5f62ef23b7c778e7592425e33bca3d4f140485c7284bd",
+        "environment": {
+          "TORCH_BLAS_PREFER_CUBLASLT": "0",
+          "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+          "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+          "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+          "SAM3_EXPERIMENT_MLP": "int8_boundary",
+          "SAM3_EXPERIMENT_PROJECTION": "qkv",
+          "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+          "SAM3_EXPERIMENT_FC2_NORM": "fused",
+          "SAM3_EXPERIMENT_MLP_SCOPE": "mask:0xfffffffe",
+          "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+          "SAM3_EXPERIMENT_FC2_MEAN_BIAS": "enabled",
+          "SAM3_EXPERIMENT_PROJECTION_SCOPE": "mask:0xffffffbf"
+        },
+        "calibration_sha256": "07de8545359fc39cd350d3086501f0a5544d20f6c574e3ba02ee3bfd2981292e",
+        "mean_sha256": "67d2fc4002b37dc614219a18bcff803e5bd0f958cb68b7f47d9e1d1a3481f0aa"
+      },
+      "ms": [
+        376.1057,
+        385.3409,
+        401.4722,
+        373.6744,
+        371.0938,
+        391.4305,
+        373.7206,
+        375.11539999999997,
+        386.8595,
+        378.0173,
+        383.8125,
+        373.2969,
+        380.1777,
+        373.7341,
+        393.0983
+      ],
+      "median_ms": 378.0173,
+      "peak_allocated_bytes": 2691931648,
+      "sampled_whole_gpu_peak_bytes": 3744378880,
+      "temperature_start_c": 74,
+      "temperature_end_c": 75,
+      "process_peak_sm_mhz": 1785,
+      "quality": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9990751682679957,
+        "max_score_error": 0.00439453125,
+        "max_box_error_px": 0.2000885009765625,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "run": "r4-scope-timing-all-attention-1425-p0",
+      "case": "coco-val-000000001425-p0",
+      "mode": "calibrated",
+      "signature": {
+        "args": {
+          "kind": "timing",
+          "role": "development",
+          "mode": "calibrated",
+          "name": "r4-scope-timing-all-attention-1425-p0",
+          "scope": "mask:0xfffffffe",
+          "calibration": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+          "limit_images": null,
+          "primary_only": true,
+          "image_id": 1425,
+          "projection_scope": "mask:0xffffffbf",
+          "mean_bias": true
+        },
+        "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+        "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+        "runtime_sha256": "feb8266eb738a0c133b5f62ef23b7c778e7592425e33bca3d4f140485c7284bd",
+        "environment": {
+          "TORCH_BLAS_PREFER_CUBLASLT": "0",
+          "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+          "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+          "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+          "SAM3_EXPERIMENT_MLP": "int8_boundary",
+          "SAM3_EXPERIMENT_PROJECTION": "qkv",
+          "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+          "SAM3_EXPERIMENT_FC2_NORM": "fused",
+          "SAM3_EXPERIMENT_MLP_SCOPE": "mask:0xfffffffe",
+          "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+          "SAM3_EXPERIMENT_FC2_MEAN_BIAS": "enabled",
+          "SAM3_EXPERIMENT_PROJECTION_SCOPE": "mask:0xffffffbf"
+        },
+        "calibration_sha256": "07de8545359fc39cd350d3086501f0a5544d20f6c574e3ba02ee3bfd2981292e",
+        "mean_sha256": "67d2fc4002b37dc614219a18bcff803e5bd0f958cb68b7f47d9e1d1a3481f0aa"
+      },
+      "ms": [
+        396.94800000000004,
+        376.9151,
+        373.1715,
+        380.02439999999996,
+        376.34139999999996,
+        387.4753,
+        379.116,
+        388.4014,
+        380.75399999999996,
+        381.62,
+        382.22040000000004,
+        375.209,
+        398.05879999999996,
+        386.20369999999997,
+        374.5112
+      ],
+      "median_ms": 380.75399999999996,
+      "peak_allocated_bytes": 2691931648,
+      "sampled_whole_gpu_peak_bytes": 3744378880,
+      "temperature_start_c": 74,
+      "temperature_end_c": 75,
+      "process_peak_sm_mhz": 1785,
+      "quality": {
+        "reference_count": 2,
+        "candidate_count": 2,
+        "min_mask_iou": 0.9980643846780766,
+        "max_score_error": 0.00244140625,
+        "max_box_error_px": 0.10821533203125,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "run": "r4-scope-timing-all-attention-1425-p1",
+      "case": "coco-val-000000001425-p0",
+      "mode": "calibrated",
+      "signature": {
+        "args": {
+          "kind": "timing",
+          "role": "development",
+          "mode": "calibrated",
+          "name": "r4-scope-timing-all-attention-1425-p1",
+          "scope": "mask:0xfffffffe",
+          "calibration": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+          "limit_images": null,
+          "primary_only": true,
+          "image_id": 1425,
+          "projection_scope": "mask:0xffffffbf",
+          "mean_bias": true
+        },
+        "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+        "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+        "runtime_sha256": "feb8266eb738a0c133b5f62ef23b7c778e7592425e33bca3d4f140485c7284bd",
+        "environment": {
+          "TORCH_BLAS_PREFER_CUBLASLT": "0",
+          "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+          "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+          "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+          "SAM3_EXPERIMENT_MLP": "int8_boundary",
+          "SAM3_EXPERIMENT_PROJECTION": "qkv",
+          "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+          "SAM3_EXPERIMENT_FC2_NORM": "fused",
+          "SAM3_EXPERIMENT_MLP_SCOPE": "mask:0xfffffffe",
+          "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+          "SAM3_EXPERIMENT_FC2_MEAN_BIAS": "enabled",
+          "SAM3_EXPERIMENT_PROJECTION_SCOPE": "mask:0xffffffbf"
+        },
+        "calibration_sha256": "07de8545359fc39cd350d3086501f0a5544d20f6c574e3ba02ee3bfd2981292e",
+        "mean_sha256": "67d2fc4002b37dc614219a18bcff803e5bd0f958cb68b7f47d9e1d1a3481f0aa"
+      },
+      "ms": [
+        373.526,
+        391.3331,
+        378.7995,
+        383.4936,
+        377.2026,
+        372.3821,
+        384.803,
+        383.51829999999995,
+        382.7282,
+        374.2987,
+        382.9609,
+        395.1961,
+        378.30809999999997,
+        392.6654,
+        378.0027
+      ],
+      "median_ms": 382.7282,
+      "peak_allocated_bytes": 2691931648,
+      "sampled_whole_gpu_peak_bytes": 3744378880,
+      "temperature_start_c": 75,
+      "temperature_end_c": 76,
+      "process_peak_sm_mhz": 1785,
+      "quality": {
+        "reference_count": 2,
+        "candidate_count": 2,
+        "min_mask_iou": 0.9980643846780766,
+        "max_score_error": 0.00244140625,
+        "max_box_error_px": 0.10821533203125,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "run": "r4-scope-timing-all-attention-7574-p1",
+      "case": "coco-val-000000007574-p0",
+      "mode": "calibrated",
+      "signature": {
+        "args": {
+          "kind": "timing",
+          "role": "development",
+          "mode": "calibrated",
+          "name": "r4-scope-timing-all-attention-7574-p1",
+          "scope": "mask:0xfffffffe",
+          "calibration": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+          "limit_images": null,
+          "primary_only": true,
+          "image_id": 7574,
+          "projection_scope": "mask:0xffffffbf",
+          "mean_bias": true
+        },
+        "manifest_sha256": "327a07ed18f065fe09b7e2a8027e2860a12c1d92b08a60d31354b7d30c8077a9",
+        "binary_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+        "runtime_sha256": "feb8266eb738a0c133b5f62ef23b7c778e7592425e33bca3d4f140485c7284bd",
+        "environment": {
+          "TORCH_BLAS_PREFER_CUBLASLT": "0",
+          "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+          "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+          "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+          "SAM3_EXPERIMENT_MLP": "int8_boundary",
+          "SAM3_EXPERIMENT_PROJECTION": "qkv",
+          "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+          "SAM3_EXPERIMENT_FC2_NORM": "fused",
+          "SAM3_EXPERIMENT_MLP_SCOPE": "mask:0xfffffffe",
+          "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+          "SAM3_EXPERIMENT_FC2_MEAN_BIAS": "enabled",
+          "SAM3_EXPERIMENT_PROJECTION_SCOPE": "mask:0xffffffbf"
+        },
+        "calibration_sha256": "07de8545359fc39cd350d3086501f0a5544d20f6c574e3ba02ee3bfd2981292e",
+        "mean_sha256": "67d2fc4002b37dc614219a18bcff803e5bd0f958cb68b7f47d9e1d1a3481f0aa"
+      },
+      "ms": [
+        384.927,
+        378.8823,
+        373.46790000000004,
+        376.3549,
+        380.66929999999996,
+        384.7904,
+        376.6882,
+        375.0932,
+        381.7675,
+        375.274,
+        376.802,
+        380.044,
+        380.91740000000004,
+        379.79249999999996,
+        381.9763
+      ],
+      "median_ms": 379.79249999999996,
+      "peak_allocated_bytes": 2691931648,
+      "sampled_whole_gpu_peak_bytes": 3744378880,
+      "temperature_start_c": 75,
+      "temperature_end_c": 77,
+      "process_peak_sm_mhz": 1785,
+      "quality": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9990751682679957,
+        "max_score_error": 0.00439453125,
+        "max_box_error_px": 0.2000885009765625,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    }
+  ]
+}

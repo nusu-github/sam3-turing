@@ -1,0 +1,15 @@
+Test project D:/PycharmProjects/sam3-turing/build/native-windows-cu130
+    Start 1: vision_experiments_cpu
+1/5 Test #1: vision_experiments_cpu ............................   Passed    0.57 sec
+    Start 2: vision_experiments_invalid_scope_cpu
+2/5 Test #2: vision_experiments_invalid_scope_cpu ..............   Passed    0.54 sec
+    Start 3: vision_experiments_invalid_int4_cpu
+3/5 Test #3: vision_experiments_invalid_int4_cpu ...............   Passed    0.55 sec
+    Start 4: vision_experiments_invalid_part_cpu
+4/5 Test #4: vision_experiments_invalid_part_cpu ...............   Passed    0.55 sec
+    Start 5: vision_experiments_invalid_projection_scope_cpu
+5/5 Test #5: vision_experiments_invalid_projection_scope_cpu ...   Passed    0.57 sec
+
+100% tests passed out of 5
+
+Total Test time (real) =   2.79 sec

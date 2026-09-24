@@ -36,7 +36,9 @@ at::Tensor VisionEncoder::attention(const at::Tensor& x, const std::string& pref
 #ifdef SAM3_WITH_CUDA
   const auto fusion = detail::checked_experiment("SAM3_EXPERIMENT_QKV_ROPE",
       {"exact", "fused"}, "invalid QKV RoPE experiment: ");
-  if(fusion=="fused") {
+  // The constructor validates fusion mode. A scoped-out QKV keeps the exact
+  // linear/rotary path and has no integer weight allocation.
+  if(fusion=="fused" && weights_.count(prefix+".qkv.int8")) {
     const auto name=prefix+".qkv";
     TORCH_CHECK(x.is_cuda() && weights_.count(name+".int8"),"QKV RoPE fusion requires QKV INT8");
     auto packed=detail::profile_call("vision.qkv_rope",[&] {

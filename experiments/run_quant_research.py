@@ -27,7 +27,7 @@ def environment(mode, scope, calibration):
     if mode in ['selective','all','calibrated']:
         env.update(SAM3_EXPERIMENT_MLP='int8_boundary',SAM3_EXPERIMENT_PROJECTION='qkv',
                    SAM3_EXPERIMENT_QKV_ROPE='fused',SAM3_EXPERIMENT_FC2_NORM='fused',
-                   SAM3_EXPERIMENT_MLP_SCOPE=scope if mode=='calibrated' else ('global' if mode=='selective' else 'all'))
+                   SAM3_EXPERIMENT_MLP_SCOPE='global' if mode=='selective' else scope)
     if mode == 'calibrated':
         if calibration is None:
             raise ValueError('calibrated mode needs --calibration')
@@ -41,13 +41,14 @@ def main():
     parser.add_argument('--role', choices=['calibration','development','holdout'], default='development')
     parser.add_argument('--mode', choices=['fp16','attention','selective','all','calibrated'],default='fp16')
     parser.add_argument('--name', required=True)
-    parser.add_argument('--scope', default='all')
+    parser.add_argument('--scope', default='all',help='MLP scope for all/calibrated: all, firstN, lastN, global, local, mask:0xHEX')
     parser.add_argument('--calibration',type=Path)
     parser.add_argument('--limit-images',type=int)
     parser.add_argument('--primary-only',action='store_true')
     parser.add_argument('--image-id',type=int,help='Inspect one image from the selected split without changing its role')
     parser.add_argument('--attention',choices=['exact','kitchen','kitchen_all','kitchen_rot_all'],help='Explicit attention isolation override')
     parser.add_argument('--projection',choices=['exact','qkv'],help='Explicit QKV isolation override')
+    parser.add_argument('--projection-scope',help='Quantized projection blocks: all, firstN, lastN, global, local, mask:0xHEX')
     parser.add_argument('--mlp-part',choices=['both','fc1','fc2'],help='Quantize only the selected MLP linear(s)')
     parser.add_argument('--mean-bias',action='store_true',help='Compensate FC2 weight quantization mean error using calibration data')
     args = parser.parse_args()
@@ -63,6 +64,11 @@ def main():
         parser.error('FC2 calibration cannot apply when only FC1 is quantized')
     if args.mean_bias and args.mode!='calibrated':
         parser.error('FC2 mean bias needs calibrated mode and fc2-mean.f32.bin')
+    if args.scope!='all' and args.mode not in ['all','calibrated']:
+        parser.error('explicit MLP scope requires all or calibrated mode')
+    if args.projection_scope is not None and (args.mode=='fp16' or args.projection=='exact' or
+            (args.mode=='attention' and args.projection!='qkv')):
+        parser.error('projection scope requires a QKV INT8 mode')
     data=json.loads(DATA.read_text())
     images=[r for r in data['images'] if r['role']==args.role]
     if args.image_id is not None:
@@ -73,6 +79,7 @@ def main():
     if args.attention is not None: env['SAM3_EXPERIMENT_ATTENTION']=args.attention
     if args.mlp_part is not None: env['SAM3_EXPERIMENT_MLP_PART']=args.mlp_part
     if args.mean_bias: env['SAM3_EXPERIMENT_FC2_MEAN_BIAS']='enabled'
+    if args.projection_scope is not None: env['SAM3_EXPERIMENT_PROJECTION_SCOPE']=args.projection_scope
     if args.projection is not None:
         env['SAM3_EXPERIMENT_PROJECTION']=args.projection
         env['SAM3_EXPERIMENT_QKV_ROPE']='fused' if args.projection=='qkv' else 'exact'
@@ -83,7 +90,7 @@ def main():
                    binary_sha256=hashlib.sha256(EXE.read_bytes()).hexdigest(),
                    runtime_sha256=hashlib.sha256((EXE.parent/'sam3_native.dll').read_bytes()).hexdigest(),
                    environment={k:v for k,v in env.items() if k.startswith(('SAM3_','TORCH_BLAS'))})
-    for optional in ['image_id','attention','projection','mlp_part']:
+    for optional in ['image_id','attention','projection','mlp_part','projection_scope']:
         if getattr(args,optional) is None: signature['args'].pop(optional)
     if not args.mean_bias: signature['args'].pop('mean_bias')
     if args.calibration:

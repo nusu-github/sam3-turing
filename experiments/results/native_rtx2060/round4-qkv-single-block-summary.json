@@ -1,0 +1,103 @@
+{
+  "scope": "TV prompt only, MLP block0 FP16, 31 calibrated INT8 MLPs, all INT8 attention, one QKV block FP16",
+  "results": [
+    {
+      "fp16_qkv_block": 1,
+      "int8_scope": "mask:0xfffffffd",
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9985260589866837,
+        "max_score_error": 0.0498046875,
+        "max_box_error_px": 0.77374267578125,
+        "finite": true,
+        "gate_pass": false,
+        "byte_equal": false
+      }
+    },
+    {
+      "fp16_qkv_block": 2,
+      "int8_scope": "mask:0xfffffffb",
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.998801368619104,
+        "max_score_error": 0.00830078125,
+        "max_box_error_px": 0.2298583984375,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "fp16_qkv_block": 3,
+      "int8_scope": "mask:0xfffffff7",
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9986560994922236,
+        "max_score_error": 0.0625,
+        "max_box_error_px": 0.15067577362060547,
+        "finite": true,
+        "gate_pass": false,
+        "byte_equal": false
+      }
+    },
+    {
+      "fp16_qkv_block": 4,
+      "int8_scope": "mask:0xffffffef",
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9986925066101054,
+        "max_score_error": 0.02978515625,
+        "max_box_error_px": 0.2813720703125,
+        "finite": true,
+        "gate_pass": false,
+        "byte_equal": false
+      }
+    },
+    {
+      "fp16_qkv_block": 5,
+      "int8_scope": "mask:0xffffffdf",
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.998997333488335,
+        "max_score_error": 0.0283203125,
+        "max_box_error_px": 0.220306396484375,
+        "finite": true,
+        "gate_pass": false,
+        "byte_equal": false
+      }
+    },
+    {
+      "fp16_qkv_block": 6,
+      "int8_scope": "mask:0xffffffbf",
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9988958222855026,
+        "max_score_error": 0.01025390625,
+        "max_box_error_px": 0.131439208984375,
+        "finite": true,
+        "gate_pass": true,
+        "byte_equal": false
+      }
+    },
+    {
+      "fp16_qkv_block": 7,
+      "int8_scope": "mask:0xffffff7f",
+      "comparison": {
+        "reference_count": 1,
+        "candidate_count": 1,
+        "min_mask_iou": 0.9988375894511242,
+        "max_score_error": 0.001953125,
+        "max_box_error_px": 1.741851806640625,
+        "finite": true,
+        "gate_pass": false,
+        "byte_equal": false
+      }
+    }
+  ]
+}
