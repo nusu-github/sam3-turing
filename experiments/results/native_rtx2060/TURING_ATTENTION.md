@@ -59,12 +59,12 @@ With the existing Windows CUDA/LibTorch toolchain configured:
 ```powershell
 cmake -S native -B build/native-windows-cu130 -DSAM3_EXPERIMENT_TURING_ATTENTION=ON -DSAM3_TURING_DONOR=D:/PycharmProjects/sam3-turing/.cache/portability-review/flash-attention-turing
 cmake --build build/native-windows-cu130 --target sam3_turing_attention_bench sam3_image_latency
-.venv/Scripts/python.exe experiments/run_attention_native.py timing
-.venv/Scripts/python.exe experiments/run_attention_native.py quality
-.venv/Scripts/python.exe experiments/summarize_attention_native.py
 ```
 
-Drivers refuse to overwrite existing run directories. The summarizer intentionally exits 1 for the recorded box gate failure. Raw runs: `.cache/native-perf/attention-ba018a0`. Durable results: [model JSON](attention-ba018a0.json), [operator JSON](attention-micro.json), [memcheck unit JSON](attention-memcheck.json).
+The model runs used `experiments/run_attention_native.py timing|quality` and
+`summarize_attention_native.py` (which intentionally exits 1 for the recorded
+box gate failure). These drivers were removed after the experiment and remain in
+commit `7d7fddb`. Raw runs: `.cache/native-perf/attention-ba018a0`. Durable results: [model JSON](attention-ba018a0.json), [operator JSON](attention-micro.json), [memcheck unit JSON](attention-memcheck.json).
 
 CMake option defaults OFF. When built ON, unset `SAM3_EXPERIMENT_ATTENTION` or `exact` still selects existing SDPA. `global32`/`global64` replace only the four 5184-token Vision global layers in the tested image path. `all32` is diagnostic only. Other paths, including Detector and video memory Attention, are outside this experiment's validation scope.
 

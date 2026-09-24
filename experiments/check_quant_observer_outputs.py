@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from run_quant_research import ROOT
-from summarize_kitchen_extended import FILES
+from native_quality import FILES
 
 
 def main():

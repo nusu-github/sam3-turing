@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 from run_quant_research import ROOT
-from summarize_kitchen_extended import compare
+from native_quality import compare
 
 
 def main():

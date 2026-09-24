@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-from summarize_kitchen_extended import compare
+from native_quality import compare
 
 DATA = Path('experiments/results/native_rtx2060/quant-research-data.json')
 ROOT = Path('.cache/quant-research-20260924')

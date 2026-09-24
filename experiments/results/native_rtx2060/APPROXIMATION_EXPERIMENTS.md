@@ -108,8 +108,8 @@ GEMM epilogueでの復元などを候補にする。ただしTuring cuBLASLtのe
 ## 再現
 
 - `native/tools/approx_bench.cpp` と `approx_kernels.cu`: 合成入力によるカーネル検証と性能測定。
-- `experiments/run_approx_native.py timing` / `quality`: 同一DLLでモードを切替。
-  既存出力を上書きしない。再実行時は第2引数で新しい出力rootを指定する。
-- `experiments/summarize_approx_native.py [ROOT]`: 対応するrootから統計とマスク対応付けを再計算。
+- `experiments/run_approx_native.py timing` / `quality` と `summarize_approx_native.py [ROOT]`:
+  同一DLLでモードを切替えて測定・集計するドライバー。実験終了後に削除した。
+  当時のランタイムとともに commit `7d7fddb` に残っている（`git worktree add ../sam3-7d7fddb 7d7fddb`）。
 - [全体の生データ・比較](approximation-results.json)、[測定DLL等のハッシュ](approximation-manifest.json)。
 - 各runの出力・NVML監視・コマンドは `.cache/native-perf/approximation-v3/`。

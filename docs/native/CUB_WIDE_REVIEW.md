@@ -45,7 +45,8 @@ Reordering the includes fixed the build without patching dependency headers.
 
 ## Tests and measurements
 
-`experiments/check_cub_ops.py LIBRARY OUTPUT.json [--check-only]` checks CPU parity,
+`experiments/check_cub_ops.py LIBRARY OUTPUT.json [--check-only]` (removed after this
+review; kept in commit `7d7fddb`) checked CPU parity,
 byte-boundary tails, arbitrary packed input bytes, empty batches, multi-batch
 inputs, strided components inputs, negative/multiple component values, and
 nondefault CUDA streams. CUDA Graph capture/replay is verified with changed inputs.

@@ -23,12 +23,21 @@ separate checkout, for example `git worktree add ../sam3-sweep 080bec0`.
 
 ## Native runtime (Windows / RTX 2060)
 
-Native benchmarks run `sam3_image_latency` through `monitor_native_bench.py`,
-which restricts `PATH` to Windows system directories and samples whole-device
-NVML memory, clocks and power. The experiment index and decisions are in
-[results/native_rtx2060/README.md](results/native_rtx2060/README.md).
+| Script | Purpose |
+|---|---|
+| `monitor_native_bench.py` | Run one native process (usually `sam3_image_latency`) with a Windows-only `PATH`, sampling whole-device NVML memory, clocks and power |
+| `native_quality.py` | FP16-agreement gates (`compare`) and the 17 fixed regression cases |
+| `profile_native_hotspots.py`, `analyze_native_hotspots.py` | Nsight Systems capture and NVTX-correlated GPU kernel attribution |
 
-The INT8/INT4 calibration research is driven by `run_quant_research.py` and the
-related `prepare_*`, `make_*`, `run_quant_*` and `summarize_quant_*` scripts. Its
-goal, fixed data splits, quality gates and round-by-round results are in
+The experiment index and decisions are in
+[results/native_rtx2060/README.md](results/native_rtx2060/README.md). Drivers of
+concluded experiments (`run_*_native.py`, `summarize_*_native.py` and similar)
+were removed; they remain in commit `7d7fddb` together with the runtime they
+measured.
+
+The ongoing INT8/INT4 calibration research is driven by `run_quant_research.py`
+and the related `prepare_quant_research_data.py`, `make_*`, `run_quant_*`,
+`run_kitchen_center_bench.py`, `check_quant_observer_outputs.py` and
+`summarize_quant_*` scripts. Its goal, fixed data splits, quality gates and
+round-by-round results are in
 [docs/native/QUANT_RESEARCH_LOG.md](../docs/native/QUANT_RESEARCH_LOG.md).

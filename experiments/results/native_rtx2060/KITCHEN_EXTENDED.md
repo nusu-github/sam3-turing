@@ -44,10 +44,11 @@ output. Independent exact operator/layout checks validate that transformation.
 Original-case results are in [the updated comparison](kitchen-ba018a0.json).
 
 Raw results: [extended comparisons](kitchen-extended-ba018a0.json).
-Reproduce with `experiments/run_kitchen_extended.py` (completed runs are reused)
-and `experiments/summarize_kitchen_extended.py`. Run mode `attention_only` for
-the isolated attention approximation; this clears the earlier quantization
-environment variables instead of silently inheriting them.
+The runs used `experiments/run_kitchen_extended.py` and
+`summarize_kitchen_extended.py` (mode `attention_only` cleared the earlier
+quantization variables). Those drivers were removed after the experiment and
+remain in commit `7d7fddb`; the twelve cases and the gate comparison now live in
+[`experiments/native_quality.py`](../../native_quality.py).
 
 ## Remaining kernel time
 
@@ -94,9 +95,9 @@ that head concatenation shares the underlying storage. The five original
 full-model image cases also preserve masks, scores, boxes and query indices
 byte for byte. The `head` control matches the previous build's output bytes.
 
-Reproduction scripts: `experiments/run_kitchen_layout.py quality` / `timing`,
-`experiments/summarize_kitchen_layout.py`, and
-`experiments/profile_kitchen_native.py --layout sequence`.
+Drivers: `experiments/run_kitchen_layout.py quality|timing`,
+`summarize_kitchen_layout.py` and `profile_kitchen_native.py --layout sequence`
+(removed after the experiment; in commit `7d7fddb`).
 
 ### Measured layout result
 
@@ -136,6 +137,6 @@ INT8 (with sequence-major output). It also uses two processes, five warmups,
 This is a 6.37% wall reduction. It is slower than the combined INT8 path,
 but clears the new cases' original FP16 agreement gates. These are separate
 timing series: do not interpret 483.73 versus 377.67 ms as a controlled direct
-comparison. Reproduce with `experiments/run_kitchen_precision_timing.py` and
-`experiments/summarize_kitchen_precision.py`.
+comparison. Drivers: `experiments/run_kitchen_precision_timing.py` and
+`summarize_kitchen_precision.py` (in commit `7d7fddb`).
 [Raw paired timings](kitchen-precision-ba018a0.json).

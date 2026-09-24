@@ -150,9 +150,9 @@ but does not replace, the opt-in operator and five-case model checks above.
 ## Reproduction
 
 The existing optional INT8 development build also enables the INT4 experiments.
-Run `experiments/run_int4_method_native.py quality` with explicit modes, then
-`experiments/summarize_int4_method_native.py`. Use `timing` separately for warm
-measurements; cold quality-run latency is not a speed benchmark.
+The model comparisons used `experiments/run_int4_method_native.py quality|timing`
+and `summarize_int4_method_native.py`, removed after the experiment and kept in
+commit `7d7fddb`. Cold quality-run latency is not a speed benchmark.
 
 For attention, configure `SAM3_EXPERIMENT_KITCHEN_ATTENTION=ON` and set
 `SAM3_KITCHEN_ROOT` to the pinned checkout's `comfy_kitchen/backends/cuda`.

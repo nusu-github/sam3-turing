@@ -75,12 +75,6 @@ Native INT4 arithmetic and the previous fusions coexist on this SM75 GPU. The sp
 
 ## Reproduction
 
-Build `sam3_int4_bench` and `sam3_image_latency` with the existing CUDA 13 / MSVC 14.44 development configuration. Drivers:
+Build `sam3_int4_bench` and `sam3_image_latency` with the existing CUDA 13 / MSVC 14.44 development configuration. The model runs used `experiments/run_int4_native.py quality|timing exact all last8 last4 last2 last` and `summarize_int4_native.py`; these drivers were removed after the experiment and remain in commit `7d7fddb`.
 
-```powershell
-.venv/Scripts/python.exe experiments/run_int4_native.py quality exact all last8 last4 last2 last
-.venv/Scripts/python.exe experiments/run_int4_native.py timing exact all last8 last4 last2 last
-.venv/Scripts/python.exe experiments/summarize_int4_native.py
-```
-
-The driver refuses to overwrite an existing run directory. The summarizer intentionally records failed gates without suppressing performance data: these runs explore tradeoffs, not deployment acceptance. It can summarize partial runs; check the matrix is complete before drawing a final conclusion. Raw model outputs/telemetry are under `.cache/native-perf/int4-fc2-ba018a0`. Modes are opt-in, no model defaults were changed, and no commit/push was made.
+The driver refused to overwrite an existing run directory. The summarizer intentionally records failed gates without suppressing performance data: these runs explore tradeoffs, not deployment acceptance. It can summarize partial runs; check the matrix is complete before drawing a final conclusion. Raw model outputs/telemetry are under `.cache/native-perf/int4-fc2-ba018a0`. Modes are opt-in, no model defaults were changed, and no commit/push was made.

@@ -108,7 +108,7 @@ thrust::tabulate(policy, dst, dst + count,
 
 ## 実行確認と次の実装単位
 
-`experiments/cccl_highlevel_probe.cu`をCUDA 13.0 NVCC + MSVC、C++17、SM75、
+`experiments/cccl_highlevel_probe.cu`（調査後に削除、commit `7d7fddb` に残る）をCUDA 13.0 NVCC + MSVC、C++17、SM75、
 `--extended-lambda`でコンパイルした。上記Thrust 3 API、zip、span、layout_stride mdspanを
 同じ非デフォルトストリームで実行し、Graph capture後の3回再実行と128要素の期待値一致を確認。
 これはAPI利用可能性の確認で、実モデルの性能・精度検証ではない。
@@ -117,7 +117,7 @@ thrust::tabulate(policy, dst, dst + count,
 本体・CMake・依存バージョンは今回変更していない。
 
 次に実装するなら、優先1の4変換をひとまとまりにする。専用functorを短いlambdaへ置換し、
-`check_cub_ops.py`と位置埋め込み54ケース、Graph再実行、旧CUB版との交互計測を再利用する。
+`check_cub_ops.py`（commit `7d7fddb`）と位置埋め込み54ケース、Graph再実行、旧CUB版との交互計測を再利用する。
 ROIAlignとmdspanは、その結果を見て別の変更単位にする。
 
 

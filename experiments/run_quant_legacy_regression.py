@@ -10,9 +10,8 @@ from pathlib import Path
 import subprocess
 import sys
 
-from run_kitchen_extended import CASES, ROOT as EXTRA
+from native_quality import compare, regression_inputs
 from run_quant_research import EXE, ROOT, environment
-from summarize_kitchen_extended import compare
 
 
 def sha(path):
@@ -46,12 +45,7 @@ def main():
         assert candidate['calibration_sha256'] == sha(cal / 'fc2-affine.f32.bin')
         if 'mean_sha256' in candidate:
             assert candidate['mean_sha256'] == sha(cal / 'fc2-mean.f32.bin')
-    base = Path('.cache/native-perf')
-    originals = {'truck': ('truck.ppm', 'prompt.txt'), 'bag': ('groceries.ppm', 'bag.txt'),
-                 'child': ('test_image.ppm', 'child.txt'), 'wheel': ('truck.ppm', 'wheel.txt'),
-                 'empty': ('truck.ppm', 'empty.txt')}
-    inputs = [(name, base / image, base / prompt) for name, (image, prompt) in originals.items()]
-    inputs += [(name, EXTRA / (name + '.ppm'), EXTRA / (name + '.txt')) for name, _, _ in CASES]
+    inputs = regression_inputs()
     signature = dict(candidate_run=args.candidate_run, candidate=candidate,
                      weight_manifest_sha256=sha(Path('.cache/native-weights-sam3/manifest.json')),
                      scope='17 known regression cases; fresh FP16 and candidate; cold quality only',

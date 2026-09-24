@@ -78,6 +78,7 @@ Builds succeeded and all **51 component tests passed** (135.81 seconds). Test lo
 
 - `run_projection_native.py timing|quality` and `summarize_projection_native.py`: `.cache/native-perf/projection-ba018a0/`, `projection-ba018a0.json`.
 - `run_restore_rows_native.py timing|quality` and `summarize_restore_rows_native.py`: `.cache/native-perf/restore-rows-ba018a0/`, `restore-rows-ba018a0.json`.
+- These four drivers were removed after the experiment and remain in commit `7d7fddb`.
 - `profile_native_hotspots.py OUTPUT_ROOT MODE...` now accepts a separate root/mode list. `analyze_native_hotspots.py TRACE_ROOT REPORT_JSON REFERENCE_ROOT` accepts a matching output reference directory or benchmark root.
 - Profiles: `.cache/native-perf/hotspots-boundary/`, `.cache/native-perf/hotspots-qkv/`; exported attribution: `hotspots-boundary.json`, `hotspots-qkv.json`.
 

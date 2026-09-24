@@ -49,12 +49,12 @@ Using the existing configured Windows native build:
 
 ```powershell
 cmake --build build/native-windows-cu130 --target sam3_qkv_rope_bench sam3_image_latency
-.venv/Scripts/python.exe experiments/run_qkv_rope_native.py timing
-.venv/Scripts/python.exe experiments/run_qkv_rope_native.py quality
-.venv/Scripts/python.exe experiments/summarize_qkv_rope_native.py
 ```
 
-Drivers refuse to overwrite existing outputs. The summarizer fails if any required binary output differs. Runtime configuration:
+The model comparisons used `experiments/run_qkv_rope_native.py timing|quality`
+and `summarize_qkv_rope_native.py`, which failed if any required binary output
+differed. These drivers were removed after the experiment and remain in commit
+`7d7fddb`. Runtime configuration:
 
 ```powershell
 $env:SAM3_EXPERIMENT_MLP='int8_boundary'

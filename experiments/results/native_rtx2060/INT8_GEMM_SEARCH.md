@@ -66,11 +66,10 @@ All three modes retain byte-identical masks, scores, boxes and query IDs on truc
 cmake -S native -B build/native-windows-cu130 -DSAM3_EXPERIMENT_INT8_GEMM=ON -DSAM3_CUTLASS_ROOT=D:/PycharmProjects/sam3-turing/.cache/portability-review/flash-attention-turing/csrc/cutlass
 cmake --build build/native-windows-cu130 --target sam3_int8_gemm_bench sam3_int8_lt_bench sam3_image_latency
 .venv/Scripts/python.exe experiments/monitor_native_bench.py .cache/native-perf/int8-tiles-new build/native-windows-cu130/sam3_int8_gemm_bench.exe .cache/native-perf/int8-tiles-new.json
-.venv/Scripts/python.exe experiments/run_int8_cache_native.py timing
-.venv/Scripts/python.exe experiments/run_int8_cache_native.py quality
-.venv/Scripts/python.exe experiments/summarize_int8_cache_native.py
 ```
 
-Model runners refuse to overwrite existing runs. Custom CUTLASS build option defaults OFF; runtime cached-LT selector `SAM3_EXPERIMENT_INT8_LT` defaults to `exact`. Earlier model runners clear the new selector. Generated compatibility headers now retain timestamps when content is unchanged, avoiding unnecessary CUDA rebuilds on reconfiguration.
+The model runs used `experiments/run_int8_cache_native.py timing|quality` and
+`summarize_int8_cache_native.py`, removed after the experiment and kept in commit
+`7d7fddb`. Model runners refused to overwrite existing runs. Custom CUTLASS build option defaults OFF; runtime cached-LT selector `SAM3_EXPERIMENT_INT8_LT` defaults to `exact`. Earlier model runners clear the new selector. Generated compatibility headers now retain timestamps when content is unchanged, avoiding unnecessary CUDA rebuilds on reconfiguration.
 
 No candidate is promoted to the recommended inference configuration. The evidence shifts priority away from small-tile/occupancy tuning alone and toward eliminating intermediate memory traffic or changing Attention arithmetic, each requiring its own implementation and quality evaluation.

@@ -44,9 +44,7 @@ The boundary diagnostic checks widths 32, 257, 1024, 4736 and 8192, including no
 
 All five actual-model cases produced **byte-identical masks, scores, boxes and query indices between fused and original INT8**. Counts were Truck 1, bag 4, child 6, wheel 4 and empty 0. Versus FP16, the minimum matched mask IoU was 0.999670 / 0.998122 / 0.996927 / 0.989715 respectively; the empty case remained empty. Maximum score difference was 0.0112305 and maximum matched box-coordinate difference was 0.64856 pixels. These differences are the same for both INT8 paths. Byte parity against original INT8 does not establish ground-truth accuracy; this remains a five-case smoke test, and the original quantization error versus FP16 still applies.
 
-- `experiments/run_boundary_native.py timing` — six fresh-process timing runs.
-- `experiments/run_boundary_native.py quality` — FP16, original INT8 and fused INT8 on Truck, bag, child, wheel and empty-detection cases.
-- `experiments/summarize_boundary_native.py` — timing and Hungarian mask-IoU comparison in `boundary-ba018a0.json`.
+- `experiments/run_boundary_native.py timing|quality` and `summarize_boundary_native.py` ran the six timing processes and the FP16 / original INT8 / fused INT8 five-case comparison (`boundary-ba018a0.json`). These drivers were removed after the experiment; they remain in commit `7d7fddb`.
 - `sam3_boundary_bench OUTPUT.json` — kernel correctness and isolated timing.
 
 Raw metrics, stage intervals, binary outputs and NVML telemetry: `.cache/native-perf/boundary-ba018a0/`. Kernel diagnostic: `boundary-micro.json` in this results directory.

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from summarize_kitchen_extended import compare
+from native_quality import compare
 
 
 def main():

@@ -26,7 +26,7 @@ The evidence favors memory-traffic work over trying to increase an already high 
 
 Two processes per variant, forward/reverse order, four alternating separate/fused timing passes per process. These are medians of operator-pass medians. All existing random/zero/constant checks at widths 32/257/1024/4736/8192 pass. Candidate scheduling changes apply only to width 4736. The variants were not promoted to expensive model comparisons because no operator improvement was established.
 
-Data: [boundary counters](boundary-counters.txt), [boundary sweep](boundary-sweep.json). Runner: `experiments/run_boundary_sweep.py`. Raw counter report: `.cache/native-perf/boundary-counters.ncu-rep`. The first capture attempts selected no kernels; only the final demangled-name capture contains the reported evidence.
+Data: [boundary counters](boundary-counters.txt), [boundary sweep](boundary-sweep.json). Runner: `experiments/run_boundary_sweep.py` (in commit `7d7fddb`). Raw counter report: `.cache/native-perf/boundary-counters.ncu-rep`. The first capture attempts selected no kernels; only the final demangled-name capture contains the reported evidence.
 
 ## FC2: restore + residual + next normalization
 
@@ -73,12 +73,10 @@ Counter evidence: [FC2 INT8 counters](fc2-int8-counters.txt), `.cache/native-per
 
 ```powershell
 cmake --build build/native-windows-cu130 --target sam3_boundary_bench sam3_fc2_norm_bench sam3_image_latency
-.venv/Scripts/python.exe experiments/run_boundary_sweep.py
-.venv/Scripts/python.exe experiments/run_mlp_sweep_native.py timing
-.venv/Scripts/python.exe experiments/run_mlp_sweep_native.py quality
-.venv/Scripts/python.exe experiments/summarize_mlp_sweep_native.py
 ```
 
-Model driver refuses to overwrite previous runs. Both new switches default to `exact`. On the existing tested INT8/QKV/RoPE configuration, opt in with `SAM3_EXPERIMENT_FC2_NORM=fused`; keep `SAM3_EXPERIMENT_BOUNDARY=exact`. The rejected boundary candidates remain diagnostic options `threads128`, `threads512`, `readonly`. Earlier benchmark drivers clear these switches to preserve their prior comparisons.
+The sweep and model drivers (`run_boundary_sweep.py`, `run_mlp_sweep_native.py
+timing|quality`, `summarize_mlp_sweep_native.py`) were removed after the
+experiment and remain in commit `7d7fddb`. Both new switches default to `exact`. On the existing tested INT8/QKV/RoPE configuration, opt in with `SAM3_EXPERIMENT_FC2_NORM=fused`; keep `SAM3_EXPERIMENT_BOUNDARY=exact`. The rejected boundary candidates remain diagnostic options `threads128`, `threads512`, `readonly`. Earlier benchmark drivers clear these switches to preserve their prior comparisons.
 
 Existing CTest suite: **51/51 pass**, 138.62 seconds, using the rebuilt DLL with new experiment switches unset. Log: `build/native-windows-cu130/windows-validation-mlp-sweep.log`. The new paths are exercised separately by the operator/model comparisons above. Python compilation and `git diff --check` also pass. These validations do not establish all-image, all-batch, cross-platform or video parity.

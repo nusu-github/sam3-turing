@@ -154,8 +154,8 @@ must not be added as a measured combined gain.
 
 Original-case comparisons and timing samples are in
 [the updated attention results](kitchen-ba018a0.json), mode `global_mlp`.
-Reproduce with `experiments/run_kitchen_native.py quality global_mlp` and
-`experiments/run_kitchen_native.py timing global_mlp attention_only`.
+They were produced with `experiments/run_kitchen_native.py quality global_mlp`
+and `timing global_mlp attention_only` (driver in commit `7d7fddb`).
 
 ## Kernel safety checks
 
@@ -168,13 +168,14 @@ The full existing CTest suite also passes 51/51 with the updated library
 
 ## Reproduce
 
-Build `sam3_pixel_bench` and `sam3_image_latency`. Run
-`experiments/run_pixel_native.py quality exact borrow borrow_relu nchw fused_nchw`
-and `experiments/summarize_pixel_native.py`. Timing uses the same driver with
-`timing` and explicit modes, in forward/reverse order, five warmups and 15
-samples per process. Cold quality-run times are not used as speed claims.
+Build `sam3_pixel_bench` and `sam3_image_latency`. The model runs used
+`experiments/run_pixel_native.py quality|timing` with explicit modes
+(`exact borrow borrow_relu nchw fused_nchw`) and `summarize_pixel_native.py`.
+Timing ran in forward/reverse order, five warmups and 15 samples per process;
+cold quality-run times are not used as speed claims.
 
-Run `experiments/run_precision_isolation.py` for the diagnostic split.
-`experiments/run_mlp_scope.py first24 last24 global local` screens scopes;
-`experiments/run_mlp_scope.py global --all-cases` extends the selected candidate
-to the fixed 12 cases. Completed scope results are reused without overwriting.
+`experiments/run_precision_isolation.py` produced the diagnostic split, and
+`experiments/run_mlp_scope.py first24 last24 global local` / `global --all-cases`
+screened scopes and extended the selected candidate to the fixed 12 cases.
+All of these drivers were removed after the experiment and remain in commit
+`7d7fddb`.

@@ -78,13 +78,9 @@ INT4 quantization collective and were checked with its operator harness.
 
 ## NPP EDT feasibility probe
 
-Run from the repository root:
-
-```powershell
-.venv/Scripts/python.exe experiments/probe_npp_edt.py experiments/results/native_rtx2060/npp-edt-probe.json
-```
-
-The probe calls the installed CUDA 13 NPP C API using ctypes and application-managed
+The probe was run from the repository root as
+`experiments/probe_npp_edt.py experiments/results/native_rtx2060/npp-edt-probe.json`;
+it was removed after this survey and remains in commit `7d7fddb`. It calls the installed CUDA 13 NPP C API using ctypes and application-managed
 stream context. No model dispatch, build dependency or system configuration is
 changed. It compares NPP with the current native CUDA EDT on a nondefault stream.
 
