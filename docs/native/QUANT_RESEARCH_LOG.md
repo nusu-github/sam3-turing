@@ -147,3 +147,78 @@ QKVだけが唯一の原因、またはFC2校正で全問題が解決したと�
 [検証要約](../../experiments/results/native_rtx2060/quant-research-validation.json)、
 [memcheck log](../../experiments/results/native_rtx2060/boundary-affine-memcheck.log)、
 [CTest log](../../experiments/results/native_rtx2060/quant-research-ctest.log)。
+
+### 開発16枚へ拡張した結果
+
+校正全MLPのみの構成は33prompt中29合格（非空25例中22合格）。
+検出数変化は2例。全体の最小IoU .94466、最大score差 .03711、最大box差1.35315px。
+最初の9例の合格から一般化したと判断しない。
+
+- 画像2261 `surfboard`: FP16は0検出、候補は1検出。
+- 画像5992 `sheep`: 検出数8とmask基準は保つが、box差1.35315px。
+- 画像9590 `person`: 検出数5→6、最小IoU .94466、score差 .03711。
+- 同画像 `spoon`: IoU .97183、score差 .02246。
+
+[全33例](../../experiments/results/native_rtx2060/development-cal-mlp-only.json)。
+品質未達のため最終評価セットは使用しない。
+
+同じ33promptで現行global4 + attention/QKV INT8を測ると31/33（非空23/25）だった。
+テレビのscore差 .03027と羊のbox差1.12643pxが基準外。現行にも誤差はあるが、
+校正全MLPのみが開発セット全体で上回ったとは言えない。
+[同一条件での全件比較](../../experiments/results/native_rtx2060/fc2-development-summary.json)。
+
+### 追加調査から次の仮説へ
+
+Sciteで2025年以降のbias correction/ViT関連を追加検索し、
+[Joint PTQ of ViTs（2026-02-21）](https://arxiv.org/html/2602.18861v1) を本文で確認した。
+32枚はパラメータ初期化に用いる枚数で、その後は中間特徴と最終logitの蒸留を含む
+全体最適化を24,000反復・batch32で行う。対象はImageNet分類のViT/DeiT/Swin。
+SAM3で32枚の統計を取るだけで同じ結果になる研究ではない。HF papers APIは404で取得できなかった。
+当面は層間相互作用と出力スコアを見ながら、より小さな再構成実験へ落とす。
+
+次に調べるのは、(1) FC1とFC2の量子化の分離、(2) 実際に量子化した重みによる
+平均出力誤差のbias補正、(3) global attentionだけを量子化する構成。
+FC2の入力分布だけを改善しても、FC1やQKV由来の誤差は消えないためである。
+まだ採用条件を満たした構成はなく、品質基準は変更しない。
+
+bias correction自体は新規の発想ではない。
+Sciteで [Nagel et al., ICCV 2019](https://arxiv.org/abs/1906.04721) の平均誤差補正も再確認した。
+SAM3ではpost-GELU入力と実際の量子化重みに合わせて補正量を求め、
+既存のscale/shiftに伴う代数的bias補正とは分けて効果を検証する。
+
+### 速度・メモリと追加候補の採否
+
+品質が通った開発用2画像（7574 / 1425の主prompt）で、現行と校正全MLPのみを比較した。
+各画像・各構成2 fresh process、5 warmup + 15測定、2巡目は構成の順番を反転。
+1構成60サンプル。これは品質不合格候補の診断用測定であり、採用の根拠にはしない。
+
+| 構成 | pooled median ms | pooled p95 ms | 最大allocated GB | sampled whole GPU GB |
+|---|---:|---:|---:|---:|
+| 現行global4 + attention/QKV INT8 | 436.80 | 453.96 | 2.432 | 3.470 |
+| 校正全MLP INT8、attention/QKV FP16 | 435.56 | 448.46 | 2.601 | 3.591 |
+
+pooled medianの短縮は0.28%、画像別medianでは0.95% / 1.15%に留まり、5%条件未達。
+process medianにも変動があり、NVML温度は測定開始63℃から最終77℃へ上がった。
+この小さな差を安定した高速化と断定しない。次の有望候補では熱状態が安定してから再測定する。
+GBは10^9 bytes。NVMLは20ms間隔の全GPU標本で厳密なprocess peakではない。
+[全サンプル・process別結果・温度](../../experiments/results/native_rtx2060/fc2-mlp-only-paired-timing.json)。
+
+再現: `run_quant_research.py timing --mode selective --image-id 7574 --primary-only --name <unique>` と、
+`--mode calibrated --calibration <a050-none> --attention exact --projection exact` の候補を比較する。
+画像1425でも同じ設定を使い、2巡目は候補を先にする。8 runのディレクトリを
+`summarize_quant_timing.py <run1> ... <run8> --output <report.json>` に渡す。
+
+さらに全MLP校正 + global attentionのみINT8 / QKV FP16を調べた。
+テレビはPass、surfboardの検出数変化も解消したが、追加3画像5promptでは2/5合格。
+羊のbox差1.70251px、人物の5→6検出とIoU .94018、spoonのIoU .97872 / score差 .02051でFail。
+全33例への展開は行わず不採用とした。
+[追加screen](../../experiments/results/native_rtx2060/fc2-global-attention-probe-summary.json)。
+回転付きall attentionもテレビのbox差1.33914pxで不合格だった。
+
+## 次の反復の開始点
+
+ゴールは継続中。最終評価32枚は未使用、通常設定の採用変更なし。
+まずFC1 FP16 / FC2 INT8を分離して、今回の失敗がFC1を含めた量子化から来るか確認する。
+その後、校正データのみから平均誤差補正またはFC1のチャネル変換を作る。
+FC2の品質・速度が成立した範囲でINT4へ同じ校正を移す。失敗例を隠したり基準を緩めたりせず、
+screen → 開発33例 → 既存17例 → 候補固定 → 未使用holdout → 制御した速度測定、を続ける。

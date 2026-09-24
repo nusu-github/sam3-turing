@@ -58,6 +58,44 @@
     "max_box_error_px": 0.338043212890625
   },
   {
+    "run": "isolate-tv-cal-kitchen",
+    "kind": "quality",
+    "mode": "calibrated",
+    "completed": 1,
+    "process_wall_seconds": 6.472635507583618,
+    "max_peak_allocated_bytes": 2602091520,
+    "max_sampled_whole_gpu_bytes": 3591286784,
+    "compared": 1,
+    "passed": 1,
+    "nonempty": 1,
+    "nonempty_passed": 1,
+    "count_changes": 0,
+    "failed_cases": [],
+    "min_mask_iou": 0.9988012467034284,
+    "max_score_error": 0.01513671875,
+    "max_box_error_px": 0.293701171875
+  },
+  {
+    "run": "isolate-tv-cal-kitchen_rot_all",
+    "kind": "quality",
+    "mode": "calibrated",
+    "completed": 1,
+    "process_wall_seconds": 6.739953279495239,
+    "max_peak_allocated_bytes": 2603303936,
+    "max_sampled_whole_gpu_bytes": 3664687104,
+    "compared": 1,
+    "passed": 0,
+    "nonempty": 1,
+    "nonempty_passed": 0,
+    "count_changes": 0,
+    "failed_cases": [
+      "coco-val-000000004795-p0"
+    ],
+    "min_mask_iou": 0.9986120900760808,
+    "max_score_error": 0.01123046875,
+    "max_box_error_px": 1.339141845703125
+  },
+  {
     "run": "isolate-tv-cal-mlp",
     "kind": "quality",
     "mode": "calibrated",

@@ -84,6 +84,24 @@
     "max_box_error_px": 0.545684814453125
   },
   {
+    "run": "screen-cal-mlp-only",
+    "kind": "quality",
+    "mode": "calibrated",
+    "completed": 9,
+    "process_wall_seconds": 58.514466524124146,
+    "max_peak_allocated_bytes": 2602091520,
+    "max_sampled_whole_gpu_bytes": 3599675392,
+    "compared": 9,
+    "passed": 9,
+    "nonempty": 8,
+    "nonempty_passed": 8,
+    "count_changes": 0,
+    "failed_cases": [],
+    "min_mask_iou": 0.9820717131474104,
+    "max_score_error": 0.00927734375,
+    "max_box_error_px": 0.97686767578125
+  },
+  {
     "run": "screen-identity",
     "kind": "quality",
     "mode": "calibrated",
