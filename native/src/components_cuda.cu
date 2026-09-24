@@ -3,6 +3,7 @@
 #include <c10/cuda/CUDAException.h>
 #include <c10/cuda/CUDAStream.h>
 #include <algorithm>
+#include <cub/device/device_transform.cuh>
 namespace sam3 {
 namespace {
 using Index = unsigned long long;
@@ -56,11 +57,12 @@ __global__ void count_components(const Index* parents, int64_t* labels, Index* h
     atomicAdd(hist + root, 1ULL);
   }
 }
-__global__ void gather_sizes(const int64_t* labels, const int64_t* hist, int64_t* sizes, int64_t n) {
-  for (int64_t i = static_cast<int64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
-       i < n; i += static_cast<int64_t>(blockDim.x) * gridDim.x)
-    sizes[i] = labels[i] ? hist[labels[i] - 1] : 0;
-}
+struct GatherSize {
+  const int64_t* histogram;
+  __device__ int64_t operator()(int64_t label) const {
+    return label ? histogram[label - 1] : 0;
+  }
+};
 }
 std::tuple<at::Tensor, at::Tensor> components_cuda(const at::Tensor& values) {
   static_assert(sizeof(Index) == sizeof(int64_t), "64-bit atomic indices required");
@@ -81,8 +83,8 @@ std::tuple<at::Tensor, at::Tensor> components_cuda(const at::Tensor& values) {
   C10_CUDA_KERNEL_LAUNCH_CHECK();
   count_components<<<blocks, threads, 0, stream>>>(p, labels.mutable_data_ptr<int64_t>(), hist, n);
   C10_CUDA_KERNEL_LAUNCH_CHECK();
-  gather_sizes<<<blocks, threads, 0, stream>>>(labels.const_data_ptr<int64_t>(), histogram.const_data_ptr<int64_t>(), sizes.mutable_data_ptr<int64_t>(), n);
-  C10_CUDA_KERNEL_LAUNCH_CHECK();
+  C10_CUDA_CHECK(cub::DeviceTransform::Transform(labels.const_data_ptr<int64_t>(),
+      sizes.mutable_data_ptr<int64_t>(), n, GatherSize{histogram.const_data_ptr<int64_t>()}, stream));
   return {labels, sizes};
 }
 }

@@ -10,6 +10,7 @@ DetectorEncoder::DetectorEncoder(const WeightStore& store,const std::string& mod
 }
 FusionFeatures DetectorEncoder::forward(const at::Tensor& image,const at::Tensor& positions,
     const at::Tensor& prompt,const at::Tensor& prompt_padding,const at::Tensor& image_padding,const std::string& mode) const {
+  detail::ProfileRange range("detector.encoder");
   c10::InferenceMode inference;
   detail::check_mode(mode);
   AutocastGuard autocast(device_.type(),mode!="fp32",mode=="fp16" ? at::kHalf : at::kBFloat16);

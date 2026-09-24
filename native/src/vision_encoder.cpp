@@ -1,12 +1,19 @@
 #include "sam3/vision_encoder.h"
 #include "sam3/autocast.h"
-#include "sam3/rotary.h"
-#include "sam3/rotary_pair.h"
-#include "sam3/vision_fusion.h"
 #include "sam3/vision_position.h"
 #include <c10/core/InferenceMode.h>
 #include <cmath>
 #include <set>
+#include <algorithm>
+#include "profile_range.h"
+#ifdef SAM3_EXPERIMENT_INT8_GEMM
+#include "sam3/int4_experiment.h"
+#endif
+
+#include "vision_experiments.h"
+#ifdef SAM3_WITH_CUDA
+#include "vision_quantization.h"
+#endif
 
 namespace sam3 {
 VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model, at::Device device)
@@ -47,6 +54,54 @@ VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
   if (weights_.count("propagation_convs.0.conv_1x1.weight")) heads_.push_back("propagation_convs");
   levels_ = weights_.count("convs.3.conv_1x1.weight") ? 4 : 3;
   for (int i = 0; i < 32; ++i) weight("trunk.blocks." + std::to_string(i) + ".attn.qkv.weight");
+#ifdef SAM3_WITH_CUDA
+  const auto experiment = detail::read_experiment("SAM3_EXPERIMENT_MLP");
+  if(detail::int4_fc2_layer(31))TORCH_CHECK(experiment=="int8_boundary","INT4 FC2 requires int8_boundary MLP");
+  if (experiment == "int8" || experiment == "int8_boundary") {
+    TORCH_CHECK(device.is_cuda() && compute_storage == at::kHalf,
+                "experimental int8 requires CUDA FP16 compute storage");
+    for (int layer=0; layer<32; ++layer) for (int fc=1; fc<=2; ++fc) {
+      if(!detail::mlp_int8_layer(layer))continue;
+      const auto name = "trunk.blocks." + std::to_string(layer) + ".mlp.fc" + std::to_string(fc);
+      const auto& w = weight(name + ".weight");
+      auto q=at::empty(w.sizes(),w.options().dtype(at::kChar));
+      auto scales=at::empty({w.size(0)},w.options().dtype(at::kFloat));
+#ifdef SAM3_EXPERIMENT_INT8_GEMM
+      if(fc==2 && detail::int4_fc2_layer(layer) && !detail::int4_activation_only()) {
+        if(detail::int4_rotation())std::tie(q,scales)=int4_quant_rht(w,detail::int4_rotation());
+        else std::tie(q,scales)=int4_quant(w,detail::int4_mse_mode());
+        if(detail::int4_weight_only())q=detail::unpack_int4_diagnostic(q);
+      }
+      else
+#endif
+      approx_quant(w,q,scales);
+#ifdef SAM3_EXPERIMENT_INT8_GEMM
+      if(fc==2 && detail::int4_affine_mode()) {
+        auto expanded=q.scalar_type()==at::kByte?detail::unpack_int4_diagnostic(q):q;
+        weights_.emplace(name+".sum",expanded.sum(1,false,at::kInt).contiguous());
+      }
+#endif
+      weights_.emplace(name + ".int8",std::move(q));
+      weights_.emplace(name + ".scale",std::move(scales));
+    }
+  }
+  const auto projection_mode = detail::checked_experiment("SAM3_EXPERIMENT_PROJECTION",
+      {"exact", "qkv", "proj", "both"}, "invalid SAM3_EXPERIMENT_PROJECTION: ");
+  if(projection_mode!="exact") {
+    TORCH_CHECK(device.is_cuda() && compute_storage==at::kHalf,
+                "experimental projection INT8 requires CUDA FP16 compute storage");
+    for(int layer=0;layer<32;++layer) for(const std::string part : {"qkv","proj"}) {
+      if(projection_mode!="both" && projection_mode!=part)continue;
+      const auto name="trunk.blocks."+std::to_string(layer)+".attn."+part;
+      const auto& w=weight(name+".weight");
+      auto q=at::empty(w.sizes(),w.options().dtype(at::kChar));
+      auto scales=at::empty({w.size(0)},w.options().dtype(at::kFloat));
+      approx_quant(w,q,scales);
+      weights_.emplace(name+".int8",std::move(q));
+      weights_.emplace(name+".scale",std::move(scales));
+    }
+  }
+#endif
 }
 const at::Tensor& VisionEncoder::weight(const std::string& name) const {
   const auto it = weights_.find(name);
@@ -56,90 +111,8 @@ const at::Tensor& VisionEncoder::weight(const std::string& name) const {
 at::Tensor VisionEncoder::norm(const at::Tensor& x, const std::string& prefix) const {
   return at::layer_norm(x, {1024}, weight(prefix + ".weight"), weight(prefix + ".bias"), 1e-5);
 }
-at::Tensor VisionEncoder::linear(const at::Tensor& x, const std::string& prefix) const {
-  return at::linear(x, weight(prefix + ".weight"), weight(prefix + ".bias"));
-}
-at::Tensor VisionEncoder::attention(const at::Tensor& x, const std::string& prefix) const {
-  const auto b = x.size(0), h = x.size(1), w = x.size(2), length = h * w;
-  const auto qkv = linear(x, prefix + ".qkv").reshape({b,length,3,16,64}).permute({2,0,3,1,4});
-  const auto& frequencies = weight(prefix + ".freqs_cis");
-  TORCH_CHECK(frequencies.sizes() == at::IntArrayRef({length,32}), "RoPE token grid mismatch");
-#ifdef SAM3_FUSE_VISION_QK
-  const auto [q, k] = rotary_embedding_pair(qkv[0], qkv[1], frequencies);
-#else
-  const auto q = rotary_embedding(qkv[0], frequencies);
-  const auto k = rotary_embedding(qkv[1], frequencies);
-#endif
-  const auto attended = at::scaled_dot_product_attention(q, k, qkv[2]);
-  const auto output = attended.view({b,16,h,w,64}).permute({0,2,3,1,4}).reshape({b,h,w,1024});
-  return linear(output, prefix + ".proj");
-}
-at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fused_bf16) const {
-  return block(input, layer, fused_bf16, nullptr);
-}
-at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fused_bf16, at::Tensor* prepared) const {
-  const auto prefix = "trunk.blocks." + std::to_string(layer);
-  const auto b = input.size(0), h = input.size(1), w = input.size(2);
-  const bool windowed = (layer + 1) % 8 != 0;
-#ifdef SAM3_FUSE_VISION_NORM
-  const bool fuse_norm = input.is_cuda() && input.scalar_type() == at::kFloat &&
-      h % 24 == 0 && w % 24 == 0;
-#else
-  const bool fuse_norm = false;
-#endif
-  const auto projection_type = at::autocast::is_autocast_enabled(at::kCUDA)
-      ? (fused_bf16 ? at::kBFloat16 : at::kHalf) : at::kFloat;
-  auto x = fuse_norm && prepared && prepared->defined() ? std::move(*prepared)
-      : fuse_norm ? vision_norm_projection(input, weight(prefix + ".norm1.weight"),
-      weight(prefix + ".norm1.bias"), projection_type, windowed) : norm(input, prefix + ".norm1");
-  const auto hp = ((h + 23) / 24) * 24, wp = ((w + 23) / 24) * 24;
-  if (windowed && !fuse_norm) {
-    if (hp != h || wp != w) x = at::constant_pad_nd(x, {0,0,0,wp-w,0,hp-h}, 0);
-    x = x.view({b,hp/24,24,wp/24,24,1024}).permute({0,1,3,2,4,5}).reshape({-1,24,24,1024});
-  }
-  x = attention(x, prefix + ".attn");
-  at::Tensor normalized;
-  if (fuse_norm) {
-    std::tie(x, normalized) = vision_residual_norm(input, x,
-        weight(prefix + ".norm2.weight"), weight(prefix + ".norm2.bias"),
-        projection_type, windowed);
-  } else {
-    if (windowed) {
-      x = x.reshape({b,hp/24,wp/24,24,24,1024}).permute({0,1,3,2,4,5}).reshape({b,hp,wp,1024});
-      x = x.slice(1,0,h).slice(2,0,w);
-    }
-    x = input + x;
-    normalized = norm(x, prefix + ".norm2");
-  }
-  at::Tensor hidden;
-  if (fused_bf16) {
-    // Reference-only path: exactly reproduce upstream's forced BF16 epilogue.
-    const auto flat = normalized.to(at::kBFloat16).view({-1,1024});
-    hidden = at::_addmm_activation(weight(prefix + ".mlp.fc1.bias").to(at::kBFloat16), flat,
-      weight(prefix + ".mlp.fc1.weight").to(at::kBFloat16).t(), 1, 1, true).view({b,h,w,4736});
-  } else {
-    // The fresh linear result has no other consumers. Reuse its allocation
-    // for exact GELU, keeping the FP16 rounding point before activation.
-    hidden = linear(normalized, prefix + ".mlp.fc1");
-    at::gelu_(hidden, "none");
-  }
-  auto projection = linear(hidden, prefix + ".mlp.fc2");
-  if (fuse_norm && prepared && layer < 31) {
-    // Complete this block's residual and prepare the next QKV input in one
-    // pass. Release consumed MLP intermediates before allocating the pair.
-    hidden = at::Tensor();
-    normalized = at::Tensor();
-    const auto next = "trunk.blocks." + std::to_string(layer + 1) + ".norm1";
-    at::Tensor result;
-    std::tie(result, *prepared) = vision_residual_norm_projection(x, projection,
-        weight(next + ".weight"), weight(next + ".bias"), projection_type,
-        (layer + 2) % 8 != 0);
-    return result;
-  }
-  if (prepared) *prepared = at::Tensor();
-  return x + projection;
-}
 at::Tensor VisionEncoder::neck(const at::Tensor& input, const std::string& head, int64_t level) const {
+  detail::ProfileRange range("vision.neck." + std::to_string(level));
   const auto prefix = head + "." + std::to_string(level);
   auto x = input;
   const auto transpose = [&](const at::Tensor& in, const std::string& name) {
@@ -184,6 +157,7 @@ VisionFeatures VisionEncoder::forward(const at::Tensor& image, const std::string
 }
 VisionFeatures VisionEncoder::forward(const at::Tensor& image, const std::string& mode,
     const std::vector<std::string>& heads, const std::vector<int64_t>& position_levels) const {
+  detail::ProfileRange range("vision.total");
   c10::InferenceMode inference;
   std::set<int64_t> selected_positions;
   for (auto level : position_levels) {

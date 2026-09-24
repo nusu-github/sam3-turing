@@ -2,6 +2,7 @@
 #include "sam3/weights.h"
 #include <limits>
 #include <cmath>
+#include "profile_range.h"
 namespace sam3::detail {
 using Weights = std::map<std::string,at::Tensor>;
 inline Weights load(const WeightStore& store,const std::string& prefix,at::Device device) {
@@ -15,6 +16,7 @@ inline const at::Tensor& weight(const Weights& weights,const std::string& name) 
   return it->second;
 }
 inline at::Tensor linear(const Weights& w,const at::Tensor& x,const std::string& name) {
+  ProfileRange range("detector.linear."+name);
   return at::linear(x,weight(w,name+".weight"),weight(w,name+".bias"));
 }
 inline at::Tensor norm(const Weights& w,const at::Tensor& x,const std::string& name) {
@@ -33,10 +35,13 @@ enum class Projection { Separate, SharedKV, SharedQKV };
 inline at::Tensor attention(const Weights& weights,const at::Tensor& query,const at::Tensor& key,
     const at::Tensor& value,const at::Tensor& padding,const std::string& prefix,
     Projection projection, bool explicit_softmax = false,const at::Tensor& bias = {}) {
+  ProfileRange range("detector.attention."+prefix);
   const auto length=query.size(0), batch=query.size(1), source=key.size(0);
   const auto& w=weight(weights,prefix+".in_proj_weight");
   const auto& b=weight(weights,prefix+".in_proj_bias");
   at::Tensor q,k,v;
+  {
+  ProfileRange projection_range("detector.qkv");
   if (projection == Projection::SharedQKV) {
     const auto packed=at::linear(query,w,b);
     q=packed.slice(2,0,256);k=packed.slice(2,256,512);v=packed.slice(2,512,768);
@@ -49,6 +54,7 @@ inline at::Tensor attention(const Weights& weights,const at::Tensor& query,const
       k=at::linear(key,w.slice(0,256,512),b.slice(0,256,512));
       v=at::linear(value,w.slice(0,512,768),b.slice(0,512,768));
     }
+  }
   }
   q=q.contiguous().view({length,batch*8,32}).transpose(0,1);
   k=k.contiguous().view({source,batch*8,32}).transpose(0,1);
@@ -63,10 +69,12 @@ inline at::Tensor attention(const Weights& weights,const at::Tensor& query,const
   }
   at::Tensor output;
   if (explicit_softmax) {
+    ProfileRange attention_range("detector.explicit_attention");
     const auto scaled=q*std::sqrt(1.0/32);
     const auto scores=mask ? at::baddbmm(*mask,scaled,k.transpose(1,2)) : at::bmm(scaled,k.transpose(1,2));
     output=at::bmm(at::softmax(scores,-1),v).transpose(0,1).contiguous().view({length*batch,256});
   } else {
+    ProfileRange attention_range("detector.sdpa");
     if (mask) mask=mask->view({batch,8,-1,source});
     output=at::scaled_dot_product_attention(q.view({batch,8,length,32}),k.view({batch,8,source,32}),
         v.view({batch,8,source,32}),mask).permute({2,0,1,3}).contiguous().view({length*batch,256});
