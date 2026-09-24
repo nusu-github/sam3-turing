@@ -1,0 +1,30 @@
+{
+  "ctest": {
+    "passed": 54,
+    "total": 54,
+    "seconds": 142.11,
+    "log": "quant-research-ctest.log"
+  },
+  "memcheck": {
+    "errors": 0,
+    "log": "boundary-affine-memcheck.log"
+  },
+  "operator": {
+    "widths": [
+      1,
+      31,
+      32,
+      257,
+      1024,
+      4736,
+      8192
+    ],
+    "identity_byte_equal": true,
+    "scalar_reference_byte_equal": true
+  },
+  "model_identity": {
+    "cases": 9,
+    "all_output_files_byte_equal": true
+  },
+  "default_runtime_options_changed": false
+}

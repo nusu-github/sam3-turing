@@ -7,6 +7,7 @@
 #endif
 
 #include "vision_experiments.h"
+#include "vision_calibration.h"
 #ifdef SAM3_WITH_CUDA
 #include "vision_quantization.h"
 #endif
@@ -73,6 +74,8 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
       };
       if (mode == "int8_boundary") {
         const auto fc1=prefix+".mlp.fc1",fc2=prefix+".mlp.fc2";
+        const bool calibrated=weights_.count(fc2+".calib_r")!=0;
+        const auto& fc2_bias=weight(fc2+(calibrated?".calib_bias":".bias"));
         at::Tensor qhidden,shidden,int4_offset;
         {
           detail::ProfileRange fc1_range("vision.mlp.fc1");
@@ -84,6 +87,11 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
             shidden=at::empty_like(scales);
           }
           detail::profile_call("vision.mlp.boundary",[&] {
+            if(calibrated) {
+              approx_restore_quant_affine(accum,scales,weight(fc1+".scale"),weight(fc1+".bias"),
+                  weight(fc2+".calib_r"),weight(fc2+".calib_shift"),qhidden,shidden);
+              return 0;
+            }
 #ifdef SAM3_EXPERIMENT_INT8_GEMM
             if(detail::int4_fc2_layer(layer) && !detail::int4_weight_only()) {
               if(detail::int4_affine_mode())std::tie(qhidden,shidden,int4_offset)=int4_boundary_affine(accum,scales,weight(fc1+".scale"),weight(fc1+".bias"),detail::int4_mse_mode());
@@ -111,13 +119,13 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
           const auto next="trunk.blocks."+std::to_string(layer+1)+".norm1";
           at::Tensor result;
           std::tie(result,*prepared)=detail::profile_call("vision.mlp.fc2.restore_norm",[&]{
-            return approx_fc2_norm(x,accum,shidden,weight(fc2+".scale"),weight(fc2+".bias"),weight(next+".weight"),weight(next+".bias"),(layer+2)%8!=0);
+            return approx_fc2_norm(x,accum,shidden,weight(fc2+".scale"),fc2_bias,weight(next+".weight"),weight(next+".bias"),(layer+2)%8!=0);
           });
           return result;
         }
         auto result=at::empty(accum.sizes(),normalized.options().dtype(at::kHalf));
         detail::profile_call("vision.mlp.fc2.restore",[&] {
-          approx_restore(accum,shidden,weight(fc2+".scale"),weight(fc2+".bias"),result,false);return 0;
+          approx_restore(accum,shidden,weight(fc2+".scale"),fc2_bias,result,false);return 0;
         });
         projection=result.view({b,h,w,1024});
       } else {
@@ -139,7 +147,10 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
       detail::profile_call("vision.mlp.gelu",[&] { at::gelu_(hidden, mode == "tanh" ? "tanh" : "none"); return 0; });
     }
   }
-  if (!projection.defined()) projection = detail::profile_call("vision.mlp.fc2",[&] { return linear(hidden, prefix + ".mlp.fc2"); });
+  if (!projection.defined()) {
+    detail::observe_fc2(hidden,weight(prefix+".mlp.fc2.weight"),int(layer));
+    projection = detail::profile_call("vision.mlp.fc2",[&] { return linear(hidden, prefix + ".mlp.fc2"); });
+  }
   if (fuse_norm && prepared && layer < 31) {
     // Complete this block's residual and prepare the next QKV input in one
     // pass. Release consumed MLP intermediates before allocating the pair.

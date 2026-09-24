@@ -66,6 +66,22 @@ int main(int argc,char** argv) { try {
     acc.random_(-100000,100001);xs.uniform_(0,.002);ws.uniform_(0,.005);bias.normal_(0,.02);
     separate();fused();
     TORCH_CHECK(at::equal(q,qf) && at::equal(s,sf),"benchmark input mismatch");
+    // Check channel scaling/translation against an independent scalar FP16 reference.
+    auto r=at::ones({n},opts),shift=at::zeros({n},opts);
+    approx_restore_quant_affine(acc,xs,ws,bias,r,shift,qf,sf);
+    TORCH_CHECK(at::equal(q,qf) && at::equal(s,sf),"identity calibration changes boundary");
+    r.uniform_(.125,8);shift.uniform_(-.5,.5);
+    auto scalar=half.cpu().contiguous(),rc=r.cpu(),bc=shift.cpu();
+    auto* values=scalar.mutable_data_ptr<at::Half>();
+    for(int64_t i=0;i<scalar.numel();++i) {
+      const float scaled=float(values[i])/rc.const_data_ptr<float>()[i%n];
+      values[i]=at::Half(scaled-bc.const_data_ptr<float>()[i%n]);
+    }
+    auto transformed=scalar.to(at::kCUDA);
+    approx_quant(transformed,q,s);
+    approx_restore_quant_affine(acc,xs,ws,bias,r,shift,qf,sf);
+    TORCH_CHECK(at::equal(q,qf) && at::equal(s,sf),"affine calibration scalar mismatch n=",n);
+    check_quant(scalar,qf,sf);
     std::vector<double> a,b;
     if(n==4736 && argc==2) {
       for(int i=0;i<100;++i) {separate();fused();}
@@ -75,7 +91,7 @@ int main(int argc,char** argv) { try {
       }
     }
     if(!first)out<<',';first=false;
-    out<<"{\"m\":"<<m<<",\"n\":"<<n<<",\"bit_equal\":true,\"separate_ms\":[";
+    out<<"{\"m\":"<<m<<",\"n\":"<<n<<",\"bit_equal\":true,\"affine_scalar_equal\":true,\"separate_ms\":[";
     for(size_t i=0;i<a.size();++i) {if(i)out<<',';out<<a[i];}
     out<<"],\"fused_ms\":[";
     for(size_t i=0;i<b.size();++i) {if(i)out<<',';out<<b[i];}

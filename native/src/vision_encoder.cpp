@@ -11,6 +11,7 @@
 #endif
 
 #include "vision_experiments.h"
+#include "vision_calibration.h"
 #ifdef SAM3_WITH_CUDA
 #include "vision_quantization.h"
 #endif
@@ -56,6 +57,9 @@ VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
   for (int i = 0; i < 32; ++i) weight("trunk.blocks." + std::to_string(i) + ".attn.qkv.weight");
 #ifdef SAM3_WITH_CUDA
   const auto experiment = detail::read_experiment("SAM3_EXPERIMENT_MLP");
+  const bool calibrated = !detail::read_experiment("SAM3_EXPERIMENT_FC2_CALIBRATION", "").empty();
+  TORCH_CHECK(!calibrated || (experiment=="int8_boundary" && detail::int4_fc2_mode()=="exact"),
+      "FC2 calibration currently requires INT8 boundary mode without INT4");
   if(detail::int4_fc2_layer(31))TORCH_CHECK(experiment=="int8_boundary","INT4 FC2 requires int8_boundary MLP");
   if (experiment == "int8" || experiment == "int8_boundary") {
     TORCH_CHECK(device.is_cuda() && compute_storage == at::kHalf,
@@ -63,7 +67,18 @@ VisionEncoder::VisionEncoder(const WeightStore& store, const std::string& model,
     for (int layer=0; layer<32; ++layer) for (int fc=1; fc<=2; ++fc) {
       if(!detail::mlp_int8_layer(layer))continue;
       const auto name = "trunk.blocks." + std::to_string(layer) + ".mlp.fc" + std::to_string(fc);
-      const auto& w = weight(name + ".weight");
+      auto w = weight(name + ".weight");
+      if(fc==2 && calibrated) {
+        auto [r, shift] = detail::read_fc2_calibration(layer,device);
+        w = (w.to(at::kFloat)*r).to(at::kHalf).contiguous();
+        auto corrected_bias = (weight(name+".bias").to(at::kFloat) +
+            at::mv(w.to(at::kFloat),shift)).to(at::kHalf).contiguous();
+        TORCH_CHECK(at::isfinite(w).all().item<bool>() && at::isfinite(corrected_bias).all().item<bool>(),
+            "FC2 affine calibration overflows FP16");
+        weights_.emplace(name+".calib_r",std::move(r));
+        weights_.emplace(name+".calib_shift",std::move(shift));
+        weights_.emplace(name+".calib_bias",std::move(corrected_bias));
+      }
       auto q=at::empty(w.sizes(),w.options().dtype(at::kChar));
       auto scales=at::empty({w.size(0)},w.options().dtype(at::kFloat));
 #ifdef SAM3_EXPERIMENT_INT8_GEMM

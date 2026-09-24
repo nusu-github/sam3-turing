@@ -3,15 +3,18 @@
 #include <ATen/ATen.h>
 #include <c10/cuda/CUDAStream.h>
 #include <c10/cuda/CUDAException.h>
+#include <c10/cuda/CUDAGuard.h>
 #include <cuda_fp16.h>
 #include <cub/block/block_reduce.cuh>
 #include <cuda/functional>
 #include <cstdlib>
 #include <string>
+#include <climits>
 
-template<int Items,int Threads=256,bool ReadOnly=false>
+template<int Items,int Threads=256,bool ReadOnly=false,bool Affine=false>
 __global__ void restore_quant_rows(const int* accum, const float* xs, const float* ws,
-    const half* bias, signed char* q, float* scales, int n) {
+    const half* bias, signed char* q, float* scales, int n,
+    const float* channel_scale=nullptr,const float* channel_shift=nullptr) {
   const int row=blockIdx.x;
   float values[Items], mx=0;
   const float xscale=xs[row];
@@ -26,6 +29,10 @@ __global__ void restore_quant_rows(const int* accum, const float* xs, const floa
       v=.5f*v*(1.f+erff(v*.7071067811865475f));
       // Preserve the existing two-kernel INT8 path's rounding before absmax.
       v=__half2float(__float2half_rn(v));
+      if constexpr(Affine) {
+        // The calibrated FC2 consumes rounded FP16 GELU, then a rounded affine input.
+        v=__half2float(__float2half_rn(__fsub_rn(__fdiv_rn(v,channel_scale[col]),channel_shift[col])));
+      }
     }
     values[j]=v; mx=fmaxf(mx,fabsf(v));
   }
@@ -41,6 +48,29 @@ __global__ void restore_quant_rows(const int* accum, const float* xs, const floa
     const int col=threadIdx.x+j*Threads;
     if(col<n) q[row*n+col]=(signed char)__float2int_rn(fminf(127.f,fmaxf(-127.f,values[j]/scale)));
   }
+}
+
+void approx_restore_quant_affine(const at::Tensor& accum,const at::Tensor& xs,
+    const at::Tensor& ws,const at::Tensor& bias,const at::Tensor& r,const at::Tensor& shift,
+    at::Tensor& q,at::Tensor& scales) {
+  TORCH_CHECK(accum.is_cuda() && accum.scalar_type()==at::kInt && accum.dim()==2 &&
+      accum.is_contiguous() && accum.size(0)>0 && accum.numel()<INT_MAX &&
+      accum.size(1)>0 && accum.size(1)<=8192,"invalid calibrated boundary accumulator");
+  const auto n=accum.size(1),m=accum.size(0);
+  for(const auto& t:{xs,ws,bias,r,shift,q,scales})
+    TORCH_CHECK(t.device()==accum.device() && t.is_contiguous(),"calibrated boundary device/layout mismatch");
+  TORCH_CHECK(xs.scalar_type()==at::kFloat && ws.scalar_type()==at::kFloat &&
+      r.scalar_type()==at::kFloat && shift.scalar_type()==at::kFloat && scales.scalar_type()==at::kFloat &&
+      bias.scalar_type()==at::kHalf && q.scalar_type()==at::kChar && q.sizes()==accum.sizes() &&
+      xs.numel()==m && scales.numel()==m && ws.numel()==n && bias.numel()==n && r.numel()==n && shift.numel()==n,
+      "calibrated boundary operand type/shape mismatch");
+  // Positive finite calibration vectors are validated once when loaded.
+  const c10::cuda::CUDAGuard guard(accum.device());
+  auto stream=c10::cuda::getCurrentCUDAStream();
+#define AFFINE_LAUNCH(I) restore_quant_rows<I,256,false,true><<<m,256,0,stream>>>(accum.const_data_ptr<int>(),xs.const_data_ptr<float>(),ws.const_data_ptr<float>(),reinterpret_cast<const half*>(bias.const_data_ptr<at::Half>()),q.mutable_data_ptr<int8_t>(),scales.mutable_data_ptr<float>(),int(n),r.const_data_ptr<float>(),shift.const_data_ptr<float>())
+  if(n==4736) {AFFINE_LAUNCH(19);} else {AFFINE_LAUNCH(32);}
+#undef AFFINE_LAUNCH
+  C10_CUDA_KERNEL_LAUNCH_CHECK();
 }
 
 void approx_restore_quant(const at::Tensor& accum,const at::Tensor& xs,

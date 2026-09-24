@@ -1,0 +1,11 @@
+[
+  {
+    "run": "calibration-fp16",
+    "kind": "observe",
+    "mode": "fp16",
+    "completed": 32,
+    "process_wall_seconds": 214.23716044425964,
+    "max_peak_allocated_bytes": 2307267072,
+    "max_sampled_whole_gpu_bytes": 3262033920
+  }
+]

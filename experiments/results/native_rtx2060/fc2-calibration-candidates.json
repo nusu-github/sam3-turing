@@ -1,0 +1,942 @@
+{
+  "identity": {
+    "alpha": 0.5,
+    "shift": "none",
+    "identity": true,
+    "images": 32,
+    "file_sha256": "8dcecb5eccfc96b8e4bbd7216efa243836fca858f6b7a64d7251c5fae19d448a",
+    "layers": [
+      {
+        "layer": 0,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.8203125
+      },
+      {
+        "layer": 1,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 5.19921875
+      },
+      {
+        "layer": 2,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.8671875
+      },
+      {
+        "layer": 3,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 7.09375
+      },
+      {
+        "layer": 4,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 5.2734375
+      },
+      {
+        "layer": 5,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 5.90625
+      },
+      {
+        "layer": 6,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 6.12890625
+      },
+      {
+        "layer": 7,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 6.35546875
+      },
+      {
+        "layer": 8,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 7.30078125
+      },
+      {
+        "layer": 9,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 7.6171875
+      },
+      {
+        "layer": 10,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 7.46875
+      },
+      {
+        "layer": 11,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.0390625
+      },
+      {
+        "layer": 12,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 13.015625
+      },
+      {
+        "layer": 13,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.390625
+      },
+      {
+        "layer": 14,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 14.1171875
+      },
+      {
+        "layer": 15,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.0546875
+      },
+      {
+        "layer": 16,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 19.5
+      },
+      {
+        "layer": 17,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.6015625
+      },
+      {
+        "layer": 18,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.3125
+      },
+      {
+        "layer": 19,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.453125
+      },
+      {
+        "layer": 20,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.484375
+      },
+      {
+        "layer": 21,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.3671875
+      },
+      {
+        "layer": 22,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.40625
+      },
+      {
+        "layer": 23,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.8515625
+      },
+      {
+        "layer": 24,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.34375
+      },
+      {
+        "layer": 25,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.2578125
+      },
+      {
+        "layer": 26,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.7109375
+      },
+      {
+        "layer": 27,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.4453125
+      },
+      {
+        "layer": 28,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.59375
+      },
+      {
+        "layer": 29,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.3671875
+      },
+      {
+        "layer": 30,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 7.66015625
+      },
+      {
+        "layer": 31,
+        "min_scale": 1.0,
+        "max_scale": 1.0,
+        "max_abs_shift": 0.0,
+        "max_activation": 6.49609375
+      }
+    ],
+    "rounding": "GELU FP16 -> affine FP32 division/subtraction -> FP16 -> symmetric row INT8. Weight transformed in FP32 then stored FP16; bias correction uses transformed FP16 weight.",
+    "metadata_sha256": "8d1fda325f2b907d513e4a7ad5c78b6470209d2acaa24a86ef63cb301d8bd435"
+  },
+  "a050-none": {
+    "alpha": 0.5,
+    "shift": "none",
+    "identity": false,
+    "images": 32,
+    "file_sha256": "07de8545359fc39cd350d3086501f0a5544d20f6c574e3ba02ee3bfd2981292e",
+    "layers": [
+      {
+        "layer": 0,
+        "min_scale": 0.30778107047080994,
+        "max_scale": 2.7803564071655273,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.8203125
+      },
+      {
+        "layer": 1,
+        "min_scale": 0.26832449436187744,
+        "max_scale": 2.2170803546905518,
+        "max_abs_shift": 0.0,
+        "max_activation": 5.19921875
+      },
+      {
+        "layer": 2,
+        "min_scale": 0.18855172395706177,
+        "max_scale": 2.300274610519409,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.8671875
+      },
+      {
+        "layer": 3,
+        "min_scale": 0.24915683269500732,
+        "max_scale": 1.7114310264587402,
+        "max_abs_shift": 0.0,
+        "max_activation": 7.09375
+      },
+      {
+        "layer": 4,
+        "min_scale": 0.1708567589521408,
+        "max_scale": 1.668910026550293,
+        "max_abs_shift": 0.0,
+        "max_activation": 5.2734375
+      },
+      {
+        "layer": 5,
+        "min_scale": 0.22750797867774963,
+        "max_scale": 1.8499466180801392,
+        "max_abs_shift": 0.0,
+        "max_activation": 5.90625
+      },
+      {
+        "layer": 6,
+        "min_scale": 0.2147519588470459,
+        "max_scale": 1.7941763401031494,
+        "max_abs_shift": 0.0,
+        "max_activation": 6.12890625
+      },
+      {
+        "layer": 7,
+        "min_scale": 0.20242811739444733,
+        "max_scale": 1.7095235586166382,
+        "max_abs_shift": 0.0,
+        "max_activation": 6.35546875
+      },
+      {
+        "layer": 8,
+        "min_scale": 0.20190303027629852,
+        "max_scale": 1.741441011428833,
+        "max_abs_shift": 0.0,
+        "max_activation": 7.30078125
+      },
+      {
+        "layer": 9,
+        "min_scale": 0.20862968266010284,
+        "max_scale": 1.7851362228393555,
+        "max_abs_shift": 0.0,
+        "max_activation": 7.6171875
+      },
+      {
+        "layer": 10,
+        "min_scale": 0.18110375106334686,
+        "max_scale": 1.6548950672149658,
+        "max_abs_shift": 0.0,
+        "max_activation": 7.46875
+      },
+      {
+        "layer": 11,
+        "min_scale": 0.22089432179927826,
+        "max_scale": 1.8557167053222656,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.0390625
+      },
+      {
+        "layer": 12,
+        "min_scale": 0.22366182506084442,
+        "max_scale": 2.2087385654449463,
+        "max_abs_shift": 0.0,
+        "max_activation": 13.015625
+      },
+      {
+        "layer": 13,
+        "min_scale": 0.2062559574842453,
+        "max_scale": 1.7254852056503296,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.390625
+      },
+      {
+        "layer": 14,
+        "min_scale": 0.18847499787807465,
+        "max_scale": 1.7737846374511719,
+        "max_abs_shift": 0.0,
+        "max_activation": 14.1171875
+      },
+      {
+        "layer": 15,
+        "min_scale": 0.17178378999233246,
+        "max_scale": 1.728892207145691,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.0546875
+      },
+      {
+        "layer": 16,
+        "min_scale": 0.19705599546432495,
+        "max_scale": 1.6956326961517334,
+        "max_abs_shift": 0.0,
+        "max_activation": 19.5
+      },
+      {
+        "layer": 17,
+        "min_scale": 0.2133529931306839,
+        "max_scale": 1.6754496097564697,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.6015625
+      },
+      {
+        "layer": 18,
+        "min_scale": 0.19985470175743103,
+        "max_scale": 1.5437735319137573,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.3125
+      },
+      {
+        "layer": 19,
+        "min_scale": 0.20026642084121704,
+        "max_scale": 1.6341888904571533,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.453125
+      },
+      {
+        "layer": 20,
+        "min_scale": 0.19175849854946136,
+        "max_scale": 1.6833302974700928,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.484375
+      },
+      {
+        "layer": 21,
+        "min_scale": 0.23896726965904236,
+        "max_scale": 1.626217007637024,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.3671875
+      },
+      {
+        "layer": 22,
+        "min_scale": 0.22159826755523682,
+        "max_scale": 1.5872468948364258,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.40625
+      },
+      {
+        "layer": 23,
+        "min_scale": 0.22368109226226807,
+        "max_scale": 1.908502459526062,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.8515625
+      },
+      {
+        "layer": 24,
+        "min_scale": 0.2389267534017563,
+        "max_scale": 1.6355122327804565,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.34375
+      },
+      {
+        "layer": 25,
+        "min_scale": 0.1946903020143509,
+        "max_scale": 1.7969024181365967,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.2578125
+      },
+      {
+        "layer": 26,
+        "min_scale": 0.15429581701755524,
+        "max_scale": 2.085725784301758,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.7109375
+      },
+      {
+        "layer": 27,
+        "min_scale": 0.1973070651292801,
+        "max_scale": 2.763779640197754,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.4453125
+      },
+      {
+        "layer": 28,
+        "min_scale": 0.11590603739023209,
+        "max_scale": 3.814969301223755,
+        "max_abs_shift": 0.0,
+        "max_activation": 8.59375
+      },
+      {
+        "layer": 29,
+        "min_scale": 0.0625,
+        "max_scale": 4.412637710571289,
+        "max_abs_shift": 0.0,
+        "max_activation": 9.3671875
+      },
+      {
+        "layer": 30,
+        "min_scale": 0.0625,
+        "max_scale": 4.642153739929199,
+        "max_abs_shift": 0.0,
+        "max_activation": 7.66015625
+      },
+      {
+        "layer": 31,
+        "min_scale": 0.28842875361442566,
+        "max_scale": 3.1890509128570557,
+        "max_abs_shift": 0.0,
+        "max_activation": 6.49609375
+      }
+    ],
+    "rounding": "GELU FP16 -> affine FP32 division/subtraction -> FP16 -> symmetric row INT8. Weight transformed in FP32 then stored FP16; bias correction uses transformed FP16 weight.",
+    "metadata_sha256": "509c26614dfabdad28784ac57a71af05ed270b5f0dc5c3b3725aab94d393ff34"
+  },
+  "a050-mean": {
+    "alpha": 0.5,
+    "shift": "mean",
+    "identity": false,
+    "images": 32,
+    "file_sha256": "d5704f63cee3a94fa5e0e4483e9ed1b73a61e7c31f7cfcb20aaa4d16266d05a1",
+    "layers": [
+      {
+        "layer": 0,
+        "min_scale": 0.3052913248538971,
+        "max_scale": 2.660118818283081,
+        "max_abs_shift": 1.6894235610961914,
+        "max_activation": 8.8203125
+      },
+      {
+        "layer": 1,
+        "min_scale": 0.21560290455818176,
+        "max_scale": 2.115117073059082,
+        "max_abs_shift": 0.5451842546463013,
+        "max_activation": 5.19921875
+      },
+      {
+        "layer": 2,
+        "min_scale": 0.1916886866092682,
+        "max_scale": 2.217499256134033,
+        "max_abs_shift": 0.4691089689731598,
+        "max_activation": 9.8671875
+      },
+      {
+        "layer": 3,
+        "min_scale": 0.1912810206413269,
+        "max_scale": 1.68166983127594,
+        "max_abs_shift": 0.43613627552986145,
+        "max_activation": 7.09375
+      },
+      {
+        "layer": 4,
+        "min_scale": 0.17240524291992188,
+        "max_scale": 1.654975414276123,
+        "max_abs_shift": 0.4850068986415863,
+        "max_activation": 5.2734375
+      },
+      {
+        "layer": 5,
+        "min_scale": 0.1848958134651184,
+        "max_scale": 1.8258763551712036,
+        "max_abs_shift": 0.4370681643486023,
+        "max_activation": 5.90625
+      },
+      {
+        "layer": 6,
+        "min_scale": 0.20269295573234558,
+        "max_scale": 1.784946084022522,
+        "max_abs_shift": 0.5038810968399048,
+        "max_activation": 6.12890625
+      },
+      {
+        "layer": 7,
+        "min_scale": 0.17494651675224304,
+        "max_scale": 1.7026067972183228,
+        "max_abs_shift": 0.6753328442573547,
+        "max_activation": 6.35546875
+      },
+      {
+        "layer": 8,
+        "min_scale": 0.18623250722885132,
+        "max_scale": 1.7306417226791382,
+        "max_abs_shift": 0.9052282571792603,
+        "max_activation": 7.30078125
+      },
+      {
+        "layer": 9,
+        "min_scale": 0.19130343198776245,
+        "max_scale": 1.7824586629867554,
+        "max_abs_shift": 0.4143325090408325,
+        "max_activation": 7.6171875
+      },
+      {
+        "layer": 10,
+        "min_scale": 0.17442695796489716,
+        "max_scale": 1.647231936454773,
+        "max_abs_shift": 0.7396052479743958,
+        "max_activation": 7.46875
+      },
+      {
+        "layer": 11,
+        "min_scale": 0.19441315531730652,
+        "max_scale": 1.8522450923919678,
+        "max_abs_shift": 0.5376009345054626,
+        "max_activation": 8.0390625
+      },
+      {
+        "layer": 12,
+        "min_scale": 0.21915464103221893,
+        "max_scale": 2.1977763175964355,
+        "max_abs_shift": 0.49415287375450134,
+        "max_activation": 13.015625
+      },
+      {
+        "layer": 13,
+        "min_scale": 0.1969081163406372,
+        "max_scale": 1.7270965576171875,
+        "max_abs_shift": 0.7044135332107544,
+        "max_activation": 9.390625
+      },
+      {
+        "layer": 14,
+        "min_scale": 0.17063450813293457,
+        "max_scale": 1.7683602571487427,
+        "max_abs_shift": 1.2914376258850098,
+        "max_activation": 14.1171875
+      },
+      {
+        "layer": 15,
+        "min_scale": 0.16265416145324707,
+        "max_scale": 1.7223008871078491,
+        "max_abs_shift": 1.1538149118423462,
+        "max_activation": 9.0546875
+      },
+      {
+        "layer": 16,
+        "min_scale": 0.20500104129314423,
+        "max_scale": 1.6883156299591064,
+        "max_abs_shift": 0.9011931419372559,
+        "max_activation": 19.5
+      },
+      {
+        "layer": 17,
+        "min_scale": 0.22683222591876984,
+        "max_scale": 1.6662616729736328,
+        "max_abs_shift": 0.775905430316925,
+        "max_activation": 9.6015625
+      },
+      {
+        "layer": 18,
+        "min_scale": 0.18685322999954224,
+        "max_scale": 1.533422827720642,
+        "max_abs_shift": 0.6272574067115784,
+        "max_activation": 8.3125
+      },
+      {
+        "layer": 19,
+        "min_scale": 0.18049830198287964,
+        "max_scale": 1.6161153316497803,
+        "max_abs_shift": 1.457074522972107,
+        "max_activation": 8.453125
+      },
+      {
+        "layer": 20,
+        "min_scale": 0.18280629813671112,
+        "max_scale": 1.6606539487838745,
+        "max_abs_shift": 0.7668615579605103,
+        "max_activation": 8.484375
+      },
+      {
+        "layer": 21,
+        "min_scale": 0.21907033026218414,
+        "max_scale": 1.6098275184631348,
+        "max_abs_shift": 0.8301963806152344,
+        "max_activation": 8.3671875
+      },
+      {
+        "layer": 22,
+        "min_scale": 0.2090664505958557,
+        "max_scale": 1.5714259147644043,
+        "max_abs_shift": 0.5692609548568726,
+        "max_activation": 8.40625
+      },
+      {
+        "layer": 23,
+        "min_scale": 0.20969849824905396,
+        "max_scale": 1.8809269666671753,
+        "max_abs_shift": 2.133512258529663,
+        "max_activation": 9.8515625
+      },
+      {
+        "layer": 24,
+        "min_scale": 0.22629089653491974,
+        "max_scale": 1.610925555229187,
+        "max_abs_shift": 1.3228836059570312,
+        "max_activation": 8.34375
+      },
+      {
+        "layer": 25,
+        "min_scale": 0.1862349957227707,
+        "max_scale": 1.7747983932495117,
+        "max_abs_shift": 1.113556146621704,
+        "max_activation": 8.2578125
+      },
+      {
+        "layer": 26,
+        "min_scale": 0.1478382796049118,
+        "max_scale": 2.065467596054077,
+        "max_abs_shift": 0.7664198875427246,
+        "max_activation": 8.7109375
+      },
+      {
+        "layer": 27,
+        "min_scale": 0.1949693113565445,
+        "max_scale": 2.7488434314727783,
+        "max_abs_shift": 0.5607437491416931,
+        "max_activation": 8.4453125
+      },
+      {
+        "layer": 28,
+        "min_scale": 0.11565475910902023,
+        "max_scale": 3.812075614929199,
+        "max_abs_shift": 0.6094892621040344,
+        "max_activation": 8.59375
+      },
+      {
+        "layer": 29,
+        "min_scale": 0.0625,
+        "max_scale": 4.415265083312988,
+        "max_abs_shift": 0.6434072852134705,
+        "max_activation": 9.3671875
+      },
+      {
+        "layer": 30,
+        "min_scale": 0.0625,
+        "max_scale": 4.667419910430908,
+        "max_abs_shift": 1.747770071029663,
+        "max_activation": 7.66015625
+      },
+      {
+        "layer": 31,
+        "min_scale": 0.28723523020744324,
+        "max_scale": 3.205667018890381,
+        "max_abs_shift": 1.0191901922225952,
+        "max_activation": 6.49609375
+      }
+    ],
+    "rounding": "GELU FP16 -> affine FP32 division/subtraction -> FP16 -> symmetric row INT8. Weight transformed in FP32 then stored FP16; bias correction uses transformed FP16 weight.",
+    "metadata_sha256": "20f206055344cc7582cb375223c42a4a5f3d1b9b123bdec299a647f3177ba3d1"
+  },
+  "a050-midrange": {
+    "alpha": 0.5,
+    "shift": "midrange",
+    "identity": false,
+    "images": 32,
+    "file_sha256": "d32656a9a43805345c1369c63ed8881195ea2921d9c7dab40081c3556554e834",
+    "layers": [
+      {
+        "layer": 0,
+        "min_scale": 0.36937564611434937,
+        "max_scale": 2.518022298812866,
+        "max_abs_shift": 2.6511385440826416,
+        "max_activation": 8.8203125
+      },
+      {
+        "layer": 1,
+        "min_scale": 0.26888352632522583,
+        "max_scale": 2.05303955078125,
+        "max_abs_shift": 2.151686668395996,
+        "max_activation": 5.19921875
+      },
+      {
+        "layer": 2,
+        "min_scale": 0.2242196947336197,
+        "max_scale": 2.1818883419036865,
+        "max_abs_shift": 2.2222185134887695,
+        "max_activation": 9.8671875
+      },
+      {
+        "layer": 3,
+        "min_scale": 0.23533178865909576,
+        "max_scale": 1.6548854112625122,
+        "max_abs_shift": 2.4971563816070557,
+        "max_activation": 7.09375
+      },
+      {
+        "layer": 4,
+        "min_scale": 0.20475605130195618,
+        "max_scale": 1.6209402084350586,
+        "max_abs_shift": 1.8659542798995972,
+        "max_activation": 5.2734375
+      },
+      {
+        "layer": 5,
+        "min_scale": 0.2170536369085312,
+        "max_scale": 1.790324091911316,
+        "max_abs_shift": 2.1130969524383545,
+        "max_activation": 5.90625
+      },
+      {
+        "layer": 6,
+        "min_scale": 0.20635074377059937,
+        "max_scale": 1.7571566104888916,
+        "max_abs_shift": 2.39202880859375,
+        "max_activation": 6.12890625
+      },
+      {
+        "layer": 7,
+        "min_scale": 0.19990931451320648,
+        "max_scale": 1.6670178174972534,
+        "max_abs_shift": 2.899824380874634,
+        "max_activation": 6.35546875
+      },
+      {
+        "layer": 8,
+        "min_scale": 0.19420365989208221,
+        "max_scale": 1.7003422975540161,
+        "max_abs_shift": 3.2588367462158203,
+        "max_activation": 7.30078125
+      },
+      {
+        "layer": 9,
+        "min_scale": 0.2012428194284439,
+        "max_scale": 1.744544267654419,
+        "max_abs_shift": 3.6935954093933105,
+        "max_activation": 7.6171875
+      },
+      {
+        "layer": 10,
+        "min_scale": 0.1814548224210739,
+        "max_scale": 1.619910717010498,
+        "max_abs_shift": 3.3221418857574463,
+        "max_activation": 7.46875
+      },
+      {
+        "layer": 11,
+        "min_scale": 0.23954682052135468,
+        "max_scale": 1.8058807849884033,
+        "max_abs_shift": 4.263066291809082,
+        "max_activation": 8.0390625
+      },
+      {
+        "layer": 12,
+        "min_scale": 0.2154860943555832,
+        "max_scale": 2.141845941543579,
+        "max_abs_shift": 4.627028465270996,
+        "max_activation": 13.015625
+      },
+      {
+        "layer": 13,
+        "min_scale": 0.24063776433467865,
+        "max_scale": 1.6834332942962646,
+        "max_abs_shift": 6.3019795417785645,
+        "max_activation": 9.390625
+      },
+      {
+        "layer": 14,
+        "min_scale": 0.2152695655822754,
+        "max_scale": 1.726831078529358,
+        "max_abs_shift": 9.224772453308105,
+        "max_activation": 14.1171875
+      },
+      {
+        "layer": 15,
+        "min_scale": 0.21859902143478394,
+        "max_scale": 1.6855195760726929,
+        "max_abs_shift": 7.384704113006592,
+        "max_activation": 9.0546875
+      },
+      {
+        "layer": 16,
+        "min_scale": 0.25911733508110046,
+        "max_scale": 1.6551190614700317,
+        "max_abs_shift": 13.032540321350098,
+        "max_activation": 19.5
+      },
+      {
+        "layer": 17,
+        "min_scale": 0.27517110109329224,
+        "max_scale": 1.6332294940948486,
+        "max_abs_shift": 7.763586044311523,
+        "max_activation": 9.6015625
+      },
+      {
+        "layer": 18,
+        "min_scale": 0.2051038146018982,
+        "max_scale": 1.5099079608917236,
+        "max_abs_shift": 7.966909408569336,
+        "max_activation": 8.3125
+      },
+      {
+        "layer": 19,
+        "min_scale": 0.22937771677970886,
+        "max_scale": 1.591367244720459,
+        "max_abs_shift": 3.6585235595703125,
+        "max_activation": 8.453125
+      },
+      {
+        "layer": 20,
+        "min_scale": 0.1842762976884842,
+        "max_scale": 1.6337672472000122,
+        "max_abs_shift": 3.8594324588775635,
+        "max_activation": 8.484375
+      },
+      {
+        "layer": 21,
+        "min_scale": 0.24573156237602234,
+        "max_scale": 1.5903220176696777,
+        "max_abs_shift": 3.031651496887207,
+        "max_activation": 8.3671875
+      },
+      {
+        "layer": 22,
+        "min_scale": 0.2606043815612793,
+        "max_scale": 1.5491424798965454,
+        "max_abs_shift": 2.763292074203491,
+        "max_activation": 8.40625
+      },
+      {
+        "layer": 23,
+        "min_scale": 0.2147979438304901,
+        "max_scale": 1.850903868675232,
+        "max_abs_shift": 4.614659309387207,
+        "max_activation": 9.8515625
+      },
+      {
+        "layer": 24,
+        "min_scale": 0.23238404095172882,
+        "max_scale": 1.5856975317001343,
+        "max_abs_shift": 3.104307174682617,
+        "max_activation": 8.34375
+      },
+      {
+        "layer": 25,
+        "min_scale": 0.189044788479805,
+        "max_scale": 1.73591148853302,
+        "max_abs_shift": 3.4309287071228027,
+        "max_activation": 8.2578125
+      },
+      {
+        "layer": 26,
+        "min_scale": 0.18143771588802338,
+        "max_scale": 2.0035369396209717,
+        "max_abs_shift": 3.7558958530426025,
+        "max_activation": 8.7109375
+      },
+      {
+        "layer": 27,
+        "min_scale": 0.1835852563381195,
+        "max_scale": 2.597313404083252,
+        "max_abs_shift": 2.8363728523254395,
+        "max_activation": 8.4453125
+      },
+      {
+        "layer": 28,
+        "min_scale": 0.10739509761333466,
+        "max_scale": 3.5788514614105225,
+        "max_abs_shift": 2.5497543811798096,
+        "max_activation": 8.59375
+      },
+      {
+        "layer": 29,
+        "min_scale": 0.0625,
+        "max_scale": 4.105350017547607,
+        "max_abs_shift": 2.0012121200561523,
+        "max_activation": 9.3671875
+      },
+      {
+        "layer": 30,
+        "min_scale": 0.0625,
+        "max_scale": 4.414454460144043,
+        "max_abs_shift": 1.5889711380004883,
+        "max_activation": 7.66015625
+      },
+      {
+        "layer": 31,
+        "min_scale": 0.27901890873908997,
+        "max_scale": 3.1250975131988525,
+        "max_abs_shift": 1.2814147472381592,
+        "max_activation": 6.49609375
+      }
+    ],
+    "rounding": "GELU FP16 -> affine FP32 division/subtraction -> FP16 -> symmetric row INT8. Weight transformed in FP32 then stored FP16; bias correction uses transformed FP16 weight.",
+    "metadata_sha256": "80b5605be99d481ddb88c993804bdc54451c573f95572a79264432ae12008e6d"
+  }
+}
