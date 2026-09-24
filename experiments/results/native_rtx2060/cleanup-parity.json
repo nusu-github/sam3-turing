@@ -1,0 +1,425 @@
+{
+ "purpose": "Removal of rejected native experiment paths must not change any retained mode",
+ "date": "2026-09-25",
+ "hardware": "RTX 2060 Max-Q 6 GB, Windows 11, CUDA 13.0, MSVC 14.44, LibTorch 2.10.0+cu130",
+ "base_commit": "7d7fddb (via 3f742a7)",
+ "binaries": {
+  "before": {
+   "exe_sha256": "a3dc6072df5b45f1282bb3a32c58351d15239e429efc08dedba2839e345f9a4f",
+   "dll_sha256": "fbe9c54661b539933858f97fdd300c4ceccfdbea4fede90ae995f602ddef306b"
+  },
+  "after": {
+   "exe_sha256": "b2c0588fe866b96124f81d6b140815137a6eb226019cfabcfcf9343c0b5cae83",
+   "dll_sha256": "ad3efd7f6f03d72839b1016715a26a3f332739f5ee11ad99518c8825da00f6f4"
+  }
+ },
+ "inputs": {
+  "truck": ".cache/native-perf/truck.ppm + prompt 'truck'",
+  "child": ".cache/native-perf/test_image.ppm + prompt 'child'"
+ },
+ "compared_files": [
+  "masks.u8.bin",
+  "scores.f32.bin",
+  "boxes.f32.bin",
+  "queries.i64.bin"
+ ],
+ "note": "Each process: sam3_image_latency with 0 warmups, 1 repeat. before_rerun_identical checks run-to-run determinism of the old binary. Fused kitchen 'mean' centering is nondeterministic by design (atomic partial sums), so mean_half is used. The removed MLP 'int8' mode equals int8_boundary byte-for-byte (unfused_int8 before == boundary_qkv before/after).",
+ "results": [
+  {
+   "config": "fp16",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "fp16",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "pixel",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "pixel",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "selective",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "selective",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "r7_qkv",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "r7_qkv",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "r8_output_bias",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "r8_output_bias",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "int4_last",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "int4_last",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "int4_rht16",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "int4_rht16",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "int4_mse",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "int4_mse",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "int4_w4",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "int4_w4",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "int4_a4_affine",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "int4_a4_affine",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "unfused_int8",
+   "case": "truck",
+   "result": "removed mode rejected: invalid SAM3_EXPERIMENT_MLP: int8",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "unfused_int8",
+   "case": "child",
+   "result": "removed mode rejected: invalid SAM3_EXPERIMENT_MLP: int8",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "mlp_fc1",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "mlp_fc1",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "mlp_fc2_cal",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "mlp_fc2_cal",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "kitchen_rot",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "kitchen_rot",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "kitchen_head_center",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "kitchen_head_center",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "boundary_qkv",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "boundary_qkv",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "kitchen_global",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "kitchen_global",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "restore_exact",
+   "case": "truck",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  },
+  {
+   "config": "restore_exact",
+   "case": "child",
+   "result": "byte-identical",
+   "before_rerun_identical": true
+  }
+ ],
+ "summary": {
+  "retained_identical": 34,
+  "retained_different": 0,
+  "removed_rejected": 2
+ },
+ "ctest": "100% tests passed out of 62; Total Test time (real) = 188.53 sec",
+ "operator_checks": {
+  "sam3_boundary_bench": "passed (--check-only)",
+  "sam3_qkv_rope_bench": "passed (--check-only)",
+  "sam3_fc2_norm_bench": "passed (--check-only)",
+  "sam3_int4_bench": "passed (--check-only)",
+  "sam3_pixel_bench": "passed (--check-only)",
+  "sam3_kitchen_bench": "passed (--check-only)"
+ },
+ "configs": {
+  "fp16": {},
+  "pixel": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw"
+  },
+  "selective": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused",
+   "SAM3_EXPERIMENT_MLP_SCOPE": "global"
+  },
+  "r7_qkv": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused",
+   "SAM3_EXPERIMENT_MLP_SCOPE": "mask:0xfffffffe",
+   "SAM3_EXPERIMENT_ATTENTION_SCOPE": "mask:0xfffffffe",
+   "SAM3_EXPERIMENT_PROJECTION_SCOPE": "mask:0xffffffbf",
+   "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+   "SAM3_EXPERIMENT_FC2_MEAN_BIAS": "enabled",
+   "SAM3_EXPERIMENT_QKV_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\qkv-a050-mean",
+   "SAM3_EXPERIMENT_QKV_MEAN_BIAS": "enabled"
+  },
+  "r8_output_bias": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused",
+   "SAM3_EXPERIMENT_MLP_SCOPE": "mask:0xfffffffe",
+   "SAM3_EXPERIMENT_ATTENTION_SCOPE": "mask:0xfffffffe",
+   "SAM3_EXPERIMENT_PROJECTION_SCOPE": "mask:0xffffffbf",
+   "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\a050-none-mean-bias",
+   "SAM3_EXPERIMENT_FC2_MEAN_BIAS": "enabled",
+   "SAM3_EXPERIMENT_QKV_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\qkv-output-mean",
+   "SAM3_EXPERIMENT_QKV_MEAN_BIAS": "enabled",
+   "SAM3_EXPERIMENT_QKV_OUTPUT_BIAS": "enabled"
+  },
+  "int4_last": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused",
+   "SAM3_EXPERIMENT_INT4_FC2": "last"
+  },
+  "int4_rht16": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused",
+   "SAM3_EXPERIMENT_INT4_FC2": "rht16"
+  },
+  "int4_mse": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused",
+   "SAM3_EXPERIMENT_INT4_FC2": "mse"
+  },
+  "int4_w4": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused",
+   "SAM3_EXPERIMENT_INT4_FC2": "w4"
+  },
+  "int4_a4_affine": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused",
+   "SAM3_EXPERIMENT_INT4_FC2": "a4_affine"
+  },
+  "unfused_int8": {
+   "SAM3_EXPERIMENT_MLP": "int8",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv"
+  },
+  "mlp_fc1": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused",
+   "SAM3_EXPERIMENT_MLP_PART": "fc1"
+  },
+  "mlp_fc2_cal": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused",
+   "SAM3_EXPERIMENT_MLP_PART": "fc2",
+   "SAM3_EXPERIMENT_FC2_CALIBRATION": ".cache\\quant-research-20260924\\calibrations\\a050-mean"
+  },
+  "kitchen_rot": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_rot_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused"
+  },
+  "kitchen_head_center": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "head",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused",
+   "SAM3_EXPERIMENT_KITCHEN_CENTER": "mean_half",
+   "SAM3_EXPERIMENT_KITCHEN_CENTER_SCOPE": "global"
+  },
+  "boundary_qkv": {
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv"
+  },
+  "kitchen_global": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "fused",
+   "SAM3_EXPERIMENT_FC2_NORM": "fused"
+  },
+  "restore_exact": {
+   "SAM3_EXPERIMENT_PIXEL": "fused_nchw",
+   "SAM3_EXPERIMENT_ATTENTION": "kitchen_all",
+   "SAM3_EXPERIMENT_KITCHEN_LAYOUT": "sequence",
+   "SAM3_EXPERIMENT_MLP": "int8_boundary",
+   "SAM3_EXPERIMENT_PROJECTION": "qkv",
+   "SAM3_EXPERIMENT_QKV_ROPE": "exact",
+   "SAM3_EXPERIMENT_FC2_NORM": "exact"
+  }
+ }
+}

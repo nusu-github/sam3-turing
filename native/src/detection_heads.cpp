@@ -65,7 +65,9 @@ DetectionOutput DetectionHeads::forward(const std::vector<at::Tensor>& pyramid,c
   auto pixel=memory.permute({1,2,0}).slice(2,0,h*w).reshape({batch,256,h,w});
   const auto* experiment_env=std::getenv("SAM3_EXPERIMENT_PIXEL");
   const std::string experiment=experiment_env?experiment_env:"exact";
-  TORCH_CHECK(experiment=="exact" || experiment=="borrow" || experiment=="borrow_relu" || experiment=="nchw" || experiment=="fused_nchw","invalid pixel experiment: ",experiment);
+  // fused_nchw borrows the single-source feature and converts the FP16 channels-last
+  // convolution output to contiguous FP32 in one kernel before GroupNorm.
+  TORCH_CHECK(experiment=="exact" || experiment=="fused_nchw","invalid pixel experiment: ",experiment);
   for (int64_t level=static_cast<int64_t>(pyramid.size())-2,layer=0;level>=0;--level,++layer) {
     const auto range_name="detector.heads.pixel."+std::to_string(layer);
     const auto& feature=pyramid[level];
@@ -79,17 +81,18 @@ DetectionOutput DetectionHeads::forward(const std::vector<at::Tensor>& pyramid,c
     const auto conv="seg.pixel_decoder.conv_layers."+std::to_string(layer);
     pixel=detail::profile_call(range_name+".conv",[&] {return at::conv2d(pixel,detail::weight(weights_,conv+".weight"),detail::weight(weights_,conv+".bias"),{1,1},{1,1});});
     const auto norm="seg.pixel_decoder.norms."+std::to_string(layer);
-    if(experiment=="nchw" || experiment=="fused_nchw") {
+    if(experiment=="fused_nchw") {
       pixel=detail::profile_call(range_name+".pre_norm",[&] {
         TORCH_CHECK(pixel.is_cuda() && pixel.scalar_type()==at::kHalf,"pixel layout experiment requires CUDA FP16 convolution output");
 #ifdef SAM3_WITH_CUDA
-        if(experiment=="fused_nchw")return pixel_nchw_float(pixel);
-#endif
+        return pixel_nchw_float(pixel);
+#else
         return pixel.contiguous().to(at::kFloat);
+#endif
       });
     }
     auto normalized=detail::profile_call(range_name+".group_norm",[&] {return at::group_norm(pixel,8,detail::weight(weights_,norm+".weight"),detail::weight(weights_,norm+".bias"),1e-5);});
-    pixel=detail::profile_call(range_name+".relu",[&] {return experiment=="borrow_relu"?at::relu_(normalized):at::relu(normalized);});
+    pixel=detail::profile_call(range_name+".relu",[&] {return at::relu(normalized);});
   }
   const auto instances=detail::profile_call("detector.heads.instances",[&] {return at::conv2d(pixel,detail::weight(weights_,"seg.instance_seg_head.weight"),detail::weight(weights_,"seg.instance_seg_head.bias"));});
   const auto queries=hs[-1];

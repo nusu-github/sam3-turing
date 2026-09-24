@@ -5,9 +5,6 @@
 #ifdef SAM3_EXPERIMENT_KITCHEN_ATTENTION
 #include "sam3/kitchen_attention.h"
 #endif
-#ifdef SAM3_EXPERIMENT_TURING_ATTENTION
-#include "sam3/turing_attention.h"
-#endif
 
 #include "vision_experiments.h"
 #ifdef SAM3_WITH_CUDA
@@ -20,7 +17,7 @@ at::Tensor VisionEncoder::linear(const at::Tensor& x, const std::string& prefix)
   if(prefix.find(".attn.")!=std::string::npos && weights_.count(prefix+".int8")) {
     const auto& w = weight(prefix + ".int8");
     auto result = detail::quantized_linear(x, w, weight(prefix + ".scale"),
-        weight(prefix + (weights_.count(prefix+".calib_bias")?".calib_bias":".bias")), false, false, "vision.projection");
+        weight(prefix + (weights_.count(prefix+".calib_bias")?".calib_bias":".bias")), false, "vision.projection");
     auto shape=x.sizes().vec();shape.back()=w.size(0);
     return result.view(shape);
   }
@@ -44,7 +41,7 @@ at::Tensor VisionEncoder::attention(const at::Tensor& x, const std::string& pref
     auto packed=detail::profile_call("vision.qkv_rope",[&] {
       auto flat=x.to(at::kHalf).reshape({-1,1024}).contiguous();
       auto [quant, scales] = detail::quantize_rows(flat, "vision.projection");
-      auto accum=detail::profile_call("vision.projection.int8_gemm",[&]{return detail::experimental_int_mm(quant,weight(name+".int8"));});
+      auto accum=detail::profile_call("vision.projection.int8_gemm",[&]{return at::_int_mm(quant,weight(name+".int8").t());});
       const auto& bias=weight(name+(weights_.count(name+".calib_bias")?".calib_bias":".bias"));
       return detail::profile_call("vision.projection.restore_rope",[&]{return approx_restore_rope(accum,scales,weight(name+".scale"),bias,frequencies,b);});
     });
@@ -61,29 +58,17 @@ at::Tensor VisionEncoder::attention(const at::Tensor& x, const std::string& pref
     v=qkv[2];
   }
   const auto attended = detail::profile_call(length == 576 ? "vision.sdpa.local" : "vision.sdpa.global", [&] {
-#if defined(SAM3_EXPERIMENT_TURING_ATTENTION) || defined(SAM3_EXPERIMENT_KITCHEN_ATTENTION)
-    const auto mode = detail::read_experiment("SAM3_EXPERIMENT_ATTENTION");
 #ifdef SAM3_EXPERIMENT_KITCHEN_ATTENTION
-    if(mode=="kitchen" || mode=="kitchen_rot" || mode=="kitchen_all" || mode=="kitchen_rot_all") {
-      if(detail::attention_int8_layer(detail::attention_block_index(prefix)) &&
-          (length==5184 || mode=="kitchen_all" || mode=="kitchen_rot_all")) {
-        const auto layout = detail::checked_experiment("SAM3_EXPERIMENT_KITCHEN_LAYOUT",
-            {"head", "sequence"}, "invalid kitchen output layout: ", "head");
-        return kitchen_attention(q,k,v,mode=="kitchen_rot" || mode=="kitchen_rot_all",layout=="sequence");
-      }
-      return at::scaled_dot_product_attention(q,k,v);
-    }
-#endif
-    detail::check_experiment(mode, {"exact", "global32", "global64", "all32"},
+    // kitchen/kitchen_rot replace the 5184-token global layers; *_all also the local ones.
+    const auto mode = detail::checked_experiment("SAM3_EXPERIMENT_ATTENTION",
+        {"exact", "kitchen", "kitchen_rot", "kitchen_all", "kitchen_rot_all"},
         "invalid attention experiment: ");
-#ifdef SAM3_EXPERIMENT_TURING_ATTENTION
-    if(mode!="exact" && q.is_cuda() && q.scalar_type()==at::kHalf &&
-       (mode=="all32" || length==5184)) {
-      return turing_attention(q,k,v,mode=="global64");
+    if(mode!="exact" && detail::attention_int8_layer(detail::attention_block_index(prefix)) &&
+        (length==5184 || mode=="kitchen_all" || mode=="kitchen_rot_all")) {
+      const auto layout = detail::checked_experiment("SAM3_EXPERIMENT_KITCHEN_LAYOUT",
+          {"head", "sequence"}, "invalid kitchen output layout: ", "head");
+      return kitchen_attention(q,k,v,mode=="kitchen_rot" || mode=="kitchen_rot_all",layout=="sequence");
     }
-#else
-    TORCH_CHECK(mode=="exact","FP16 donor attention was not built");
-#endif
 #endif
     return at::scaled_dot_product_attention(q, k, v);
   });

@@ -6,9 +6,13 @@
 
 **QKV W8A8 is a repeatable but small additional improvement: about 1.8–1.9% of inference time.** Quantizing the attention output projection did not help. Reindexing restoration by row, to avoid per-element integer division, did not establish an additional whole-model improvement worth recommending.
 
-No approximation is enabled by default. The new opt-in `SAM3_EXPERIMENT_PROJECTION` accepts `exact` (default), `qkv`, `proj`, or `both`. It quantizes the selected Vision attention weights per output channel once at setup, dynamically quantizes inputs per row, runs GPU INT8 GEMM and restores FP16 with bias. Attention QK/softmax/PV remain FP16/FP32 as before; this is projection quantization, not INT8 Attention.
+> **Status:** `qkv` was adopted into the research baseline. The rejected `proj`/`both`
+> projection modes and `SAM3_EXPERIMENT_RESTORE=rows` were removed in the repository
+> cleanup; they remain in commit `7d7fddb`.
 
-`SAM3_EXPERIMENT_RESTORE=rows` is a separate experimental switch. It changes the restoration launch to a 2D grid, keeping the same expression and FP16 rounding. Unset or `flat` uses the original kernel. Inputs with more than 65535 rows retain the original launch. Keep this experiment disabled for now.
+No approximation is enabled by default. The opt-in `SAM3_EXPERIMENT_PROJECTION` accepted `exact` (default), `qkv`, `proj`, or `both`. It quantizes the selected Vision attention weights per output channel once at setup, dynamically quantizes inputs per row, runs GPU INT8 GEMM and restores FP16 with bias. Attention QK/softmax/PV remain FP16/FP32 as before; this is projection quantization, not INT8 Attention.
+
+`SAM3_EXPERIMENT_RESTORE=rows` was a separate experimental switch. It changed the restoration launch to a 2D grid, keeping the same expression and FP16 rounding. Unset or `flat` used the original kernel. Inputs with more than 65535 rows retained the original launch.
 
 ## Updated kernel attribution
 
@@ -82,4 +86,4 @@ Builds succeeded and all **51 component tests passed** (135.81 seconds). Test lo
 - `profile_native_hotspots.py OUTPUT_ROOT MODE...` now accepts a separate root/mode list. `analyze_native_hotspots.py TRACE_ROOT REPORT_JSON REFERENCE_ROOT` accepts a matching output reference directory or benchmark root.
 - Profiles: `.cache/native-perf/hotspots-boundary/`, `.cache/native-perf/hotspots-qkv/`; exported attribution: `hotspots-boundary.json`, `hotspots-qkv.json`.
 
-Recommended experimental combination: `SAM3_EXPERIMENT_MLP=int8_boundary`, `SAM3_EXPERIMENT_PROJECTION=qkv`, with `SAM3_EXPERIMENT_RESTORE` unset. The original fused-MLP-only mode remains the lower-memory option without additional projection quantization error.
+Recommended experimental combination at the time: `SAM3_EXPERIMENT_MLP=int8_boundary` and `SAM3_EXPERIMENT_PROJECTION=qkv`. The fused-MLP-only mode (without `PROJECTION`) remains the lower-memory option without additional projection quantization error.

@@ -2,7 +2,8 @@
 
 Measured 2026-09-23, RTX 2060 Max-Q, LibTorch 2.10.0+cu130, native FP16 compute
 storage. No candidate established a useful model-level improvement. Runtime
-BLAS defaults remain unchanged.
+BLAS defaults remain unchanged. The diagnostic `sam3_gemm_algorithms` tool was
+removed in the repository cleanup; it remains in commit `7d7fddb`.
 
 ## Complete image inference
 
@@ -60,8 +61,8 @@ None was integrated into the model.
 
 ## Reproduction and artifacts
 
-Build target `sam3_gemm_algorithms` in the existing CUDA development-tools build.
-Run `sam3_gemm_algorithms OUTPUT.json`, or use
+At commit `7d7fddb`, build target `sam3_gemm_algorithms` in the CUDA
+development-tools build. Run `sam3_gemm_algorithms OUTPUT.json`, or use
 `experiments/monitor_native_bench.py OUTPUT_DIR EXE OUTPUT.json` from the repo
 root. The output parent directory must exist. The executable needs the same
 LibTorch/CUDA DLLs as the other development tools. For the backend test, set

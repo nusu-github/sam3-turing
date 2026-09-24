@@ -1,5 +1,9 @@
 # INT8 GEMM + FP16 restoration — 2026-09-24
 
+> **Status: rejected and removed.** `native/tools/int8_gemm_restore.cu` and
+> `sam3_int8_restore_bench` were removed in the repository cleanup; they remain in
+> commit `7d7fddb`.
+
 ## Decision
 
 Keep the existing ATen GEMM followed by fused FC2/residual/next-norm. The new SM75 GEMM epilogue eliminates the INT32 intermediate and reproduces the checked outputs exactly, but the complete FC2-to-next-norm operator chain is **9.25% slower** in this microbenchmark. It is a development-only experiment, not connected to model dispatch. No whole-model speedup or accuracy claim is made.
@@ -31,7 +35,7 @@ A direct GEMM+residual+Norm epilogue is not a trivial extension: this GEMM tile 
 
 Compute Sanitizer memcheck and racecheck, filtered to CUTLASS kernels, complete all cases with **zero errors and zero race hazards/warnings**. Racecheck cases are also recorded in [their JSON](int8-restore-racecheck.json). These are operator checks, not a new full-model quality evaluation. The previous 51-test suite result belongs to the preceding report; it is not counted as a fresh run here.
 
-Build the `sam3_int8_restore_bench` target in the existing CUDA 13 / MSVC 14.44 development configuration. Run through the existing native environment monitor:
+At commit `7d7fddb`, build the `sam3_int8_restore_bench` target in the CUDA 13 / MSVC 14.44 development configuration and run it through the native environment monitor:
 
 ```powershell
 .venv/Scripts/python.exe experiments/monitor_native_bench.py .cache/native-perf/int8-restore-micro-1 build/native-windows-cu130/sam3_int8_restore_bench.exe experiments/results/native_rtx2060/int8-restore-micro-1.json

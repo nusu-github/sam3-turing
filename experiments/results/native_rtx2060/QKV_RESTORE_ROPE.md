@@ -59,7 +59,6 @@ differed. These drivers were removed after the experiment and remain in commit
 ```powershell
 $env:SAM3_EXPERIMENT_MLP='int8_boundary'
 $env:SAM3_EXPERIMENT_PROJECTION='qkv'
-$env:SAM3_EXPERIMENT_RESTORE='flat'
 $env:SAM3_EXPERIMENT_ATTENTION='exact'
 $env:SAM3_EXPERIMENT_QKV_ROPE='fused'
 ```

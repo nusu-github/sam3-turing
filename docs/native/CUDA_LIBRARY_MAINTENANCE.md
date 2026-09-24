@@ -7,7 +7,8 @@ LibTorch 2.10 cu130. This pass prioritizes maintenance, not new approximations.
 
 - `native/tools/approx_kernels.cu`: use `cub::BlockReduce<float,256>` for row absmax.
 - `native/tools/approx_boundary.cu`: use `cub::BlockReduce<float,Threads>` for
-  fused restore/GELU/quantization absmax, including 128/256/512-thread variants.
+  fused restore/GELU/quantization absmax, including 128/256/512-thread variants
+  (only the adopted 256-thread kernel remains after the repository cleanup).
 - Use `cuda::maximum<>`, the installed CCCL API, and explicitly broadcast the
   thread-0 scale with shared memory and a barrier. Per-thread absmax starts at zero
   and uses `fmaxf`, so reduction inputs are nonnegative and NaN-free.

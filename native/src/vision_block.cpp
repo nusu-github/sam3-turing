@@ -64,22 +64,14 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
     hidden = at::_addmm_activation(weight(prefix + ".mlp.fc1.bias").to(at::kBFloat16), flat,
       weight(prefix + ".mlp.fc1.weight").to(at::kBFloat16).t(), 1, 1, true).view({b,h,w,4736});
   } else {
-    // The fresh linear result has no other consumers. Reuse its allocation
-    // for exact GELU, keeping the FP16 rounding point before activation.
     // Opt-in local experiment. Unset/exact retains the original arithmetic.
     auto mode = detail::checked_experiment("SAM3_EXPERIMENT_MLP",
-        {"exact", "tanh", "fused", "int8", "int8_boundary"}, "invalid SAM3_EXPERIMENT_MLP: ");
-    if((mode=="int8" || mode=="int8_boundary") && !detail::mlp_int8_layer(layer))mode="exact";
-    if (mode == "int8" || mode == "int8_boundary") {
+        {"exact", "int8_boundary"}, "invalid SAM3_EXPERIMENT_MLP: ");
+    if(mode=="int8_boundary" && !detail::mlp_int8_layer(layer))mode="exact";
+    if (mode == "int8_boundary") {
 #ifdef SAM3_WITH_CUDA
-      const auto quant_linear = [&](const at::Tensor& value, const std::string& name, bool gelu) {
-        const std::string label=gelu ? "vision.mlp.fc1" : "vision.mlp.fc2";
-        detail::ProfileRange projection_range(label);
-        return detail::quantized_linear(value, weight(name + ".int8"),
-            weight(name + ".scale"), weight(name + ".bias"), gelu, !gelu, label);
-      };
       const auto& mlp_part=detail::mlp_int8_part();
-      if (mode == "int8_boundary" && mlp_part!="fc1") {
+      if (mlp_part!="fc1") {
         const auto fc1=prefix+".mlp.fc1",fc2=prefix+".mlp.fc2";
         const bool calibrated=weights_.count(fc2+".calib_r")!=0;
         const auto& fc2_bias=weight(fc2+(calibrated?".calib_bias":".bias"));
@@ -99,7 +91,7 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
           detail::ProfileRange fc1_range("vision.mlp.fc1");
           const auto flat=normalized.to(at::kHalf).reshape({-1,1024}).contiguous();
           auto [q, scales] = detail::quantize_rows(flat, "vision.mlp.fc1");
-          auto accum=detail::profile_call("vision.mlp.fc1.int8_gemm",[&] {return detail::experimental_int_mm(q,weight(fc1+".int8"));});
+          auto accum=detail::profile_call("vision.mlp.fc1.int8_gemm",[&] {return at::_int_mm(q,weight(fc1+".int8").t());});
           if(!detail::int4_fc2_layer(layer) || detail::int4_weight_only()) {
             qhidden=at::empty(accum.sizes(),flat.options().dtype(at::kChar));
             shidden=at::empty_like(scales);
@@ -127,7 +119,7 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
 #ifdef SAM3_EXPERIMENT_INT8_GEMM
           if(detail::int4_fc2_layer(layer) && !detail::int4_weight_only() && !detail::int4_activation_only())return int4_mm(qhidden,weight(fc2+".int8"));
 #endif
-          return detail::experimental_int_mm(qhidden,weight(fc2+".int8"),true);});
+          return at::_int_mm(qhidden,weight(fc2+".int8").t());});
 #ifdef SAM3_EXPERIMENT_INT8_GEMM
         if(int4_offset.defined())detail::profile_call("vision.mlp.fc2.affine_correction",[&]{int4_correct(accum,int4_offset,weight(fc2+".sum"));return 0;});
 #endif
@@ -147,22 +139,20 @@ at::Tensor VisionEncoder::block(const at::Tensor& input, int64_t layer, bool fus
         });
         projection=result.view({b,h,w,1024});
       } else {
-        hidden = quant_linear(normalized,prefix + ".mlp.fc1",true).view({b,h,w,4736});
-        if(mlp_part!="fc1")projection = quant_linear(hidden,prefix + ".mlp.fc2",false).view({b,h,w,1024});
+        // FC1-only isolation: unfused INT8 FC1 with restore/GELU; FC2 stays FP16 below.
+        const auto fc1=prefix+".mlp.fc1";
+        detail::ProfileRange projection_range("vision.mlp.fc1");
+        hidden = detail::quantized_linear(normalized, weight(fc1 + ".int8"), weight(fc1 + ".scale"),
+            weight(fc1 + ".bias"), true, "vision.mlp.fc1").view({b,h,w,4736});
       }
 #else
       TORCH_CHECK(false,"experimental int8 requires CUDA");
 #endif
-    } else if (mode == "fused" && normalized.is_cuda() &&
-        at::autocast::is_autocast_enabled(at::kCUDA) &&
-        at::autocast::get_autocast_dtype(at::kCUDA) == at::kHalf) {
-      hidden = at::_addmm_activation(weight(prefix + ".mlp.fc1.bias").to(at::kHalf),
-          normalized.to(at::kHalf).reshape({-1,1024}),
-          weight(prefix + ".mlp.fc1.weight").to(at::kHalf).t(),
-          1, 1, true).view({b,h,w,4736});
     } else {
+      // The fresh linear result has no other consumers. Reuse its allocation
+      // for exact GELU, keeping the FP16 rounding point before activation.
       hidden = detail::profile_call("vision.mlp.fc1",[&] { return linear(normalized, prefix + ".mlp.fc1"); });
-      detail::profile_call("vision.mlp.gelu",[&] { at::gelu_(hidden, mode == "tanh" ? "tanh" : "none"); return 0; });
+      detail::profile_call("vision.mlp.gelu",[&] { at::gelu_(hidden, "none"); return 0; });
     }
   }
   if (!projection.defined()) {

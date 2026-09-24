@@ -7,8 +7,6 @@
 #include <cuda_fp16.h>
 #include <cub/block/block_reduce.cuh>
 #include <cuda/functional>
-#include <cstdlib>
-#include <cstring>
 #include <climits>
 
 __global__ void quant_rows(const half* x, signed char* q, float* scales, int k) {
@@ -32,29 +30,12 @@ __global__ void restore(const int* accum,const float* xs,const float* ws,const h
   if(gelu)v=.5f*v*(1.f+erff(v*.7071067811865475f));
   out[i]=__float2half_rn(v);
 }
-__global__ void restore_rows(const int* accum,const float* xs,const float* ws,const half* bias,half* out,int n,bool gelu) {
-  const int row=blockIdx.y,col=blockIdx.x*blockDim.x+threadIdx.x;
-  if(col>=n)return;
-  const int i=row*n+col;
-  float v=float(accum[i])*xs[row]*ws[col]+__half2float(bias[col]);
-  if(gelu)v=.5f*v*(1.f+erff(v*.7071067811865475f));
-  out[i]=__float2half_rn(v);
-}
 void approx_quant(const at::Tensor& x,at::Tensor& q,at::Tensor& scales) {
   quant_rows<<<x.size(0),256,0,c10::cuda::getCurrentCUDAStream()>>>(
     reinterpret_cast<const half*>(x.const_data_ptr<at::Half>()),q.mutable_data_ptr<int8_t>(),scales.mutable_data_ptr<float>(),int(x.size(1)));
   C10_CUDA_KERNEL_LAUNCH_CHECK();
 }
 void approx_restore(const at::Tensor& accum,const at::Tensor& xs,const at::Tensor& ws,const at::Tensor& bias,at::Tensor& out,bool gelu) {
-  static const bool rows=[] {
-    const auto* p=std::getenv("SAM3_EXPERIMENT_RESTORE");
-    return p && std::strcmp(p,"rows")==0;
-  }();
-  if(rows && out.size(0)<=65535) {
-    restore_rows<<<dim3((out.size(1)+255)/256,out.size(0)),256,0,c10::cuda::getCurrentCUDAStream()>>>(
-      accum.const_data_ptr<int>(),xs.const_data_ptr<float>(),ws.const_data_ptr<float>(),reinterpret_cast<const half*>(bias.const_data_ptr<at::Half>()),reinterpret_cast<half*>(out.mutable_data_ptr<at::Half>()),int(out.size(1)),gelu);
-    C10_CUDA_KERNEL_LAUNCH_CHECK();return;
-  }
   restore<<<(out.numel()+255)/256,256,0,c10::cuda::getCurrentCUDAStream()>>>(accum.const_data_ptr<int>(),xs.const_data_ptr<float>(),ws.const_data_ptr<float>(),reinterpret_cast<const half*>(bias.const_data_ptr<at::Half>()),reinterpret_cast<half*>(out.mutable_data_ptr<at::Half>()),int(out.size(0)),int(out.size(1)),gelu);
   C10_CUDA_KERNEL_LAUNCH_CHECK();
 }

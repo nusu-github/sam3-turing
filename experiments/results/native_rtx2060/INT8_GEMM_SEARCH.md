@@ -1,5 +1,11 @@
 # SM75 INT8 GEMM search — 2026-09-24
 
+> **Status: rejected and removed.** The CUTLASS tile experiment
+> (`int8_gemm_experiment.cu`, `sam3_int8_gemm_bench`) and the cached cuBLASLt path
+> (`int8_lt_cached.cpp`, `SAM3_EXPERIMENT_INT8_LT`, `sam3_int8_lt_bench`) were removed
+> in the repository cleanup; they remain in commit `7d7fddb`. The
+> `SAM3_EXPERIMENT_INT8_GEMM` CMake option now builds only the INT4 FC2 experiment.
+
 ## Decision
 
 Keep the existing ATen INT8 GEMM path. Six standalone CUTLASS tile configurations all lose on the tested FC2/FC1/QKV shapes. Explicit cuBLASLt heuristic selection shows small operator-level differences, but caching the selected algorithm and descriptors does **not establish a reliable whole-model improvement**. None of these new paths is enabled by default.
@@ -62,6 +68,8 @@ All three modes retain byte-identical masks, scores, boxes and query IDs on truc
 
 ## Reproduction and scope
 
+At commit `7d7fddb`:
+
 ```powershell
 cmake -S native -B build/native-windows-cu130 -DSAM3_EXPERIMENT_INT8_GEMM=ON -DSAM3_CUTLASS_ROOT=D:/PycharmProjects/sam3-turing/.cache/portability-review/flash-attention-turing/csrc/cutlass
 cmake --build build/native-windows-cu130 --target sam3_int8_gemm_bench sam3_int8_lt_bench sam3_image_latency
@@ -70,6 +78,6 @@ cmake --build build/native-windows-cu130 --target sam3_int8_gemm_bench sam3_int8
 
 The model runs used `experiments/run_int8_cache_native.py timing|quality` and
 `summarize_int8_cache_native.py`, removed after the experiment and kept in commit
-`7d7fddb`. Model runners refused to overwrite existing runs. Custom CUTLASS build option defaults OFF; runtime cached-LT selector `SAM3_EXPERIMENT_INT8_LT` defaults to `exact`. Earlier model runners clear the new selector. Generated compatibility headers now retain timestamps when content is unchanged, avoiding unnecessary CUDA rebuilds on reconfiguration.
+`7d7fddb`. Model runners refused to overwrite existing runs. The custom CUTLASS build option defaulted OFF and the cached-LT selector `SAM3_EXPERIMENT_INT8_LT` defaulted to `exact`. Generated compatibility headers retain timestamps when content is unchanged, avoiding unnecessary CUDA rebuilds on reconfiguration.
 
 No candidate is promoted to the recommended inference configuration. The evidence shifts priority away from small-tile/occupancy tuning alone and toward eliminating intermediate memory traffic or changing Attention arithmetic, each requiring its own implementation and quality evaluation.

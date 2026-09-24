@@ -35,7 +35,7 @@ inline void observe_qkv_error(const at::Tensor& input,const at::Tensor& normaliz
   approx_quant(w,q,scales);
   const auto base_bias=linear_mean_bias(weight,bias,q,scales,mean,r,shift).to(at::kHalf).contiguous();
   TORCH_CHECK(at::isfinite(base_bias).all().item<bool>(),"QKV shadow bias overflows FP16");
-  const auto candidate=quantized_linear(transformed,q,scales,base_bias,false,false,"vision.qkv_shadow");
+  const auto candidate=quantized_linear(transformed,q,scales,base_bias,false,"vision.qkv_shadow");
   const auto reference=at::linear(normalized.reshape({5184,1024}),weight,bias);
   const auto stats=qkv_error_statistics(reference,candidate,base_bias).cpu().contiguous();
   std::filesystem::create_directories(std::filesystem::u8path(root));

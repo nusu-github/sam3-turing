@@ -1,5 +1,9 @@
 # Windows / Turing 近似演算の実験結果
 
+> **現状:** `tanh`・`fused` は不採用として削除した。`int8` は同じ出力の `int8_boundary`
+> に置き換えたため削除した（[BOUNDARY_FUSION](BOUNDARY_FUSION.md)）。
+> `sam3_approx_bench` も削除した。いずれも commit `7d7fddb` に残っている。
+
 2026-09-24、RTX 2060 Max-Q、standalone LibTorch 2.10+cu130、base `908e476`。
 通常の厳密演算がデフォルト。`SAM3_EXPERIMENT_MLP` はプロセス起動前に設定する実験用スイッチ。
 モデル作成後に値を変更しない。今回は runtime / diagnostic のローカル変更のみでコミットしていない。
@@ -109,7 +113,8 @@ GEMM epilogueでの復元などを候補にする。ただしTuring cuBLASLtのe
 
 - `native/tools/approx_bench.cpp` と `approx_kernels.cu`: 合成入力によるカーネル検証と性能測定。
 - `experiments/run_approx_native.py timing` / `quality` と `summarize_approx_native.py [ROOT]`:
-  同一DLLでモードを切替えて測定・集計するドライバー。実験終了後に削除した。
-  当時のランタイムとともに commit `7d7fddb` に残っている（`git worktree add ../sam3-7d7fddb 7d7fddb`）。
+  同一DLLでモードを切替えて測定・集計するドライバー。
+- ベンチとドライバーは実験終了後に削除した。当時のランタイムとともに commit `7d7fddb` に
+  残っている（`git worktree add ../sam3-7d7fddb 7d7fddb`）。
 - [全体の生データ・比較](approximation-results.json)、[測定DLL等のハッシュ](approximation-manifest.json)。
 - 各runの出力・NVML監視・コマンドは `.cache/native-perf/approximation-v3/`。

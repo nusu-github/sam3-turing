@@ -7,11 +7,10 @@
 #include <cuda_fp16.h>
 #include <cub/block/block_reduce.cuh>
 #include <cuda/functional>
-#include <cstdlib>
-#include <string>
 #include <climits>
 
-template<int Items,int Threads=256,bool ReadOnly=false,bool Affine=false,bool HalfInput=false>
+constexpr int boundary_threads=256;
+template<int Items,bool Affine=false,bool HalfInput=false>
 __global__ void restore_quant_rows(const int* accum, const float* xs, const float* ws,
     const half* bias, signed char* q, float* scales, int n,
     const float* channel_scale=nullptr,const float* channel_shift=nullptr,const half* input=nullptr) {
@@ -20,15 +19,11 @@ __global__ void restore_quant_rows(const int* accum, const float* xs, const floa
   [[maybe_unused]] const float xscale=HalfInput?1.f:xs[row];
   #pragma unroll
   for(int j=0;j<Items;++j) {
-    const int col=threadIdx.x+j*Threads;
+    const int col=threadIdx.x+j*boundary_threads;
     float v=0;
     if(col<n) {
       if constexpr(HalfInput) v=__half2float(input[row*n+col]);
-      else {
-        const float w=ReadOnly ? __ldg(ws+col) : ws[col];
-        const half b=ReadOnly ? __ldg(bias+col) : bias[col];
-        v=float(accum[row*n+col])*xscale*w+__half2float(b);
-      }
+      else v=float(accum[row*n+col])*xscale*ws[col]+__half2float(bias[col]);
       v=.5f*v*(1.f+erff(v*.7071067811865475f));
       // Preserve the existing two-kernel INT8 path's rounding before absmax.
       v=__half2float(__float2half_rn(v));
@@ -39,7 +34,7 @@ __global__ void restore_quant_rows(const int* accum, const float* xs, const floa
     }
     values[j]=v; mx=fmaxf(mx,fabsf(v));
   }
-  using Reduce = cub::BlockReduce<float,Threads>;
+  using Reduce = cub::BlockReduce<float,boundary_threads>;
   __shared__ typename Reduce::TempStorage storage;
   __shared__ float scale;
   // Publish CUB's thread-0 result before all threads quantize their cached values.
@@ -48,7 +43,7 @@ __global__ void restore_quant_rows(const int* accum, const float* xs, const floa
   __syncthreads();
   #pragma unroll
   for(int j=0;j<Items;++j) {
-    const int col=threadIdx.x+j*Threads;
+    const int col=threadIdx.x+j*boundary_threads;
     if(col<n) q[row*n+col]=(signed char)__float2int_rn(fminf(127.f,fmaxf(-127.f,values[j]/scale)));
   }
 }
@@ -69,7 +64,7 @@ void approx_gelu_quant(const at::Tensor& input,const at::Tensor& r,const at::Ten
         t.numel()==n,"invalid FP16 GELU calibration vector");
   const c10::cuda::CUDAGuard guard(input.device());
   auto stream=c10::cuda::getCurrentCUDAStream();
-#define GELU_LAUNCH(I,A) restore_quant_rows<I,256,false,A,true><<<m,256,0,stream>>>(nullptr,nullptr,nullptr,nullptr,q.mutable_data_ptr<int8_t>(),scales.mutable_data_ptr<float>(),int(n),r.defined()?r.const_data_ptr<float>():nullptr,shift.defined()?shift.const_data_ptr<float>():nullptr,reinterpret_cast<const half*>(input.const_data_ptr<at::Half>()))
+#define GELU_LAUNCH(I,A) restore_quant_rows<I,A,true><<<m,256,0,stream>>>(nullptr,nullptr,nullptr,nullptr,q.mutable_data_ptr<int8_t>(),scales.mutable_data_ptr<float>(),int(n),r.defined()?r.const_data_ptr<float>():nullptr,shift.defined()?shift.const_data_ptr<float>():nullptr,reinterpret_cast<const half*>(input.const_data_ptr<at::Half>()))
   if(r.defined()) {
     if(n==4736) {GELU_LAUNCH(19,true);} else {GELU_LAUNCH(32,true);}
   } else {
@@ -96,7 +91,7 @@ void approx_restore_quant_affine(const at::Tensor& accum,const at::Tensor& xs,
   // Positive finite calibration vectors are validated once when loaded.
   const c10::cuda::CUDAGuard guard(accum.device());
   auto stream=c10::cuda::getCurrentCUDAStream();
-#define AFFINE_LAUNCH(I) restore_quant_rows<I,256,false,true><<<m,256,0,stream>>>(accum.const_data_ptr<int>(),xs.const_data_ptr<float>(),ws.const_data_ptr<float>(),reinterpret_cast<const half*>(bias.const_data_ptr<at::Half>()),q.mutable_data_ptr<int8_t>(),scales.mutable_data_ptr<float>(),int(n),r.const_data_ptr<float>(),shift.const_data_ptr<float>())
+#define AFFINE_LAUNCH(I) restore_quant_rows<I,true><<<m,256,0,stream>>>(accum.const_data_ptr<int>(),xs.const_data_ptr<float>(),ws.const_data_ptr<float>(),reinterpret_cast<const half*>(bias.const_data_ptr<at::Half>()),q.mutable_data_ptr<int8_t>(),scales.mutable_data_ptr<float>(),int(n),r.const_data_ptr<float>(),shift.const_data_ptr<float>())
   if(n==4736) {AFFINE_LAUNCH(19);} else {AFFINE_LAUNCH(32);}
 #undef AFFINE_LAUNCH
   C10_CUDA_KERNEL_LAUNCH_CHECK();
@@ -114,16 +109,6 @@ void approx_restore_quant(const at::Tensor& accum,const at::Tensor& xs,
   for(const auto& t : {xs,ws,bias,q,scales})
     TORCH_CHECK(t.device()==accum.device() && t.is_contiguous(),"restore_quant device/layout mismatch");
   auto stream=c10::cuda::getCurrentCUDAStream();
-  static const std::string mode=[] {const auto* p=std::getenv("SAM3_EXPERIMENT_BOUNDARY");return std::string(p?p:"exact");}();
-  TORCH_CHECK(mode=="exact" || mode=="threads128" || mode=="threads512" || mode=="readonly","invalid boundary experiment: ",mode);
-#define LAUNCH(I,T,R) restore_quant_rows<I,T,R><<<accum.size(0),T,0,stream>>>(accum.const_data_ptr<int>(),xs.const_data_ptr<float>(),ws.const_data_ptr<float>(),reinterpret_cast<const half*>(bias.const_data_ptr<at::Half>()),q.mutable_data_ptr<int8_t>(),scales.mutable_data_ptr<float>(),n)
-  if(n==4736 && mode!="exact") {
-    if(mode=="threads128") {LAUNCH(37,128,false);}
-    else if(mode=="threads512") {LAUNCH(10,512,false);}
-    else {LAUNCH(19,256,true);}
-    C10_CUDA_KERNEL_LAUNCH_CHECK();return;
-  }
-#undef LAUNCH
   if(n==4736)
     restore_quant_rows<19><<<accum.size(0),256,0,stream>>>(accum.const_data_ptr<int>(),xs.const_data_ptr<float>(),ws.const_data_ptr<float>(),reinterpret_cast<const half*>(bias.const_data_ptr<at::Half>()),q.mutable_data_ptr<int8_t>(),scales.mutable_data_ptr<float>(),n);
   else

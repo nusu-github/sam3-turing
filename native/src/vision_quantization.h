@@ -13,15 +13,6 @@ inline at::Tensor unpack_int4_diagnostic(const at::Tensor& p) {
 #endif
 
 #ifdef SAM3_WITH_CUDA
-inline at::Tensor experimental_int_mm(const at::Tensor& a,const at::Tensor& w,bool fc2=false) {
-  static const std::string mode=read_experiment("SAM3_EXPERIMENT_INT8_LT");
-  check_experiment(mode, {"exact", "fc2", "all"}, "invalid INT8 LT experiment: ");
-  if(mode=="all" || (mode=="fc2" && fc2))return int8_lt_cached(a,w);
-  return at::_int_mm(a,w.t());
-}
-#endif
-
-#ifdef SAM3_WITH_CUDA
 // The caller retains the flattened FP16 tensor until its restoration completes.
 inline std::pair<at::Tensor, at::Tensor> quantize_rows(
     const at::Tensor& flat, const std::string& profile_label) {
@@ -36,12 +27,12 @@ inline std::pair<at::Tensor, at::Tensor> quantize_rows(
 
 // Shared unfused INT8 projection; restore/GELU runs in FP32 before FP16 output.
 inline at::Tensor quantized_linear(const at::Tensor& value, const at::Tensor& weight,
-    const at::Tensor& weight_scales, const at::Tensor& bias, bool gelu, bool fc2,
+    const at::Tensor& weight_scales, const at::Tensor& bias, bool gelu,
     const std::string& profile_label) {
   const auto flat = value.to(at::kHalf).reshape({-1, value.size(-1)}).contiguous();
   auto [quantized, scales] = quantize_rows(flat, profile_label);
   auto accum = profile_call(profile_label + ".int8_gemm", [&] {
-    return experimental_int_mm(quantized, weight, fc2);
+    return at::_int_mm(quantized, weight.t());
   });
   auto result = at::empty(accum.sizes(), flat.options());
   profile_call(profile_label + ".restore", [&] {

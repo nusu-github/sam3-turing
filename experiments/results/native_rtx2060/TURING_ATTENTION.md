@@ -1,5 +1,9 @@
 # Turing FP16 Attention local experiment — 2026-09-24
 
+> **Status: rejected and removed.** The donor adapter, `SAM3_EXPERIMENT_TURING_ATTENTION`
+> and the `global32`/`global64`/`all32` attention modes were removed from the runtime
+> in the repository cleanup; they remain in commit `7d7fddb`.
+
 ## Decision
 
 The external d=64 kernel improves long-sequence global Attention on this RTX 2060 Max-Q. Keep it **opt-in**: the five-case model smoke check misses the preset box-coordinate gate on `child`. Do not enable it globally or claim validated production parity. Short local Attention remains on existing SDPA.
@@ -54,7 +58,7 @@ Compute Sanitizer memcheck: all six unit cases complete, zero errors. Racecheck 
 
 ## Reproduce
 
-With the existing Windows CUDA/LibTorch toolchain configured:
+At commit `7d7fddb`, with the existing Windows CUDA/LibTorch toolchain configured:
 
 ```powershell
 cmake -S native -B build/native-windows-cu130 -DSAM3_EXPERIMENT_TURING_ATTENTION=ON -DSAM3_TURING_DONOR=D:/PycharmProjects/sam3-turing/.cache/portability-review/flash-attention-turing
@@ -66,6 +70,6 @@ The model runs used `experiments/run_attention_native.py timing|quality` and
 box gate failure). These drivers were removed after the experiment and remain in
 commit `7d7fddb`. Raw runs: `.cache/native-perf/attention-ba018a0`. Durable results: [model JSON](attention-ba018a0.json), [operator JSON](attention-micro.json), [memcheck unit JSON](attention-memcheck.json).
 
-CMake option defaults OFF. When built ON, unset `SAM3_EXPERIMENT_ATTENTION` or `exact` still selects existing SDPA. `global32`/`global64` replace only the four 5184-token Vision global layers in the tested image path. `all32` is diagnostic only. Other paths, including Detector and video memory Attention, are outside this experiment's validation scope.
+The CMake option defaulted OFF. When built ON, unset `SAM3_EXPERIMENT_ATTENTION` or `exact` still selected existing SDPA. `global32`/`global64` replaced only the four 5184-token Vision global layers in the tested image path. `all32` is diagnostic only. Other paths, including Detector and video memory Attention, are outside this experiment's validation scope.
 
 The next independent candidate remains QKV INT32 restoration plus RoPE fusion: earlier profiling measured restoration at ~17.7 ms and RoPE at ~6 ms. Avoid assuming this Attention substitution proves an INT8 Attention kernel or a different tile shape will be faster.

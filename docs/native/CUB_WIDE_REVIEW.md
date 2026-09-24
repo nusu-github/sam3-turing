@@ -21,9 +21,8 @@ This pass extends CUB from block reductions to device-wide transformations.
 | `src/edt_cuda.cu`, `edt_impl.h` | Parabola-envelope EDT | Not a standard associative scan. NPP feasibility is documented separately. |
 | `tools/approx_kernels.cu`, `tools/approx_boundary.cu` | INT8 extrema | CUB already adopted. Restore/RoPE remains specialized fused arithmetic. |
 | `tools/int4_experiment.cu` | INT4 extrema/MSE/Hadamard | Symmetric extrema already CUB. Keep affine extrema after measured regression; preserve MSE addition order and rotation shuffles. |
-| `tools/int8_gemm_experiment.cu`, `tools/int8_gemm_restore.cu` | GEMM/epilogue | Already CUTLASS; no new handwritten collective to replace. |
 | `tools/pixel_transform.cu` | Coalesced tiled transpose | Keep padded shared-memory layout; an elementwise transform does not preserve that access pattern. |
-| `tools/turing_attention.cu`, `tools/kitchen_attention.cu` | External Attention adapters | Keep donor kernels/layout contracts intact; no local generic collective to substitute. |
+| `tools/kitchen_attention.cu` | External Attention adapter | Keep donor kernels/layout contracts intact; no local generic collective to substitute. |
 
 ## DeviceTransform implementation contract
 

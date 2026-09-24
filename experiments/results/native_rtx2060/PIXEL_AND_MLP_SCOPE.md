@@ -24,7 +24,9 @@ channel-major storage. A tiled shared-memory transpose can do the FP16-to-FP32
 conversion and layout change in one pass, with coalesced reads and writes.
 The GroupNorm computation and its FP32 reduction are left intact.
 
-`SAM3_EXPERIMENT_PIXEL` selects these experiments:
+`SAM3_EXPERIMENT_PIXEL` selected these experiments. Only `exact` and `fused_nchw`
+remain; the intermediate `borrow`, `borrow_relu` and `nchw` candidates were removed
+in the repository cleanup (they remain in commit `7d7fddb`).
 
 - `exact`: previous behavior, plus inactive-by-default profiling ranges.
 - `borrow`: avoid cloning the single-source pyramid feature; later addition

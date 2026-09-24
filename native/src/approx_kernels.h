@@ -22,7 +22,6 @@ at::Tensor approx_restore_rope(const at::Tensor& accum, const at::Tensor& input_
     const at::Tensor& frequencies, int64_t batch);
 
 namespace sam3 {
-at::Tensor int8_lt_cached(const at::Tensor& input, const at::Tensor& weight);
 std::tuple<at::Tensor, at::Tensor> approx_fc2_norm(const at::Tensor& input,
     const at::Tensor& accum, const at::Tensor& input_scales, const at::Tensor& weight_scales,
     const at::Tensor& bias, const at::Tensor& gamma, const at::Tensor& beta, bool partition);

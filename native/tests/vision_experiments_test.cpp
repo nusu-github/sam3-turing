@@ -98,10 +98,10 @@ int main(int argc, char** argv) {
       setting("SAM3_EXPERIMENT_MLP_PART", nullptr);
       TORCH_CHECK(mlp_int8_part()=="both","default MLP part changed");
       TORCH_CHECK(read_experiment("SAM3_EXPERIMENT_MLP") == "exact", "default changed");
-      setting("SAM3_EXPERIMENT_MLP", "int8");
-      TORCH_CHECK(read_experiment("SAM3_EXPERIMENT_MLP") == "int8", "live setting cached");
-      setting("SAM3_EXPERIMENT_MLP", "tanh");
-      TORCH_CHECK(read_experiment("SAM3_EXPERIMENT_MLP") == "tanh", "live update ignored");
+      setting("SAM3_EXPERIMENT_MLP", "int8_boundary");
+      TORCH_CHECK(read_experiment("SAM3_EXPERIMENT_MLP") == "int8_boundary", "live setting cached");
+      setting("SAM3_EXPERIMENT_MLP", "exact");
+      TORCH_CHECK(read_experiment("SAM3_EXPERIMENT_MLP") == "exact", "live update ignored");
       rejects([] { check_experiment("", {"exact", "fused"}, "invalid mode: "); });
       setting("SAM3_EXPERIMENT_MLP_SCOPE", "global");
       TORCH_CHECK(!mlp_int8_layer(0) && mlp_int8_layer(7), "global layer selection changed");

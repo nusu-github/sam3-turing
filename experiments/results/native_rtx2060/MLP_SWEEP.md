@@ -77,6 +77,6 @@ cmake --build build/native-windows-cu130 --target sam3_boundary_bench sam3_fc2_n
 
 The sweep and model drivers (`run_boundary_sweep.py`, `run_mlp_sweep_native.py
 timing|quality`, `summarize_mlp_sweep_native.py`) were removed after the
-experiment and remain in commit `7d7fddb`. Both new switches default to `exact`. On the existing tested INT8/QKV/RoPE configuration, opt in with `SAM3_EXPERIMENT_FC2_NORM=fused`; keep `SAM3_EXPERIMENT_BOUNDARY=exact`. The rejected boundary candidates remain diagnostic options `threads128`, `threads512`, `readonly`. Earlier benchmark drivers clear these switches to preserve their prior comparisons.
+experiment and remain in commit `7d7fddb`. On the tested INT8/QKV/RoPE configuration, opt in with `SAM3_EXPERIMENT_FC2_NORM=fused` (default `exact`). The rejected boundary candidates (`SAM3_EXPERIMENT_BOUNDARY=threads128|threads512|readonly`) were removed in the repository cleanup; they remain in commit `7d7fddb`.
 
 Existing CTest suite: **51/51 pass**, 138.62 seconds, using the rebuilt DLL with new experiment switches unset. Log: `build/native-windows-cu130/windows-validation-mlp-sweep.log`. The new paths are exercised separately by the operator/model comparisons above. Python compilation and `git diff --check` also pass. These validations do not establish all-image, all-batch, cross-platform or video parity.

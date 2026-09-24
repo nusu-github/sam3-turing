@@ -8,7 +8,7 @@ Fast-forwarded `codex/native-onboarding` from `908e476` to `ba018a0`, including 
 
 ## Implementation
 
-New opt-in mode: `SAM3_EXPERIMENT_MLP=int8_boundary`. Default FP16 and the original `int8` mode remain available.
+New opt-in mode: `SAM3_EXPERIMENT_MLP=int8_boundary`. Default FP16 remains available. The original `int8` mode produced byte-identical outputs and was later removed in the repository cleanup (it remains in commit `7d7fddb`).
 
 The original INT8 FC1 output was restored with bias and erf GELU to global FP16 storage, then read by a second kernel for row absmax and INT8 packing. The new `approx_restore_quant` kernel holds the restored activations in registers, reduces absmax across a row, and writes INT8 values plus their scale directly for FC2. A 256-thread block handles each row; the actual 4736-wide activation uses 19 elements per thread and warp shuffle reductions.
 
