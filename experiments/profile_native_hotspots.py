@@ -1,4 +1,8 @@
-"""Capture current FP16 / INT8 MLP inference in alternating order with Nsight."""
+"""Capture FP16 and INT8-boundary MLP inference in alternating order with Nsight.
+
+usage: profile_native_hotspots.py [OUTPUT_ROOT] [SAM3_EXPERIMENT_MLP mode...]
+Other SAM3_EXPERIMENT_* variables are inherited from the environment.
+"""
 import json
 import os
 from pathlib import Path
@@ -9,7 +13,7 @@ root=Path(sys.argv[1] if len(sys.argv)>1 else '.cache/native-perf/hotspots-curre
 root.mkdir(parents=True,exist_ok=True)
 nsys='C:/Program Files/NVIDIA Corporation/Nsight Systems 2025.3.2/target-windows-x64/nsys.exe'
 counts={}
-for mode in (sys.argv[2:] or ['exact','int8','int8','exact']):
+for mode in (sys.argv[2:] or ['exact','int8_boundary','int8_boundary','exact']):
     counts[mode]=counts.get(mode,0)+1
     name=f'{mode}-{counts[mode]}'
     out=root/name
