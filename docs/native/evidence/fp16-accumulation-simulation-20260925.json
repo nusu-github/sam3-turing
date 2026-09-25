@@ -1,0 +1,170 @@
+{
+  "date": "2026-09-25",
+  "host": "Linux container without GPU; CPU simulation only",
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "2.4.6"
+  },
+  "command": "python experiments/simulate_fp16_accumulation.py --output <json>",
+  "model": "products exact; each block of products plus the accumulator rounded once to the accumulator format (RN for FP16), following Fasi et al. (PeerJ CS 2021); FP32 accumulation modelled as RN float32 per 4-product block; errors are relative RMS against unrounded float64 products; synthetic data-free inputs, 64x64 outputs, 4 seeds",
+  "cases": {
+    "qkv": {
+      "fp32 acc (current s1688)": {
+        "relative_rms_error": 0.00035281899199181906,
+        "vs_current": 1.0
+      },
+      "fp16 acc, block 4": {
+        "relative_rms_error": 0.0023671787600002374,
+        "vs_current": 6.709329185020533
+      },
+      "fp16 acc, block 8": {
+        "relative_rms_error": 0.0016501728443034465,
+        "vs_current": 4.677108890843693
+      },
+      "two-level 4/32": {
+        "relative_rms_error": 0.0005544847010582874,
+        "vs_current": 1.571584052003483
+      },
+      "two-level 4/64": {
+        "relative_rms_error": 0.0006909898886610373,
+        "vs_current": 1.958482690401937
+      },
+      "two-level 4/128": {
+        "relative_rms_error": 0.000902652758998148,
+        "vs_current": 2.5584018419821293
+      },
+      "two-level 4/256": {
+        "relative_rms_error": 0.0012710882580948988,
+        "vs_current": 3.602663935178331
+      },
+      "INT8 row x channel": {
+        "relative_rms_error": 0.04377080678980172,
+        "vs_current": 124.06023423709756
+      },
+      "INT8 + block Hadamard": {
+        "relative_rms_error": 0.01086218460405119,
+        "vs_current": 30.78684779050402
+      },
+      "official BF16 autocast": {
+        "relative_rms_error": 0.002875765002466667,
+        "vs_current": 8.150822568342205
+      }
+    },
+    "fc2": {
+      "fp32 acc (current s1688)": {
+        "relative_rms_error": 0.0003561989158354016,
+        "vs_current": 1.0
+      },
+      "fp16 acc, block 4": {
+        "relative_rms_error": 0.005004121507195096,
+        "vs_current": 14.048671359537448
+      },
+      "fp16 acc, block 8": {
+        "relative_rms_error": 0.0035118011394570667,
+        "vs_current": 9.859101146393884
+      },
+      "two-level 4/32": {
+        "relative_rms_error": 0.000561137998149393,
+        "vs_current": 1.5753501013144382
+      },
+      "two-level 4/64": {
+        "relative_rms_error": 0.0007045378053471553,
+        "vs_current": 1.9779336040223097
+      },
+      "two-level 4/128": {
+        "relative_rms_error": 0.0009149363746013499,
+        "vs_current": 2.5686107787709807
+      },
+      "two-level 4/256": {
+        "relative_rms_error": 0.0012348111114762871,
+        "vs_current": 3.4666335482247495
+      },
+      "INT8 row x channel": {
+        "relative_rms_error": 0.014990358698885821,
+        "vs_current": 42.08423448939642
+      },
+      "INT8 + block Hadamard": {
+        "relative_rms_error": 0.012548261613248936,
+        "vs_current": 35.22824201701795
+      },
+      "official BF16 autocast": {
+        "relative_rms_error": 0.002874855273213013,
+        "vs_current": 8.070926511582854
+      }
+    },
+    "pv": {
+      "fp32 acc (current s1688)": {
+        "relative_rms_error": 0.00032920320492672243,
+        "vs_current": 1.0
+      },
+      "fp16 acc, block 4": {
+        "relative_rms_error": 0.0041108700657185,
+        "vs_current": 12.487333064189158
+      },
+      "fp16 acc, block 8": {
+        "relative_rms_error": 0.0034254903884482816,
+        "vs_current": 10.40539805561967
+      },
+      "two-level 4/32": {
+        "relative_rms_error": 0.0005094321330032412,
+        "vs_current": 1.5474701502879842
+      },
+      "two-level 4/64": {
+        "relative_rms_error": 0.0006193236956849658,
+        "vs_current": 1.8812808818881988
+      },
+      "two-level 4/128": {
+        "relative_rms_error": 0.0007760316615854523,
+        "vs_current": 2.357302875463165
+      },
+      "two-level 4/256": {
+        "relative_rms_error": 0.0010130475680673369,
+        "vs_current": 3.0772712807970137
+      },
+      "INT8 row x channel": {
+        "relative_rms_error": 0.03521729574891322,
+        "vs_current": 106.97737817209969
+      },
+      "INT8 + block Hadamard": {
+        "relative_rms_error": 0.01744300643650417,
+        "vs_current": 52.985530442775676
+      },
+      "official BF16 autocast": {
+        "relative_rms_error": 0.0026078358409793003,
+        "vs_current": 7.921659941189759
+      }
+    }
+  },
+  "hardware_sources": {
+    "turing_whitepaper_rtx2070_tu106": {
+      "fp16_tensor_tflops_fp16_acc": "59.7 / 63",
+      "fp16_tensor_tflops_fp32_acc": "29.9 / 31.5",
+      "int8_tops": "119.4 / 126",
+      "int4_tops": "238.9 / 252.1",
+      "note": "Reference / Founders Edition; Quadro RTX and Tesla T4 list equal FP16- and FP32-accumulate rates",
+      "url": "https://images.nvidia.com/aem-dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf"
+    },
+    "sun_et_al_dissecting_tensor_cores_table5_rtx2080ti": {
+      "fp16_in_fp32_acc_m16n8k8_fma_per_clk_sm": [
+        252.4,
+        255.1
+      ],
+      "fp16_in_fp16_acc_m16n8k8_fma_per_clk_sm": [
+        467.9,
+        509.4
+      ],
+      "int8_m8n8k16_fma_per_clk_sm": [
+        846.1,
+        1012.6
+      ],
+      "note": "(4 warps, ILP) and (8 warps, ILP) columns",
+      "url": "https://arxiv.org/abs/2206.02874"
+    },
+    "native_profile_fp16": {
+      "s1688_gemm_kernel_ms": 249.89,
+      "fmha_cutlassF_sm75_ms": 99.83,
+      "gpu_kernel_ms_per_inference": 459.08,
+      "source": "experiments/results/native_rtx2060/hotspots-current.json (exact-1)"
+    }
+  }
+}

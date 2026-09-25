@@ -20,6 +20,7 @@
 - [experiments/README.md](../experiments/README.md): measurement and research tooling
 - [experiments/results/native_rtx2060](../experiments/results/native_rtx2060/README.md): experiment index and decisions
 - [native/QUANT_RESEARCH_LOG.md](native/QUANT_RESEARCH_LOG.md) (Japanese): ongoing INT8/INT4 calibration research
+- [native/DATA_FREE_STRUCTURE_RESEARCH_20260925_JA.md](native/DATA_FREE_STRUCTURE_RESEARCH_20260925_JA.md) (Japanese): calibration-free, always-on speedups (FP16 accumulation, exact weight merges, scheduling)
 
 ## History
 
