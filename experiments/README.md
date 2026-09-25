@@ -28,6 +28,7 @@ separate checkout, for example `git worktree add ../sam3-sweep 080bec0`.
 | `monitor_native_bench.py` | Run one native process (usually `sam3_image_latency`) with a Windows-only `PATH`, sampling whole-device NVML memory, clocks and power |
 | `native_quality.py` | FP16-agreement gates (`compare`) and the 17 fixed regression cases |
 | `profile_native_hotspots.py`, `analyze_native_hotspots.py` | Nsight Systems capture and NVTX-correlated GPU kernel attribution |
+| `simulate_fp16_accumulation.py` | CPU-only estimate of GEMM rounding error for FP16/two-level accumulation, INT8 and BF16 on synthetic inputs ([survey](../docs/native/DATA_FREE_STRUCTURE_RESEARCH_20260925_JA.md)) |
 
 The experiment index and decisions are in
 [results/native_rtx2060/README.md](results/native_rtx2060/README.md). Drivers of

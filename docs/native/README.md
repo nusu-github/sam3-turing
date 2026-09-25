@@ -12,7 +12,7 @@ options, tests, probes and experiment switches are in
 | Predictor features | [VIDEO_EDIT.md](VIDEO_EDIT.md), [VIDEO_MULTIDEVICE.md](VIDEO_MULTIDEVICE.md), [OUTPUT_CACHE.md](OUTPUT_CACHE.md) |
 | Input | [MEDIA_IO.md](MEDIA_IO.md), [VIDEO_PREPROCESS.md](VIDEO_PREPROCESS.md) |
 | Internals | [COMPONENTS.md](COMPONENTS.md), [VIDEO_PIPELINE.md](VIDEO_PIPELINE.md), [CUDA_LIBRARIES.md](CUDA_LIBRARIES.md), [CUDA_PYTORCH_LIBRARY_REVIEW_20260924_JA.md](CUDA_PYTORCH_LIBRARY_REVIEW_20260924_JA.md) (library survey for fewer hand-written kernels) |
-| Performance | [PERFORMANCE.md](PERFORMANCE.md) |
+| Performance | [PERFORMANCE.md](PERFORMANCE.md), [DATA_FREE_STRUCTURE_RESEARCH_20260925_JA.md](DATA_FREE_STRUCTURE_RESEARCH_20260925_JA.md) (calibration-free survey: FP16 accumulation, exact weight merges, scheduling) |
 | Validation | [VALIDATION.md](VALIDATION.md), [IMAGE_PRECISION_AUDIT.md](IMAGE_PRECISION_AUDIT.md) |
 | Quantization research (ongoing) | [QUANT_RESEARCH_LOG.md](QUANT_RESEARCH_LOG.md), [INT8_INT4_RESEARCH_20260924_JA.md](INT8_INT4_RESEARCH_20260924_JA.md) (literature survey), [Windows/RTX 2060 experiments](../../experiments/results/native_rtx2060/README.md) |
 | History | [docs/HISTORY.md](../HISTORY.md) |
